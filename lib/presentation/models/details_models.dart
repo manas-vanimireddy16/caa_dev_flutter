@@ -1,0 +1,3453 @@
+import 'dart:convert';
+
+RequestDetailModel welcomeFromJson(String str) =>
+    RequestDetailModel.fromJson(json.decode(str));
+
+String welcomeToJson(RequestDetailModel data) => json.encode(data.toJson());
+
+class RequestDetailModel {
+  String? status;
+  RequestDetailData? data;
+
+  RequestDetailModel({this.status, this.data});
+
+  factory RequestDetailModel.fromJson(Map<String, dynamic> json) =>
+      RequestDetailModel(
+        status: json["status"],
+        data: json["data"] == null
+            ? null
+            : RequestDetailData.fromJson(json["data"]),
+      );
+
+  Map<String, dynamic> toJson() => {"status": status, "data": data?.toJson()};
+}
+
+class RequestDetailData {
+  RequestModel? request;
+  List<WorkflowDetailModel>? workflowDetails;
+  List<ApprovalDetailModel>? approvalDetails;
+  List<ChatMessageModel>? chatMessages;
+  List<AttachmentModel>? attachments;
+  final int? id;
+  final int? serviceId;
+  final int? subServiceId;
+
+  final String? description;
+  final String? status;
+  final String? priority; // NEW
+  final int? typeOfThreat; // NEW
+
+  final String? workflowExecutionId;
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+  final int? userId;
+
+  final int? reqUserDepartmentId;
+  final int? reqUserSectionId;
+
+  // ─────────────────────────────
+  // CONTACT INFO (Salalah)
+  // ─────────────────────────────
+  final String? contactNum; // contact_number / contact_num
+  final String? extnNum; // extension_number
+  final String? email;
+  final String? personName;
+  final String? personContactNumber;
+  final String? requestFor;
+  final String? problem;
+  final String? requestDate;
+  final int? serviceTypeId;
+  final String? requestType;
+
+  // ─────────────────────────────
+  // LOGISTICS FIELDS
+  // ─────────────────────────────
+  final String? category;
+  final String? vehicleRequiredFor;
+  final String? vehicleRequiredLocation;
+  final String? title;
+  final String? purposeOfTravel;
+  final String? typeOfVehicleRequired;
+  final String? typeOfRequest;
+  final String? dateOfTravel;
+  final String? timeOfTravel;
+  final int? expDurationOfUseHrs;
+  final int? expDurationOfUseDays;
+
+  // ─────────────────────────────
+  // ACCOMMODATION FIELDS
+  // ─────────────────────────────
+  final String? hotelName;
+  final String? typeOfAccommodation;
+  final int? numberOfGuests;
+  final List<String>? meal;
+  final String? price;
+  final String? requestedBy;
+  final bool? hrApproval;
+  final bool? prApproval;
+  final String? checkInDate;
+  final String? checkInTime;
+  final String? checkOutDate;
+  final String? checkOutTime;
+  final String? dateOfRequest;
+  final String? visitorName;
+
+  // ─────────────────────────────
+  // SECURITY AWARENESS FIELDS
+  // ─────────────────────────────
+  final String? dateOfSubmission;
+  final String? phoneNumber;
+  final String? place;
+  final String? eventDate;
+  final String? eventTime;
+  final String? mediaCoverageRequired;
+
+  // ─────────────────────────────
+  // AIRPORT ENTRY / PERMIT FIELDS
+  // ─────────────────────────────
+  final String? nameFullFamilyName;
+  final String? nationality;
+  final String? dob;
+  final String? passportIdCardNo;
+  final String? categoryOfPermit;
+  final String? typeOfPermit;
+
+  final List<String>? permissionToRequiredAreas;
+  final String? occupationStaff;
+  final String? temporaryStartTime;
+  final String? temporaryDuration;
+  final List<String>? forVisitor;
+  final String? currentEntity;
+  final String? transferredToEntity;
+
+  final String? salaryDetails;
+  final String? salaryDetailsDescription;
+
+  // ─────────────────────────────
+  // CONSENTS / FLAGS
+  // ─────────────────────────────
+  final bool? acknowledgeSecurityPolicies;
+  final bool? acknowledgeDisciplinaryAction;
+  final bool? consentApproveToIssuePermit;
+  final bool? consentDoNotApproveToIssuePermit;
+  final String? consentJustification;
+
+  // ─────────────────────────────
+  // META
+  // ─────────────────────────────
+  final String? requestId;
+  final String? expirationDate;
+  final String? attachmentUrl;
+
+  // ─────────────────────────────
+  // NESTED OBJECTS
+  // ─────────────────────────────
+  final UserModel? createdByUser;
+  final ServiceTypeModel? serviceType;
+  final ServiceModel? service;
+  final SubServiceModel? subService;
+  final DepartmentModel? reqDepartment;
+  final SectionModel? reqSection;
+
+  // ─────────────────────────────
+  // ASSIGNMENT DECISION FIELDS
+  // ─────────────────────────────
+  final bool? isDeleted;
+
+  final int? assignedToUserId;
+  final String? assignedAt;
+  final int? reviewerUserId;
+
+  final String? assignedEmployeeName;
+  final String? civilIdCardNumber;
+  final String? employeeId;
+  final String? currentJobPosition;
+  final String? assignedJobPosition;
+
+  final String? startDate;
+  final String? endDate;
+  final String? assignmentAllowance;
+  final String? reasonForRequest;
+
+  // Replacement
+  final bool? isReplaced;
+  final String? replacementEmployeeName;
+  final String? replacementEmployeeId;
+  final String? replacementCivilIdCardNumber;
+  final String? replacementReason;
+  final int? replacedByUserId;
+  final String? replacedAt;
+  final int? reqUserPositionId;
+  final int? originalDepartmentId;
+  final int? assignedDepartmentId;
+  final String? fromEntity;
+  final String? toEntity;
+  final dynamic assignedToRole;
+
+  /// ─────────────────────────────
+  /// TASK MANAGEMENT FIELDS (NEW)
+  /// ─────────────────────────────
+  final String? taskTitle;
+  final String? taskDescription;
+  final String? completionDate;
+
+  // ─────────────────────────────
+  // DUTY MISSION FIELDS (NEW)
+  // ─────────────────────────────
+  final String? tripType;
+  final String? chooseType;
+
+  final String? missionSponsoredBy;
+  final String? missionPurpose;
+  final String? missionNumber;
+  final String? missionId;
+
+  final String? missionStartDate;
+  final String? missionEndDate;
+
+  final String? travellingAreaFrom;
+  final String? travellingAreaTo;
+
+  final String? fromCountry;
+  final String? toCountry;
+  final String? travelPlace;
+
+  final String? travelStartDate;
+  final String? travelReturnDate;
+
+  final int? missionDays;
+  final String? distance;
+
+  final String? ifSponsored;
+  final String? allowancePercentage;
+  final String? airTicketRequired;
+  final String? vehicleRequired;
+  final String? remarks;
+
+  // ─────────────────────────────
+  // DUTY MISSION NESTED LISTS
+  // ─────────────────────────────
+  final List<EmployeeDutyMission>? employeesDetails;
+  final List<AirTicketDetail>? airTicketDetails;
+
+  // ─────────────────────────────
+  // REQUEST FOR COVERAGE (MEDIA) FIELDS
+  // ─────────────────────────────
+  final String? eventLocation;
+  final String? eventDetails;
+  final String? importanceOfPublishing;
+  final String? directorateName;
+  final bool? requiredForPresident;
+  final int? departmentId; // Media / Communication department
+  final String? suggestedPhotography;
+  final String? newsSize;
+  final String? eventObjective;
+  final String? organizingEntity;
+  final String? hostedPerson;
+  final String? audience;
+  final String? rejectionReason;
+  final String? documentType;
+
+  // ─────────────────────────────
+  // TRAINING ROOM BOOKING FIELDS
+  // ─────────────────────────────
+  final String? purposeOfTraining;
+  final String? dateOfEvent;
+  final String? startTime;
+  final String? endTime;
+  final String? roomType;
+  final int? numberOfAttendees;
+  final bool? networkSupportRequired;
+  final bool? mealsRequired;
+
+  /// ─────────────────────────────
+  /// TRAINING DETAILS (MISSING FIELDS ADDED)
+  /// ─────────────────────────────
+  final String? courseName;
+  final int? noOfParticipants;
+  final String? courseCost;
+  final String? totalCost;
+  final String? reason;
+  final String? location;
+  final List<dynamic>? employeeList;
+  final String? proposedImplementationDate;
+
+  /// ─────────────────────────────
+  /// TRAINING REQUEST (CAA015) FIELDS
+  /// ─────────────────────────────
+  final String? typeOfTraining;
+  final String? typeOfCategory;
+
+  final int? noOfAttendees;
+
+  final String? durationOfCourse;
+  final String? instituteName;
+  final String? courseStartDate;
+  final String? courseEndDate;
+
+  /// Transfer specific fields only
+  final String? positionToBeTransferred;
+  final String? effectiveFromDate;
+  final String? decisionNumber;
+
+  /// Employee info
+  final String? employeeName;
+  final String? jobTitle;
+  final String? financialGrade;
+
+  /// Shift details
+  final DateTime? shiftStartDate;
+  final DateTime? shiftEndDate;
+
+  /// Employee Info
+  ///
+  final String? salaryGrade;
+
+  /// Leave Calculation Fields
+  final String? remainingLeaveBalance;
+  final String? basicSalary;
+  final String? totalSalaryDue;
+  final DateTime? endOfServiceDate;
+  final String? reasonForTermination;
+  final String? salaryPaymentSource;
+  final String? socialServiceFundContribution;
+  final String? positionToBeFilled;
+  final String? grade;
+  final String? roleTitle;
+  final String? educationRequirements;
+  final String? requiredSkills;
+  final String? yearsOfExperience;
+  final String? jobDescription;
+
+  /// Current Details
+  final String? currentBasicSalary;
+  final String? currentJobTitle;
+  final String? currentSalaryGrade;
+
+  /// Proposed Details
+  final String? proposedBasicSalary;
+  final String? proposedJobTitle;
+  final String? proposedSalaryGrade;
+
+  RequestDetailData({
+    this.request,
+    this.workflowDetails,
+    this.approvalDetails,
+    this.chatMessages,
+    this.attachments,
+    this.id,
+    this.serviceId,
+    this.subServiceId,
+    this.description,
+    this.status,
+    this.priority,
+    this.typeOfThreat,
+    this.workflowExecutionId,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+    this.userId,
+    this.reqUserDepartmentId,
+    this.reqUserSectionId,
+
+    this.contactNum,
+    this.extnNum,
+    this.email,
+    this.personName,
+    this.personContactNumber,
+    this.requestFor,
+    this.problem,
+    this.requestDate,
+    this.serviceTypeId,
+    this.requestType,
+
+    this.category,
+    this.vehicleRequiredFor,
+    this.vehicleRequiredLocation,
+    this.title,
+    this.purposeOfTravel,
+    this.typeOfVehicleRequired,
+    this.typeOfRequest,
+    this.dateOfTravel,
+    this.timeOfTravel,
+    this.expDurationOfUseHrs,
+    this.expDurationOfUseDays,
+
+    this.hotelName,
+    this.typeOfAccommodation,
+    this.numberOfGuests,
+    this.meal,
+    this.price,
+    this.requestedBy,
+    this.hrApproval,
+    this.prApproval,
+    this.checkInDate,
+    this.checkInTime,
+    this.checkOutDate,
+    this.checkOutTime,
+    this.dateOfRequest,
+    this.visitorName,
+
+    this.createdByUser,
+    this.serviceType,
+    this.service,
+    this.subService,
+    this.reqDepartment,
+    this.reqSection,
+
+    this.dateOfSubmission,
+    this.phoneNumber,
+    this.place,
+    this.eventDate,
+    this.eventTime,
+    this.mediaCoverageRequired,
+    this.nameFullFamilyName,
+    this.nationality,
+    this.dob,
+    this.passportIdCardNo,
+    this.categoryOfPermit,
+    this.typeOfPermit,
+    this.permissionToRequiredAreas,
+    this.occupationStaff,
+    this.temporaryStartTime,
+    this.temporaryDuration,
+    this.forVisitor,
+    this.acknowledgeSecurityPolicies,
+    this.acknowledgeDisciplinaryAction,
+    this.consentApproveToIssuePermit,
+    this.consentDoNotApproveToIssuePermit,
+    this.consentJustification,
+    this.requestId,
+    this.expirationDate,
+    this.attachmentUrl,
+
+    this.isDeleted,
+
+    this.assignedToUserId,
+    this.assignedAt,
+    this.reviewerUserId,
+
+    this.assignedEmployeeName,
+    this.civilIdCardNumber,
+    this.employeeId,
+    this.currentJobPosition,
+    this.assignedJobPosition,
+
+    this.startDate,
+    this.endDate,
+    this.assignmentAllowance,
+    this.reasonForRequest,
+
+    this.isReplaced,
+    this.replacementEmployeeName,
+    this.replacementEmployeeId,
+    this.replacementCivilIdCardNumber,
+    this.replacementReason,
+    this.replacedByUserId,
+    this.replacedAt,
+    this.reqUserPositionId,
+    this.originalDepartmentId,
+    this.assignedDepartmentId,
+    this.fromEntity,
+    this.toEntity,
+    this.assignedToRole,
+
+    this.currentEntity,
+    this.transferredToEntity,
+
+    this.salaryDetails,
+    this.salaryDetailsDescription,
+    this.taskTitle,
+    this.taskDescription,
+    this.completionDate,
+
+    this.tripType,
+    this.chooseType,
+    this.missionSponsoredBy,
+    this.missionPurpose,
+    this.missionNumber,
+    this.missionId,
+    this.missionStartDate,
+    this.missionEndDate,
+    this.travellingAreaFrom,
+    this.travellingAreaTo,
+    this.fromCountry,
+    this.toCountry,
+    this.travelPlace,
+    this.travelStartDate,
+    this.travelReturnDate,
+    this.missionDays,
+    this.distance,
+    this.ifSponsored,
+    this.allowancePercentage,
+    this.airTicketRequired,
+    this.vehicleRequired,
+    this.remarks,
+    this.employeesDetails,
+    this.airTicketDetails,
+
+    this.eventLocation,
+    this.eventDetails,
+    this.importanceOfPublishing,
+    this.directorateName,
+    this.requiredForPresident,
+    this.departmentId,
+    this.suggestedPhotography,
+    this.newsSize,
+    this.eventObjective,
+    this.organizingEntity,
+    this.hostedPerson,
+    this.audience,
+    this.rejectionReason,
+    this.documentType,
+    this.purposeOfTraining,
+    this.dateOfEvent,
+    this.startTime,
+    this.endTime,
+    this.roomType,
+    this.numberOfAttendees,
+    this.networkSupportRequired,
+    this.mealsRequired,
+    this.courseName,
+    this.noOfParticipants,
+    this.courseCost,
+    this.totalCost,
+    this.reason,
+    this.location,
+    this.employeeList,
+    this.proposedImplementationDate,
+    this.typeOfTraining,
+    this.typeOfCategory,
+    this.noOfAttendees,
+
+    this.durationOfCourse,
+    this.instituteName,
+    this.courseStartDate,
+    this.courseEndDate,
+
+    this.positionToBeTransferred,
+    this.effectiveFromDate,
+    this.decisionNumber,
+    this.employeeName,
+    this.jobTitle,
+    this.financialGrade,
+    this.shiftStartDate,
+    this.shiftEndDate,
+    this.salaryGrade,
+    this.remainingLeaveBalance,
+    this.basicSalary,
+    this.totalSalaryDue,
+    this.endOfServiceDate,
+    this.reasonForTermination,
+
+    this.salaryPaymentSource,
+    this.socialServiceFundContribution,
+    this.positionToBeFilled,
+    this.grade,
+    this.roleTitle,
+    this.educationRequirements,
+    this.requiredSkills,
+    this.yearsOfExperience,
+    this.jobDescription,
+    this.currentBasicSalary,
+    this.currentJobTitle,
+    this.currentSalaryGrade,
+    this.proposedBasicSalary,
+    this.proposedJobTitle,
+    this.proposedSalaryGrade,
+  });
+
+  factory RequestDetailData.fromJson(Map<String, dynamic> json) =>
+      RequestDetailData(
+        request: json["request"] == null
+            ? null
+            : RequestModel.fromJson(json["request"]),
+
+        workflowDetails:
+            (json["workflow_details"] ?? json["workflow_logs"] ?? []) is List
+            ? (json["workflow_details"] ?? json["workflow_logs"])
+                  .map<WorkflowDetailModel>(
+                    (x) => WorkflowDetailModel.fromJson(x),
+                  )
+                  .toList()
+            : [],
+
+        approvalDetails: json["approval_details"] == null
+            ? []
+            : List<ApprovalDetailModel>.from(
+                json["approval_details"]!.map(
+                  (x) => ApprovalDetailModel.fromJson(x),
+                ),
+              ),
+
+        chatMessages: json["chat_messages"] == null
+            ? []
+            : List<ChatMessageModel>.from(
+                json["chat_messages"]!.map((x) => ChatMessageModel.fromJson(x)),
+              ),
+
+        attachments: json["attachments"] == null
+            ? []
+            : List<AttachmentModel>.from(
+                json["attachments"]!.map((x) => AttachmentModel.fromJson(x)),
+              ),
+
+        id: json["id"],
+        serviceId: json["service_id"],
+        subServiceId: json["sub_service_id"],
+
+        description: json["description"],
+        status: json["status"],
+        priority: json["priority"] ?? json["request_priority"],
+        typeOfThreat: json["type_of_threat"] ?? json["typeOfThreat"],
+
+        workflowExecutionId: json["workflow_execution_id"],
+        createdBy: json["created_by"],
+        createdAt: json["created_at"],
+        updatedBy: json["updated_by"],
+        updatedAt: json["updated_at"],
+        userId: json["user_id"],
+
+        reqUserDepartmentId: json["req_user_department_id"],
+        reqUserSectionId: json["req_user_section_id"],
+
+        contactNum: json["contact_number"] ?? json["contact_num"],
+        extnNum: json["extension_number"] ?? json["extn_num"],
+        email: json["email"],
+        personName: json["person_name"],
+        personContactNumber: json["person_contact_number"],
+        requestFor: json["request_for"],
+        problem: json["problem"],
+        requestDate: json["request_date"],
+        serviceTypeId: json["service_type_id"],
+        requestType: json["request_type"],
+
+        category: json["category"],
+        vehicleRequiredFor: json["vehicle_required_for"],
+        vehicleRequiredLocation: json["vehicle_required_location"],
+        title: json["title"],
+        purposeOfTravel: json["purpose_of_travel"],
+        typeOfVehicleRequired: json["type_of_vehicle_required"],
+        typeOfRequest: json["type_of_request"],
+        dateOfTravel: json["date_of_travel"],
+        timeOfTravel: json["time_of_travel"],
+        expDurationOfUseHrs: json["exp_duration_of_use_hrs"],
+        expDurationOfUseDays: json["exp_duration_of_use_days"],
+
+        hotelName: json["hotel_name"],
+        typeOfAccommodation: json["type_of_accommodation"],
+        numberOfGuests: json["number_of_guests"],
+        meal: json["meal"] != null ? List<String>.from(json["meal"]) : null,
+        price: json["price"],
+        requestedBy: json["requested_by"],
+        hrApproval: json["hr_approval"],
+        prApproval: json["pr_approval"],
+        checkInDate: json["check_in_date"],
+        checkInTime: json["check_in_time"],
+        checkOutDate: json["check_out_date"],
+        checkOutTime: json["check_out_time"],
+        dateOfRequest: json["date_of_request"],
+        visitorName: json["visitor_name"],
+
+        createdByUser: json["created_by_user"] != null
+            ? UserModel.fromJson(json["created_by_user"])
+            : null,
+
+        serviceType: json["service_type"] != null
+            ? ServiceTypeModel.fromJson(json["service_type"])
+            : null,
+
+        service: json["service"] != null
+            ? ServiceModel.fromJson(json["service"])
+            : null,
+
+        subService: json["sub_service"] != null
+            ? SubServiceModel.fromJson(json["sub_service"])
+            : null,
+
+        reqDepartment: json["req_department"] != null
+            ? DepartmentModel.fromJson(json["req_department"])
+            : null,
+
+        reqSection: json["req_section"] != null
+            ? SectionModel.fromJson(json["req_section"])
+            : null,
+
+        dateOfSubmission: json["date_of_submission"],
+        phoneNumber: json["phone_number"],
+        place: json["place"],
+        eventDate: json["event_date"],
+        eventTime: json["event_time"],
+        mediaCoverageRequired: json["media_coverage_required"],
+        nameFullFamilyName: json["name_full_family_name"],
+        nationality: json["nationality"],
+        dob: json["dob"],
+        passportIdCardNo: json["passport_id_card_no"],
+        categoryOfPermit: json["category_of_permit"],
+        typeOfPermit: json["type_of_permit"],
+
+        permissionToRequiredAreas: json["permission_to_required_areas"] != null
+            ? List<String>.from(json["permission_to_required_areas"])
+            : null,
+
+        occupationStaff: json["occupation_staff"],
+        temporaryStartTime: json["temporary_start_time"],
+        temporaryDuration: json["temporary_duration"],
+
+        forVisitor: json["for_visitor"] != null
+            ? List<String>.from(json["for_visitor"])
+            : null,
+
+        acknowledgeSecurityPolicies: json["acknowledge_security_policies"],
+        acknowledgeDisciplinaryAction: json["acknowledge_disciplinary_action"],
+        consentApproveToIssuePermit: json["consent_approve_to_issue_permit"],
+        consentDoNotApproveToIssuePermit:
+            json["consent_do_not_approve_to_issue_permit"],
+        consentJustification: json["consent_justification"],
+
+        requestId: json["request_id"],
+        expirationDate: json["expiration_date"],
+        attachmentUrl: json["attachment_url"],
+        isDeleted: json["is_deleted"],
+
+        assignedToUserId: json["assigned_to_user_id"],
+        assignedAt: json["assigned_at"],
+        reviewerUserId: json["reviewer_user_id"],
+
+        assignedEmployeeName: json["assigned_employee_name"],
+        civilIdCardNumber: json["civil_id_card_number"],
+        employeeId: json["employee_id"],
+        currentJobPosition: json["current_job_position"],
+        assignedJobPosition: json["assigned_job_position"],
+
+        startDate: json["start_date"],
+        endDate: json["end_date"],
+        assignmentAllowance: json["assignment_allowance"]?.toString(),
+        reasonForRequest: json["reason_for_request"],
+
+        isReplaced: json["is_replaced"],
+        replacementEmployeeName: json["replacement_employee_name"],
+        replacementEmployeeId: json["replacement_employee_id"],
+        replacementCivilIdCardNumber: json["replacement_civil_id_card_number"],
+        replacementReason: json["replacement_reason"],
+        replacedByUserId: json["replaced_by_user_id"],
+        replacedAt: json["replaced_at"],
+        reqUserPositionId: json["req_user_position_id"],
+
+        originalDepartmentId: json["original_department_id"],
+        assignedDepartmentId: json["assigned_department_id"],
+
+        fromEntity: json["from_entity"],
+        toEntity: json["to_entity"],
+
+        assignedToRole: json["assigned_to_role"],
+        currentEntity: json['current_entity'],
+        transferredToEntity: json['transferred_to_entity'],
+
+        salaryDetails: json['salary_details'],
+        salaryDetailsDescription: json['salary_details_description'],
+        // ───────── TASK MANAGEMENT ─────────
+        taskTitle: json["task_title"],
+        taskDescription: json["task_description"] ?? json["description"],
+        completionDate: json["completion_date"],
+        employeesDetails: json['employees_details'] != null
+            ? (json['employees_details'] as List)
+                  .map((e) => EmployeeDutyMission.fromJson(e))
+                  .toList()
+            : null,
+
+        airTicketDetails: json['air_ticket_details'] != null
+            ? (json['air_ticket_details'] as List)
+                  .map((e) => AirTicketDetail.fromJson(e))
+                  .toList()
+            : null,
+        tripType: json['trip_type'],
+        chooseType: json['choose_type'],
+
+        missionSponsoredBy: json['mission_sponsored_by'],
+        missionPurpose: json['mission_purpose'],
+        missionNumber: json['mission_number'],
+        missionId: json['mission_id'],
+
+        missionStartDate: json['mission_start_date'],
+        missionEndDate: json['mission_end_date'],
+
+        travellingAreaFrom: json['travelling_area_from'],
+        travellingAreaTo: json['travelling_area_to'],
+
+        fromCountry: json['from_country'],
+        toCountry: json['to_country'],
+        travelPlace: json['travel_place'],
+
+        travelStartDate: json['travel_start_date'],
+        travelReturnDate: json['travel_return_date'],
+
+        missionDays: json['mission_days'],
+        distance: json['distance'],
+
+        ifSponsored: json['if_sponsored'],
+        allowancePercentage: json['allowance_percentage'],
+        airTicketRequired: json['air_ticket_required'],
+        vehicleRequired: json['vehicle_required'],
+        remarks: json['remarks'],
+        // ───── MEDIA COVERAGE ─────
+        eventLocation: json['event_location'],
+        eventDetails: json['event_details'],
+        importanceOfPublishing: json['importance_of_publishing'],
+        directorateName: json['directorate_name'],
+        requiredForPresident: json['required_for_president'],
+        departmentId: json['department_id'],
+        suggestedPhotography: json['suggested_photography'],
+        newsSize: json['news_size'],
+        eventObjective: json['event_objective'],
+        organizingEntity: json['organizing_entity'],
+        hostedPerson: json['hosted_person'],
+        audience: json['audience'],
+        rejectionReason: json['rejection_reason'],
+        documentType: json['document_event'],
+        purposeOfTraining: json['purpose_of_training'],
+        dateOfEvent: json['date_of_event'],
+        startTime: json['start_time'],
+        endTime: json['end_time'],
+        roomType: json['room_type'],
+        numberOfAttendees: json['number_of_attendees'],
+        networkSupportRequired: json['network_support_required'],
+        mealsRequired: json['meals_required'],
+        courseName: json['course_name'],
+        noOfParticipants: json['no_of_participants'],
+        courseCost: json['course_cost'],
+        totalCost: json['total_cost'],
+        reason: json['reason'],
+        location: json['location'],
+        employeeList: json['employee_list'],
+        proposedImplementationDate: json['proposed_implementation_date'],
+        typeOfTraining: json['type_of_training'],
+        typeOfCategory: json['type_of_category'],
+        noOfAttendees: json['no_of_attendees'],
+        durationOfCourse: json['duration_of_course'],
+        instituteName: json['institute_name'],
+        courseStartDate: json['course_start_date'],
+        courseEndDate: json['course_end_date'],
+
+        positionToBeTransferred: json['position_to_be_transferred'],
+        effectiveFromDate: json['effective_from_date'],
+        decisionNumber: json['decision_number'],
+        employeeName: json['employee_name'],
+        jobTitle: json['job_title'],
+        financialGrade: json['financial_grade'],
+
+        shiftStartDate: json['shift_start_date'] != null
+            ? DateTime.tryParse(json['shift_start_date'])
+            : null,
+        shiftEndDate: json['shift_end_date'] != null
+            ? DateTime.tryParse(json['shift_end_date'])
+            : null,
+        salaryGrade: json['salary_grade'],
+
+        remainingLeaveBalance: json['remaining_leave_balance'],
+        basicSalary: json['basic_salary'],
+        totalSalaryDue: json['total_salary_due'],
+
+        endOfServiceDate: json['end_of_service_date'] != null
+            ? DateTime.tryParse(json['end_of_service_date'])
+            : null,
+
+        reasonForTermination: json['reason_for_termination'],
+
+        salaryPaymentSource: json['salary_payment_source'],
+        socialServiceFundContribution: json['social_service_fund_contribution'],
+        positionToBeFilled: json['position_to_be_filled'] as String?,
+        grade: json['grade'] as String?,
+        roleTitle: json['role_title'] as String?,
+        educationRequirements: json['education_requirements'] as String?,
+        requiredSkills: json['required_skills'] as String?,
+        yearsOfExperience: json['years_of_experience'] as String?,
+        jobDescription: json['job_description'] as String?,
+        currentBasicSalary: json['current_basic_salary'] as String?,
+        currentJobTitle: json['current_job_title'] as String?,
+        currentSalaryGrade: json['current_salary_grade'] as String?,
+
+        proposedBasicSalary: json['proposed_basic_salary'] as String?,
+        proposedJobTitle: json['proposed_job_title'] as String?,
+        proposedSalaryGrade: json['proposed_salary_grade'] as String?,
+      );
+
+  Map<String, dynamic> toJson() => {
+    "request": request?.toJson(),
+    "workflow_details": workflowDetails == null
+        ? []
+        : List<dynamic>.from(workflowDetails!.map((x) => x.toJson())),
+    "approval_details": approvalDetails == null
+        ? []
+        : List<dynamic>.from(approvalDetails!.map((x) => x.toJson())),
+    "chat_messages": chatMessages == null
+        ? []
+        : List<dynamic>.from(chatMessages!.map((x) => x.toJson())),
+    "attachments": attachments == null
+        ? []
+        : List<dynamic>.from(attachments!.map((x) => x.toJson())),
+  };
+}
+
+class RequestModel {
+  // ─────────────────────────────
+  // COMMON FIELDS
+  // ─────────────────────────────
+  final int? id;
+  final int? serviceId;
+  final int? subServiceId;
+
+  final String? description;
+  final String? status;
+  final String? priority; // NEW
+  final int? typeOfThreat; // NEW
+
+  final String? workflowExecutionId;
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+  final int? userId;
+
+  final int? reqUserDepartmentId;
+  final int? reqUserSectionId;
+
+  // ─────────────────────────────
+  // CONTACT INFO (Salalah)
+  // ─────────────────────────────
+  final String? contactNum; // contact_number / contact_num
+  final String? extnNum; // extension_number
+  final String? email;
+  final String? personName;
+  final String? personContactNumber;
+  final String? requestFor;
+  final String? problem;
+  final String? requestDate;
+  final int? serviceTypeId;
+  final String? requestType;
+
+  // ─────────────────────────────
+  // LOGISTICS FIELDS
+  // ─────────────────────────────
+  final String? category;
+  final String? vehicleRequiredFor;
+  final String? vehicleRequiredLocation;
+  final String? title;
+  final String? purposeOfTravel;
+  final String? typeOfVehicleRequired;
+  final String? typeOfRequest;
+  final String? dateOfTravel;
+  final String? timeOfTravel;
+  final int? expDurationOfUseHrs;
+  final int? expDurationOfUseDays;
+
+  // ─────────────────────────────
+  // ACCOMMODATION FIELDS
+  // ─────────────────────────────
+  final String? hotelName;
+  final String? typeOfAccommodation;
+  final int? numberOfGuests;
+  final List<String>? meal;
+  final String? price;
+  final String? requestedBy;
+  final bool? hrApproval;
+  final bool? prApproval;
+  final String? checkInDate;
+  final String? checkInTime;
+  final String? checkOutDate;
+  final String? checkOutTime;
+  final String? dateOfRequest;
+  final String? visitorName;
+
+  // ─────────────────────────────
+  // SECURITY AWARENESS FIELDS
+  // ─────────────────────────────
+  final String? dateOfSubmission;
+  final String? phoneNumber;
+  final String? place;
+  final String? eventDate;
+  final String? eventTime;
+  final String? mediaCoverageRequired;
+
+  // ─────────────────────────────
+  // AIRPORT ENTRY / PERMIT FIELDS
+  // ─────────────────────────────
+  final String? nameFullFamilyName;
+  final String? nationality;
+  final String? dob;
+  final String? passportIdCardNo;
+  final String? categoryOfPermit;
+  final String? typeOfPermit;
+
+  final List<String>? permissionToRequiredAreas;
+  final String? occupationStaff;
+  final String? temporaryStartTime;
+  final String? temporaryDuration;
+  final List<String>? forVisitor;
+  final String? currentEntity;
+  final String? transferredToEntity;
+
+  final String? salaryDetails;
+  final String? salaryDetailsDescription;
+
+  // ─────────────────────────────
+  // CONSENTS / FLAGS
+  // ─────────────────────────────
+  final bool? acknowledgeSecurityPolicies;
+  final bool? acknowledgeDisciplinaryAction;
+  final bool? consentApproveToIssuePermit;
+  final bool? consentDoNotApproveToIssuePermit;
+  final String? consentJustification;
+
+  // ─────────────────────────────
+  // META
+  // ─────────────────────────────
+  final String? requestId;
+  final String? expirationDate;
+  final String? attachmentUrl;
+
+  // ─────────────────────────────
+  // NESTED OBJECTS
+  // ─────────────────────────────
+  final UserModel? createdByUser;
+  final ServiceTypeModel? serviceType;
+  final ServiceModel? service;
+  final SubServiceModel? subService;
+  final DepartmentModel? reqDepartment;
+  final SectionModel? reqSection;
+
+  // ─────────────────────────────
+  // ASSIGNMENT DECISION FIELDS
+  // ─────────────────────────────
+  final bool? isDeleted;
+
+  final int? assignedToUserId;
+  final String? assignedAt;
+  final int? reviewerUserId;
+
+  final String? assignedEmployeeName;
+  final String? civilIdCardNumber;
+  final String? employeeId;
+  final String? currentJobPosition;
+  final String? assignedJobPosition;
+
+  final String? startDate;
+  final String? endDate;
+  final String? assignmentAllowance;
+  final String? reasonForRequest;
+
+  // Replacement
+  final bool? isReplaced;
+  final String? replacementEmployeeName;
+  final String? replacementEmployeeId;
+  final String? replacementCivilIdCardNumber;
+  final String? replacementReason;
+  final int? replacedByUserId;
+  final String? replacedAt;
+  final int? reqUserPositionId;
+  final int? originalDepartmentId;
+  final int? assignedDepartmentId;
+  final String? fromEntity;
+  final String? toEntity;
+  final dynamic assignedToRole;
+
+  /// ─────────────────────────────
+  /// TASK MANAGEMENT FIELDS (NEW)
+  /// ─────────────────────────────
+  final String? taskTitle;
+  final String? taskDescription;
+  final String? completionDate;
+
+  // ─────────────────────────────
+  // DUTY MISSION FIELDS (NEW)
+  // ─────────────────────────────
+  final String? tripType;
+  final String? chooseType;
+
+  final String? missionSponsoredBy;
+  final String? missionPurpose;
+  final String? missionNumber;
+  final String? missionId;
+
+  final String? missionStartDate;
+  final String? missionEndDate;
+
+  final String? travellingAreaFrom;
+  final String? travellingAreaTo;
+
+  final String? fromCountry;
+  final String? toCountry;
+  final String? travelPlace;
+
+  final String? travelStartDate;
+  final String? travelReturnDate;
+
+  final int? missionDays;
+  final String? distance;
+
+  final String? ifSponsored;
+  final String? allowancePercentage;
+  final String? airTicketRequired;
+  final String? vehicleRequired;
+  final String? remarks;
+
+  // ─────────────────────────────
+  // DUTY MISSION NESTED LISTS
+  // ─────────────────────────────
+  final List<EmployeeDutyMission>? employeesDetails;
+  final List<AirTicketDetail>? airTicketDetails;
+
+  // ─────────────────────────────
+  // REQUEST FOR COVERAGE (MEDIA) FIELDS
+  // ─────────────────────────────
+  final String? eventLocation;
+  final String? eventDetails;
+  final String? importanceOfPublishing;
+  final String? directorateName;
+  final bool? requiredForPresident;
+  final int? departmentId; // Media / Communication department
+  final String? suggestedPhotography;
+  final String? newsSize;
+  final String? eventObjective;
+  final String? organizingEntity;
+  final String? hostedPerson;
+  final String? audience;
+  final String? rejectionReason;
+  final String? documentType;
+
+  // ─────────────────────────────
+  // TRAINING ROOM BOOKING FIELDS
+  // ─────────────────────────────
+  final String? purposeOfTraining;
+  final String? dateOfEvent;
+  final String? startTime;
+  final String? endTime;
+  final String? roomType;
+  final int? numberOfAttendees;
+  final bool? networkSupportRequired;
+  final bool? mealsRequired;
+
+  /// ─────────────────────────────
+  /// TRAINING DETAILS (MISSING FIELDS ADDED)
+  /// ─────────────────────────────
+  final String? courseName;
+  final int? noOfParticipants;
+  final String? courseCost;
+  final String? totalCost;
+  final String? reason;
+  final String? location;
+  final List<dynamic>? employeeList;
+  final String? proposedImplementationDate;
+
+  /// ─────────────────────────────
+  /// TRAINING REQUEST (CAA015) FIELDS
+  /// ─────────────────────────────
+  final String? typeOfTraining;
+  final String? typeOfCategory;
+
+  final int? noOfAttendees;
+
+  final String? durationOfCourse;
+  final String? instituteName;
+  final String? courseStartDate;
+  final String? courseEndDate;
+
+  /// Transfer specific fields only
+  final String? positionToBeTransferred;
+  final String? effectiveFromDate;
+  final String? decisionNumber;
+
+  /// Employee info
+  final String? employeeName;
+  final String? jobTitle;
+  final String? financialGrade;
+
+  /// Shift details
+  final DateTime? shiftStartDate;
+  final DateTime? shiftEndDate;
+
+  /// Employee Info
+  ///
+  final String? salaryGrade;
+
+  /// Leave Calculation Fields
+  final String? remainingLeaveBalance;
+  final String? basicSalary;
+  final String? totalSalaryDue;
+  final DateTime? endOfServiceDate;
+  final String? reasonForTermination;
+  final String? positionToBeFilled;
+  final String? grade;
+  final String? roleTitle;
+  final String? educationRequirements;
+  final String? requiredSkills;
+  final String? yearsOfExperience;
+  final String? jobDescription;
+
+  /// Current Details
+  final String? currentBasicSalary;
+  final String? currentJobTitle;
+  final String? currentSalaryGrade;
+
+  /// Proposed Details
+  final String? proposedBasicSalary;
+  final String? proposedJobTitle;
+  final String? proposedSalaryGrade;
+  // ─────────────────────────────
+  // CONSTRUCTOR
+  // ─────────────────────────────
+
+  RequestModel({
+    this.id,
+    this.serviceId,
+    this.subServiceId,
+    this.description,
+    this.status,
+    this.priority,
+    this.typeOfThreat,
+    this.workflowExecutionId,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+    this.userId,
+    this.reqUserDepartmentId,
+    this.reqUserSectionId,
+
+    this.contactNum,
+    this.extnNum,
+    this.email,
+    this.personName,
+    this.personContactNumber,
+    this.requestFor,
+    this.problem,
+    this.requestDate,
+    this.serviceTypeId,
+    this.requestType,
+
+    this.category,
+    this.vehicleRequiredFor,
+    this.vehicleRequiredLocation,
+    this.title,
+    this.purposeOfTravel,
+    this.typeOfVehicleRequired,
+    this.typeOfRequest,
+    this.dateOfTravel,
+    this.timeOfTravel,
+    this.expDurationOfUseHrs,
+    this.expDurationOfUseDays,
+
+    this.hotelName,
+    this.typeOfAccommodation,
+    this.numberOfGuests,
+    this.meal,
+    this.price,
+    this.requestedBy,
+    this.hrApproval,
+    this.prApproval,
+    this.checkInDate,
+    this.checkInTime,
+    this.checkOutDate,
+    this.checkOutTime,
+    this.dateOfRequest,
+    this.visitorName,
+
+    this.createdByUser,
+    this.serviceType,
+    this.service,
+    this.subService,
+    this.reqDepartment,
+    this.reqSection,
+
+    this.dateOfSubmission,
+    this.phoneNumber,
+    this.place,
+    this.eventDate,
+    this.eventTime,
+    this.mediaCoverageRequired,
+    this.nameFullFamilyName,
+    this.nationality,
+    this.dob,
+    this.passportIdCardNo,
+    this.categoryOfPermit,
+    this.typeOfPermit,
+    this.permissionToRequiredAreas,
+    this.occupationStaff,
+    this.temporaryStartTime,
+    this.temporaryDuration,
+    this.forVisitor,
+    this.acknowledgeSecurityPolicies,
+    this.acknowledgeDisciplinaryAction,
+    this.consentApproveToIssuePermit,
+    this.consentDoNotApproveToIssuePermit,
+    this.consentJustification,
+    this.requestId,
+    this.expirationDate,
+    this.attachmentUrl,
+
+    this.isDeleted,
+
+    this.assignedToUserId,
+    this.assignedAt,
+    this.reviewerUserId,
+
+    this.assignedEmployeeName,
+    this.civilIdCardNumber,
+    this.employeeId,
+    this.currentJobPosition,
+    this.assignedJobPosition,
+
+    this.startDate,
+    this.endDate,
+    this.assignmentAllowance,
+    this.reasonForRequest,
+
+    this.isReplaced,
+    this.replacementEmployeeName,
+    this.replacementEmployeeId,
+    this.replacementCivilIdCardNumber,
+    this.replacementReason,
+    this.replacedByUserId,
+    this.replacedAt,
+    this.reqUserPositionId,
+    this.originalDepartmentId,
+    this.assignedDepartmentId,
+    this.fromEntity,
+    this.toEntity,
+    this.assignedToRole,
+
+    this.currentEntity,
+    this.transferredToEntity,
+
+    this.salaryDetails,
+    this.salaryDetailsDescription,
+    this.taskTitle,
+    this.taskDescription,
+    this.completionDate,
+
+    this.tripType,
+    this.chooseType,
+    this.missionSponsoredBy,
+    this.missionPurpose,
+    this.missionNumber,
+    this.missionId,
+    this.missionStartDate,
+    this.missionEndDate,
+    this.travellingAreaFrom,
+    this.travellingAreaTo,
+    this.fromCountry,
+    this.toCountry,
+    this.travelPlace,
+    this.travelStartDate,
+    this.travelReturnDate,
+    this.missionDays,
+    this.distance,
+    this.ifSponsored,
+    this.allowancePercentage,
+    this.airTicketRequired,
+    this.vehicleRequired,
+    this.remarks,
+    this.employeesDetails,
+    this.airTicketDetails,
+
+    this.eventLocation,
+    this.eventDetails,
+    this.importanceOfPublishing,
+    this.directorateName,
+    this.requiredForPresident,
+    this.departmentId,
+    this.suggestedPhotography,
+    this.newsSize,
+    this.eventObjective,
+    this.organizingEntity,
+    this.hostedPerson,
+    this.audience,
+    this.rejectionReason,
+    this.documentType,
+    this.purposeOfTraining,
+    this.dateOfEvent,
+    this.startTime,
+    this.endTime,
+    this.roomType,
+    this.numberOfAttendees,
+    this.networkSupportRequired,
+    this.mealsRequired,
+    this.courseName,
+    this.noOfParticipants,
+    this.courseCost,
+    this.totalCost,
+    this.reason,
+    this.location,
+    this.employeeList,
+    this.proposedImplementationDate,
+    this.typeOfTraining,
+    this.typeOfCategory,
+    this.noOfAttendees,
+
+    this.durationOfCourse,
+    this.instituteName,
+    this.courseStartDate,
+    this.courseEndDate,
+
+    this.positionToBeTransferred,
+    this.effectiveFromDate,
+    this.decisionNumber,
+    this.employeeName,
+    this.jobTitle,
+    this.financialGrade,
+    this.shiftStartDate,
+    this.shiftEndDate,
+    this.salaryGrade,
+    this.remainingLeaveBalance,
+    this.basicSalary,
+    this.totalSalaryDue,
+    this.endOfServiceDate,
+    this.reasonForTermination,
+    this.positionToBeFilled,
+    this.grade,
+    this.roleTitle,
+    this.educationRequirements,
+    this.requiredSkills,
+    this.yearsOfExperience,
+    this.jobDescription,
+    this.currentBasicSalary,
+    this.currentJobTitle,
+    this.currentSalaryGrade,
+    this.proposedBasicSalary,
+    this.proposedJobTitle,
+    this.proposedSalaryGrade,
+  });
+
+  // ─────────────────────────────
+  // FROM JSON (supports BOTH KEY versions)
+  // ─────────────────────────────
+
+  factory RequestModel.fromJson(Map<String, dynamic> json) {
+    return RequestModel(
+      id: json["id"],
+      serviceId: json["service_id"],
+      subServiceId: json["sub_service_id"],
+
+      description: json["description"],
+      status: json["status"],
+      priority: json["priority"] ?? json["request_priority"],
+      typeOfThreat: json["type_of_threat"] ?? json["typeOfThreat"],
+
+      workflowExecutionId: json["workflow_execution_id"],
+      createdBy: json["created_by"],
+      createdAt: json["created_at"],
+      updatedBy: json["updated_by"],
+      updatedAt: json["updated_at"],
+      userId: json["user_id"],
+
+      reqUserDepartmentId: json["req_user_department_id"],
+      reqUserSectionId: json["req_user_section_id"],
+
+      contactNum: json["contact_number"] ?? json["contact_num"],
+      extnNum: json["extension_number"] ?? json["extn_num"],
+      email: json["email"],
+      personName: json["person_name"],
+      personContactNumber: json["person_contact_number"],
+      requestFor: json["request_for"],
+      problem: json["problem"],
+      requestDate: json["request_date"],
+      serviceTypeId: json["service_type_id"],
+      requestType: json["request_type"],
+
+      category: json["category"],
+      vehicleRequiredFor: json["vehicle_required_for"],
+      vehicleRequiredLocation: json["vehicle_required_location"],
+      title: json["title"],
+      purposeOfTravel: json["purpose_of_travel"],
+      typeOfVehicleRequired: json["type_of_vehicle_required"],
+      typeOfRequest: json["type_of_request"],
+      dateOfTravel: json["date_of_travel"],
+      timeOfTravel: json["time_of_travel"],
+      expDurationOfUseHrs: json["exp_duration_of_use_hrs"],
+      expDurationOfUseDays: json["exp_duration_of_use_days"],
+
+      hotelName: json["hotel_name"],
+      typeOfAccommodation: json["type_of_accommodation"],
+      numberOfGuests: json["number_of_guests"],
+      meal: json["meal"] != null ? List<String>.from(json["meal"]) : null,
+      price: json["price"],
+      requestedBy: json["requested_by"],
+      hrApproval: json["hr_approval"],
+      prApproval: json["pr_approval"],
+      checkInDate: json["check_in_date"],
+      checkInTime: json["check_in_time"],
+      checkOutDate: json["check_out_date"],
+      checkOutTime: json["check_out_time"],
+      dateOfRequest: json["date_of_request"],
+      visitorName: json["visitor_name"],
+
+      createdByUser: json["created_by_user"] != null
+          ? UserModel.fromJson(json["created_by_user"])
+          : null,
+
+      serviceType: json["service_type"] != null
+          ? ServiceTypeModel.fromJson(json["service_type"])
+          : null,
+
+      service: json["service"] != null
+          ? ServiceModel.fromJson(json["service"])
+          : null,
+
+      subService: json["sub_service"] != null
+          ? SubServiceModel.fromJson(json["sub_service"])
+          : null,
+
+      reqDepartment: json["req_department"] != null
+          ? DepartmentModel.fromJson(json["req_department"])
+          : null,
+
+      reqSection: json["req_section"] != null
+          ? SectionModel.fromJson(json["req_section"])
+          : null,
+
+      dateOfSubmission: json["date_of_submission"],
+      phoneNumber: json["phone_number"],
+      place: json["place"],
+      eventDate: json["event_date"],
+      eventTime: json["event_time"],
+      mediaCoverageRequired: json["media_coverage_required"],
+      nameFullFamilyName: json["name_full_family_name"],
+      nationality: json["nationality"],
+      dob: json["dob"],
+      passportIdCardNo: json["passport_id_card_no"],
+      categoryOfPermit: json["category_of_permit"],
+      typeOfPermit: json["type_of_permit"],
+
+      permissionToRequiredAreas: json["permission_to_required_areas"] != null
+          ? List<String>.from(json["permission_to_required_areas"])
+          : null,
+
+      occupationStaff: json["occupation_staff"],
+      temporaryStartTime: json["temporary_start_time"],
+      temporaryDuration: json["temporary_duration"],
+
+      forVisitor: json["for_visitor"] != null
+          ? List<String>.from(json["for_visitor"])
+          : null,
+
+      acknowledgeSecurityPolicies: json["acknowledge_security_policies"],
+      acknowledgeDisciplinaryAction: json["acknowledge_disciplinary_action"],
+      consentApproveToIssuePermit: json["consent_approve_to_issue_permit"],
+      consentDoNotApproveToIssuePermit:
+          json["consent_do_not_approve_to_issue_permit"],
+      consentJustification: json["consent_justification"],
+
+      requestId: json["request_id"],
+      expirationDate: json["expiration_date"],
+      attachmentUrl: json["attachment_url"],
+      isDeleted: json["is_deleted"],
+
+      assignedToUserId: json["assigned_to_user_id"],
+      assignedAt: json["assigned_at"],
+      reviewerUserId: json["reviewer_user_id"],
+
+      assignedEmployeeName: json["assigned_employee_name"],
+      civilIdCardNumber: json["civil_id_card_number"],
+      employeeId: json["employee_id"],
+      currentJobPosition: json["current_job_position"],
+      assignedJobPosition: json["assigned_job_position"],
+
+      startDate: json["start_date"],
+      endDate: json["end_date"],
+      assignmentAllowance: json["assignment_allowance"]?.toString(),
+      reasonForRequest: json["reason_for_request"],
+
+      isReplaced: json["is_replaced"],
+      replacementEmployeeName: json["replacement_employee_name"],
+      replacementEmployeeId: json["replacement_employee_id"],
+      replacementCivilIdCardNumber: json["replacement_civil_id_card_number"],
+      replacementReason: json["replacement_reason"],
+      replacedByUserId: json["replaced_by_user_id"],
+      replacedAt: json["replaced_at"],
+      reqUserPositionId: json["req_user_position_id"],
+
+      originalDepartmentId: json["original_department_id"],
+      assignedDepartmentId: json["assigned_department_id"],
+
+      fromEntity: json["from_entity"],
+      toEntity: json["to_entity"],
+
+      assignedToRole: json["assigned_to_role"],
+      currentEntity: json['current_entity'],
+      transferredToEntity: json['transferred_to_entity'],
+
+      salaryDetails: json['salary_details'],
+      salaryDetailsDescription: json['salary_details_description'],
+      // ───────── TASK MANAGEMENT ─────────
+      taskTitle: json["task_title"],
+      taskDescription: json["task_description"] ?? json["description"],
+      completionDate: json["completion_date"],
+      employeesDetails: json['employees_details'] != null
+          ? (json['employees_details'] as List)
+                .map((e) => EmployeeDutyMission.fromJson(e))
+                .toList()
+          : null,
+
+      airTicketDetails: json['air_ticket_details'] != null
+          ? (json['air_ticket_details'] as List)
+                .map((e) => AirTicketDetail.fromJson(e))
+                .toList()
+          : null,
+      tripType: json['trip_type'],
+      chooseType: json['choose_type'],
+
+      missionSponsoredBy: json['mission_sponsored_by'],
+      missionPurpose: json['mission_purpose'],
+      missionNumber: json['mission_number'],
+      missionId: json['mission_id'],
+
+      missionStartDate: json['mission_start_date'],
+      missionEndDate: json['mission_end_date'],
+
+      travellingAreaFrom: json['travelling_area_from'],
+      travellingAreaTo: json['travelling_area_to'],
+
+      fromCountry: json['from_country'],
+      toCountry: json['to_country'],
+      travelPlace: json['travel_place'],
+
+      travelStartDate: json['travel_start_date'],
+      travelReturnDate: json['travel_return_date'],
+
+      missionDays: json['mission_days'],
+      distance: json['distance'],
+
+      ifSponsored: json['if_sponsored'],
+      allowancePercentage: json['allowance_percentage'],
+      airTicketRequired: json['air_ticket_required'],
+      vehicleRequired: json['vehicle_required'],
+      remarks: json['remarks'],
+      // ───── MEDIA COVERAGE ─────
+      eventLocation: json['event_location'],
+      eventDetails: json['event_details'],
+      importanceOfPublishing: json['importance_of_publishing'],
+      directorateName: json['directorate_name'],
+      requiredForPresident: json['required_for_president'],
+      departmentId: json['department_id'],
+      suggestedPhotography: json['suggested_photography'],
+      newsSize: json['news_size'],
+      eventObjective: json['event_objective'],
+      organizingEntity: json['organizing_entity'],
+      hostedPerson: json['hosted_person'],
+      audience: json['audience'],
+      rejectionReason: json['rejection_reason'],
+      documentType: json['document_event'],
+      purposeOfTraining: json['purpose_of_training'],
+      dateOfEvent: json['date_of_event'],
+      startTime: json['start_time'],
+      endTime: json['end_time'],
+      roomType: json['room_type'],
+      numberOfAttendees: json['number_of_attendees'],
+      networkSupportRequired: json['network_support_required'],
+      mealsRequired: json['meals_required'],
+      courseName: json['course_name'],
+      noOfParticipants: json['no_of_participants'],
+      courseCost: json['course_cost'],
+      totalCost: json['total_cost'],
+      reason: json['reason'],
+      location: json['location'],
+      employeeList: json['employee_list'],
+      proposedImplementationDate: json['proposed_implementation_date'],
+      typeOfTraining: json['type_of_training'],
+      typeOfCategory: json['type_of_category'],
+      noOfAttendees: json['no_of_attendees'],
+      durationOfCourse: json['duration_of_course'],
+      instituteName: json['institute_name'],
+      courseStartDate: json['course_start_date'],
+      courseEndDate: json['course_end_date'],
+
+      positionToBeTransferred: json['position_to_be_transferred'],
+      effectiveFromDate: json['effective_from_date'],
+      decisionNumber: json['decision_number'],
+      employeeName: json['employee_name'],
+      jobTitle: json['job_title'],
+      financialGrade: json['financial_grade'],
+
+      shiftStartDate: json['shift_start_date'] != null
+          ? DateTime.tryParse(json['shift_start_date'])
+          : null,
+      shiftEndDate: json['shift_end_date'] != null
+          ? DateTime.tryParse(json['shift_end_date'])
+          : null,
+      salaryGrade: json['salary_grade'],
+
+      remainingLeaveBalance: json['remaining_leave_balance'],
+      basicSalary: json['basic_salary'],
+      totalSalaryDue: json['total_salary_due'],
+
+      endOfServiceDate: json['end_of_service_date'] != null
+          ? DateTime.tryParse(json['end_of_service_date'])
+          : null,
+
+      reasonForTermination: json['reason_for_termination'],
+      positionToBeFilled: json['position_to_be_filled'] as String?,
+      grade: json['grade'] as String?,
+      roleTitle: json['role_title'] as String?,
+      educationRequirements: json['education_requirements'] as String?,
+      requiredSkills: json['required_skills'] as String?,
+      yearsOfExperience: json['years_of_experience'] as String?,
+      jobDescription: json['job_description'] as String?,
+      currentBasicSalary: json['current_basic_salary'] as String?,
+      currentJobTitle: json['current_job_title'] as String?,
+      currentSalaryGrade: json['current_salary_grade'] as String?,
+
+      proposedBasicSalary: json['proposed_basic_salary'] as String?,
+      proposedJobTitle: json['proposed_job_title'] as String?,
+      proposedSalaryGrade: json['proposed_salary_grade'] as String?,
+    );
+  }
+
+  // ─────────────────────────────
+  // TO JSON
+  // ─────────────────────────────
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "service_id": serviceId,
+      "sub_service_id": subServiceId,
+      "description": description,
+      "status": status,
+      "priority": priority,
+      "type_of_threat": typeOfThreat,
+      "workflow_execution_id": workflowExecutionId,
+      "created_by": createdBy,
+      "created_at": createdAt,
+      "updated_by": updatedBy,
+      "updated_at": updatedAt,
+      "user_id": userId,
+      "req_user_department_id": reqUserDepartmentId,
+      "req_user_section_id": reqUserSectionId,
+
+      "contact_number": contactNum,
+      "extension_number": extnNum,
+      "email": email,
+      "person_name": personName,
+      "person_contact_number": personContactNumber,
+      "request_for": requestFor,
+      "problem": problem,
+      "request_date": requestDate,
+      "service_type_id": serviceTypeId,
+      "request_type": requestType,
+
+      "category": category,
+      "vehicle_required_for": vehicleRequiredFor,
+      "vehicle_required_location": vehicleRequiredLocation,
+      "title": title,
+      "purpose_of_travel": purposeOfTravel,
+      "type_of_vehicle_required": typeOfVehicleRequired,
+      "type_of_request": typeOfRequest,
+      "date_of_travel": dateOfTravel,
+      "time_of_travel": timeOfTravel,
+      "exp_duration_of_use_hrs": expDurationOfUseHrs,
+      "exp_duration_of_use_days": expDurationOfUseDays,
+
+      "hotel_name": hotelName,
+      "type_of_accommodation": typeOfAccommodation,
+      "number_of_guests": numberOfGuests,
+      "meal": meal,
+      "price": price,
+      "requested_by": requestedBy,
+      "hr_approval": hrApproval,
+      "pr_approval": prApproval,
+      "check_in_date": checkInDate,
+      "check_in_time": checkInTime,
+      "check_out_date": checkOutDate,
+      "check_out_time": checkOutTime,
+      "date_of_request": dateOfRequest,
+      "visitor_name": visitorName,
+
+      "created_by_user": createdByUser?.toJson(),
+      "service": service?.toJson(),
+      "sub_service": subService?.toJson(),
+      "req_department": reqDepartment?.toJson(),
+      "req_section": reqSection?.toJson(),
+      "date_of_submission": dateOfSubmission,
+      "phone_number": phoneNumber,
+      "place": place,
+      "event_date": eventDate,
+      "event_time": eventTime,
+      "media_coverage_required": mediaCoverageRequired,
+      "name_full_family_name": nameFullFamilyName,
+      "nationality": nationality,
+      "dob": dob,
+      "passport_id_card_no": passportIdCardNo,
+      "category_of_permit": categoryOfPermit,
+      "type_of_permit": typeOfPermit,
+      "permission_to_required_areas": permissionToRequiredAreas,
+      "occupation_staff": occupationStaff,
+      "temporary_start_time": temporaryStartTime,
+      "temporary_duration": temporaryDuration,
+      "for_visitor": forVisitor,
+
+      "acknowledge_security_policies": acknowledgeSecurityPolicies,
+      "acknowledge_disciplinary_action": acknowledgeDisciplinaryAction,
+      "consent_approve_to_issue_permit": consentApproveToIssuePermit,
+      "consent_do_not_approve_to_issue_permit":
+          consentDoNotApproveToIssuePermit,
+      "consent_justification": consentJustification,
+
+      "request_id": requestId,
+      "expiration_date": expirationDate,
+      "attachment_url": attachmentUrl,
+      "is_deleted": isDeleted,
+
+      "assigned_to_user_id": assignedToUserId,
+      "assigned_at": assignedAt,
+      "reviewer_user_id": reviewerUserId,
+
+      "assigned_employee_name": assignedEmployeeName,
+      "civil_id_card_number": civilIdCardNumber,
+      "employee_id": employeeId,
+      "current_job_position": currentJobPosition,
+      "assigned_job_position": assignedJobPosition,
+
+      "start_date": startDate,
+      "end_date": endDate,
+      "assignment_allowance": assignmentAllowance,
+      "reason_for_request": reasonForRequest,
+
+      "is_replaced": isReplaced,
+      "replacement_employee_name": replacementEmployeeName,
+      "replacement_employee_id": replacementEmployeeId,
+      "replacement_civil_id_card_number": replacementCivilIdCardNumber,
+      "replacement_reason": replacementReason,
+      "replaced_by_user_id": replacedByUserId,
+      "replaced_at": replacedAt,
+    };
+  }
+
+  // ─────────────────────────────
+  // COPYWITH
+  // ─────────────────────────────
+  RequestModel copyWith({
+    int? id,
+    int? serviceId,
+    int? subServiceId,
+
+    String? description,
+    String? status,
+    String? priority,
+    int? typeOfThreat,
+
+    String? workflowExecutionId,
+    int? createdBy,
+    String? createdAt,
+    int? updatedBy,
+    String? updatedAt,
+    int? userId,
+
+    int? reqUserDepartmentId,
+    int? reqUserSectionId,
+
+    String? contactNum,
+    String? extnNum,
+    String? email,
+    String? personName,
+    String? personContactNumber,
+    String? requestFor,
+    String? problem,
+    String? requestDate,
+    int? serviceTypeId,
+    String? requestType,
+
+    String? category,
+    String? vehicleRequiredFor,
+    String? vehicleRequiredLocation,
+    String? title,
+    String? purposeOfTravel,
+    String? typeOfVehicleRequired,
+    String? typeOfRequest,
+    String? dateOfTravel,
+    String? timeOfTravel,
+    int? expDurationOfUseHrs,
+    int? expDurationOfUseDays,
+
+    String? hotelName,
+    String? typeOfAccommodation,
+    int? numberOfGuests,
+    List<String>? meal,
+    String? price,
+    String? requestedBy,
+    bool? hrApproval,
+    bool? prApproval,
+    String? checkInDate,
+    String? checkInTime,
+    String? checkOutDate,
+    String? checkOutTime,
+    String? dateOfRequest,
+    String? visitorName,
+
+    UserModel? createdByUser,
+    ServiceTypeModel? serviceType,
+    ServiceModel? service,
+    SubServiceModel? subService,
+    DepartmentModel? reqDepartment,
+    SectionModel? reqSection,
+
+    String? dateOfSubmission,
+    String? phoneNumber,
+    String? place,
+    String? eventDate,
+    String? eventTime,
+    String? mediaCoverageRequired,
+  }) {
+    return RequestModel(
+      id: id ?? this.id,
+      serviceId: serviceId ?? this.serviceId,
+      subServiceId: subServiceId ?? this.subServiceId,
+
+      description: description ?? this.description,
+      status: status ?? this.status,
+      priority: priority ?? this.priority,
+      typeOfThreat: typeOfThreat ?? this.typeOfThreat,
+
+      workflowExecutionId: workflowExecutionId ?? this.workflowExecutionId,
+      createdBy: createdBy ?? this.createdBy,
+      createdAt: createdAt ?? this.createdAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+      updatedAt: updatedAt ?? this.updatedAt,
+      userId: userId ?? this.userId,
+
+      reqUserDepartmentId: reqUserDepartmentId ?? this.reqUserDepartmentId,
+      reqUserSectionId: reqUserSectionId ?? this.reqUserSectionId,
+
+      contactNum: contactNum ?? this.contactNum,
+      extnNum: extnNum ?? this.extnNum,
+      email: email ?? this.email,
+      personName: personName ?? this.personName,
+      personContactNumber: personContactNumber ?? this.personContactNumber,
+      requestFor: requestFor ?? this.requestFor,
+      problem: problem ?? this.problem,
+      requestDate: requestDate ?? this.requestDate,
+      serviceTypeId: serviceTypeId ?? this.serviceTypeId,
+      requestType: requestType ?? this.requestType,
+
+      category: category ?? this.category,
+      vehicleRequiredFor: vehicleRequiredFor ?? this.vehicleRequiredFor,
+      vehicleRequiredLocation:
+          vehicleRequiredLocation ?? this.vehicleRequiredLocation,
+      title: title ?? this.title,
+      purposeOfTravel: purposeOfTravel ?? this.purposeOfTravel,
+      typeOfVehicleRequired:
+          typeOfVehicleRequired ?? this.typeOfVehicleRequired,
+      typeOfRequest: typeOfRequest ?? this.typeOfRequest,
+      dateOfTravel: dateOfTravel ?? this.dateOfTravel,
+      timeOfTravel: timeOfTravel ?? this.timeOfTravel,
+      expDurationOfUseHrs: expDurationOfUseHrs ?? this.expDurationOfUseHrs,
+      expDurationOfUseDays: expDurationOfUseDays ?? this.expDurationOfUseDays,
+
+      hotelName: hotelName ?? this.hotelName,
+      typeOfAccommodation: typeOfAccommodation ?? this.typeOfAccommodation,
+      numberOfGuests: numberOfGuests ?? this.numberOfGuests,
+      meal: meal ?? this.meal,
+      price: price ?? this.price,
+      requestedBy: requestedBy ?? this.requestedBy,
+      hrApproval: hrApproval ?? this.hrApproval,
+      prApproval: prApproval ?? this.prApproval,
+      checkInDate: checkInDate ?? this.checkInDate,
+      checkInTime: checkInTime ?? this.checkInTime,
+      checkOutDate: checkOutDate ?? this.checkOutDate,
+      checkOutTime: checkOutTime ?? this.checkOutTime,
+      dateOfRequest: dateOfRequest ?? this.dateOfRequest,
+      visitorName: visitorName ?? this.visitorName,
+
+      createdByUser: createdByUser ?? this.createdByUser,
+      serviceType: serviceType ?? this.serviceType,
+      service: service ?? this.service,
+      subService: subService ?? this.subService,
+      reqDepartment: reqDepartment ?? this.reqDepartment,
+      reqSection: reqSection ?? this.reqSection,
+      dateOfSubmission: dateOfSubmission ?? this.dateOfSubmission,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      place: place ?? this.place,
+      eventDate: eventDate ?? this.eventDate,
+      eventTime: eventTime ?? this.eventTime,
+      mediaCoverageRequired:
+          mediaCoverageRequired ?? this.mediaCoverageRequired,
+    );
+  }
+}
+
+class UserModel {
+  final int? id;
+  final String? employeeId;
+  final String? civilEmployeeId;
+  final String? employeeName;
+  final String? employeeArabicName;
+  final String? personType;
+  final String? dateOfBirth;
+  final String? regionOfBirth;
+  final String? countryOfBirth;
+  final String? dateOfJoining;
+  final String? lastPromotionDate;
+  final String? gender;
+  final String? qualification;
+  final String? maritalStatus;
+  final String? nationality;
+  final String? email;
+  final String? bloodType;
+  final String? nationalId;
+  final String? manpowerId;
+  final String? mobile;
+  final String? officeNumber;
+
+  /// FIXED — department can be ID or object AND API also gives user_department
+  final DepartmentModel? department;
+
+  final String? category;
+  final String? directorate;
+
+  /// FIXED — section can be ID or object AND API also gives user_section
+  final SectionModel? section;
+
+  /// FIXED — position can be ID or object AND API also gives user_position
+  final PositionModel? position;
+
+  final String? arabicPosition;
+  final int? grade;
+  final String? location;
+  final String? supervisorEmpId;
+  final String? supervisorEmpName;
+
+  final String? passportNumber;
+  final String? personalEmail;
+  final int? extensionNumber;
+  final String? faxNumber;
+  final String? diplomaticName;
+  final String? avatar;
+  final String? fatherName;
+  final String? spouseName;
+  final String? children1Name;
+  final String? children2Name;
+  final String? address;
+  final String? religion;
+
+  UserModel({
+    this.id,
+    this.employeeId,
+    this.civilEmployeeId,
+    this.employeeName,
+    this.employeeArabicName,
+    this.personType,
+    this.dateOfBirth,
+    this.regionOfBirth,
+    this.countryOfBirth,
+    this.dateOfJoining,
+    this.lastPromotionDate,
+    this.gender,
+    this.qualification,
+    this.maritalStatus,
+    this.nationality,
+    this.email,
+    this.bloodType,
+    this.nationalId,
+    this.manpowerId,
+    this.mobile,
+    this.officeNumber,
+    this.department,
+    this.category,
+    this.directorate,
+    this.section,
+    this.position,
+    this.arabicPosition,
+    this.grade,
+    this.location,
+    this.supervisorEmpId,
+    this.supervisorEmpName,
+    this.passportNumber,
+    this.personalEmail,
+    this.extensionNumber,
+    this.faxNumber,
+    this.diplomaticName,
+    this.avatar,
+    this.fatherName,
+    this.spouseName,
+    this.children1Name,
+    this.children2Name,
+    this.address,
+    this.religion,
+  });
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      employeeId: json['employee_id'],
+      civilEmployeeId: json['civil_employee_id'],
+      employeeName: json['employee_name'],
+      employeeArabicName: json['employee_arabic_name'],
+      personType: json['person_type'],
+      dateOfBirth: json['date_of_birth'],
+      regionOfBirth: json['region_of_birth'],
+      countryOfBirth: json['country_of_birth'],
+      dateOfJoining: json['date_of_joining'],
+      lastPromotionDate: json['last_promotion_date'],
+      gender: json['gender'],
+      qualification: json['qualification'],
+      maritalStatus: json['marital_status'],
+      nationality: json['nationality'],
+      email: json['email'],
+      bloodType: json['blood_type'],
+      nationalId: json['national_id'],
+      manpowerId: json['manpower_id'],
+      mobile: json['mobile'],
+      officeNumber: json['office_number'],
+
+      /// FIX 1 — department
+      department: json['user_department'] != null
+          ? DepartmentModel.fromJson(json['user_department'])
+          : (json['department'] is int
+                ? DepartmentModel(id: json['department'])
+                : json['department'] is Map
+                ? DepartmentModel.fromJson(json['department'])
+                : null),
+
+      category: json['category'],
+      directorate: json['directorate'],
+
+      /// FIX 2 — section
+      section: json['user_section'] != null
+          ? SectionModel.fromJson(json['user_section'])
+          : (json['section'] is int
+                ? SectionModel(id: json['section'])
+                : json['section'] is Map
+                ? SectionModel.fromJson(json['section'])
+                : null),
+
+      /// FIX 3 — position
+      position: json['user_position'] != null
+          ? PositionModel.fromJson(json['user_position'])
+          : (json['position'] is int
+                ? PositionModel(id: json['position'])
+                : json['position'] is Map
+                ? PositionModel.fromJson(json['position'])
+                : null),
+
+      arabicPosition: json['arabic_position'],
+      grade: json['grade'],
+      location: json['location'],
+      supervisorEmpId: json['supervisor_emp_id'],
+      supervisorEmpName: json['supervisor_emp_name'],
+      passportNumber: json['passport_number'],
+      personalEmail: json['personal_email'],
+      extensionNumber: json['extension_number'],
+      faxNumber: json['fax_number'],
+      diplomaticName: json['diplomatic_name'],
+      avatar: json['avatar'],
+      fatherName: json['father_name'],
+      spouseName: json['spouse_name'],
+      children1Name: json['children1_name'],
+      children2Name: json['children2_name'],
+      address: json['address'],
+      religion: json['religion'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'employee_id': employeeId,
+      'civil_employee_id': civilEmployeeId,
+      'employee_name': employeeName,
+      'employee_arabic_name': employeeArabicName,
+      'person_type': personType,
+      'date_of_birth': dateOfBirth,
+      'region_of_birth': regionOfBirth,
+      'country_of_birth': countryOfBirth,
+      'date_of_joining': dateOfJoining,
+      'last_promotion_date': lastPromotionDate,
+      'gender': gender,
+      'qualification': qualification,
+      'marital_status': maritalStatus,
+      'nationality': nationality,
+      'email': email,
+      'blood_type': bloodType,
+      'national_id': nationalId,
+      'manpower_id': manpowerId,
+      'mobile': mobile,
+      'office_number': officeNumber,
+
+      /// FIXED
+      'department': department?.toJson(),
+      'category': category,
+      'directorate': directorate,
+
+      'section': section?.toJson(),
+      'position': position?.toJson(),
+
+      'arabic_position': arabicPosition,
+      'grade': grade,
+      'location': location,
+      'supervisor_emp_id': supervisorEmpId,
+      'supervisor_emp_name': supervisorEmpName,
+      'passport_number': passportNumber,
+      'personal_email': personalEmail,
+      'extension_number': extensionNumber,
+      'fax_number': faxNumber,
+      'diplomatic_name': diplomaticName,
+      'avatar': avatar,
+      'father_name': fatherName,
+      'spouse_name': spouseName,
+      'children1_name': children1Name,
+      'children2_name': children2Name,
+      'address': address,
+      'religion': religion,
+    };
+  }
+}
+
+// ------------------ SIMPLE MODELS ------------------
+class DepartmentModel {
+  final List<String>? jsonIgnore;
+  final bool? isDeleted;
+  final int? id;
+  final String? departmentName;
+  final String? departmentCode;
+  final String? departmentDescription;
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+
+  DepartmentModel({
+    this.jsonIgnore,
+    this.isDeleted,
+    this.id,
+    this.departmentName,
+    this.departmentCode,
+    this.departmentDescription,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+  });
+
+  factory DepartmentModel.fromJson(Map<String, dynamic> json) {
+    return DepartmentModel(
+      jsonIgnore: (json["jsonIgnore"] as List<dynamic>?)
+          ?.map((e) => e.toString())
+          .toList(),
+      isDeleted: json["is_deleted"],
+      id: json["id"],
+      departmentName: json["department_name"],
+      departmentCode: json["department_code"],
+      departmentDescription: json["department_description"],
+      createdBy: json["created_by"],
+      createdAt: json["created_at"],
+      updatedBy: json["updated_by"],
+      updatedAt: json["updated_at"],
+    );
+  }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'department_name': departmentName,
+    'department_code': departmentCode,
+    'department_description': departmentDescription,
+  };
+}
+
+class SectionModel {
+  final List<String>? jsonIgnore;
+  final bool? isDeleted;
+  final int? id;
+  final String? sectionName;
+  final String? sectionCode;
+  final String? sectionDescription;
+  final int? departmentId;
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+
+  SectionModel({
+    this.jsonIgnore,
+    this.isDeleted,
+    this.id,
+    this.sectionName,
+    this.sectionCode,
+    this.sectionDescription,
+    this.departmentId,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+  });
+
+  factory SectionModel.fromJson(Map<String, dynamic> json) {
+    return SectionModel(
+      jsonIgnore: (json["jsonIgnore"] as List<dynamic>?)
+          ?.map((e) => e.toString())
+          .toList(),
+      isDeleted: json["is_deleted"],
+      id: json["id"],
+      sectionName: json["section_name"],
+      sectionCode: json["section_code"],
+      sectionDescription: json["section_description"],
+      departmentId: json["department_id"] is int
+          ? json["department_id"]
+          : int.tryParse(json["department_id"] ?? "0"),
+      createdBy: json["created_by"],
+      createdAt: json["created_at"],
+      updatedBy: json["updated_by"],
+      updatedAt: json["updated_at"],
+    );
+  }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'section_name': sectionName,
+    'section_code': sectionCode,
+    'section_description': sectionDescription,
+    'department_id': departmentId,
+  };
+}
+
+// class DepartmentModel {
+//   final int? id;
+//   final String? departmentName;
+//   final String? departmentCode;
+//   final String? departmentDescription;
+
+//   DepartmentModel({
+//     this.id,
+//     this.departmentName,
+//     this.departmentCode,
+//     this.departmentDescription,
+//   });
+
+//   factory DepartmentModel.fromJson(Map<String, dynamic> json) =>
+//       DepartmentModel(
+//         id: json['id'],
+//         departmentName: json['department_name'],
+//         departmentCode: json['department_code'],
+//         departmentDescription: json['department_description'],
+//       );
+
+//   Map<String, dynamic> toJson() => {
+//     'id': id,
+//     'department_name': departmentName,
+//     'department_code': departmentCode,
+//     'department_description': departmentDescription,
+//   };
+// }
+
+// class SectionModel {
+//   final int? id;
+//   final String? sectionName;
+//   final String? sectionCode;
+//   final String? sectionDescription;
+//   final dynamic departmentId; // can be string or int
+
+//   SectionModel({
+//     this.id,
+//     this.sectionName,
+//     this.sectionCode,
+//     this.sectionDescription,
+//     this.departmentId,
+//   });
+
+//   factory SectionModel.fromJson(Map<String, dynamic> json) => SectionModel(
+//     id: json['id'],
+//     sectionName: json['section_name'],
+//     sectionCode: json['section_code'],
+//     sectionDescription: json['section_description'],
+//     departmentId: json['department_id'],
+//   );
+
+//   Map<String, dynamic> toJson() => {
+//     'id': id,
+//     'section_name': sectionName,
+//     'section_code': sectionCode,
+//     'section_description': sectionDescription,
+//     'department_id': departmentId,
+//   };
+// }
+
+class PositionModel {
+  final int? id;
+  final String? name;
+
+  PositionModel({this.id, this.name});
+
+  factory PositionModel.fromJson(Map<String, dynamic> json) =>
+      PositionModel(id: json['id'], name: json['name']);
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name};
+}
+
+class ServiceTypeModel {
+  final int? id;
+  final String? name;
+  final String? nameInArabic;
+  final int? serviceId;
+  final int? subServiceId;
+  final String? description;
+  final bool? isActive;
+  final int? departmentId;
+  final int? sectionId;
+
+  ServiceTypeModel({
+    this.id,
+    this.name,
+    this.nameInArabic,
+    this.serviceId,
+    this.subServiceId,
+    this.description,
+    this.isActive,
+    this.departmentId,
+    this.sectionId,
+  });
+
+  factory ServiceTypeModel.fromJson(Map<String, dynamic> json) {
+    return ServiceTypeModel(
+      id: json['id'],
+      name: json['name'],
+      nameInArabic: json['name_in_arabic'],
+      serviceId: json['service_id'],
+      subServiceId: json['sub_service_id'],
+      description: json['description'],
+      isActive: json['is_active'],
+      departmentId: json['department_id'],
+      sectionId: json['section_id'],
+    );
+  }
+}
+
+class ServiceModel {
+  final int? id;
+  final String? name;
+  final String? description;
+  final String? code;
+  final String? logoUrl;
+
+  ServiceModel({this.id, this.name, this.description, this.code, this.logoUrl});
+
+  factory ServiceModel.fromJson(Map<String, dynamic> json) => ServiceModel(
+    id: json['id'],
+    name: json['name'],
+    description: json['description'],
+    code: json['code'],
+    logoUrl: json['logo_url'],
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'description': description,
+    'code': code,
+    'logo_url': logoUrl,
+  };
+}
+
+class SubServiceModel {
+  final int? id;
+  final String? subServiceName;
+  final String? description;
+  final int? serviceId;
+  final String? logoUrl;
+  final String? code;
+
+  SubServiceModel({
+    this.id,
+    this.subServiceName,
+    this.description,
+    this.serviceId,
+    this.logoUrl,
+    this.code,
+  });
+
+  factory SubServiceModel.fromJson(Map<String, dynamic> json) =>
+      SubServiceModel(
+        id: json['id'],
+        subServiceName: json['sub_service_name'],
+        description: json['description'],
+        serviceId: json['service_id'],
+        logoUrl: json['logo_url'],
+        code: json['code'],
+      );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'sub_service_name': subServiceName,
+    'description': description,
+    'service_id': serviceId,
+    'logo_url': logoUrl,
+    'code': code,
+  };
+}
+
+class WorkflowDetailModel {
+  final bool? isDeleted;
+  final int? id;
+  final int? requestId;
+  final int? serviceId;
+  final int? subServiceId;
+
+  final String? content;
+  final String? status;
+  final int? order;
+
+  // -------- Workflow specific --------
+  final int? approverRoleId;
+  final int? approverUserId;
+  final int? approvedBy;
+
+  // -------- Audit --------
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+
+  // -------- NEW (workflow timeline) --------
+  final UserModel? approvedByUser;
+  final RoleModel? approverRole;
+
+  // -------- OLD (backward compatibility) --------
+  final UserModel? user;
+  final RoleModel? role;
+  final DepartmentModel? department;
+  final SectionModel? section;
+
+  WorkflowDetailModel({
+    this.isDeleted,
+    this.id,
+    this.requestId,
+    this.serviceId,
+    this.subServiceId,
+    this.content,
+    this.status,
+    this.order,
+    this.approverRoleId,
+    this.approverUserId,
+    this.approvedBy,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+    this.approvedByUser,
+    this.approverRole,
+    this.user,
+    this.role,
+    this.department,
+    this.section,
+  });
+
+  factory WorkflowDetailModel.fromJson(Map<String, dynamic> json) {
+    return WorkflowDetailModel(
+      isDeleted: json['is_deleted'] as bool?,
+      id: json['id'] as int?,
+      requestId: json['request_id'] as int?,
+      serviceId: json['service_id'] as int?,
+      subServiceId: json['sub_service_id'] as int?,
+      content: json['content'] as String?,
+      status: json['status'] as String?,
+      order: json['order'] as int?,
+
+      approverRoleId: json['approver_role_id'] as int?,
+      approverUserId: json['approver_user_id'] as int?,
+      approvedBy: json['approved_by'] as int?,
+
+      createdBy: json['created_by'] as int?,
+      createdAt: json['created_at'] as String?,
+      updatedBy: json['updated_by'] as int?,
+      updatedAt: json['updated_at'] as String?,
+
+      // 🔥 NEW
+      approvedByUser: json['approved_by_user'] != null
+          ? UserModel.fromJson(json['approved_by_user'])
+          : null,
+
+      approverRole: json['approver_role'] != null
+          ? RoleModel.fromJson(json['approver_role'])
+          : null,
+
+      // 🔁 OLD (fallback)
+      user: json['user'] != null ? UserModel.fromJson(json['user']) : null,
+
+      role: json['role'] != null ? RoleModel.fromJson(json['role']) : null,
+
+      department: json['department'] != null
+          ? DepartmentModel.fromJson(json['department'])
+          : null,
+
+      section: json['section'] != null
+          ? SectionModel.fromJson(json['section'])
+          : null,
+    );
+  }
+  Map<String, dynamic> toJson() => {
+    'is_deleted': isDeleted,
+    'id': id,
+    'request_id': requestId,
+    'service_id': serviceId,
+    'sub_service_id': subServiceId,
+    'content': content,
+    'status': status,
+    // 'user_id': userId,
+    // 'role_id': roleId,
+    // 'department_id': departmentId,
+    // 'section_id': sectionId,
+    'created_by': createdBy,
+    'created_at': createdAt,
+    'updated_by': updatedBy,
+    'updated_at': updatedAt,
+    'user': user?.toJson(),
+    'role': role?.toJson(),
+    'department': department?.toJson(),
+    'section': section?.toJson(),
+  };
+}
+
+class RoleModel {
+  final bool? isDeleted;
+  final int? id;
+  final String? name;
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+
+  RoleModel({
+    this.isDeleted,
+    this.id,
+    this.name,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+  });
+
+  factory RoleModel.fromJson(Map<String, dynamic> json) {
+    return RoleModel(
+      isDeleted: json['is_deleted'] as bool?,
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      createdBy: json['created_by'] as int?,
+      createdAt: json['created_at'] as String?,
+      updatedBy: json['updated_by'] as int?,
+      updatedAt: json['updated_at'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'is_deleted': isDeleted,
+    'id': id,
+    'name': name,
+    'created_by': createdBy,
+    'created_at': createdAt,
+    'updated_by': updatedBy,
+    'updated_at': updatedAt,
+  };
+}
+
+class ApprovalDetailModel {
+  final int? id;
+  final int? requestId;
+  final int? serviceId;
+  final int? subServiceId;
+  final int? approverUserId;
+  final int? approverRoleId;
+  final String? comment;
+  final String? approvalStatus;
+  final int? level;
+  final int? departmentId;
+  final int? sectionId;
+  final int? approvedBy;
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+  final bool? isDeleted;
+  final bool? isManager;
+  final bool? isAllowed;
+  final bool? isPresident;
+  final bool? isReplace;
+
+  final int? delegationUserId; // Salalah
+  final int? delegateUserId; // Logistics
+
+  final DepartmentModel? department;
+  final SectionModel? section;
+
+  final ApproverUserModel? approverUser;
+  final ApproverRoleModel? approverRole;
+  final ApproverUserModel? approvedByUser;
+  final ApproverUserModel? delegateUser;
+
+  ApprovalDetailModel({
+    this.id,
+    this.requestId,
+    this.serviceId,
+    this.subServiceId,
+    this.approverUserId,
+    this.approverRoleId,
+    this.comment,
+    this.approvalStatus,
+    this.level,
+    this.departmentId,
+    this.sectionId,
+    this.approvedBy,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+    this.isDeleted,
+    this.delegationUserId,
+    this.delegateUserId,
+    this.approverUser,
+    this.approverRole,
+    this.approvedByUser,
+    this.delegateUser,
+    this.isManager,
+    this.isAllowed,
+    this.isPresident,
+    this.isReplace,
+    this.department,
+    this.section,
+  });
+
+  factory ApprovalDetailModel.fromJson(Map<String, dynamic> json) {
+    return ApprovalDetailModel(
+      id: json['id'],
+      requestId: json['request_id'],
+      serviceId: json['service_id'],
+      subServiceId: json['sub_service_id'],
+      approverUserId: json['approver_user_id'],
+      approverRoleId: json['approver_role_id'],
+      comment: json['comment'],
+      approvalStatus: json['approval_status'],
+      level: json['level'],
+      departmentId: json['department_id'],
+      sectionId: json['section_id'],
+      approvedBy: json['approved_by'],
+      isManager: json['is_manager'],
+      createdBy: json['created_by'],
+      createdAt: json['created_at'],
+      updatedBy: json['updated_by'],
+      updatedAt: json['updated_at'],
+      isDeleted: json['is_deleted'],
+      isAllowed: json['is_allowed'],
+      isPresident: json['is_president'],
+      isReplace: json['is_replace'],
+
+      delegationUserId: json['delegation_user_id'],
+      delegateUserId: json['delegate_user_id'],
+      department: json['department'] is Map
+          ? DepartmentModel.fromJson(json['department'])
+          : null,
+      section: json['section'] is Map
+          ? SectionModel.fromJson(json['section'])
+          : null,
+
+      approverUser: json['approver_user'] is Map
+          ? ApproverUserModel.fromJson(json['approver_user'])
+          : null,
+
+      approverRole: json['approver_role'] is Map
+          ? ApproverRoleModel.fromJson(json['approver_role'])
+          : null,
+
+      approvedByUser: json['approved_by_user'] is Map
+          ? ApproverUserModel.fromJson(json['approved_by_user'])
+          : null,
+
+      delegateUser: json['delegate_user'] is Map
+          ? ApproverUserModel.fromJson(json['delegate_user'])
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'request_id': requestId,
+    'service_id': serviceId,
+    'sub_service_id': subServiceId,
+    'approver_user_id': approverUserId,
+    'approver_role_id': approverRoleId,
+    'comment': comment,
+    'approval_status': approvalStatus,
+    'level': level,
+    'department_id': departmentId,
+    'section_id': sectionId,
+    'approved_by': approvedBy,
+    'created_by': createdBy,
+    'created_at': createdAt,
+    'updated_by': updatedBy,
+    'updated_at': updatedAt,
+    'is_deleted': isDeleted,
+    'delegation_user_id': delegationUserId,
+    'delegate_user_id': delegateUserId,
+    'approver_user': approverUser?.toJson(),
+    'approver_role': approverRole?.toJson(),
+    'approved_by_user': approvedByUser?.toJson(),
+    'delegate_user': delegateUser?.toJson(),
+  };
+}
+
+class ApproverUserModel {
+  final int? id;
+  final String? employeeId;
+  final String? civilEmployeeId;
+  final String? employeeName;
+  final String? employeeArabicName;
+  final String? personType;
+  final String? dateOfBirth;
+  final String? regionOfBirth;
+  final String? countryOfBirth;
+  final String? dateOfJoining;
+  final String? lastPromotionDate;
+  final String? gender;
+  final String? qualification;
+  final String? maritalStatus;
+  final String? nationality;
+  final String? email;
+  final String? bloodType;
+  final String? nationalId;
+  final String? manpowerId;
+  final String? mobile;
+  final String? officeNumber;
+
+  final int? department;
+  final String? category;
+  final String? directorate;
+  final int? section;
+  final int? position;
+
+  final String? arabicPosition;
+  final int? grade;
+  final String? location;
+  final String? supervisorEmpId;
+  final String? supervisorEmpName;
+
+  final String? passportNumber;
+  final String? personalEmail;
+  final int? extensionNumber;
+  final String? faxNumber;
+  final String? diplomaticName;
+  final String? avatar;
+  final String? fatherName;
+  final String? spouseName;
+  final String? children1Name;
+  final String? children2Name;
+  final String? address;
+  final String? religion;
+
+  ApproverUserModel({
+    this.id,
+    this.employeeId,
+    this.civilEmployeeId,
+    this.employeeName,
+    this.employeeArabicName,
+    this.personType,
+    this.dateOfBirth,
+    this.regionOfBirth,
+    this.countryOfBirth,
+    this.dateOfJoining,
+    this.lastPromotionDate,
+    this.gender,
+    this.qualification,
+    this.maritalStatus,
+    this.nationality,
+    this.email,
+    this.bloodType,
+    this.nationalId,
+    this.manpowerId,
+    this.mobile,
+    this.officeNumber,
+    this.department,
+    this.category,
+    this.directorate,
+    this.section,
+    this.position,
+    this.arabicPosition,
+    this.grade,
+    this.location,
+    this.supervisorEmpId,
+    this.supervisorEmpName,
+    this.passportNumber,
+    this.personalEmail,
+    this.extensionNumber,
+    this.faxNumber,
+    this.diplomaticName,
+    this.avatar,
+    this.fatherName,
+    this.spouseName,
+    this.children1Name,
+    this.children2Name,
+    this.address,
+    this.religion,
+  });
+
+  factory ApproverUserModel.fromJson(Map<String, dynamic> json) {
+    return ApproverUserModel(
+      id: json['id'],
+      employeeId: json['employee_id'],
+      civilEmployeeId: json['civil_employee_id'],
+      employeeName: json['employee_name'],
+      employeeArabicName: json['employee_arabic_name'],
+      personType: json['person_type'],
+      dateOfBirth: json['date_of_birth'],
+      regionOfBirth: json['region_of_birth'],
+      countryOfBirth: json['country_of_birth'],
+      dateOfJoining: json['date_of_joining'],
+      lastPromotionDate: json['last_promotion_date'],
+      gender: json['gender'],
+      qualification: json['qualification'],
+      maritalStatus: json['marital_status'],
+      nationality: json['nationality'],
+      email: json['email'],
+      bloodType: json['blood_type'],
+      nationalId: json['national_id'],
+      manpowerId: json['manpower_id'],
+      mobile: json['mobile'],
+      officeNumber: json['office_number'],
+
+      department: json['department'],
+      category: json['category'],
+      directorate: json['directorate'],
+
+      section: json['section'],
+      position: json['position'],
+
+      arabicPosition: json['arabic_position'],
+      grade: json['grade'],
+      location: json['location'],
+      supervisorEmpId: json['supervisor_emp_id'],
+      supervisorEmpName: json['supervisor_emp_name'],
+
+      passportNumber: json['passport_number'],
+      personalEmail: json['personal_email'],
+      extensionNumber: json['extension_number'],
+      faxNumber: json['fax_number'],
+      diplomaticName: json['diplomatic_name'],
+      avatar: json['avatar'],
+      fatherName: json['father_name'],
+      spouseName: json['spouse_name'],
+      children1Name: json['children1_name'],
+      children2Name: json['children2_name'],
+      address: json['address'],
+      religion: json['religion'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'employee_id': employeeId,
+    'civil_employee_id': civilEmployeeId,
+    'employee_name': employeeName,
+    'employee_arabic_name': employeeArabicName,
+    'person_type': personType,
+    'date_of_birth': dateOfBirth,
+    'region_of_birth': regionOfBirth,
+    'country_of_birth': countryOfBirth,
+    'date_of_joining': dateOfJoining,
+    'last_promotion_date': lastPromotionDate,
+    'gender': gender,
+    'qualification': qualification,
+    'marital_status': maritalStatus,
+    'nationality': nationality,
+    'email': email,
+    'blood_type': bloodType,
+    'national_id': nationalId,
+    'manpower_id': manpowerId,
+    'mobile': mobile,
+    'office_number': officeNumber,
+    'department': department,
+    'category': category,
+    'directorate': directorate,
+    'section': section,
+    'position': position,
+    'arabic_position': arabicPosition,
+    'grade': grade,
+    'location': location,
+    'supervisor_emp_id': supervisorEmpId,
+    'supervisor_emp_name': supervisorEmpName,
+    'passport_number': passportNumber,
+    'personal_email': personalEmail,
+    'extension_number': extensionNumber,
+    'fax_number': faxNumber,
+    'diplomatic_name': diplomaticName,
+    'avatar': avatar,
+    'father_name': fatherName,
+    'spouse_name': spouseName,
+    'children1_name': children1Name,
+    'children2_name': children2Name,
+    'address': address,
+    'religion': religion,
+  };
+}
+
+class ApproverRoleModel {
+  final int? id;
+  final String? name;
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+
+  ApproverRoleModel({
+    this.id,
+    this.name,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+  });
+
+  factory ApproverRoleModel.fromJson(Map<String, dynamic> json) {
+    return ApproverRoleModel(
+      id: json['id'],
+      name: json['name'],
+      createdBy: json['created_by'],
+      createdAt: json['created_at'],
+      updatedBy: json['updated_by'],
+      updatedAt: json['updated_at'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'created_by': createdBy,
+      'created_at': createdAt,
+      'updated_by': updatedBy,
+      'updated_at': updatedAt,
+    };
+  }
+}
+
+class AttachmentModel {
+  final int? id;
+  final int? requestId;
+
+  final int? uploadedBy;
+  final String? fileUrl;
+  final String? fileName;
+  final String? fileType;
+  final String? fileSize;
+  final String? description;
+
+  final int? serviceId;
+  final int? subServiceId;
+
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+
+  final UserModel? user;
+
+  AttachmentModel({
+    this.id,
+    this.requestId,
+    this.uploadedBy,
+    this.fileUrl,
+    this.fileName,
+    this.fileType,
+    this.fileSize,
+    this.description,
+    this.serviceId,
+    this.subServiceId,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+    this.user,
+  });
+
+  factory AttachmentModel.fromJson(Map<String, dynamic> json) {
+    return AttachmentModel(
+      id: json['id'],
+      requestId: json['request_id'],
+
+      uploadedBy: json['uploaded_by'],
+      fileUrl: json['file_url'],
+      fileName: json['file_name'],
+      fileType: json['file_type'],
+      fileSize: json['file_size'],
+      description: json['description'],
+
+      serviceId: json['service_id'],
+      subServiceId: json['sub_service_id'],
+
+      createdBy: json['created_by'],
+      createdAt: json['created_at'],
+      updatedBy: json['updated_by'],
+      updatedAt: json['updated_at'],
+
+      user: json['user'] is Map ? UserModel.fromJson(json['user']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'request_id': requestId,
+    'uploaded_by': uploadedBy,
+    'file_url': fileUrl,
+    'file_name': fileName,
+    'file_type': fileType,
+    'file_size': fileSize,
+    'description': description,
+    'service_id': serviceId,
+    'sub_service_id': subServiceId,
+    'created_by': createdBy,
+    'created_at': createdAt,
+    'updated_by': updatedBy,
+    'updated_at': updatedAt,
+    'user': user?.toJson(),
+  };
+}
+
+class ChatMessageModel {
+  final int? id;
+  final int? requestId;
+  final int? serviceId;
+  final int? subServiceId;
+
+  final int? userId;
+  final int? roleId;
+
+  final String? message;
+  final String? messageType;
+  final String? status;
+
+  final bool? isInternal;
+  final bool? isDeleted; // ✅ added
+
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+
+  final UserModel? user;
+
+  // ✅ added relational models
+  final RequestModel? request;
+  final ServiceModel? service;
+  final SubServiceModel? subService;
+  final RoleModel? role;
+
+  ChatMessageModel({
+    this.id,
+    this.requestId,
+    this.serviceId,
+    this.subServiceId,
+    this.userId,
+    this.roleId,
+    this.message,
+    this.messageType,
+    this.status,
+    this.isInternal,
+    this.isDeleted,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+    this.user,
+    this.request,
+    this.service,
+    this.subService,
+    this.role,
+  });
+
+  factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+    return ChatMessageModel(
+      id: json['id'],
+      requestId: json['request_id'],
+      serviceId: json['service_id'],
+      subServiceId: json['sub_service_id'],
+      userId: json['user_id'],
+      roleId: json['role_id'],
+      message: json['message'],
+      messageType: json['messageType'],
+      status: json['status'],
+      isInternal: json['is_internal'],
+      isDeleted: json['is_deleted'], // ✅ added
+      createdBy: json['created_by'],
+      createdAt: json['created_at'],
+      updatedBy: json['updated_by'],
+      updatedAt: json['updated_at'],
+      user: json['user'] is Map ? UserModel.fromJson(json['user']) : null,
+
+      // ✅ added parsing
+      request: json['request'] != null
+          ? RequestModel.fromJson(json['request'])
+          : null,
+      service: json['service'] != null
+          ? ServiceModel.fromJson(json['service'])
+          : null,
+      subService: json['sub_service'] != null
+          ? SubServiceModel.fromJson(json['sub_service'])
+          : null,
+      role: json['role'] != null ? RoleModel.fromJson(json['role']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'request_id': requestId,
+    'service_id': serviceId,
+    'sub_service_id': subServiceId,
+    'user_id': userId,
+    'role_id': roleId,
+    'message': message,
+    'messageType': messageType,
+    'status': status,
+    'is_internal': isInternal,
+    'is_deleted': isDeleted,
+    'created_by': createdBy,
+    'created_at': createdAt,
+    'updated_by': updatedBy,
+    'updated_at': updatedAt,
+    'user': user?.toJson(),
+    'request': request?.toJson(),
+    'service': service?.toJson(),
+    'sub_service': subService?.toJson(),
+    'role': role?.toJson(),
+  };
+}
+
+class EmployeeDutyMission {
+  final String? employeeId;
+  final String? employeeName;
+  final String? department;
+  final String? grade;
+  final String? position;
+  final String? percentage;
+  final String? allowancePerDay;
+  final String? totalAllowance;
+
+  EmployeeDutyMission({
+    this.employeeId,
+    this.employeeName,
+    this.department,
+    this.grade,
+    this.position,
+    this.percentage,
+    this.allowancePerDay,
+    this.totalAllowance,
+  });
+
+  factory EmployeeDutyMission.fromJson(Map<String, dynamic> json) {
+    return EmployeeDutyMission(
+      employeeId: json['employee_id'],
+      employeeName: json['employee_name'],
+      department: json['department'],
+      grade: json['grade'],
+      position: json['position'],
+      percentage: json['percentage'],
+      allowancePerDay: json['allowance_per_day'],
+      totalAllowance: json['total_allowance'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'employee_id': employeeId,
+    'employee_name': employeeName,
+    'department': department,
+    'grade': grade,
+    'position': position,
+    'percentage': percentage,
+    'allowance_per_day': allowancePerDay,
+    'total_allowance': totalAllowance,
+  };
+}
+
+class AirTicketDetail {
+  final String? employeeId;
+  final String? employeeName;
+  final String? passportNo;
+  final String? ticketType;
+  final String? departureDate;
+  final String? returnDate;
+
+  AirTicketDetail({
+    this.employeeId,
+    this.employeeName,
+    this.passportNo,
+    this.ticketType,
+    this.departureDate,
+    this.returnDate,
+  });
+
+  factory AirTicketDetail.fromJson(Map<String, dynamic> json) {
+    return AirTicketDetail(
+      employeeId: json['employee_id'],
+      employeeName: json['employee_name'],
+      passportNo: json['passport_no'],
+      ticketType: json['ticket_type'],
+      departureDate: json['departure_date'],
+      returnDate: json['return_date'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'employee_id': employeeId,
+    'employee_name': employeeName,
+    'passport_no': passportNo,
+    'ticket_type': ticketType,
+    'departure_date': departureDate,
+    'return_date': returnDate,
+  };
+}
+
+class EmployeeDetailModel {
+  final int? id;
+  final bool? isDeleted;
+
+  final int? requestId;
+  final int? serviceId;
+  final int? subServiceId;
+
+  final String? employeeId;
+  final String? employeeName;
+  final String? department;
+  final String? grade;
+  final String? position;
+
+  final String? percentage;
+  final String? allowancePerDay;
+  final String? totalAllowance;
+
+  final int? createdBy;
+  final int? updatedBy;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  const EmployeeDetailModel({
+    this.id,
+    this.isDeleted,
+    this.requestId,
+    this.serviceId,
+    this.subServiceId,
+    this.employeeId,
+    this.employeeName,
+    this.department,
+    this.grade,
+    this.position,
+    this.percentage,
+    this.allowancePerDay,
+    this.totalAllowance,
+    this.createdBy,
+    this.updatedBy,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory EmployeeDetailModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return const EmployeeDetailModel();
+
+    return EmployeeDetailModel(
+      id: json['id'],
+      isDeleted: json['is_deleted'],
+      requestId: json['request_id'],
+      serviceId: json['service_id'],
+      subServiceId: json['sub_service_id'],
+      employeeId: json['employee_id'],
+      employeeName: json['employee_name'],
+      department: json['department'],
+      grade: json['grade'],
+      position: json['position'],
+      percentage: json['percentage'],
+      allowancePerDay: json['allowance_per_day'],
+      totalAllowance: json['total_allowance'],
+      createdBy: json['created_by'],
+      updatedBy: json['updated_by'],
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
+    );
+  }
+}
+
+class AirTicketDetailModel {
+  final int? id;
+  final bool? isDeleted;
+
+  final int? requestId;
+  final int? serviceId;
+  final int? subServiceId;
+
+  final String? employeeId;
+  final String? employeeName;
+  final String? passportNo;
+  final String? ticketType;
+
+  final String? decisionDate;
+  final String? departureDate;
+  final String? returnDate;
+  final String? decisionNumber;
+  final String? missionNumber;
+  final String? passportIssueDate;
+  final String? passportExpiryDate;
+
+  final int? createdBy;
+  final int? updatedBy;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  const AirTicketDetailModel({
+    this.id,
+    this.isDeleted,
+    this.requestId,
+    this.serviceId,
+    this.subServiceId,
+    this.employeeId,
+    this.employeeName,
+    this.passportNo,
+    this.ticketType,
+    this.decisionDate,
+    this.departureDate,
+    this.returnDate,
+    this.decisionNumber,
+    this.missionNumber,
+    this.passportIssueDate,
+    this.passportExpiryDate,
+    this.createdBy,
+    this.updatedBy,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory AirTicketDetailModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return const AirTicketDetailModel();
+
+    return AirTicketDetailModel(
+      id: json['id'],
+      isDeleted: json['is_deleted'],
+      requestId: json['request_id'],
+      serviceId: json['service_id'],
+      subServiceId: json['sub_service_id'],
+      employeeId: json['employee_id'],
+      employeeName: json['employee_name'],
+      passportNo: json['passport_no'],
+      ticketType: json['ticket_type'],
+      decisionDate: json['decision_date'],
+      departureDate: json['departure_date'],
+      returnDate: json['return_date'],
+      decisionNumber: json['decision_number'],
+      missionNumber: json['mission_number'],
+      passportIssueDate: json['passport_issue_date'],
+      passportExpiryDate: json['passport_expiry_date'],
+      createdBy: json['created_by'],
+      updatedBy: json['updated_by'],
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
+    );
+  }
+}

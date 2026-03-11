@@ -1,0 +1,112 @@
+import 'dart:convert';
+
+import 'dart:developer';
+
+import 'package:auto_route/auto_route.dart';
+
+import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
+
+import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+
+import 'package:code_setup/modules/domain/core/theme/theme.dart';
+import 'package:code_setup/modules/domain/models/roles_model.dart';
+
+import 'package:code_setup/modules/router/app_router.gr.dart';
+import 'package:code_setup/presentation/common_widgets/drawer_component.dart';
+
+import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
+import 'package:code_setup/presentation/core_widgets/drawer/drawer.dart';
+
+import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
+import 'package:code_setup/presentation/core_widgets/list_tile_divider.dart';
+
+import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
+import 'package:code_setup/presentation/models/request_detail.dart'
+    hide Service;
+
+import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/assets/icons.dart';
+
+import 'package:flutter/material.dart';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:google_fonts/google_fonts.dart';
+
+part 'controller.dart';
+
+part 'widgets/drawer.dart';
+
+// part 'my_profile_page/widget/my_profile_widget.dart';
+
+@RoutePage()
+class MediaCoverageHomeScreen extends ConsumerWidget {
+  const MediaCoverageHomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentTheme = KAppX.globalProvider
+        .read(KAppX.theme.current)
+        .themeBox;
+
+    final stateController = ref.read(bottomNavigatorVsProvider.notifier);
+
+    return AutoTabsRouter.builder(
+      routes: [
+        MediaServicesDashboardRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
+        RequestforCoverageRoute(service: Service(), subService: SubService()),
+      ],
+      // 👇 CORRECT builder signature for AutoTabsRouter.builder
+      builder: (tabsContext, children, tabsRouter) {
+        final activeIndex = tabsRouter.activeIndex;
+
+        return Scaffold(
+          backgroundColor: currentTheme.colors.background,
+          appBar: KAppBar(
+            leading: Builder(
+              builder: (ctx) => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ),
+            ),
+
+            title: Text(
+              stateController.titleForIndex(activeIndex),
+              style: TextStyle(
+                fontSize: currentTheme.fontSizes.s16,
+                fontWeight: currentTheme.fontWeights.wBold,
+              ),
+            ),
+          ),
+          drawer: KDrawer(
+            child: _DrawerMenu(
+              currentTheme: currentTheme,
+              activeIndex: activeIndex,
+              onItemTap: (index) {
+                if (index == activeIndex) {
+                  KAppX.router.pop(); // just close drawer
+                  return;
+                }
+
+                tabsRouter.setActiveIndex(index);
+                stateController.onTabChanged(index);
+                KAppX.router.pop(); // close drawer after nav
+              },
+            ),
+          ),
+          // Nice, smooth transition between tabs
+          body: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: KeyedSubtree(
+              key: ValueKey(activeIndex),
+              child: children[activeIndex],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

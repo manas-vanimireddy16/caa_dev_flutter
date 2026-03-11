@@ -1,0 +1,13 @@
+{
+    "client_id": "80314aeb-8563-4924-bbf3-b0a76e75a73c",
+    "authorization_user_agent": "DEFAULT",
+    "redirect_uri": "msauth://com.example.sso_testing/%2ByTKwzXT6K1fl0HQWwIryOQSHEw%3D",
+    "account_mode": "SINGLE",
+    "broker_redirect_uri_registered": false,
+    "authorities": [
+        {
+            "type": "AAD",
+            "authority_url": "https://login.microsoftonline.com/a0d55139-70f6-49e4-b912-4d13d30fc66b"
+        }
+    ]
+}
