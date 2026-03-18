@@ -39,6 +39,7 @@ import 'package:code_setup/presentation/screens/hr_service/models/grade_list_mod
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/promotions_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/required_new_resource_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/skills_enchancement_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/security_self/models/security_threat_reassign.dart';
@@ -144,7 +145,7 @@ class _SkillsEnhancementScreenState
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
             metric: "Total Tickets",
-            selectedYear: controller.currentYear.toString(),
+            // selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,

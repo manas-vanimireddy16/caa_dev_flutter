@@ -229,9 +229,9 @@ class _RequestforDutyMissionScreenState
               "Dec",
             ],
             metric: "Total Tickets",
-            selectedYear: DateTime.now().year.toString(),
+            // selectedYear: DateTime.now().year.toString(),
             barColor: Colors.blue,
-            onYearTap: () => debugPrint("Year dropdown tapped"),
+            // onYearTap: () => debugPrint("Year dropdown tapped"),
             onChanged: (value) {
               if (value != null) {
                 state.tabIndex == 0

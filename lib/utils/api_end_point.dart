@@ -1490,17 +1490,17 @@ class ApiEndPoint {
 
   /// Approve Skills Enhancement request
   static const String skillsEnhancementApprove =
-      '/v1/hr-service/skills-enhancement/request/approve-reject';
+      '/v1/hr-service/skills-enhancement/approve';
 
   /// Reject Skills Enhancement request
   static const String skillsEnhancementReject =
-      '/v1/hr-service/skills-enhancement/request/approve-reject';
+      '/v1/hr-service/skills-enhancement/approve';
 
   /// ===================== CHAT APIs =====================
 
   /// Send chat message (POST)
   static String skillsEnhancementSendChatById(int requestId) =>
-      '/v1/hr-service/skills-enhancement/request/chat';
+      '/v1/hr-service/skills-enhancement/request/$requestId/chat';
 
   /// Get chats (GET)
   static String skillsEnhancementChatsById(int requestId) =>
@@ -1510,7 +1510,7 @@ class ApiEndPoint {
 
   /// Upload attachment for request (POST)
   static String skillsEnhancementSendAttachmentById(int requestId) =>
-      '/v1/hr-service/skills-enhancement/request/attachment';
+      '/v1/hr-service/skills-enhancement/request/$requestId/attachment';
 
   /// Get/Delete attachment by attachment ID
   static String skillsEnhancementAttachmentById(int attachmentId) =>
@@ -1532,14 +1532,14 @@ class ApiEndPoint {
 
   /// Get approval list (For approvers)
   static const String performanceManagementGetActionItems =
-      '/v1/hr-service/performance-management/approvals';
+      '/v1/hr-service/performance-management/requests/approval';
 
   /// Get all requests
   static const String performanceManagementGetRequests =
       '/v1/hr-service/performance-management/requests';
 
   static String performanceManagementRequestById(int requestId) =>
-      '/v1/hr-service/performance-management/request/$requestId';
+      '/v1/hr-service/performance-management/requests/$requestId';
 
   /// ===================== KPI APIs =====================
 
@@ -1549,7 +1549,7 @@ class ApiEndPoint {
 
   /// Approval KPI cards
   static const String performanceManagementApprovalKpiCards =
-      '/v1/hr-service/performance-management/analytics/kpi-cards';
+      '/v1/hr-service/performance-management/analytics/approval/kpi-cards';
 
   /// ===================== STATUS BREAKDOWN =====================
 
@@ -1577,7 +1577,7 @@ class ApiEndPoint {
 
   /// Approve Performance Management request
   static const String performanceManagementApprove =
-      '/v1/hr-service/performance-management/request/approve-reject';
+      '/v1/hr-service/performance-management/approve';
 
   /// Reject Performance Management request
   static const String performanceManagementReject =
@@ -1587,21 +1587,21 @@ class ApiEndPoint {
 
   /// Send chat message (POST)
   static String performanceManagementSendChatById(int requestId) =>
-      '/v1/hr-service/performance-management/request/chat';
+      '/v1/hr-service/performance-management/requests/$requestId/chat';
 
   /// Get chats (GET)
   static String performanceManagementChatsById(int requestId) =>
-      '/v1/hr-service/performance-management/request/$requestId/chats';
+      '/v1/hr-service/performance-management/requests/$requestId/chats';
 
   /// ===================== ATTACHMENT APIs =====================
 
   /// Upload attachment for request (POST)
   static String performanceManagementSendAttachmentById(int requestId) =>
-      '/v1/hr-service/performance-management/request/attachment';
+      '/v1/hr-service/performance-management/requests/$requestId/attachment';
 
   /// Get/Delete attachment by attachment ID
   static String performanceManagementAttachmentById(int attachmentId) =>
-      '/v1/hr-service/performance-management/request/$attachmentId/attachments';
+      '/v1/hr-service/performance-management/requests/$attachmentId/attachments';
   static const String performanceManagementGoalsByCycle =
       '/v1/hr-service/performance-management/master/goals/by-cycle';
 }

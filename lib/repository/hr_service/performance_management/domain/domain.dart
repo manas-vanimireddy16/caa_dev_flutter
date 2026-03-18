@@ -3,6 +3,7 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/performance_management_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/promotions_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
@@ -28,7 +29,7 @@ abstract class PerformanceManagementRepository {
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId);
   Future<LocationListResponseModel>? getLocations();
 
-  Future<List<PromotionsModel>> getRequests({
+  Future<List<PerformanceManagementModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -39,7 +40,7 @@ abstract class PerformanceManagementRepository {
     String searchText = '',
   });
 
-  Future<List<PromotionsModel>> getActionItems({
+  Future<List<PerformanceManagementModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -83,10 +84,7 @@ abstract class PerformanceManagementRepository {
   });
   Future<void> onAssignEmployee(Map<String, dynamic> payload);
   Future<List<GoalModel>> getByCycleGoalsData({
-    required int offset,
-    required int limit,
-    required int serviceId,
-    required int subServiceId,
+    required String cyclePeriod,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List

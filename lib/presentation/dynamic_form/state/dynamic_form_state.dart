@@ -42,7 +42,7 @@ class DynamicFormState {
 
 final dynamicFormProvider =
     StateNotifierProvider<DynamicFormNotifier, DynamicFormState>(
-      (ref) => DynamicFormNotifier(),
+      (ref) => DynamicFormNotifier(ref),
     );
 
 class DynamicForm extends ConsumerWidget {

@@ -47,7 +47,7 @@ class _RequestForStudyLeaveNewRequestScreenState
       /// ✅ DynamicForm MUST be root-level in a screen
       body: ProviderScope(
         overrides: [
-          dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier()),
+          dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
           title: 'Mission Transfer Request',

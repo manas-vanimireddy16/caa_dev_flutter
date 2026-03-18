@@ -64,7 +64,7 @@ class _SkillsEnhancementDetailsScreenState
           // final request = state.requestDetails.request == null
           //     ? null
           //     : state.requestDetails;
-          final request = state.requestDetails;
+          final request = state.requestDetails.request;
           final requestId = request?.id;
           final List<AttachmentModel> attachments = state.attachmentsById;
           final chats = state.chatById;
@@ -96,7 +96,7 @@ class _SkillsEnhancementDetailsScreenState
                   avatarUrl: "https://i.pravatar.cc/150?img=3",
                   isOnline: true,
                   info: {
-                    "Request ID": (request.id ?? 0).toString(),
+                    "Request ID": (request?.id ?? 0).toString(),
                     "Customer ID": (request?.userId ?? 0).toString(),
                     "Job Title/Designation":
                         request?.createdByUser?.directorate ?? 'N/A',

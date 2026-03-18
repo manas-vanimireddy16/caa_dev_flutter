@@ -35,16 +35,25 @@ import 'package:code_setup/presentation/models/selection_dialog_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_list.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/performance_management_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/promotions_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/required_new_resource_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/performance_management/widgets/dynamic_weight_list.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/security_self/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
+import 'package:code_setup/repository/hr_service/annual_increment/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/assignment_decision/domain/domain.dart';
+import 'package:code_setup/repository/hr_service/performance_management/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/promotions/domain/domain.dart';
+import 'package:code_setup/repository/hr_service/required_new_resource/domain/domain.dart';
+import 'package:code_setup/repository/hr_service/skills_enhancement/domain/domain.dart';
 import 'package:code_setup/repository/security_access/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
@@ -59,7 +68,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-part 'widgets/promotions_new_request.dart';
+part 'widgets/skills_enhancement_new_request.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
 part 'widgets/request_details_tabs.dart';
@@ -68,21 +77,24 @@ part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
 
 @RoutePage()
-class PromotionsScreen extends ConsumerStatefulWidget {
+class RequestForHumanResourceAnnualPlanningScreen
+    extends ConsumerStatefulWidget {
   final Service service;
   final SubService subService;
 
-  const PromotionsScreen({
+  const RequestForHumanResourceAnnualPlanningScreen({
     super.key,
     required this.service,
     required this.subService,
   });
 
   @override
-  ConsumerState<PromotionsScreen> createState() => _PromotionsScreenState();
+  ConsumerState<RequestForHumanResourceAnnualPlanningScreen> createState() =>
+      _RequestForHumanResourceAnnualPlanningScreenState();
 }
 
-class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
+class _RequestForHumanResourceAnnualPlanningScreenState
+    extends ConsumerState<RequestForHumanResourceAnnualPlanningScreen> {
   late FocusNode _focusNode;
   late _VSControllerParams _providerArgs;
   late PageController _pageController;
@@ -138,7 +150,7 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
             metric: "Total Tickets",
-            // selectedYear: controller.currentYear.toString(),
+            selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,

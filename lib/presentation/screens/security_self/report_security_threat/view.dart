@@ -171,9 +171,9 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen>
               "Dec",
             ],
             metric: "Total Tickets",
-            selectedYear: '2025',
+            // selectedYear: '2025',
             barColor: Colors.blue,
-            onYearTap: () => debugPrint("Year dropdown tapped"),
+            // onYearTap: () => debugPrint("Year dropdown tapped"),
             onChanged: (value) {
               if (value != null) {
                 state.tabIndex == 0

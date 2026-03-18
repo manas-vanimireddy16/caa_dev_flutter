@@ -187,9 +187,9 @@ class _AirportEntryPermitScreenState
               "Dec",
             ],
             metric: "Total Tickets",
-            selectedYear: '2025',
+            // selectedYear: DateTime.now().year.toString(),
             barColor: Colors.blue,
-            onYearTap: () => debugPrint("Year dropdown tapped"),
+            // onYearTap: () => debugPrint("Year dropdown tapped"),
             onChanged: (value) {
               if (value != null) {
                 state.tabIndex == 0

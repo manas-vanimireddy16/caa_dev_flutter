@@ -3,6 +3,7 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/promotions_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/skills_enchancement_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/hr_service/annual_increment/data/data.dart';
@@ -27,7 +28,7 @@ abstract class SkillsEnhancementRepository {
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId);
   Future<LocationListResponseModel>? getLocations();
 
-  Future<List<PromotionsModel>> getRequests({
+  Future<List<SkillsEnhancementModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -38,7 +39,7 @@ abstract class SkillsEnhancementRepository {
     String searchText = '',
   });
 
-  Future<List<PromotionsModel>> getActionItems({
+  Future<List<SkillsEnhancementModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,

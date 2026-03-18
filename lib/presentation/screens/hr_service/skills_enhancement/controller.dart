@@ -61,8 +61,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<PromotionsModel> promotionsRequestData;
-  final List<PromotionsModel> promotionsActionItems;
+  final List<SkillsEnhancementModel> RequestData;
+  final List<SkillsEnhancementModel> ActionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final List<PendingApprovalUser> engineersList;
@@ -124,8 +124,8 @@ class _ViewState {
     required this.selectedTab,
     required this.approvalStatusBreakdown,
     required this.approvalTrendData,
-    required this.promotionsRequestData,
-    required this.promotionsActionItems,
+    required this.RequestData,
+    required this.ActionItems,
     required this.requestDetails,
     required this.requestDetailTab,
     required this.engineersList,
@@ -167,8 +167,8 @@ class _ViewState {
         selectedTab: 0,
         approvalStatusBreakdown: StatusBreakdownModel(),
         approvalTrendData: TrendBreakdownModel(),
-        promotionsRequestData: [],
-        promotionsActionItems: [],
+        RequestData: [],
+        ActionItems: [],
         requestDetails: RequestDetailData(),
         requestDetailTab: 0,
         engineersList: [],
@@ -213,8 +213,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<PromotionsModel>? promotionsRequestData,
-    List<PromotionsModel>? promotionsActionItems,
+    List<SkillsEnhancementModel>? RequestData,
+    List<SkillsEnhancementModel>? ActionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -263,10 +263,8 @@ class _ViewState {
       approvalStatusBreakdown:
           approvalStatusBreakdown ?? this.approvalStatusBreakdown,
       approvalTrendData: approvalTrendData ?? this.approvalTrendData,
-      promotionsRequestData:
-          promotionsRequestData ?? this.promotionsRequestData,
-      promotionsActionItems:
-          promotionsActionItems ?? this.promotionsActionItems,
+      RequestData: RequestData ?? this.RequestData,
+      ActionItems: ActionItems ?? this.ActionItems,
       requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
       engineersList: engineersList ?? this.engineersList,
@@ -398,7 +396,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(PromotionsModel item) {
+  Map<String, String> buildRequestCardData(SkillsEnhancementModel item) {
     final approverMap = resolveApproverMap(item.base.approvalDetails);
 
     return {
@@ -407,18 +405,10 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request By': item.base.createdByUser?.employeeName ?? '-',
 
       /// ================= EMPLOYEE INFO =================
-      'Employee ID': item.employeeId ?? '-',
-      'Employee Name': item.employeeName ?? '-',
-
-      /// ================= CURRENT DETAILS =================
-      'Current Job Title': item.currentJobTitle ?? '-',
-      'Current Salary Grade': item.currentSalaryGrade ?? '-',
-      'Current Basic Salary': item.currentBasicSalary ?? '-',
-
-      /// ================= PROPOSED DETAILS =================
-      'Proposed Job Title': item.proposedJobTitle ?? '-',
-      'Proposed Salary Grade': item.proposedSalaryGrade ?? '-',
-      'Proposed Basic Salary': item.proposedBasicSalary ?? '-',
+      'Completion Date': item.completionDate ?? '-',
+      'Certification Title': item.certificationTitle ?? '-',
+      'Skill Category': item.skillCategory ?? '-',
+      'Request Submission Date': item.base.createdAt.toString(),
 
       /// 👇 APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
@@ -430,26 +420,23 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildRequestInformationData() {
-    final request = state.requestDetails;
+    final request = state.requestDetails.request;
     return {
       /// ───── RIGHT COLUMN ─────
       "Service Type": request?.service?.name ?? 'N/A',
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      "Position to be Filled": request?.positionToBeFilled ?? 'N/A',
-      "Grade": request?.grade ?? 'N/A',
-      "Role / Title of Resource": request?.roleTitle ?? 'N/A',
-      "Education Requirements": request?.educationRequirements ?? 'N/A',
-      "Required Skills / Expertise": request?.requiredSkills ?? 'N/A',
-      "Number of Years of Experience": request?.yearsOfExperience ?? 'N/A',
-      "Job Description": request?.jobDescription ?? 'N/A',
+
+      'Completion Date': request?.completionDate ?? '-',
+      'Certification Title': request?.certificationTitle ?? '-',
+      'Skill Category': request?.skillCategory ?? '-',
     };
   }
 
   Map<String, String> buildStatusInformation() {
-    final request = state.requestDetails;
-    final approvals = request.approvalDetails;
+    final request = state.requestDetails.request;
+    final approvals = state.requestDetails.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
     return {
       "Approval Status": request?.status ?? 'N/A',
@@ -469,7 +456,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildTechnicalInformation() {
-    final request = state.requestDetails;
+    final request = state.requestDetails.request;
     return {
       'Extension Number':
           request?.createdByUser?.extensionNumber.toString() ?? '0',
@@ -838,7 +825,7 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       // Clear list only if explicitly refreshing or searching
       if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(promotionsRequestData: [], isLoading: false);
+        state = state.copyWith(RequestData: [], isLoading: false);
       }
 
       final requests = await skillsEnhancementInstance.getRequests(
@@ -851,7 +838,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(promotionsRequestData: requests);
+      state = state.copyWith(RequestData: requests);
     } catch (e) {
       state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: e.toString());
@@ -867,7 +854,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     try {
       if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(promotionsActionItems: [], isLoading: false);
+        state = state.copyWith(ActionItems: [], isLoading: false);
       }
 
       final items = await skillsEnhancementInstance.getActionItems(
@@ -881,7 +868,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(promotionsActionItems: items, isLoading: false);
+      state = state.copyWith(ActionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }
@@ -1602,7 +1589,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // KAppX.router.pop();
       if (response['status'] == 'success') {
-        Future.delayed(Duration(seconds: 3));
+        Future.delayed(Duration(seconds: 1));
 
         fetchKpi();
         fetchStatusBreakdown('monthly');

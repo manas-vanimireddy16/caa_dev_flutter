@@ -1,4 +1,6 @@
 import 'package:code_setup/presentation/models/allowance_employee.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/performance_management/widgets/goals_table.dart';
 import 'package:code_setup/presentation/screens/hr_service/request_for_duty_mission/widgets/allowance_table.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/presentation/common_widgets/cardInfo.dart';
@@ -6,7 +8,9 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 
 class CommonRequestDetails extends StatelessWidget {
   final List<AllowanceEmployee>? allowanceEmployees;
+  final List<GoalModel>? goals;
   final bool showAllowanceSection;
+  final bool showGoalsSection;
 
   final Map<String, String>? statusInfo;
   final Map<String, String>? requestInfo;
@@ -21,6 +25,8 @@ class CommonRequestDetails extends StatelessWidget {
     this.technicalInfo,
     this.coverageInfo,
     this.showAllowanceSection = false,
+    this.goals,
+    this.showGoalsSection = false,
   });
 
   @override
@@ -46,6 +52,8 @@ class CommonRequestDetails extends StatelessWidget {
             info: requestInfo!,
             customContent: showAllowanceSection
                 ? AllowanceTable(employees: allowanceEmployees ?? [])
+                : showGoalsSection
+                ? GoalsTable(goals: goals ?? [], isOnHold: true)
                 : null,
           ),
           6.toVerticalSizedBox,

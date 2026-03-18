@@ -180,9 +180,9 @@ class _RequestTrainingScreenState extends ConsumerState<RequestTrainingScreen>
                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             monthLabels: state.months,
             metric: "Total Tickets",
-            selectedYear: DateTime.now().year.toString(),
+            // selectedYear: DateTime.now().year.toString(),
             barColor: Colors.blue,
-            onYearTap: () => debugPrint("Year dropdown tapped"),
+            // onYearTap: () => debugPrint("Year dropdown tapped"),
             onChanged: (value) {
               if (value != null) {
                 state.tabIndex == 0

@@ -142,7 +142,7 @@ class _AnnualIncrementScreenState extends ConsumerState<AnnualIncrementScreen> {
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
             metric: "Total Tickets",
-            selectedYear: controller.currentYear.toString(),
+            // selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,

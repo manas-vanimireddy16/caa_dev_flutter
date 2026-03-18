@@ -38,10 +38,12 @@ import 'package:code_setup/presentation/screens/hr_service/models/employee_model
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_list.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/performance_management_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/promotions_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/required_new_resource_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/performance_management/widgets/dynamic_weight_list.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/security_self/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';

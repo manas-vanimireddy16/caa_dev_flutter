@@ -7,6 +7,7 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/performance_management_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/promotions_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
@@ -64,7 +65,7 @@ class PerformanceManagementRepositoryImple
     Map<String, dynamic> payload,
   ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.sendRequestForSkillsEnhancement;
+    final String url = ApiEndPoint.performanceManagementGetRequests;
 
     try {
       if (client == null) {
@@ -217,7 +218,7 @@ class PerformanceManagementRepositoryImple
 
   @override
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId) async {
-    String url = ApiEndPoint.skillsEnhancementKpiCards;
+    String url = ApiEndPoint.performanceManagementKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -253,7 +254,7 @@ class PerformanceManagementRepositoryImple
     required int serviceId,
     required int subServiceId,
   }) async {
-    String url = ApiEndPoint.skillsEnhancementApprovalKpiCards;
+    String url = ApiEndPoint.performanceManagementApprovalKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -300,7 +301,7 @@ class PerformanceManagementRepositoryImple
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.skillsEnhancementApprovalStatusBreakdown,
+          ApiEndPoint.performanceManagementApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -343,7 +344,7 @@ class PerformanceManagementRepositoryImple
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.skillsEnhancementApprovalTrendBreakdown,
+          ApiEndPoint.performanceManagementApprovalTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -383,7 +384,7 @@ class PerformanceManagementRepositoryImple
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.skillsEnhancementStatusBreakdown,
+          ApiEndPoint.performanceManagementStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -426,7 +427,7 @@ class PerformanceManagementRepositoryImple
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.skillsEnhancementTrendBreakdown,
+          ApiEndPoint.performanceManagementTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -451,7 +452,7 @@ class PerformanceManagementRepositoryImple
   }
 
   @override
-  Future<List<PromotionsModel>> getRequests({
+  Future<List<PerformanceManagementModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -479,7 +480,7 @@ class PerformanceManagementRepositoryImple
         if (status.isNotEmpty) {
           queryParams['status'] = status;
         }
-        final url = ApiEndPoint.skillsEnhancementGetRequests;
+        final url = ApiEndPoint.performanceManagementGetRequests;
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
@@ -487,23 +488,27 @@ class PerformanceManagementRepositoryImple
           final List<dynamic> list = data['data'];
 
           return list
-              .map((e) => PromotionsModel.fromJson(e as Map<String, dynamic>))
+              .map(
+                (e) => PerformanceManagementModel.fromJson(
+                  e as Map<String, dynamic>,
+                ),
+              )
               .toList();
         } else {
           throw Exception(
-            'Failed to fetch required new resource request: ${response.statusCode}',
+            'Failed to fetch performance management request: ${response.statusCode}',
           );
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching required new resource request: $e");
+      throw Exception("Error fetching performance management request: $e");
     }
   }
 
   @override
-  Future<List<PromotionsModel>> getActionItems({
+  Future<List<PerformanceManagementModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -532,7 +537,7 @@ class PerformanceManagementRepositoryImple
         }
 
         final response = await client.get(
-          ApiEndPoint.skillsEnhancementGetActionItems,
+          ApiEndPoint.performanceManagementGetActionItems,
           queryParameters: queryParams,
         );
 
@@ -544,8 +549,9 @@ class PerformanceManagementRepositoryImple
           /// Parse each Action Item
           final actionItems = list
               .map(
-                (item) =>
-                    PromotionsModel.fromJson(item as Map<String, dynamic>),
+                (item) => PerformanceManagementModel.fromJson(
+                  item as Map<String, dynamic>,
+                ),
               )
               .toList();
 
@@ -570,7 +576,7 @@ class PerformanceManagementRepositoryImple
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.skillsEnhancementSendChatById(id);
+    final String url = ApiEndPoint.performanceManagementSendChatById(id);
 
     try {
       if (client != null) {
@@ -603,7 +609,7 @@ class PerformanceManagementRepositoryImple
   @override
   Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.skillsEnhancementSendAttachmentById(id);
+    final String url = ApiEndPoint.performanceManagementSendAttachmentById(id);
 
     try {
       if (client != null) {
@@ -636,7 +642,7 @@ class PerformanceManagementRepositoryImple
   @override
   Future<void> onApprove(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.skillsEnhancementApprove;
+    final String url = ApiEndPoint.performanceManagementApprove;
 
     try {
       if (client != null) {
@@ -671,7 +677,7 @@ class PerformanceManagementRepositoryImple
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.skillsEnhancementChatsById(id);
+        final url = ApiEndPoint.performanceManagementChatsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -699,7 +705,7 @@ class PerformanceManagementRepositoryImple
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.skillsEnhancementAttachmentById(id);
+        final url = ApiEndPoint.performanceManagementAttachmentById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -735,7 +741,7 @@ class PerformanceManagementRepositoryImple
           'service_id': serviceId,
           'sub_service_id': subServiceId,
         };
-        final url = ApiEndPoint.skillsEnhancementRequestById(id);
+        final url = ApiEndPoint.performanceManagementRequestById(id);
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
@@ -794,10 +800,7 @@ class PerformanceManagementRepositoryImple
 
   @override
   Future<List<GoalModel>> getByCycleGoalsData({
-    required int offset,
-    required int limit,
-    required int serviceId,
-    required int subServiceId,
+    required String cyclePeriod,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
@@ -807,12 +810,7 @@ class PerformanceManagementRepositoryImple
 
     try {
       if (client != null) {
-        final Map<String, dynamic> queryParams = {
-          'offset': offset,
-          'limit': limit,
-          'service_id': serviceId,
-          'sub_service_id': subServiceId,
-        };
+        final Map<String, dynamic> queryParams = {'cycle_period': cyclePeriod};
 
         if (searchText.isNotEmpty) {
           queryParams['search_text'] = searchText;
@@ -821,7 +819,7 @@ class PerformanceManagementRepositoryImple
         if (status.isNotEmpty) {
           queryParams['status'] = status;
         }
-        final url = ApiEndPoint.skillsEnhancementGetRequests;
+        final url = ApiEndPoint.performanceManagementGoalsByCycle;
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {

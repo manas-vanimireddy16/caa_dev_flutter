@@ -47,7 +47,7 @@ class _AnnualIncrementNewRequestScreenState
       /// ✅ DynamicForm MUST be root-level in a screen
       body: ProviderScope(
         overrides: [
-          dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier()),
+          dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
           title: 'Required New Resource Request',

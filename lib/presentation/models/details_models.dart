@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
+
 RequestDetailModel welcomeFromJson(String str) =>
     RequestDetailModel.fromJson(json.decode(str));
 
@@ -28,6 +30,7 @@ class RequestDetailData {
   List<ApprovalDetailModel>? approvalDetails;
   List<ChatMessageModel>? chatMessages;
   List<AttachmentModel>? attachments;
+  final List<GoalModel>? goals;
   final int? id;
   final int? serviceId;
   final int? subServiceId;
@@ -330,6 +333,15 @@ class RequestDetailData {
   final String? proposedBasicSalary;
   final String? proposedJobTitle;
   final String? proposedSalaryGrade;
+  final String? certificationTitle;
+  final String? skillCategory;
+  final String? issuingAuthority;
+  final String? skillSummary;
+  final String? additionalInfoRequested;
+
+  /// Performance Management Fields
+  final String? cyclePeriod;
+  final int? cycleYear;
 
   RequestDetailData({
     this.request,
@@ -337,6 +349,7 @@ class RequestDetailData {
     this.approvalDetails,
     this.chatMessages,
     this.attachments,
+    this.goals,
     this.id,
     this.serviceId,
     this.subServiceId,
@@ -558,322 +571,338 @@ class RequestDetailData {
     this.proposedBasicSalary,
     this.proposedJobTitle,
     this.proposedSalaryGrade,
+    this.certificationTitle,
+    this.skillCategory,
+    this.issuingAuthority,
+    this.skillSummary,
+    this.additionalInfoRequested,
+    this.cyclePeriod,
+    this.cycleYear,
   });
 
-  factory RequestDetailData.fromJson(Map<String, dynamic> json) =>
-      RequestDetailData(
-        request: json["request"] == null
-            ? null
-            : RequestModel.fromJson(json["request"]),
+  factory RequestDetailData.fromJson(
+    Map<String, dynamic> json,
+  ) => RequestDetailData(
+    request: json["request"] == null
+        ? null
+        : RequestModel.fromJson(json["request"]),
 
-        workflowDetails:
-            (json["workflow_details"] ?? json["workflow_logs"] ?? []) is List
-            ? (json["workflow_details"] ?? json["workflow_logs"])
-                  .map<WorkflowDetailModel>(
-                    (x) => WorkflowDetailModel.fromJson(x),
-                  )
-                  .toList()
-            : [],
+    workflowDetails:
+        (json["workflow_details"] ?? json["workflow_logs"] ?? []) is List
+        ? (json["workflow_details"] ?? json["workflow_logs"])
+              .map<WorkflowDetailModel>((x) => WorkflowDetailModel.fromJson(x))
+              .toList()
+        : [],
 
-        approvalDetails: json["approval_details"] == null
-            ? []
-            : List<ApprovalDetailModel>.from(
-                json["approval_details"]!.map(
-                  (x) => ApprovalDetailModel.fromJson(x),
-                ),
-              ),
+    approvalDetails: json["approval_details"] == null
+        ? []
+        : List<ApprovalDetailModel>.from(
+            json["approval_details"]!.map(
+              (x) => ApprovalDetailModel.fromJson(x),
+            ),
+          ),
 
-        chatMessages: json["chat_messages"] == null
-            ? []
-            : List<ChatMessageModel>.from(
-                json["chat_messages"]!.map((x) => ChatMessageModel.fromJson(x)),
-              ),
+    chatMessages: json["chat_messages"] == null
+        ? []
+        : List<ChatMessageModel>.from(
+            json["chat_messages"]!.map((x) => ChatMessageModel.fromJson(x)),
+          ),
 
-        attachments: json["attachments"] == null
-            ? []
-            : List<AttachmentModel>.from(
-                json["attachments"]!.map((x) => AttachmentModel.fromJson(x)),
-              ),
+    attachments: json["attachments"] == null
+        ? []
+        : List<AttachmentModel>.from(
+            json["attachments"]!.map((x) => AttachmentModel.fromJson(x)),
+          ),
 
-        id: json["id"],
-        serviceId: json["service_id"],
-        subServiceId: json["sub_service_id"],
+    goals: json['goals'] == null
+        ? []
+        : List<GoalModel>.from(json['goals'].map((x) => GoalModel.fromJson(x))),
+    id: json["id"],
+    serviceId: json["service_id"],
+    subServiceId: json["sub_service_id"],
 
-        description: json["description"],
-        status: json["status"],
-        priority: json["priority"] ?? json["request_priority"],
-        typeOfThreat: json["type_of_threat"] ?? json["typeOfThreat"],
+    description: json["description"],
+    status: json["status"],
+    priority: json["priority"] ?? json["request_priority"],
+    typeOfThreat: json["type_of_threat"] ?? json["typeOfThreat"],
 
-        workflowExecutionId: json["workflow_execution_id"],
-        createdBy: json["created_by"],
-        createdAt: json["created_at"],
-        updatedBy: json["updated_by"],
-        updatedAt: json["updated_at"],
-        userId: json["user_id"],
+    workflowExecutionId: json["workflow_execution_id"],
+    createdBy: json["created_by"],
+    createdAt: json["created_at"],
+    updatedBy: json["updated_by"],
+    updatedAt: json["updated_at"],
+    userId: json["user_id"],
 
-        reqUserDepartmentId: json["req_user_department_id"],
-        reqUserSectionId: json["req_user_section_id"],
+    reqUserDepartmentId: json["req_user_department_id"],
+    reqUserSectionId: json["req_user_section_id"],
 
-        contactNum: json["contact_number"] ?? json["contact_num"],
-        extnNum: json["extension_number"] ?? json["extn_num"],
-        email: json["email"],
-        personName: json["person_name"],
-        personContactNumber: json["person_contact_number"],
-        requestFor: json["request_for"],
-        problem: json["problem"],
-        requestDate: json["request_date"],
-        serviceTypeId: json["service_type_id"],
-        requestType: json["request_type"],
+    contactNum: json["contact_number"] ?? json["contact_num"],
+    extnNum: json["extension_number"] ?? json["extn_num"],
+    email: json["email"],
+    personName: json["person_name"],
+    personContactNumber: json["person_contact_number"],
+    requestFor: json["request_for"],
+    problem: json["problem"],
+    requestDate: json["request_date"],
+    serviceTypeId: json["service_type_id"],
+    requestType: json["request_type"],
 
-        category: json["category"],
-        vehicleRequiredFor: json["vehicle_required_for"],
-        vehicleRequiredLocation: json["vehicle_required_location"],
-        title: json["title"],
-        purposeOfTravel: json["purpose_of_travel"],
-        typeOfVehicleRequired: json["type_of_vehicle_required"],
-        typeOfRequest: json["type_of_request"],
-        dateOfTravel: json["date_of_travel"],
-        timeOfTravel: json["time_of_travel"],
-        expDurationOfUseHrs: json["exp_duration_of_use_hrs"],
-        expDurationOfUseDays: json["exp_duration_of_use_days"],
+    category: json["category"],
+    vehicleRequiredFor: json["vehicle_required_for"],
+    vehicleRequiredLocation: json["vehicle_required_location"],
+    title: json["title"],
+    purposeOfTravel: json["purpose_of_travel"],
+    typeOfVehicleRequired: json["type_of_vehicle_required"],
+    typeOfRequest: json["type_of_request"],
+    dateOfTravel: json["date_of_travel"],
+    timeOfTravel: json["time_of_travel"],
+    expDurationOfUseHrs: json["exp_duration_of_use_hrs"],
+    expDurationOfUseDays: json["exp_duration_of_use_days"],
 
-        hotelName: json["hotel_name"],
-        typeOfAccommodation: json["type_of_accommodation"],
-        numberOfGuests: json["number_of_guests"],
-        meal: json["meal"] != null ? List<String>.from(json["meal"]) : null,
-        price: json["price"],
-        requestedBy: json["requested_by"],
-        hrApproval: json["hr_approval"],
-        prApproval: json["pr_approval"],
-        checkInDate: json["check_in_date"],
-        checkInTime: json["check_in_time"],
-        checkOutDate: json["check_out_date"],
-        checkOutTime: json["check_out_time"],
-        dateOfRequest: json["date_of_request"],
-        visitorName: json["visitor_name"],
+    hotelName: json["hotel_name"],
+    typeOfAccommodation: json["type_of_accommodation"],
+    numberOfGuests: json["number_of_guests"],
+    meal: json["meal"] != null ? List<String>.from(json["meal"]) : null,
+    price: json["price"],
+    requestedBy: json["requested_by"],
+    hrApproval: json["hr_approval"],
+    prApproval: json["pr_approval"],
+    checkInDate: json["check_in_date"],
+    checkInTime: json["check_in_time"],
+    checkOutDate: json["check_out_date"],
+    checkOutTime: json["check_out_time"],
+    dateOfRequest: json["date_of_request"],
+    visitorName: json["visitor_name"],
 
-        createdByUser: json["created_by_user"] != null
-            ? UserModel.fromJson(json["created_by_user"])
-            : null,
+    createdByUser: json["created_by_user"] != null
+        ? UserModel.fromJson(json["created_by_user"])
+        : null,
 
-        serviceType: json["service_type"] != null
-            ? ServiceTypeModel.fromJson(json["service_type"])
-            : null,
+    serviceType: json["service_type"] != null
+        ? ServiceTypeModel.fromJson(json["service_type"])
+        : null,
 
-        service: json["service"] != null
-            ? ServiceModel.fromJson(json["service"])
-            : null,
+    service: json["service"] != null
+        ? ServiceModel.fromJson(json["service"])
+        : null,
 
-        subService: json["sub_service"] != null
-            ? SubServiceModel.fromJson(json["sub_service"])
-            : null,
+    subService: json["sub_service"] != null
+        ? SubServiceModel.fromJson(json["sub_service"])
+        : null,
 
-        reqDepartment: json["req_department"] != null
-            ? DepartmentModel.fromJson(json["req_department"])
-            : null,
+    reqDepartment: json["req_department"] != null
+        ? DepartmentModel.fromJson(json["req_department"])
+        : null,
 
-        reqSection: json["req_section"] != null
-            ? SectionModel.fromJson(json["req_section"])
-            : null,
+    reqSection: json["req_section"] != null
+        ? SectionModel.fromJson(json["req_section"])
+        : null,
 
-        dateOfSubmission: json["date_of_submission"],
-        phoneNumber: json["phone_number"],
-        place: json["place"],
-        eventDate: json["event_date"],
-        eventTime: json["event_time"],
-        mediaCoverageRequired: json["media_coverage_required"],
-        nameFullFamilyName: json["name_full_family_name"],
-        nationality: json["nationality"],
-        dob: json["dob"],
-        passportIdCardNo: json["passport_id_card_no"],
-        categoryOfPermit: json["category_of_permit"],
-        typeOfPermit: json["type_of_permit"],
+    dateOfSubmission: json["date_of_submission"],
+    phoneNumber: json["phone_number"],
+    place: json["place"],
+    eventDate: json["event_date"],
+    eventTime: json["event_time"],
+    mediaCoverageRequired: json["media_coverage_required"],
+    nameFullFamilyName: json["name_full_family_name"],
+    nationality: json["nationality"],
+    dob: json["dob"],
+    passportIdCardNo: json["passport_id_card_no"],
+    categoryOfPermit: json["category_of_permit"],
+    typeOfPermit: json["type_of_permit"],
 
-        permissionToRequiredAreas: json["permission_to_required_areas"] != null
-            ? List<String>.from(json["permission_to_required_areas"])
-            : null,
+    permissionToRequiredAreas: json["permission_to_required_areas"] != null
+        ? List<String>.from(json["permission_to_required_areas"])
+        : null,
 
-        occupationStaff: json["occupation_staff"],
-        temporaryStartTime: json["temporary_start_time"],
-        temporaryDuration: json["temporary_duration"],
+    occupationStaff: json["occupation_staff"],
+    temporaryStartTime: json["temporary_start_time"],
+    temporaryDuration: json["temporary_duration"],
 
-        forVisitor: json["for_visitor"] != null
-            ? List<String>.from(json["for_visitor"])
-            : null,
+    forVisitor: json["for_visitor"] != null
+        ? List<String>.from(json["for_visitor"])
+        : null,
 
-        acknowledgeSecurityPolicies: json["acknowledge_security_policies"],
-        acknowledgeDisciplinaryAction: json["acknowledge_disciplinary_action"],
-        consentApproveToIssuePermit: json["consent_approve_to_issue_permit"],
-        consentDoNotApproveToIssuePermit:
-            json["consent_do_not_approve_to_issue_permit"],
-        consentJustification: json["consent_justification"],
+    acknowledgeSecurityPolicies: json["acknowledge_security_policies"],
+    acknowledgeDisciplinaryAction: json["acknowledge_disciplinary_action"],
+    consentApproveToIssuePermit: json["consent_approve_to_issue_permit"],
+    consentDoNotApproveToIssuePermit:
+        json["consent_do_not_approve_to_issue_permit"],
+    consentJustification: json["consent_justification"],
 
-        requestId: json["request_id"],
-        expirationDate: json["expiration_date"],
-        attachmentUrl: json["attachment_url"],
-        isDeleted: json["is_deleted"],
+    requestId: json["request_id"],
+    expirationDate: json["expiration_date"],
+    attachmentUrl: json["attachment_url"],
+    isDeleted: json["is_deleted"],
 
-        assignedToUserId: json["assigned_to_user_id"],
-        assignedAt: json["assigned_at"],
-        reviewerUserId: json["reviewer_user_id"],
+    assignedToUserId: json["assigned_to_user_id"],
+    assignedAt: json["assigned_at"],
+    reviewerUserId: json["reviewer_user_id"],
 
-        assignedEmployeeName: json["assigned_employee_name"],
-        civilIdCardNumber: json["civil_id_card_number"],
-        employeeId: json["employee_id"],
-        currentJobPosition: json["current_job_position"],
-        assignedJobPosition: json["assigned_job_position"],
+    assignedEmployeeName: json["assigned_employee_name"],
+    civilIdCardNumber: json["civil_id_card_number"],
+    employeeId: json["employee_id"],
+    currentJobPosition: json["current_job_position"],
+    assignedJobPosition: json["assigned_job_position"],
 
-        startDate: json["start_date"],
-        endDate: json["end_date"],
-        assignmentAllowance: json["assignment_allowance"]?.toString(),
-        reasonForRequest: json["reason_for_request"],
+    startDate: json["start_date"],
+    endDate: json["end_date"],
+    assignmentAllowance: json["assignment_allowance"]?.toString(),
+    reasonForRequest: json["reason_for_request"],
 
-        isReplaced: json["is_replaced"],
-        replacementEmployeeName: json["replacement_employee_name"],
-        replacementEmployeeId: json["replacement_employee_id"],
-        replacementCivilIdCardNumber: json["replacement_civil_id_card_number"],
-        replacementReason: json["replacement_reason"],
-        replacedByUserId: json["replaced_by_user_id"],
-        replacedAt: json["replaced_at"],
-        reqUserPositionId: json["req_user_position_id"],
+    isReplaced: json["is_replaced"],
+    replacementEmployeeName: json["replacement_employee_name"],
+    replacementEmployeeId: json["replacement_employee_id"],
+    replacementCivilIdCardNumber: json["replacement_civil_id_card_number"],
+    replacementReason: json["replacement_reason"],
+    replacedByUserId: json["replaced_by_user_id"],
+    replacedAt: json["replaced_at"],
+    reqUserPositionId: json["req_user_position_id"],
 
-        originalDepartmentId: json["original_department_id"],
-        assignedDepartmentId: json["assigned_department_id"],
+    originalDepartmentId: json["original_department_id"],
+    assignedDepartmentId: json["assigned_department_id"],
 
-        fromEntity: json["from_entity"],
-        toEntity: json["to_entity"],
+    fromEntity: json["from_entity"],
+    toEntity: json["to_entity"],
 
-        assignedToRole: json["assigned_to_role"],
-        currentEntity: json['current_entity'],
-        transferredToEntity: json['transferred_to_entity'],
+    assignedToRole: json["assigned_to_role"],
+    currentEntity: json['current_entity'],
+    transferredToEntity: json['transferred_to_entity'],
 
-        salaryDetails: json['salary_details'],
-        salaryDetailsDescription: json['salary_details_description'],
-        // ───────── TASK MANAGEMENT ─────────
-        taskTitle: json["task_title"],
-        taskDescription: json["task_description"] ?? json["description"],
-        completionDate: json["completion_date"],
-        employeesDetails: json['employees_details'] != null
-            ? (json['employees_details'] as List)
-                  .map((e) => EmployeeDutyMission.fromJson(e))
-                  .toList()
-            : null,
+    salaryDetails: json['salary_details'],
+    salaryDetailsDescription: json['salary_details_description'],
+    // ───────── TASK MANAGEMENT ─────────
+    taskTitle: json["task_title"],
+    taskDescription: json["task_description"] ?? json["description"],
+    completionDate: json["completion_date"],
+    employeesDetails: json['employees_details'] != null
+        ? (json['employees_details'] as List)
+              .map((e) => EmployeeDutyMission.fromJson(e))
+              .toList()
+        : null,
 
-        airTicketDetails: json['air_ticket_details'] != null
-            ? (json['air_ticket_details'] as List)
-                  .map((e) => AirTicketDetail.fromJson(e))
-                  .toList()
-            : null,
-        tripType: json['trip_type'],
-        chooseType: json['choose_type'],
+    airTicketDetails: json['air_ticket_details'] != null
+        ? (json['air_ticket_details'] as List)
+              .map((e) => AirTicketDetail.fromJson(e))
+              .toList()
+        : null,
+    tripType: json['trip_type'],
+    chooseType: json['choose_type'],
 
-        missionSponsoredBy: json['mission_sponsored_by'],
-        missionPurpose: json['mission_purpose'],
-        missionNumber: json['mission_number'],
-        missionId: json['mission_id'],
+    missionSponsoredBy: json['mission_sponsored_by'],
+    missionPurpose: json['mission_purpose'],
+    missionNumber: json['mission_number'],
+    missionId: json['mission_id'],
 
-        missionStartDate: json['mission_start_date'],
-        missionEndDate: json['mission_end_date'],
+    missionStartDate: json['mission_start_date'],
+    missionEndDate: json['mission_end_date'],
 
-        travellingAreaFrom: json['travelling_area_from'],
-        travellingAreaTo: json['travelling_area_to'],
+    travellingAreaFrom: json['travelling_area_from'],
+    travellingAreaTo: json['travelling_area_to'],
 
-        fromCountry: json['from_country'],
-        toCountry: json['to_country'],
-        travelPlace: json['travel_place'],
+    fromCountry: json['from_country'],
+    toCountry: json['to_country'],
+    travelPlace: json['travel_place'],
 
-        travelStartDate: json['travel_start_date'],
-        travelReturnDate: json['travel_return_date'],
+    travelStartDate: json['travel_start_date'],
+    travelReturnDate: json['travel_return_date'],
 
-        missionDays: json['mission_days'],
-        distance: json['distance'],
+    missionDays: json['mission_days'],
+    distance: json['distance'],
 
-        ifSponsored: json['if_sponsored'],
-        allowancePercentage: json['allowance_percentage'],
-        airTicketRequired: json['air_ticket_required'],
-        vehicleRequired: json['vehicle_required'],
-        remarks: json['remarks'],
-        // ───── MEDIA COVERAGE ─────
-        eventLocation: json['event_location'],
-        eventDetails: json['event_details'],
-        importanceOfPublishing: json['importance_of_publishing'],
-        directorateName: json['directorate_name'],
-        requiredForPresident: json['required_for_president'],
-        departmentId: json['department_id'],
-        suggestedPhotography: json['suggested_photography'],
-        newsSize: json['news_size'],
-        eventObjective: json['event_objective'],
-        organizingEntity: json['organizing_entity'],
-        hostedPerson: json['hosted_person'],
-        audience: json['audience'],
-        rejectionReason: json['rejection_reason'],
-        documentType: json['document_event'],
-        purposeOfTraining: json['purpose_of_training'],
-        dateOfEvent: json['date_of_event'],
-        startTime: json['start_time'],
-        endTime: json['end_time'],
-        roomType: json['room_type'],
-        numberOfAttendees: json['number_of_attendees'],
-        networkSupportRequired: json['network_support_required'],
-        mealsRequired: json['meals_required'],
-        courseName: json['course_name'],
-        noOfParticipants: json['no_of_participants'],
-        courseCost: json['course_cost'],
-        totalCost: json['total_cost'],
-        reason: json['reason'],
-        location: json['location'],
-        employeeList: json['employee_list'],
-        proposedImplementationDate: json['proposed_implementation_date'],
-        typeOfTraining: json['type_of_training'],
-        typeOfCategory: json['type_of_category'],
-        noOfAttendees: json['no_of_attendees'],
-        durationOfCourse: json['duration_of_course'],
-        instituteName: json['institute_name'],
-        courseStartDate: json['course_start_date'],
-        courseEndDate: json['course_end_date'],
+    ifSponsored: json['if_sponsored'],
+    allowancePercentage: json['allowance_percentage'],
+    airTicketRequired: json['air_ticket_required'],
+    vehicleRequired: json['vehicle_required'],
+    remarks: json['remarks'],
+    // ───── MEDIA COVERAGE ─────
+    eventLocation: json['event_location'],
+    eventDetails: json['event_details'],
+    importanceOfPublishing: json['importance_of_publishing'],
+    directorateName: json['directorate_name'],
+    requiredForPresident: json['required_for_president'],
+    departmentId: json['department_id'],
+    suggestedPhotography: json['suggested_photography'],
+    newsSize: json['news_size'],
+    eventObjective: json['event_objective'],
+    organizingEntity: json['organizing_entity'],
+    hostedPerson: json['hosted_person'],
+    audience: json['audience'],
+    rejectionReason: json['rejection_reason'],
+    documentType: json['document_event'],
+    purposeOfTraining: json['purpose_of_training'],
+    dateOfEvent: json['date_of_event'],
+    startTime: json['start_time'],
+    endTime: json['end_time'],
+    roomType: json['room_type'],
+    numberOfAttendees: json['number_of_attendees'],
+    networkSupportRequired: json['network_support_required'],
+    mealsRequired: json['meals_required'],
+    courseName: json['course_name'],
+    noOfParticipants: json['no_of_participants'],
+    courseCost: json['course_cost'],
+    totalCost: json['total_cost'],
+    reason: json['reason'],
+    location: json['location'],
+    employeeList: json['employee_list'],
+    proposedImplementationDate: json['proposed_implementation_date'],
+    typeOfTraining: json['type_of_training'],
+    typeOfCategory: json['type_of_category'],
+    noOfAttendees: json['no_of_attendees'],
+    durationOfCourse: json['duration_of_course'],
+    instituteName: json['institute_name'],
+    courseStartDate: json['course_start_date'],
+    courseEndDate: json['course_end_date'],
 
-        positionToBeTransferred: json['position_to_be_transferred'],
-        effectiveFromDate: json['effective_from_date'],
-        decisionNumber: json['decision_number'],
-        employeeName: json['employee_name'],
-        jobTitle: json['job_title'],
-        financialGrade: json['financial_grade'],
+    positionToBeTransferred: json['position_to_be_transferred'],
+    effectiveFromDate: json['effective_from_date'],
+    decisionNumber: json['decision_number'],
+    employeeName: json['employee_name'],
+    jobTitle: json['job_title'],
+    financialGrade: json['financial_grade'],
 
-        shiftStartDate: json['shift_start_date'] != null
-            ? DateTime.tryParse(json['shift_start_date'])
-            : null,
-        shiftEndDate: json['shift_end_date'] != null
-            ? DateTime.tryParse(json['shift_end_date'])
-            : null,
-        salaryGrade: json['salary_grade'],
+    shiftStartDate: json['shift_start_date'] != null
+        ? DateTime.tryParse(json['shift_start_date'])
+        : null,
+    shiftEndDate: json['shift_end_date'] != null
+        ? DateTime.tryParse(json['shift_end_date'])
+        : null,
+    salaryGrade: json['salary_grade'],
 
-        remainingLeaveBalance: json['remaining_leave_balance'],
-        basicSalary: json['basic_salary'],
-        totalSalaryDue: json['total_salary_due'],
+    remainingLeaveBalance: json['remaining_leave_balance'],
+    basicSalary: json['basic_salary'],
+    totalSalaryDue: json['total_salary_due'],
 
-        endOfServiceDate: json['end_of_service_date'] != null
-            ? DateTime.tryParse(json['end_of_service_date'])
-            : null,
+    endOfServiceDate: json['end_of_service_date'] != null
+        ? DateTime.tryParse(json['end_of_service_date'])
+        : null,
 
-        reasonForTermination: json['reason_for_termination'],
+    reasonForTermination: json['reason_for_termination'],
 
-        salaryPaymentSource: json['salary_payment_source'],
-        socialServiceFundContribution: json['social_service_fund_contribution'],
-        positionToBeFilled: json['position_to_be_filled'] as String?,
-        grade: json['grade'] as String?,
-        roleTitle: json['role_title'] as String?,
-        educationRequirements: json['education_requirements'] as String?,
-        requiredSkills: json['required_skills'] as String?,
-        yearsOfExperience: json['years_of_experience'] as String?,
-        jobDescription: json['job_description'] as String?,
-        currentBasicSalary: json['current_basic_salary'] as String?,
-        currentJobTitle: json['current_job_title'] as String?,
-        currentSalaryGrade: json['current_salary_grade'] as String?,
+    salaryPaymentSource: json['salary_payment_source'],
+    socialServiceFundContribution: json['social_service_fund_contribution'],
+    positionToBeFilled: json['position_to_be_filled'] as String?,
+    grade: json['grade'] as String?,
+    roleTitle: json['role_title'] as String?,
+    educationRequirements: json['education_requirements'] as String?,
+    requiredSkills: json['required_skills'] as String?,
+    yearsOfExperience: json['years_of_experience'] as String?,
+    jobDescription: json['job_description'] as String?,
+    currentBasicSalary: json['current_basic_salary'] as String?,
+    currentJobTitle: json['current_job_title'] as String?,
+    currentSalaryGrade: json['current_salary_grade'] as String?,
 
-        proposedBasicSalary: json['proposed_basic_salary'] as String?,
-        proposedJobTitle: json['proposed_job_title'] as String?,
-        proposedSalaryGrade: json['proposed_salary_grade'] as String?,
-      );
+    proposedBasicSalary: json['proposed_basic_salary'] as String?,
+    proposedJobTitle: json['proposed_job_title'] as String?,
+    proposedSalaryGrade: json['proposed_salary_grade'] as String?,
+    certificationTitle: json['certification_title'] as String?,
+    skillCategory: json['skill_category'] as String?,
+    issuingAuthority: json['issuing_authority'] as String?,
+    skillSummary: json['skill_summary'] as String?,
+    additionalInfoRequested: json['additional_info_requested'] as String?,
+    cyclePeriod: json['cycle_period'] as String?,
+    cycleYear: json['cycle_year'] as int?,
+  );
 
   Map<String, dynamic> toJson() => {
     "request": request?.toJson(),
@@ -1196,6 +1225,16 @@ class RequestModel {
   final String? proposedBasicSalary;
   final String? proposedJobTitle;
   final String? proposedSalaryGrade;
+
+  final String? certificationTitle;
+  final String? skillCategory;
+  final String? issuingAuthority;
+  final String? skillSummary;
+  final String? additionalInfoRequested;
+
+  /// Performance Management Fields
+  final String? cyclePeriod;
+  final int? cycleYear;
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1419,6 +1458,13 @@ class RequestModel {
     this.proposedBasicSalary,
     this.proposedJobTitle,
     this.proposedSalaryGrade,
+    this.certificationTitle,
+    this.skillCategory,
+    this.issuingAuthority,
+    this.skillSummary,
+    this.additionalInfoRequested,
+    this.cyclePeriod,
+    this.cycleYear,
   });
 
   // ─────────────────────────────
@@ -1702,6 +1748,13 @@ class RequestModel {
       proposedBasicSalary: json['proposed_basic_salary'] as String?,
       proposedJobTitle: json['proposed_job_title'] as String?,
       proposedSalaryGrade: json['proposed_salary_grade'] as String?,
+      certificationTitle: json['certification_title'] as String?,
+      skillCategory: json['skill_category'] as String?,
+      issuingAuthority: json['issuing_authority'] as String?,
+      skillSummary: json['skill_summary'] as String?,
+      additionalInfoRequested: json['additional_info_requested'] as String?,
+      cyclePeriod: json['cycle_period'] as String?,
+      cycleYear: json['cycle_year'] as int?,
     );
   }
 

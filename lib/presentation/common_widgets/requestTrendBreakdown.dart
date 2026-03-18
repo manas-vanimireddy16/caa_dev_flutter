@@ -165,9 +165,21 @@ class _RequestTrendBarChartState extends State<_RequestTrendBarChart> {
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)
         .themeBox;
+    final maxDataValue = widget.data.reduce((a, b) => a > b ? a : b);
+    final maxY = (maxDataValue * 1.2).ceilToDouble();
+
+    double calculateInterval(double maxY) {
+      if (maxY <= 10) return 2;
+      if (maxY <= 50) return 10;
+      if (maxY <= 200) return 20;
+      if (maxY <= 500) return 50;
+      if (maxY > 500) return 100;
+      return (maxY / 5).ceilToDouble();
+    }
 
     return BarChart(
       BarChartData(
+        minY: 0,
         maxY: maxValue.toDouble(),
         barGroups: List.generate(
           12,
@@ -191,33 +203,54 @@ class _RequestTrendBarChartState extends State<_RequestTrendBarChart> {
         titlesData: FlTitlesData(
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
-              reservedSize: 32,
               showTitles: true,
-              interval: 20,
-              getTitlesWidget: (value, _) => Text(
-                value == 0 ? "" : value.toInt().toString(),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontSize: currentTheme.fontSizes.s12,
-                  color: const Color(0xFF9CA3AF),
-                ),
-              ),
+              reservedSize: 36,
+              interval: calculateInterval(maxY),
+              minIncluded: true, // ⭐ ensures 0 is shown
+              getTitlesWidget: (value, meta) {
+                return SideTitleWidget(
+                  meta: meta,
+                  child: Text(
+                    value.toInt().toString(),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontSize: 10,
+                      color: const Color(0xFF9CA3AF),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
+
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              getTitlesWidget: (value, group) => Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(
-                  widget.labels[value.toInt()],
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontSize: currentTheme.fontSizes.s12,
-                    color: const Color(0xFF9CA3AF),
+              reservedSize: 28,
+              interval: 1, // ⭐ show EVERY month
+              getTitlesWidget: (value, meta) {
+                final index = value.toInt();
+
+                final month = widget.labels[index];
+
+                /// ⭐ force short name (Jan Feb Mar)
+                final shortMonth = month.length >= 3
+                    ? month.substring(0, 3)
+                    : month;
+
+                return SideTitleWidget(
+                  meta: meta,
+                  child: Text(
+                    shortMonth,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontSize: 10, // ⭐ keep small
+                      color: const Color(0xFF9CA3AF),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),

@@ -16,8 +16,8 @@ class RequestsPage extends ConsumerWidget {
     final controller = ref.read(_vsProvider(providerArgs).notifier);
 
     final items = isActionItem
-        ? state.promotionsActionItems
-        : state.promotionsRequestData;
+        ? state.ActionItems
+        : state.RequestData;
 
     if (state.isLoading) {
       return const Center(child: CircularProgressIndicator());

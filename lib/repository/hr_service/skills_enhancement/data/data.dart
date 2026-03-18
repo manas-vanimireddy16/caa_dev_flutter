@@ -7,6 +7,7 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/promotions_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/skills_enchancement_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/hr_service/annual_increment/domain/domain.dart';
@@ -450,7 +451,7 @@ class SkillsEnhancementRepositoryImple implements SkillsEnhancementRepository {
   }
 
   @override
-  Future<List<PromotionsModel>> getRequests({
+  Future<List<SkillsEnhancementModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -486,23 +487,26 @@ class SkillsEnhancementRepositoryImple implements SkillsEnhancementRepository {
           final List<dynamic> list = data['data'];
 
           return list
-              .map((e) => PromotionsModel.fromJson(e as Map<String, dynamic>))
+              .map(
+                (e) =>
+                    SkillsEnhancementModel.fromJson(e as Map<String, dynamic>),
+              )
               .toList();
         } else {
           throw Exception(
-            'Failed to fetch required new resource request: ${response.statusCode}',
+            'Failed to fetch skills enhancement request: ${response.statusCode}',
           );
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching required new resource request: $e");
+      throw Exception("Error fetching skills enhancement request: $e");
     }
   }
 
   @override
-  Future<List<PromotionsModel>> getActionItems({
+  Future<List<SkillsEnhancementModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -543,15 +547,17 @@ class SkillsEnhancementRepositoryImple implements SkillsEnhancementRepository {
           /// Parse each Action Item
           final actionItems = list
               .map(
-                (item) =>
-                    PromotionsModel.fromJson(item as Map<String, dynamic>),
+                (item) => SkillsEnhancementModel.fromJson(
+                  item as Map<String, dynamic>,
+                ),
               )
               .toList();
 
           return actionItems;
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ??
+              'Skills enhancement Action Item error occurred';
           throw ApiException(errorMessage);
         }
       }

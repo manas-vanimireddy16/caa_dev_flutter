@@ -175,9 +175,9 @@ class _SalalahDashboardState extends ConsumerState<SalalahDashboard>
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             monthLabels: monthLabels,
             metric: "Total Tickets",
-            selectedYear: '2025',
+            // selectedYear: '2025',
             barColor: Colors.blue,
-            onYearTap: () => debugPrint("Year dropdown tapped"),
+            // onYearTap: () => debugPrint("Year dropdown tapped"),
             onChanged: (value) {
               if (value != null) {
                 controller.fetchTrendBreakDown(value);

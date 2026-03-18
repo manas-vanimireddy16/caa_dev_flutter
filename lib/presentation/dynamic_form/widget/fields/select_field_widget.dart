@@ -43,7 +43,6 @@ class SelectFieldWidget extends ConsumerWidget {
           ? (_) {}
           : (val) {
               notifier.updateValue(field.name, val);
-              field.onChanged?.call(val, ref);
             },
     );
   }
