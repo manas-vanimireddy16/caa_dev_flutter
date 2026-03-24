@@ -41,6 +41,8 @@ class BaseRequestModel {
   final int? assignedToUserId;
   final DateTime? assignedAt;
   final dynamic assignedToRole;
+  final String? description;
+  final String? comment;
 
   const BaseRequestModel({
     this.id,
@@ -70,6 +72,8 @@ class BaseRequestModel {
     this.assignedToUserId,
     this.assignedAt,
     this.assignedToRole,
+    this.description,
+    this.comment,
   });
 
   factory BaseRequestModel.fromJson(Map<String, dynamic>? json) {
@@ -136,6 +140,8 @@ class BaseRequestModel {
           ? DateTime.tryParse(json['assigned_at'])
           : null,
       assignedToRole: json['assigned_to_role'],
+      description: json['description'],
+      comment: json['comment'],
     );
   }
 }

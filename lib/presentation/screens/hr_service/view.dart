@@ -93,6 +93,10 @@ class HRServiceHomeScreen extends ConsumerWidget {
           service: Service(),
           subService: SubService(),
         ),
+        RequestForHumanResourceAnnualPlanningRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

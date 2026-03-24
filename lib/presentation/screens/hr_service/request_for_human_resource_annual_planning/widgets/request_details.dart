@@ -1,14 +1,15 @@
 part of '../view.dart';
 
 @RoutePage()
-class PerformanceManagementDetailsScreen extends ConsumerStatefulWidget {
+class RequestForHumanResourceAnnualPlanningDetailsScreen
+    extends ConsumerStatefulWidget {
   final String from;
   final int id;
   final int serviceId;
   final int subServiceId;
   final Service service;
   final SubService subService;
-  const PerformanceManagementDetailsScreen({
+  const RequestForHumanResourceAnnualPlanningDetailsScreen({
     super.key,
     required this.id,
     required this.serviceId,
@@ -19,11 +20,12 @@ class PerformanceManagementDetailsScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState createState() => _PerformanceManagementDetailsScreenState();
+  ConsumerState createState() =>
+      _RequestForHumanResourceAnnualPlanningDetailsScreenState();
 }
 
-class _PerformanceManagementDetailsScreenState
-    extends ConsumerState<PerformanceManagementDetailsScreen> {
+class _RequestForHumanResourceAnnualPlanningDetailsScreenState
+    extends ConsumerState<RequestForHumanResourceAnnualPlanningDetailsScreen> {
   late _VSControllerParams _providerArgs;
 
   @override
@@ -123,8 +125,7 @@ class _PerformanceManagementDetailsScreenState
 
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
-                    showGoalsSection: true,
-                    goals: state.requestDetails.goals,
+                    table: controller.mapHrPlanningTable(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(

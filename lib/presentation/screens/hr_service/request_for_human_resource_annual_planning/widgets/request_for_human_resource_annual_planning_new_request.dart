@@ -1,13 +1,14 @@
 part of '../view.dart';
 
 @RoutePage()
-class PerformanceManagementNewRequestScreen extends ConsumerStatefulWidget {
+class RequestForHumanResourceAnnualPlanningNewRequestScreen
+    extends ConsumerStatefulWidget {
   final int serviceId;
   final int subServiceId;
   final Service service;
   final SubService subService;
 
-  const PerformanceManagementNewRequestScreen({
+  const RequestForHumanResourceAnnualPlanningNewRequestScreen({
     super.key,
     required this.serviceId,
     required this.subServiceId,
@@ -16,12 +17,14 @@ class PerformanceManagementNewRequestScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<PerformanceManagementNewRequestScreen> createState() =>
-      _PerformanceManagementNewRequestScreenState();
+  ConsumerState<RequestForHumanResourceAnnualPlanningNewRequestScreen>
+  createState() =>
+      _RequestForHumanResourceAnnualPlanningNewRequestScreenState();
 }
 
-class _PerformanceManagementNewRequestScreenState
-    extends ConsumerState<PerformanceManagementNewRequestScreen> {
+class _RequestForHumanResourceAnnualPlanningNewRequestScreenState
+    extends
+        ConsumerState<RequestForHumanResourceAnnualPlanningNewRequestScreen> {
   late _VSControllerParams _providerArgs;
 
   @override
@@ -57,12 +60,15 @@ class _PerformanceManagementNewRequestScreenState
         ],
         child: DynamicForm(
           title: 'Performance Management',
-          stepTitles: const [''],
-          steps: [controller.performanceManagementForm],
+          stepTitles: const ['step 1', 'step 2'],
+          steps: [
+            controller.requestforHumanResourceFormStep1,
+            controller.requestforHumanResourceFormStep2,
+          ],
 
           /// ⭐ VERY IMPORTANT
           enableSubmitWhen: (values) {
-            return controller.validateWeights();
+            return state.hrTasks.isNotEmpty;
           },
 
           onSubmit: (values) async {

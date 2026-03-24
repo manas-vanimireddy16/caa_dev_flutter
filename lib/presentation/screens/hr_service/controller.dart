@@ -94,6 +94,8 @@ class _VSController extends StateNotifier<_ViewState> {
         return 'Skills Enhancement';
       case 15:
         return 'Performance Management';
+      case 16:
+        return 'Human Resource Annual Planning';
 
       default:
         return '  Home';

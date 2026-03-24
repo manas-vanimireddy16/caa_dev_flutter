@@ -61,8 +61,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<PerformanceManagementModel> RequestData;
-  final List<PerformanceManagementModel> ActionItems;
+  final List<HumanResourceAnnualPlanningModel> requestData;
+  final List<HumanResourceAnnualPlanningModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final List<PendingApprovalUser> engineersList;
@@ -109,6 +109,14 @@ class _ViewState {
 
   final List<MasterRolesModel> rolesList;
   final List<SelectionDialogItem> selectionItems;
+  final List<HrTask> hrTasks;
+
+  final String hrTaskInput;
+  final String hrResponsibilityInput;
+  final String hrFrequencyInput;
+  final String hrDurationInput;
+
+  final int? hrEditingIndex;
 
   /// FORM KEY
   final formKey = GlobalKey<FormState>();
@@ -127,8 +135,8 @@ class _ViewState {
     required this.selectedTab,
     required this.approvalStatusBreakdown,
     required this.approvalTrendData,
-    required this.RequestData,
-    required this.ActionItems,
+    required this.requestData,
+    required this.actionItems,
     required this.requestDetails,
     required this.requestDetailTab,
     required this.engineersList,
@@ -155,6 +163,12 @@ class _ViewState {
     required this.gradeList,
     required this.byCycleGoalsData,
     required this.goalWeightList,
+    required this.hrTasks,
+    required this.hrTaskInput,
+    required this.hrResponsibilityInput,
+    required this.hrFrequencyInput,
+    required this.hrDurationInput,
+    required this.hrEditingIndex,
   });
 
   _ViewState.init()
@@ -172,8 +186,8 @@ class _ViewState {
         selectedTab: 0,
         approvalStatusBreakdown: StatusBreakdownModel(),
         approvalTrendData: TrendBreakdownModel(),
-        RequestData: [],
-        ActionItems: [],
+        requestData: [],
+        actionItems: [],
         requestDetails: RequestDetailData(),
         requestDetailTab: 0,
         engineersList: [],
@@ -200,6 +214,12 @@ class _ViewState {
         gradeList: [],
         byCycleGoalsData: [],
         goalWeightList: [],
+        hrTasks: const [],
+        hrTaskInput: '',
+        hrResponsibilityInput: '',
+        hrFrequencyInput: '',
+        hrDurationInput: '',
+        hrEditingIndex: null,
       );
 
   _ViewState copyWith({
@@ -220,8 +240,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<PerformanceManagementModel>? RequestData,
-    List<PerformanceManagementModel>? ActionItems,
+    List<HumanResourceAnnualPlanningModel>? requestData,
+    List<HumanResourceAnnualPlanningModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -256,6 +276,12 @@ class _ViewState {
     List<Grade>? gradeList,
     List<GoalModel>? byCycleGoalsData,
     List<GoalListModel>? goalWeightList,
+    List<HrTask>? hrTasks,
+    String? hrTaskInput,
+    String? hrResponsibilityInput,
+    String? hrFrequencyInput,
+    String? hrDurationInput,
+    ValueGetter<int?>? hrEditingIndex,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -272,8 +298,8 @@ class _ViewState {
       approvalStatusBreakdown:
           approvalStatusBreakdown ?? this.approvalStatusBreakdown,
       approvalTrendData: approvalTrendData ?? this.approvalTrendData,
-      RequestData: RequestData ?? this.RequestData,
-      ActionItems: ActionItems ?? this.ActionItems,
+      requestData: requestData ?? this.requestData,
+      actionItems: actionItems ?? this.actionItems,
       requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
       engineersList: engineersList ?? this.engineersList,
@@ -301,6 +327,15 @@ class _ViewState {
       gradeList: gradeList ?? this.gradeList,
       byCycleGoalsData: byCycleGoalsData ?? this.byCycleGoalsData,
       goalWeightList: goalWeightList ?? this.goalWeightList,
+      hrTasks: hrTasks ?? this.hrTasks,
+      hrTaskInput: hrTaskInput ?? this.hrTaskInput,
+      hrResponsibilityInput:
+          hrResponsibilityInput ?? this.hrResponsibilityInput,
+      hrFrequencyInput: hrFrequencyInput ?? this.hrFrequencyInput,
+      hrDurationInput: hrDurationInput ?? this.hrDurationInput,
+      hrEditingIndex: hrEditingIndex != null
+          ? hrEditingIndex()
+          : this.hrEditingIndex,
     );
   }
 }
@@ -328,7 +363,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchRequests();
     fetchStatusBreakdown('monthly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchbyCycleGoals(cycle: 'Jan-Jun');
+    // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
   int _searchVersion = 0;
@@ -341,7 +376,7 @@ class _VSController extends StateNotifier<_ViewState> {
       if (state.tabIndex == 0) {
         await fetchRequests(isRefresh: true, searchText: value);
       } else {
-        await fetchActionItems(isRefresh: true, searchText: value);
+        await fetchactionItems(isRefresh: true, searchText: value);
       }
 
       if (currentVersion != _searchVersion) return; // ignore old response
@@ -404,15 +439,21 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(PerformanceManagementModel item) {
+  Map<String, String> buildRequestCardData(
+    HumanResourceAnnualPlanningModel item,
+  ) {
     final approverMap = resolveApproverMap(item.base.approvalDetails);
 
     return {
       'Request Id': item.base.id?.toString() ?? '-',
       'status': item.base.status ?? '-',
       'Request By': item.base.createdByUser?.employeeName ?? '-',
-      'Cycle Period': item.cyclePeriod ?? '-',
+      // 'Cycle Period': item.cyclePeriod ?? '-',
       'Request Submission Date': item.base.createdAt.toString(),
+      'Extension Number': item.extensionNumber ?? '-',
+      'Tasks Related to Projects': item.tasks?.first.toString() ?? '-',
+      'Quarter': item.quater ?? '-',
+      // 'Year': item.year?.toString() ?? '-',
 
       /// ================= EMPLOYEE INFO =================
 
@@ -433,8 +474,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      'Cycle Period': request?.cyclePeriod ?? '-',
-      'cycle Year': request?.cycleYear.toString() ?? '-',
+      'Extension Number':
+          request?.createdByUser?.extensionNumber.toString() ?? '0',
+      // 'Quarter': request?.quarter ?? 'N/A',
     };
   }
 
@@ -485,7 +527,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      PerformanceManagementDetailsRoute(
+      RequestForHumanResourceAnnualPlanningDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -509,8 +551,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void openNewRequestForm() {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
+    state = state.copyWith(hrTasks: []);
     KAppX.router.push(
-      PerformanceManagementNewRequestRoute(
+      RequestForHumanResourceAnnualPlanningNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -519,68 +562,33 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final performanceManagementInstance = PerformanceManagementRepository();
+  final humanResourceAnnualPlanningInstance =
+      HumanResourceAnnualPlanningRepository();
   final securityAccessInstance = SecurityAccessRepoistory();
 
   final assignmentdecisionInstance = AssignmentDecisionRepoistory();
-
-  List<DynamicField> get performanceManagementForm => [
-    /// -------- CYCLE PERIOD --------
+  List<DynamicField> get requestforHumanResourceFormStep2 => [
     DynamicField(
-      name: 'cycle_period',
-      label: 'Cycle Period',
-      type: FieldType.radio,
-      initialValue: 'Jan-Jun',
-      required: true,
-      options: const ['Jan-Jun', 'Jul-Dec'],
-
-      onChanged: (value, ref) async {
-        /// ⭐ NOW YOU CAN ACCESS CONTROLLER
-        // final controller = ref.read(
-        //   _vsProvider(_providerArgs).notifier,
-        // );
-
-        fetchbyCycleGoals(cycle: value);
+      name: 'hr_task_cards',
+      label: '',
+      type: FieldType.custom,
+      builder: (context, ref) {
+        return HrTaskPlannerWidget(params: params);
       },
     ),
-
-    /// -------- CATEGORY WEIGHTAGE (EXPANDABLE CARDS) --------
+  ];
+  List<DynamicField> get requestforHumanResourceFormStep1 => [
     DynamicField(
-      name: 'category_weightage',
-      label: 'Category Weightage',
-      type: FieldType.custom,
-
-      builder: (context, ref) {
-        final vsState = ref.watch(_vsProvider(params));
-
-        if (vsState.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (vsState.goalWeightList.isEmpty) {
-          return const SizedBox();
-        }
-
-        return WeightList<GoalListModel>(
-          items: vsState.goalWeightList,
-          title: (e) => e.title,
-          description: (e) => e.description,
-          weight: (e) => e.weight ?? 0,
-          onWeightChanged: (item, weight) {
-            final controller = ref.read(_vsProvider(params).notifier);
-
-            final updated = [...vsState.goalWeightList];
-
-            final index = updated.indexWhere((e) => e.id == item.id);
-
-            if (index != -1) {
-              updated[index] = updated[index].copyWith(weight: weight);
-            }
-
-            controller.updateGoalWeights(updated);
-          },
-        );
-      },
+      name: 'extension_number',
+      label: 'Extension Number',
+      type: FieldType.text,
+      required: true,
+    ),
+    DynamicField(
+      name: 'comments',
+      label: 'Comments (Optional)',
+      type: FieldType.text,
+      required: false,
     ),
 
     /// -------- ATTACHMENTS --------
@@ -594,6 +602,157 @@ class _VSController extends StateNotifier<_ViewState> {
       allowedExtensions: ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],
     ),
   ];
+
+  /// ========================= HELPERS =========================
+  ///
+
+  HrPlanningRequestTable mapHrPlanningTable() {
+    final tasks = state.requestDetails.tasks ?? [];
+
+    final rows = tasks.map((task) {
+      return ReusableTableRow(
+        cells: [
+          task.dailyResponsibilities ?? "-",
+          task.repeatFrequency ?? "-",
+          task.duration ?? "-",
+        ],
+        expandedTitle: task.taskRelatedToProjects,
+        expandedDescription: task.dailyResponsibilities,
+      );
+    }).toList();
+
+    return HrPlanningRequestTable(rows: rows);
+  }
+
+  void setHrTask(String v) => state = state.copyWith(hrTaskInput: v);
+
+  void setHrResponsibility(String v) =>
+      state = state.copyWith(hrResponsibilityInput: v);
+
+  void setHrFrequency(String v) => state = state.copyWith(hrFrequencyInput: v);
+
+  void setHrDuration(String v) => state = state.copyWith(hrDurationInput: v);
+
+  void addOrUpdateHrTask(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (!_validateHrEntry()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all required fields")),
+      );
+      return;
+    }
+
+    final model = HrTask(
+      task: state.hrTaskInput,
+      responsibility: state.hrResponsibilityInput,
+      frequency: state.hrFrequencyInput!,
+      duration: state.hrDurationInput!,
+    );
+
+    final list = [...state.hrTasks];
+
+    if (state.hrEditingIndex != null && state.hrEditingIndex! < list.length) {
+      list[state.hrEditingIndex!] = model;
+    } else {
+      list.add(model);
+    }
+
+    state = state.copyWith(
+      hrTasks: list,
+      hrEditingIndex: () => null,
+      hrTaskInput: '',
+      hrResponsibilityInput: '',
+      hrFrequencyInput: '',
+      hrDurationInput: '',
+    );
+  }
+
+  bool _validateHrEntry() {
+    return state.hrTaskInput.isNotEmpty &&
+        state.hrResponsibilityInput.isNotEmpty &&
+        state.hrFrequencyInput != null &&
+        state.hrDurationInput != null;
+  }
+
+  void editHrTask(int index) {
+    final item = state.hrTasks[index];
+
+    state = state.copyWith(
+      hrEditingIndex: () => index,
+      hrTaskInput: item.task,
+      hrResponsibilityInput: item.responsibility,
+      hrFrequencyInput: item.frequency,
+      hrDurationInput: item.duration,
+    );
+  }
+
+  void deleteHrTask(int index) {
+    final list = [...state.hrTasks]..removeAt(index);
+    state = state.copyWith(hrTasks: list);
+  }
+
+  bool validateHrTasksStep() {
+    return state.hrTasks.isNotEmpty;
+  }
+
+  Future<String?> uploadHrExcel() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xlsx'],
+    );
+
+    if (result == null) return null;
+
+    Uint8List bytes;
+
+    if (result.files.first.bytes != null) {
+      bytes = result.files.first.bytes!;
+    } else {
+      final filePath = result.files.first.path;
+      if (filePath == null) return "File path null";
+
+      final file = File(filePath);
+      bytes = await file.readAsBytes();
+    }
+
+    final excel = Excel.decodeBytes(bytes);
+    final sheet = excel.tables.values.first;
+
+    if (sheet.maxRows <= 1) return "Excel empty";
+
+    final freqList = ['Daily', 'Weekly', 'Monthly', 'Quarterly'];
+    final durList = ['Minutes', 'Hours', 'Quarter'];
+
+    final newList = [...state.hrTasks];
+
+    for (int i = 1; i < sheet.maxRows; i++) {
+      final row = sheet.rows[i];
+
+      final task = (row.length > 0 ? row[0]?.value?.toString() : '') ?? '';
+      final resp = (row.length > 1 ? row[1]?.value?.toString() : '') ?? '';
+      final freq = (row.length > 2 ? row[2]?.value?.toString() : '') ?? '';
+      final dur = (row.length > 3 ? row[3]?.value?.toString() : '') ?? '';
+
+      if (task.isEmpty) return "Task empty row ${i + 1}";
+      if (!freqList.contains(freq)) return "Invalid frequency row ${i + 1}";
+      if (!durList.contains(dur)) return "Invalid duration row ${i + 1}";
+
+      newList.add(
+        HrTask(
+          task: task,
+          responsibility: resp,
+          frequency: freq,
+          duration: dur,
+        ),
+      );
+    }
+
+    state = state.copyWith(hrTasks: newList);
+    return null;
+  }
+
+  /// ========================= API CALLS =========================
 
   Future<void> fetchpositionsList() async {
     try {
@@ -625,11 +784,12 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await performanceManagementInstance.getRequestsById(
-        id: id,
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
-      );
+      final requests = await humanResourceAnnualPlanningInstance
+          .getRequestsById(
+            id: id,
+            serviceId: service.id ?? 0,
+            subServiceId: subService.id ?? 0,
+          );
 
       if (requests != null) {
         state = state.copyWith(requestDetails: requests, isLoading: false);
@@ -666,7 +826,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await performanceManagementInstance.getchatById(id);
+      final requests = await humanResourceAnnualPlanningInstance.getchatById(
+        id,
+      );
       if (requests != null) {
         state = state.copyWith(chatById: requests);
       }
@@ -680,7 +842,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await performanceManagementInstance
+      final attachments = await humanResourceAnnualPlanningInstance
           .getAttachmentsById(id);
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
@@ -695,7 +857,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchLocations() async {
     try {
-      final locations = await performanceManagementInstance.getLocations();
+      final locations = await humanResourceAnnualPlanningInstance
+          .getLocations();
 
       if (locations != null) {
         state = state.copyWith(locations: locations.data);
@@ -708,7 +871,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await performanceManagementInstance.getKpiData(
+      final kpis = await humanResourceAnnualPlanningInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -726,7 +889,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await performanceManagementInstance
+      final data = await humanResourceAnnualPlanningInstance
           .getApprovalTrendBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -746,7 +909,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await performanceManagementInstance
+      final statusBreakdown = await humanResourceAnnualPlanningInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -770,7 +933,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await performanceManagementInstance
+      final statusBreakdown = await humanResourceAnnualPlanningInstance
           .getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -794,11 +957,12 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await performanceManagementInstance.getTrendBreakdownData(
-        period: period,
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
-      );
+      final data = await humanResourceAnnualPlanningInstance
+          .getTrendBreakdownData(
+            period: period,
+            serviceId: service.id ?? 0,
+            subServiceId: subService.id ?? 0,
+          );
 
       if (data != null) {
         state = state.copyWith(trendData: data, isLoading: false);
@@ -813,7 +977,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await performanceManagementInstance.getApprovalKpiData(
+      final kpis = await humanResourceAnnualPlanningInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
@@ -837,10 +1001,10 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       // Clear list only if explicitly refreshing or searching
       if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(RequestData: [], isLoading: false);
+        state = state.copyWith(requestData: [], isLoading: false);
       }
 
-      final requests = await performanceManagementInstance.getRequests(
+      final requests = await humanResourceAnnualPlanningInstance.getRequests(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -850,14 +1014,14 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(RequestData: requests);
+      state = state.copyWith(requestData: requests);
     } catch (e) {
       state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
 
-  Future<void> fetchActionItems({
+  Future<void> fetchactionItems({
     bool isRefresh = false,
     String searchText = '',
     String status = '',
@@ -866,10 +1030,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
     try {
       if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(ActionItems: [], isLoading: false);
+        state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await performanceManagementInstance.getActionItems(
+      final items = await humanResourceAnnualPlanningInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -880,35 +1044,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(ActionItems: items, isLoading: false);
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-    }
-  }
-
-  Future<void> fetchbyCycleGoals({required String cycle}) async {
-    state = state.copyWith(isLoading: true);
-
-    try {
-      final requests = await performanceManagementInstance.getByCycleGoalsData(
-        cyclePeriod: cycle,
-      );
-
-      final goals = requests.map((e) {
-        return GoalListModel(
-          id: e.id ?? 0,
-          title: e.goalTitle ?? 'N/A',
-          description: e.goalDescription ?? 'N/A',
-          weight: 0,
-        );
-      }).toList();
-
-      state = state.copyWith(
-        goalWeightList: goals,
-        byCycleGoalsData: requests,
-        isLoading: false,
-      );
-      refreshUI();
+      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }
@@ -1059,7 +1195,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await performanceManagementInstance
+        final uploadedFiles = await humanResourceAnnualPlanningInstance
             .uploadAttachments(state.attachments);
 
         if (uploadedFiles.isEmpty) {
@@ -1090,7 +1226,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await performanceManagementInstance.sendAttachment(payload, requestId);
+        await humanResourceAnnualPlanningInstance.sendAttachment(
+          payload,
+          requestId,
+        );
       }
 
       /// ------------------------------------------------------------
@@ -1111,7 +1250,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await performanceManagementInstance.sendChat(payload, requestId);
+        await humanResourceAnnualPlanningInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -1143,10 +1282,10 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await performanceManagementInstance.onApprove(payload);
+      await humanResourceAnnualPlanningInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchActionItems();
+      fetchactionItems();
       fetchRequests();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('monthly');
@@ -1188,13 +1327,13 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await performanceManagementInstance.onApprove(payload);
+      await humanResourceAnnualPlanningInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
-      await fetchActionItems();
+      await fetchactionItems();
       await fetchRequests();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -1215,10 +1354,10 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await performanceManagementInstance.onSendInProgress(payload);
+      // await humanResourceAnnualPlanningInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchActionItems();
+      await fetchactionItems();
       await fetchRequests();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -1270,7 +1409,7 @@ class _VSController extends StateNotifier<_ViewState> {
       {}
       print(payload);
 
-      await performanceManagementInstance.onAssignEmployee(payload);
+      await humanResourceAnnualPlanningInstance.onAssignEmployee(payload);
 
       // Refresh details after assigning
       // await fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
@@ -1554,7 +1693,7 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchActionItems();
+      fetchactionItems();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('monthly');
       fetchApprovalTrendBreakDown('2026');
@@ -1614,6 +1753,44 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(attachments: updated);
   }
 
+  List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {
+    return (values['attachments'] as List<FileUploadItem>? ?? [])
+        .map((file) => file.toJson())
+        .toList();
+  }
+
+  List<Map<String, dynamic>> _buildTasks(String extensionNumber) {
+    return state.hrTasks.map((e) {
+      return {
+        "task_related_to_projects": e.task,
+        "extension_number": extensionNumber,
+        "daily_responsibilities": e.responsibility,
+        "repeat_frequency": e.frequency,
+        "duration": e.duration,
+      };
+    }).toList();
+  }
+
+  Map<String, dynamic> _buildPayload(
+    int serviceId,
+    int subServiceId,
+    Map<String, dynamic> values,
+    // List<HrTask> tasks,
+  ) {
+    final extensionNumber = values['extension_number']?.toString() ?? '';
+
+    return {
+      "service_id": serviceId,
+      "sub_service_id": subServiceId,
+      "extension_number": extensionNumber,
+      "comment": values['comment'],
+      "year": DateTime.now().year,
+      "description": values['description'],
+      "tasks": _buildTasks(extensionNumber),
+      "attachments": _buildAttachments(values),
+    };
+  }
+
   Future<void> submitPerformanceManagementRequest(
     int serviceId,
     int subServiceId,
@@ -1622,56 +1799,37 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      // Build attachments list
-      final List<Map<String, dynamic>> attachments =
-          (values['attachments'] as List<FileUploadItem>? ?? [])
-              .map((file) => file.toJson())
-              .toList();
-      debugPrint("✅ Attachments: $attachments");
-
-      /// -------- FINAL PAYLOAD (PAYMENT OF SHIFT ALLOWANCE) --------
-      final payload = {
-        "service_id": serviceId,
-        "sub_service_id": subServiceId,
-        "cycle_period": values['cycle_period'],
-        "cycle_year": DateTime.now().year.toString(),
-
-        "goals": state.goalWeightList?.map((goal) {
-          return {
-            "goal_title": goal.title,
-            "gola_id": goal.id, // keeping same key as API
-            "goal_weight": goal.weight?.toString(),
-            "goal_description": goal.description,
-          };
-        }).toList(),
-
-        "attachments": attachments,
-      };
+      final payload = _buildPayload(
+        serviceId,
+        subServiceId,
+        values,
+        // state.hrTasks,
+      );
 
       debugPrint("✅ Final Payload: $payload");
 
-      // API CALL
-      final response = await performanceManagementInstance
-          .sendPerformanceManagementRequest(payload);
+      final response = await humanResourceAnnualPlanningInstance
+          .sendHumanResourceAnnualPlanningRequest(payload);
 
-      // KAppX.router.pop();
       if (response['status'] == 'success') {
-        Future.delayed(Duration(seconds: 3));
-
-        fetchKpi();
-        fetchStatusBreakdown('monthly');
-        fetchTrendBreakDown(DateTime.now().year.toString());
-        fetchApprovalStatusBreakdown('monthly');
-        fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-        fetchApprovalKpi();
-        fetchRequests();
-        fetchActionItems();
+        _refreshDashboard();
       }
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  void _refreshDashboard() {
+    fetchKpi();
+    fetchStatusBreakdown('monthly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalKpi();
+    fetchRequests();
+    fetchactionItems();
   }
 
   @override

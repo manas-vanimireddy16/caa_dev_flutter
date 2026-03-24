@@ -232,4 +232,8 @@ class RouteNames {
       '/performanceManagementNewRequest';
   static const String performanceManagementDetails =
       '/performanceManagementDetails';
+  static const String requestForHumanResourceAnnualPlanningNewRequest =
+      '/requestForHumanResourceAnnualPlanningNewRequest';
+  static const String requestForHumanResourceAnnualPlanningDetails =
+      '/requestForHumanResourceAnnualPlanningDetails';
 }

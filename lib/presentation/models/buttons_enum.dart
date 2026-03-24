@@ -19,6 +19,8 @@ enum AllowanceFormMode { add, edit }
 
 enum ApprovalStatus { approved, rejected }
 
+enum RequestServiceType { allowance, goals, hrPlanning }
+
 extension ApprovalStatusX on ApprovalStatus {
   String get apiValue {
     switch (this) {

@@ -1,5 +1,11 @@
+import 'package:code_setup/presentation/common_widgets/request_detail_table_renderer.dart';
+import 'package:code_setup/presentation/common_widgets/reusable_expandable_table.dart';
+import 'package:code_setup/presentation/common_widgets/reusable_table_row_model.dart';
 import 'package:code_setup/presentation/models/allowance_employee.dart';
+import 'package:code_setup/presentation/models/buttons_enum.dart';
+import 'package:code_setup/presentation/models/request_detail_table.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/human_resource_annual_plan.dart';
 import 'package:code_setup/presentation/screens/hr_service/performance_management/widgets/goals_table.dart';
 import 'package:code_setup/presentation/screens/hr_service/request_for_duty_mission/widgets/allowance_table.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +17,7 @@ class CommonRequestDetails extends StatelessWidget {
   final List<GoalModel>? goals;
   final bool showAllowanceSection;
   final bool showGoalsSection;
+  final RequestDetailTable? table;
 
   final Map<String, String>? statusInfo;
   final Map<String, String>? requestInfo;
@@ -27,6 +34,7 @@ class CommonRequestDetails extends StatelessWidget {
     this.showAllowanceSection = false,
     this.goals,
     this.showGoalsSection = false,
+    this.table,
   });
 
   @override
@@ -50,7 +58,9 @@ class CommonRequestDetails extends StatelessWidget {
           CardInfo(
             title: "Request Information",
             info: requestInfo!,
-            customContent: showAllowanceSection
+            customContent: table != null
+                ? RequestDetailTableRenderer(table: table!)
+                : showAllowanceSection
                 ? AllowanceTable(employees: allowanceEmployees ?? [])
                 : showGoalsSection
                 ? GoalsTable(goals: goals ?? [], isOnHold: true)

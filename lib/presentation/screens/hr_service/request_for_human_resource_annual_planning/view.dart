@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
@@ -15,9 +16,11 @@ import 'package:code_setup/presentation/common_widgets/dialog_config.dart';
 import 'package:code_setup/presentation/common_widgets/requestCard.dart';
 import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.dart';
 import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';
+import 'package:code_setup/presentation/common_widgets/reusable_table_row_model.dart';
 import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
+import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
@@ -31,6 +34,7 @@ import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/file_upload_model.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/master_roles.dart';
+import 'package:code_setup/presentation/models/request_detail_table.dart';
 import 'package:code_setup/presentation/models/selection_dialog_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
@@ -38,6 +42,8 @@ import 'package:code_setup/presentation/screens/hr_service/models/employee_model
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_list.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/hr_task.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/human_resource_annual_plan.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/performance_management_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/promotions_model.dart';
@@ -52,6 +58,7 @@ import 'package:code_setup/repository/hr_service/annual_increment/domain/domain.
 import 'package:code_setup/repository/hr_service/assignment_decision/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/performance_management/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/promotions/domain/domain.dart';
+import 'package:code_setup/repository/hr_service/request_for_human_resource_annual_planning/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/required_new_resource/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/skills_enhancement/domain/domain.dart';
 import 'package:code_setup/repository/security_access/domain/domain.dart';
@@ -59,22 +66,24 @@ import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
+import 'package:excel/excel.dart' hide Border;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/rendering.dart' hide Border;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-part 'widgets/skills_enhancement_new_request.dart';
+part 'widgets/request_for_human_resource_annual_planning_new_request.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
 part 'widgets/request_details_tabs.dart';
 part 'widgets/request_list.dart';
 part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
+part 'widgets/hr_task_planner_widget.dart';
 
 @RoutePage()
 class RequestForHumanResourceAnnualPlanningScreen

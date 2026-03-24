@@ -1604,4 +1604,83 @@ class ApiEndPoint {
       '/v1/hr-service/performance-management/requests/$attachmentId/attachments';
   static const String performanceManagementGoalsByCycle =
       '/v1/hr-service/performance-management/master/goals/by-cycle';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request
+  static const String sendRequestForHumanResourceAnnualPlanning =
+      '/v1/hr-service/human-resource-annual-planning/request';
+
+  /// Get approval list (For approvers)
+  static const String humanResourceAnnualPlanningGetActionItems =
+      '/v1/hr-service/human-resource-annual-planning/approvals';
+
+  /// Get all requests
+  static const String humanResourceAnnualPlanningGetRequests =
+      '/v1/hr-service/human-resource-annual-planning/requests';
+
+  static String humanResourceAnnualPlanningRequestById(int requestId) =>
+      '/v1/hr-service/human-resource-annual-planning/request/$requestId';
+
+  /// ===================== KPI APIs =====================
+
+  /// KPI cards (General)
+  static const String humanResourceAnnualPlanningKpiCards =
+      '/v1/hr-service/human-resource-annual-planning/analytics/kpi-cards';
+
+  /// Approval KPI cards
+  static const String humanResourceAnnualPlanningApprovalKpiCards =
+      '/v1/hr-service/human-resource-annual-planning/analytics/approval/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  static const String humanResourceAnnualPlanningStatusBreakdown =
+      '/v1/hr-service/human-resource-annual-planning/analytics/status-breakdown';
+
+  /// Approval Status breakdown
+  static const String humanResourceAnnualPlanningApprovalStatusBreakdown =
+      '/v1/hr-service/human-resource-annual-planning/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  static const String humanResourceAnnualPlanningTrendBreakdown =
+      '/v1/hr-service/human-resource-annual-planning/analytics/trend-breakdown';
+
+  /// Approval Trend breakdown
+  static const String humanResourceAnnualPlanningApprovalTrendBreakdown =
+      '/v1/hr-service/human-resource-annual-planning/analytics/approval/trend-breakdown';
+
+  /// ===================== ASSIGN / APPROVAL APIs =====================
+
+  /// Assign request
+  static const String humanResourceAnnualPlanningAssign =
+      '/v1/hr-service/human-resource-annual-planning/assign';
+
+  /// Approve request
+  static const String humanResourceAnnualPlanningApprove =
+      '/v1/hr-service/human-resource-annual-planning/approve';
+
+  /// Reject request
+  static const String humanResourceAnnualPlanningReject =
+      '/v1/hr-service/human-resource-annual-planning/request/approve-reject';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat message (POST)
+  static String humanResourceAnnualPlanningSendChatById(int requestId) =>
+      '/v1/hr-service/human-resource-annual-planning/request/$requestId/chat';
+
+  /// Get chats (GET)
+  static String humanResourceAnnualPlanningChatsById(int requestId) =>
+      '/v1/hr-service/human-resource-annual-planning/request/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Upload attachment for request (POST)
+  static String humanResourceAnnualPlanningSendAttachmentById(int requestId) =>
+      '/v1/hr-service/human-resource-annual-planning/request/$requestId/attachment';
+
+  /// Get/Delete attachment by attachment ID
+  static String humanResourceAnnualPlanningAttachmentById(int attachmentId) =>
+      '/v1/hr-service/human-resource-annual-planning/request/$attachmentId/attachments';
 }

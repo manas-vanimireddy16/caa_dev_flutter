@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/human_resource_annual_plan.dart';
 
 RequestDetailModel welcomeFromJson(String str) =>
     RequestDetailModel.fromJson(json.decode(str));
@@ -342,6 +343,10 @@ class RequestDetailData {
   /// Performance Management Fields
   final String? cyclePeriod;
   final int? cycleYear;
+  final String? extensionNumber;
+  final String? quater;
+  final int? year;
+  final List<TaskModel>? tasks;
 
   RequestDetailData({
     this.request,
@@ -578,6 +583,10 @@ class RequestDetailData {
     this.additionalInfoRequested,
     this.cyclePeriod,
     this.cycleYear,
+    this.extensionNumber,
+    this.quater,
+    this.year,
+    this.tasks,
   });
 
   factory RequestDetailData.fromJson(
@@ -902,6 +911,12 @@ class RequestDetailData {
     additionalInfoRequested: json['additional_info_requested'] as String?,
     cyclePeriod: json['cycle_period'] as String?,
     cycleYear: json['cycle_year'] as int?,
+    extensionNumber: json['extension_number'] as String?,
+    quater: json['quater'] as String?,
+    year: json['year'] as int?,
+    tasks: (json['tasks'] as List?)
+        ?.map((e) => TaskModel.fromJson(e as Map<String, dynamic>?))
+        .toList(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -1235,6 +1250,10 @@ class RequestModel {
   /// Performance Management Fields
   final String? cyclePeriod;
   final int? cycleYear;
+  final String? extensionNumber;
+  final String? quater;
+  final int? year;
+  final List<TaskModel>? tasks;
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1465,6 +1484,10 @@ class RequestModel {
     this.additionalInfoRequested,
     this.cyclePeriod,
     this.cycleYear,
+    this.extensionNumber,
+    this.quater,
+    this.year,
+    this.tasks,
   });
 
   // ─────────────────────────────
@@ -1755,6 +1778,12 @@ class RequestModel {
       additionalInfoRequested: json['additional_info_requested'] as String?,
       cyclePeriod: json['cycle_period'] as String?,
       cycleYear: json['cycle_year'] as int?,
+      extensionNumber: json['extension_number'] as String?,
+      quater: json['quater'] as String?,
+      year: json['year'] as int?,
+      tasks: (json['tasks'] as List?)
+          ?.map((e) => TaskModel.fromJson(e as Map<String, dynamic>?))
+          .toList(),
     );
   }
 

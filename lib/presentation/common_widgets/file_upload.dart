@@ -44,7 +44,11 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
     // ✅ Max file count validation
     if (_selectedFiles.length >= widget.maxFiles) {
       setState(() {
-        _errorMessage = "You can upload maximum ${widget.maxFiles} files";
+        if (widget.maxFiles == 1) {
+          _errorMessage = "";
+        } else {
+          _errorMessage = "You can upload maximum ${widget.maxFiles} files";
+        }
       });
       return;
     }

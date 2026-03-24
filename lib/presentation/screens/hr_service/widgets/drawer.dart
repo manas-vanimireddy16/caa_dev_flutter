@@ -234,6 +234,14 @@ class _DrawerMenu extends StatelessWidget {
         ),
         label: 'Performance Management',
       ),
+      DrawerItemData(
+        index: 16,
+        icon: KImageProvider(
+          image: KIcons.playlistAddCheck,
+          tintColor: Colors.black,
+        ),
+        label: 'Human Resource Annual Planning',
+      ),
     ];
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)

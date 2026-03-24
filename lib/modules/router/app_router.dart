@@ -263,6 +263,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: AnnualIncrementRoute.page),
         AutoRoute(page: SkillsEnhancementRoute.page),
         AutoRoute(page: PerformanceManagementRoute.page),
+        AutoRoute(page: RequestForHumanResourceAnnualPlanningRoute.page),
       ],
     ),
 
@@ -401,6 +402,14 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: PerformanceManagementDetailsRoute.page,
       path: RouteNames.performanceManagementDetails,
+    ),
+    AutoRoute(
+      page: RequestForHumanResourceAnnualPlanningNewRequestRoute.page,
+      path: RouteNames.requestForHumanResourceAnnualPlanningNewRequest,
+    ),
+    AutoRoute(
+      page: RequestForHumanResourceAnnualPlanningDetailsRoute.page,
+      path: RouteNames.requestForHumanResourceAnnualPlanningDetails,
     ),
 
     /// --- TASK MANAGEMENT ---
