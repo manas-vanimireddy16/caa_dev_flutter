@@ -407,24 +407,61 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
   /// ------------------------------------------------
   /// VALIDATION
   /// ------------------------------------------------
+  // bool validateStep(List<DynamicField> fields) {
+  //   final errors = <String, String?>{};
+
+  //   for (final field in fields) {
+  //     final value = state.values[field.name];
+
+  //     if (field.type == FieldType.file && field.required) {
+  //       final files = value as List<FileUploadItem>?;
+
+  //       if (files == null || files.isEmpty) {
+  //         errors[field.name] = '${field.label} is required';
+  //       }
+
+  //       continue;
+  //     }
+
+  //     if (field.required && (value == null || value.toString().isEmpty)) {
+  //       errors[field.name] = '${field.label} is required';
+  //     }
+  //   }
+
+  //   state = state.copyWith(errors: errors);
+  //   return errors.isEmpty;
+  // }
   bool validateStep(List<DynamicField> fields) {
     final errors = <String, String?>{};
 
     for (final field in fields) {
       final value = state.values[field.name];
 
+      /// FILE VALIDATION
       if (field.type == FieldType.file && field.required) {
         final files = value as List<FileUploadItem>?;
 
         if (files == null || files.isEmpty) {
           errors[field.name] = '${field.label} is required';
         }
-
         continue;
       }
 
-      if (field.required && (value == null || value.toString().isEmpty)) {
-        errors[field.name] = '${field.label} is required';
+      /// UNIVERSAL REQUIRED VALIDATION
+      if (field.required) {
+        bool isEmpty = false;
+
+        if (value == null) {
+          isEmpty = true;
+        } else if (value is String && value.trim().isEmpty) {
+          isEmpty = true;
+        } else if (value is List && value.isEmpty) {
+          isEmpty = true;
+        }
+
+        if (isEmpty) {
+          errors[field.name] = '${field.label} is required';
+        }
       }
     }
 

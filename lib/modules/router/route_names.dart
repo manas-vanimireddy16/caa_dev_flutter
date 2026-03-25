@@ -236,4 +236,15 @@ class RouteNames {
       '/requestForHumanResourceAnnualPlanningNewRequest';
   static const String requestForHumanResourceAnnualPlanningDetails =
       '/requestForHumanResourceAnnualPlanningDetails';
+
+  // ───────────────────────────────Asset Affairs───────────────────────────────
+  static const String requestForAccommodationInMuscatGovernorateDetails =
+      '/requestForAccommodationInMuscatGovernorateDetails';
+  static const String requestForAccommodationInMuscatGovernorateNewRequest =
+      '/requestForAccommodationInMuscatGovernorateNewRequestRoute';
+  static const String homeRouteAssetAffairs = '/homeRouteAssetAffairs';
+  static const String residentalUnitRentalNewRequest =
+      '/residentalUnitRentalNewRequest';
+  static const String residentalUnitRentalDetails =
+      '/residentalUnitRentalDetails';
 }

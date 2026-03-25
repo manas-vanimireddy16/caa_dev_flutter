@@ -33,6 +33,12 @@ class RequestDetailTableRenderer extends StatelessWidget {
           headings: const ["Task", "Frequency", "Duration"],
           rows: t.rows,
         );
+      case RequestForAccommodationInMuscatGovernorateTable():
+        final t = table as RequestForAccommodationInMuscatGovernorateTable;
+        return ReusableExpandableTable(
+          headings: const ["Emp Id", "Name", "Designation", "Grade", "Contact"],
+          rows: t.rows,
+        );
     }
   }
 }

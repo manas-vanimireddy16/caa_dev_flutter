@@ -430,6 +430,35 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.trainingsanddevelopmentDetails,
     ),
 
+    /// --- ASSET AFFAIRS ---
+    AutoRoute(
+      page: AssetAffairsHomeRoute.page,
+      path: RouteNames.homeRouteAssetAffairs,
+      children: [
+        AutoRoute(
+          page: RequestForAccommodationInMuscatGovernorateRoute.page,
+          initial: true,
+        ),
+        AutoRoute(page: ResidentalUnitRentalRoute.page),
+      ],
+    ),
+    AutoRoute(
+      page: RequestForAccommodationInMuscatGovernorateNewRequestRoute.page,
+      path: RouteNames.requestForAccommodationInMuscatGovernorateNewRequest,
+    ),
+    AutoRoute(
+      page: RequestForAccommodationInMuscatGovernorateDetailsRoute.page,
+      path: RouteNames.requestForAccommodationInMuscatGovernorateDetails,
+    ),
+    AutoRoute(
+      page: ResidentalUnitRentalNewRequestRoute.page,
+      path: RouteNames.residentalUnitRentalNewRequest,
+    ),
+    AutoRoute(
+      page: ResidentalUnitRentalDetailsRoute.page,
+      path: RouteNames.residentalUnitRentalDetails,
+    ),
+
     /// --- MEDIA COVERAGE ---
     AutoRoute(
       page: MediaCoverageHomeRoute.page,

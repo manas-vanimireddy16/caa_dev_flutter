@@ -59,7 +59,13 @@ class CommonRequestDetails extends StatelessWidget {
             title: "Request Information",
             info: requestInfo!,
             customContent: table != null
-                ? RequestDetailTableRenderer(table: table!)
+                ? RequestDetailTableRenderer(
+                    table:
+                        table ??
+                        RequestForAccommodationInMuscatGovernorateTable(
+                          rows: [],
+                        ),
+                  )
                 : showAllowanceSection
                 ? AllowanceTable(employees: allowanceEmployees ?? [])
                 : showGoalsSection

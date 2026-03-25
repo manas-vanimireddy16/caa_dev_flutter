@@ -22,3 +22,10 @@ class HrPlanningRequestTable extends RequestDetailTable {
 
   const HrPlanningRequestTable({required this.rows});
 }
+
+class RequestForAccommodationInMuscatGovernorateTable
+    extends RequestDetailTable {
+  final List<ReusableTableRow> rows;
+
+  const RequestForAccommodationInMuscatGovernorateTable({required this.rows});
+}

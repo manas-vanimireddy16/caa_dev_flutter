@@ -4,9 +4,9 @@ import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_notifier.dart';
-import 'package:code_setup/presentation/dynamic_form/widget/fields/checkbox_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/date_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/file_field_widget.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/multi_select_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/radio_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/select_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/text_field_widget.dart';
@@ -233,7 +233,7 @@ class FieldRenderer extends ConsumerWidget {
 
       case FieldType.checkbox:
       case FieldType.multiselect:
-        return CheckboxFieldWidget(field: field);
+        return MultiSelectDropdownFieldWidget(field: field);
 
       case FieldType.date:
       case FieldType.year:

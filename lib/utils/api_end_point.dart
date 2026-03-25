@@ -1683,4 +1683,154 @@ class ApiEndPoint {
   /// Get/Delete attachment by attachment ID
   static String humanResourceAnnualPlanningAttachmentById(int attachmentId) =>
       '/v1/hr-service/human-resource-annual-planning/request/$attachmentId/attachments';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request
+  static const String sendRequestForAccommodationinMuscatGovernorate =
+      '/v1/asset-affairs-service/accommodation-request/request';
+
+  /// Get approval list (For approvers)
+  static const String accommodationinMuscatGovernorateGetActionItems =
+      '/v1/asset-affairs-service/accommodation-request/requests/for-approval';
+
+  /// Get all requests
+  static const String accommodationinMuscatGovernorateGetRequests =
+      '/v1/asset-affairs-service/accommodation-request/requests';
+
+  static String accommodationinMuscatGovernorateRequestById(int requestId) =>
+      '/v1/asset-affairs-service/accommodation-request/request/$requestId';
+
+  /// ===================== KPI APIs =====================
+
+  /// KPI cards (General)
+  static const String accommodationinMuscatGovernorateKpiCards =
+      '/v1/asset-affairs-service/accommodation-request/analytics/kpi-cards';
+
+  /// Approval KPI cards
+  static const String accommodationinMuscatGovernorateApprovalKpiCards =
+      '/v1/asset-affairs-service/accommodation-request/analytics/analytics/approval-kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  static const String accommodationinMuscatGovernorateStatusBreakdown =
+      '/v1/asset-affairs-service/accommodation-request/analytics/status-breakdown';
+
+  /// Approval Status breakdown
+  static const String accommodationinMuscatGovernorateApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/accommodation-request/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  static const String accommodationinMuscatGovernorateTrendBreakdown =
+      '/v1/asset-affairs-service/accommodation-request/analytics/trend-breakdown';
+
+  /// Approval Trend breakdown
+  static const String accommodationinMuscatGovernorateApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/accommodation-request/analytics/approval/trend-breakdown';
+
+  /// ===================== ASSIGN / APPROVAL APIs =====================
+
+  /// Assign request
+  static const String accommodationinMuscatGovernorateAssign =
+      '/v1/asset-affairs-service/accommodation-request/assign';
+
+  /// Approve request
+  static const String accommodationinMuscatGovernorateApprove =
+      '/v1/asset-affairs-service/accommodation-request/approve';
+
+  /// Reject request
+  static const String accommodationinMuscatGovernorateReject =
+      '/v1/asset-affairs-service/accommodation-request/request/approve-reject';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat message (POST)
+  static String accommodationinMuscatGovernorateSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/accommodation-request/request/$requestId/chat';
+
+  /// Get chats (GET)
+  static String accommodationinMuscatGovernorateChatsById(int requestId) =>
+      '/v1/asset-affairs-service/accommodation-request/request/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Upload attachment for request (POST)
+  static String accommodationinMuscatGovernorateSendAttachmentById(
+    int requestId,
+  ) =>
+      '/v1/asset-affairs-service/accommodation-request/request/$requestId/attachment';
+
+  /// Get/Delete attachment by attachment ID
+  static String accommodationinMuscatGovernorateAttachmentById(
+    int attachmentId,
+  ) =>
+      '/v1/asset-affairs-service/accommodation-request/request/$attachmentId/attachments';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request
+  static const String sendRequestForResidentalUnitRental =
+      '/v1/asset-affairs-service/residential-unit-rental/request';
+
+  /// Get my requests
+  static const String residentalUnitRentalGetRequests =
+      '/v1/asset-affairs-service/residential-unit-rental/requests';
+
+  /// Get all requests (no user filter)
+  static const String residentalUnitRentalGetAllRequests =
+      '/v1/asset-affairs-service/residential-unit-rental/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String residentalUnitRentalGetActionItems =
+      '/v1/asset-affairs-service/residential-unit-rental/requests/for-approval';
+
+  /// Get request by ID
+  static String residentalUnitRentalRequestById(int requestId) =>
+      '/v1/asset-affairs-service/residential-unit-rental/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String residentalUnitRentalApprove =
+      '/v1/asset-affairs-service/residential-unit-rental/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String residentalUnitRentalSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/residential-unit-rental/request/$requestId/chat';
+
+  static String residentalUnitRentalChatsById(int requestId) =>
+      '/v1/asset-affairs-service/residential-unit-rental/request/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  static String residentalUnitRentalSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/residential-unit-rental/request/$requestId/attachment';
+
+  static String residentalUnitRentalAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/residential-unit-rental/request/$requestId/attachments';
+
+  /// ===================== KPI APIs =====================
+
+  static const String residentalUnitRentalKpiCards =
+      '/v1/asset-affairs-service/residential-unit-rental/analytics/kpi-cards';
+
+  static const String residentalUnitRentalApprovalKpiCards =
+      '/v1/asset-affairs-service/residential-unit-rental/analytics/approval-kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  static const String residentalUnitRentalStatusBreakdown =
+      '/v1/asset-affairs-service/residential-unit-rental/analytics/status-breakdown';
+
+  static const String residentalUnitRentalApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/residential-unit-rental/analytics/approval-status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  static const String residentalUnitRentalTrendBreakdown =
+      '/v1/asset-affairs-service/residential-unit-rental/analytics/trend-breakdown';
+
+  static const String residentalUnitRentalApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/residential-unit-rental/analytics/approval-trend-breakdown';
 }

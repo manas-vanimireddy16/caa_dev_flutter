@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/human_resource_annual_plan.dart';
 
@@ -348,6 +349,19 @@ class RequestDetailData {
   final int? year;
   final List<TaskModel>? tasks;
 
+  /// Accommodation in Muscat specific fields
+  final int? durationOfDays;
+  final String? travellingFromRegion;
+  final String? travelFrom;
+  final String? travelTo;
+  final String? timeOfArrival;
+  final String? startDateOfStay;
+  final String? referenceNumber;
+  final String? otherPurposeSpecification;
+  final String? officialPurposeOfTravel;
+  final int? numberOfEmployeesTravelling;
+  final List<AccommodationEmployeeDetails>? employeeDetails;
+
   RequestDetailData({
     this.request,
     this.workflowDetails,
@@ -587,6 +601,17 @@ class RequestDetailData {
     this.quater,
     this.year,
     this.tasks,
+    this.durationOfDays,
+    this.travellingFromRegion,
+    this.travelFrom,
+    this.travelTo,
+    this.timeOfArrival,
+    this.startDateOfStay,
+    this.referenceNumber,
+    this.otherPurposeSpecification,
+    this.officialPurposeOfTravel,
+    this.numberOfEmployeesTravelling,
+    this.employeeDetails,
   });
 
   factory RequestDetailData.fromJson(
@@ -603,10 +628,10 @@ class RequestDetailData {
               .toList()
         : [],
 
-    approvalDetails: json["approval_details"] == null
+    approvalDetails: (json['approval_details'] ?? json['approvals']) == null
         ? []
         : List<ApprovalDetailModel>.from(
-            json["approval_details"]!.map(
+            (json['approval_details'] ?? json['approvals']).map(
               (x) => ApprovalDetailModel.fromJson(x),
             ),
           ),
@@ -916,6 +941,22 @@ class RequestDetailData {
     year: json['year'] as int?,
     tasks: (json['tasks'] as List?)
         ?.map((e) => TaskModel.fromJson(e as Map<String, dynamic>?))
+        .toList(),
+    durationOfDays: json['duration_of_days'] as int?,
+    travellingFromRegion: json['travelling_from_region'] as String?,
+    travelFrom: json['travel_from'] as String?,
+    travelTo: json['travel_to'] as String?,
+    timeOfArrival: json['time_of_arrival'] as String?,
+    startDateOfStay: json['start_date_of_stay'] as String?,
+    referenceNumber: json['reference_number'] as String?,
+    otherPurposeSpecification: json['other_purpose_specification'] as String?,
+    officialPurposeOfTravel: json['official_purpose_of_travel'] as String?,
+    numberOfEmployeesTravelling: json['number_of_employees_travelling'] as int?,
+    employeeDetails: (json['employee_details'] as List?)
+        ?.map(
+          (e) =>
+              AccommodationEmployeeDetails.fromJson(e as Map<String, dynamic>?),
+        )
         .toList(),
   );
 
@@ -1254,6 +1295,20 @@ class RequestModel {
   final String? quater;
   final int? year;
   final List<TaskModel>? tasks;
+
+  /// Accommodation in Muscat specific fields
+  ///   final int? durationOfDays;
+  final String? travellingFromRegion;
+  final String? travelFrom;
+  final String? travelTo;
+  final String? timeOfArrival;
+  final String? startDateOfStay;
+  final String? referenceNumber;
+  final String? otherPurposeSpecification;
+  final String? officialPurposeOfTravel;
+  final int? numberOfEmployeesTravelling;
+  final List<AccommodationEmployeeDetails>? employeeDetails;
+
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1488,6 +1543,16 @@ class RequestModel {
     this.quater,
     this.year,
     this.tasks,
+    this.travellingFromRegion,
+    this.travelFrom,
+    this.travelTo,
+    this.timeOfArrival,
+    this.startDateOfStay,
+    this.referenceNumber,
+    this.otherPurposeSpecification,
+    this.officialPurposeOfTravel,
+    this.numberOfEmployeesTravelling,
+    this.employeeDetails,
   });
 
   // ─────────────────────────────
@@ -1783,6 +1848,23 @@ class RequestModel {
       year: json['year'] as int?,
       tasks: (json['tasks'] as List?)
           ?.map((e) => TaskModel.fromJson(e as Map<String, dynamic>?))
+          .toList(),
+      travellingFromRegion: json['travelling_from_region'] as String?,
+      travelFrom: json['travel_from'] as String?,
+      travelTo: json['travel_to'] as String?,
+      timeOfArrival: json['time_of_arrival'] as String?,
+      startDateOfStay: json['start_date_of_stay'] as String?,
+      referenceNumber: json['reference_number'] as String?,
+      otherPurposeSpecification: json['other_purpose_specification'] as String?,
+      officialPurposeOfTravel: json['official_purpose_of_travel'] as String?,
+      numberOfEmployeesTravelling:
+          json['number_of_employees_travelling'] as int?,
+      employeeDetails: (json['employee_details'] as List?)
+          ?.map(
+            (e) => AccommodationEmployeeDetails.fromJson(
+              e as Map<String, dynamic>?,
+            ),
+          )
           .toList(),
     );
   }
