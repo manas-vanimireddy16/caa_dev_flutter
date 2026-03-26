@@ -361,7 +361,9 @@ class RequestDetailData {
   final String? officialPurposeOfTravel;
   final int? numberOfEmployeesTravelling;
   final List<AccommodationEmployeeDetails>? employeeDetails;
-
+  final String? unitType;
+  final int? familySize;
+  final String? locationOfStay;
   RequestDetailData({
     this.request,
     this.workflowDetails,
@@ -612,6 +614,9 @@ class RequestDetailData {
     this.officialPurposeOfTravel,
     this.numberOfEmployeesTravelling,
     this.employeeDetails,
+    this.unitType,
+    this.familySize,
+    this.locationOfStay,
   });
 
   factory RequestDetailData.fromJson(
@@ -958,6 +963,9 @@ class RequestDetailData {
               AccommodationEmployeeDetails.fromJson(e as Map<String, dynamic>?),
         )
         .toList(),
+    unitType: json['requested_unit_type'] as String?,
+    locationOfStay: json['location_of_stay'] as String?,
+    familySize: json['family_size'] as int?,
   );
 
   Map<String, dynamic> toJson() => {
@@ -3236,7 +3244,7 @@ class AttachmentModel {
       fileUrl: json['file_url'],
       fileName: json['file_name'],
       fileType: json['file_type'],
-      fileSize: json['file_size'],
+      fileSize: json['file_size']?.toString(),
       description: json['description'],
 
       serviceId: json['service_id'],

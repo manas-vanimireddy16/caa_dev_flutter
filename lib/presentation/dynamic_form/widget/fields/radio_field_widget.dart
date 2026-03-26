@@ -79,6 +79,47 @@ import '../../models/dynamic_field.dart';
 //   }
 // }
 
+// class RadioFieldWidget extends ConsumerWidget {
+//   final DynamicField field;
+
+//   const RadioFieldWidget({super.key, required this.field});
+
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final state = ref.watch(dynamicFormProvider);
+//     final notifier = ref.read(dynamicFormProvider.notifier);
+
+//     final selectedValue = state.values[field.name];
+
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         KRadioGroup<String>(
+//           errorText: state.errors[field.name],
+//           title: field.label,
+//           isRequired: field.required,
+//           options: field.options!
+//               .map(
+//                 (opt) =>
+//                     KRadioOption(value: opt as String, label: opt.toString()),
+//               )
+//               .toList(),
+//           selectedValue: selectedValue,
+//           onChanged: field.disabled
+//               ? (val) {}
+//               : (dynamic val) {
+//                   /// ⭐ Update form value
+//                   notifier.updateValue(field.name, val);
+
+//                   /// ⭐ Trigger field callback if exists
+//                   field.onChanged?.call(val, ref);
+//                 },
+//         ),
+//       ],
+//     );
+//   }
+// }
+
 class RadioFieldWidget extends ConsumerWidget {
   final DynamicField field;
 
@@ -89,7 +130,10 @@ class RadioFieldWidget extends ConsumerWidget {
     final state = ref.watch(dynamicFormProvider);
     final notifier = ref.read(dynamicFormProvider.notifier);
 
-    final selectedValue = state.values[field.name];
+    /// ⭐ SAFE VALUE
+    final selectedValue = state.values[field.name] is String
+        ? state.values[field.name] as String?
+        : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,17 +145,14 @@ class RadioFieldWidget extends ConsumerWidget {
           options: field.options!
               .map(
                 (opt) =>
-                    KRadioOption(value: opt as String, label: opt.toString()),
+                    KRadioOption<String>(value: opt, label: opt.toString()),
               )
               .toList(),
           selectedValue: selectedValue,
           onChanged: field.disabled
               ? (val) {}
               : (dynamic val) {
-                  /// ⭐ Update form value
                   notifier.updateValue(field.name, val);
-
-                  /// ⭐ Trigger field callback if exists
                   field.onChanged?.call(val, ref);
                 },
         ),

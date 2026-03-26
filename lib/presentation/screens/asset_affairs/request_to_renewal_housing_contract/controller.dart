@@ -558,11 +558,12 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
+  final renewalHousingContractInstance =
+      RequestToRenewalHousingContractRepository();
   final securityAccessInstance = SecurityAccessRepoistory();
 
   final dutyMissionInstance = AnnualDutyMissionRepoistry();
-  List<DynamicField> get residentalUnitRentalFormFields => [
+  List<DynamicField> get requestForAccommodationFormStep1 => [
     /// ================= REQUESTED UNIT TYPE =================
     DynamicField(
       name: 'requested_unit_type',
@@ -780,7 +781,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await residentalUnitRentalInstance.getRequestsById(
+      final requests = await renewalHousingContractInstance.getRequestsById(
         id: id,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -821,7 +822,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await residentalUnitRentalInstance.getchatById(id);
+      final requests = await renewalHousingContractInstance.getchatById(id);
       if (requests != null) {
         state = state.copyWith(chatById: requests);
       }
@@ -835,9 +836,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await residentalUnitRentalInstance.getAttachmentsById(
-        id,
-      );
+      final attachments = await renewalHousingContractInstance
+          .getAttachmentsById(id);
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
       }
@@ -851,7 +851,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchLocations() async {
     try {
-      final locations = await residentalUnitRentalInstance.getLocations();
+      final locations = await renewalHousingContractInstance.getLocations();
 
       if (locations != null) {
         state = state.copyWith(locations: locations.data);
@@ -864,7 +864,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await residentalUnitRentalInstance.getKpiData(
+      final kpis = await renewalHousingContractInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -882,7 +882,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await residentalUnitRentalInstance
+      final data = await renewalHousingContractInstance
           .getApprovalTrendBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -902,7 +902,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await residentalUnitRentalInstance
+      final statusBreakdown = await renewalHousingContractInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -926,7 +926,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await residentalUnitRentalInstance
+      final statusBreakdown = await renewalHousingContractInstance
           .getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -950,7 +950,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await residentalUnitRentalInstance.getTrendBreakdownData(
+      final data = await renewalHousingContractInstance.getTrendBreakdownData(
         period: period,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -969,7 +969,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await residentalUnitRentalInstance.getApprovalKpiData(
+      final kpis = await renewalHousingContractInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
@@ -996,7 +996,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(requestData: [], isLoading: false);
       }
 
-      final requests = await residentalUnitRentalInstance.getRequests(
+      final requests = await renewalHousingContractInstance.getRequests(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -1025,7 +1025,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await residentalUnitRentalInstance.getActionItems(
+      final items = await renewalHousingContractInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -1121,7 +1121,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await residentalUnitRentalInstance
+        final uploadedFiles = await renewalHousingContractInstance
             .uploadAttachments(state.attachments);
 
         if (uploadedFiles.isEmpty) {
@@ -1152,7 +1152,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await residentalUnitRentalInstance.sendAttachment(payload, requestId);
+        await renewalHousingContractInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -1173,7 +1173,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await residentalUnitRentalInstance.sendChat(payload, requestId);
+        await renewalHousingContractInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -1205,7 +1205,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await residentalUnitRentalInstance.onApprove(payload);
+      await renewalHousingContractInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       fetchactionItems();
@@ -1250,7 +1250,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await residentalUnitRentalInstance.onApprove(payload);
+      await renewalHousingContractInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
@@ -1277,7 +1277,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await residentalUnitRentalInstance.onSendInProgress(payload);
+      // await renewalHousingContractInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1710,8 +1710,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await residentalUnitRentalInstance
-          .sendResidentalUnitRentalRequest(payload);
+      final response = await renewalHousingContractInstance
+          .sendRenewalHousingContractRequest(payload);
 
       if (response['status'] == 'success') {
         _refreshDashboard();

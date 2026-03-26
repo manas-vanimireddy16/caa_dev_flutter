@@ -1,70 +1,61 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io'; // Import dart:io for InternetAddress
+import 'dart:io';
 
+import 'package:code_setup/modules/domain/core/connectivity/connectivity.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-import '../../../domain/core/connectivity/connectivity.dart';
-
 class KConnectivityImpl implements KConnectivity {
-  late StreamSubscription<ConnectivityResult>
-  _connectivityResultStreamSubscription;
+  // 1. Correct the type to match the new List-based API
+  StreamSubscription<List<ConnectivityResult>>? _subscription;
 
-  final StreamController<ConnectivityStatus>
-  _connectivityStatusStreamController =
+  final StreamController<ConnectivityStatus> _controller =
       StreamController<ConnectivityStatus>.broadcast();
-
-  void bootDown() {
-    log('[ConnectivityStatus.bootDown]');
-
-    _connectivityResultStreamSubscription.cancel();
-    _connectivityStatusStreamController.close();
-  }
-
-  Future<void> bootUp() async {
-    log('[ConnectivityStatus.bootUp]');
-
-    final connectivity = Connectivity();
-
-    StreamSubscription<List<ConnectivityResult>> subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> result) {
-          // Received changes in available connectivity types!
-          if (result.contains(ConnectivityResult.none)) {
-            // No available network types
-            _connectivityStatusStreamController.add(
-              ConnectivityStatus.disconnected,
-            );
-          } else {
-            _connectivityStatusStreamController.add(
-              ConnectivityStatus.connected,
-            );
-          }
-        });
-  }
 
   @override
   void onBootUp() {
-    // TODO: implement onBootUp
+    log('[KConnectivity] Starting listener...');
+
+    // Listen to the stream and update our controller
+    _subscription = Connectivity().onConnectivityChanged.listen((results) {
+      // If the list contains 'none', we are definitely disconnected
+      if (results.contains(ConnectivityResult.none)) {
+        _controller.add(ConnectivityStatus.disconnected);
+      } else {
+        // Even if WiFi is on, we check if we can actually reach the web
+        _checkActualData();
+      }
+    });
+  }
+
+  Future<void> _checkActualData() async {
+    final status = await currentConnectivityStatus;
+    _controller.add(status);
+  }
+
+  @override
+  void bootDown() {
+    _subscription?.cancel();
+    _controller.close();
   }
 
   @override
   Future<ConnectivityStatus> get currentConnectivityStatus async {
-    var connectivityStatus = ConnectivityStatus.connected;
-
     try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isEmpty || result[0].rawAddress.isEmpty) {
-        connectivityStatus = ConnectivityStatus.disconnected;
+      // Standard check for actual internet reachability
+      final result = await InternetAddress.lookup(
+        'google.com',
+      ).timeout(const Duration(seconds: 3));
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        return ConnectivityStatus.connected;
       }
-    } catch (e) {
-      connectivityStatus = ConnectivityStatus.disconnected;
+    } catch (_) {
+      return ConnectivityStatus.disconnected;
     }
-
-    return connectivityStatus;
+    return ConnectivityStatus.disconnected;
   }
 
   @override
   Stream<ConnectivityStatus> get onConnectivityStatusChanged =>
-      _connectivityStatusStreamController.stream;
+      _controller.stream;
 }

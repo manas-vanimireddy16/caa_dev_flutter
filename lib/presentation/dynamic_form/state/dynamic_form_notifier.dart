@@ -321,6 +321,16 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
     final values = Map<String, dynamic>.from(state.values);
     values[key] = value;
 
+    if (key == 'requested_unit_type') {
+      values['apartment_types'] = <dynamic>[];
+      values['villa_types'] = <dynamic>[];
+    }
+
+    if (key == 'duration_type') {
+      values['duration_months'] = null;
+      values['duration_years'] = null;
+    }
+
     /// -----------------------------
     /// SALARY AUTO CALC
     /// -----------------------------

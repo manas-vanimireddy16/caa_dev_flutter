@@ -22,14 +22,15 @@ class _DrawerMenu extends StatelessWidget {
         icon: KImageProvider(image: KIcons.dashboard),
         label: 'Dashboard',
       ),
-      // DrawerItemData(
-      //   index: 1,
-      //   icon: KImageProvider(
-      //     image: KIcons.playlistAddCheck,
-      //     tintColor: Colors.black,
-      //   ),
-      //   label: 'Assignment Decision',
-      // ),
+
+      DrawerItemData(
+        index: 1,
+        icon: KImageProvider(
+          image: KIcons.playlistAddCheck,
+          tintColor: Colors.black,
+        ),
+        label: 'Residential Unit Rental',
+      ),
       // DrawerItemData(
       //   index: 2,
       //   icon: KImageProvider(

@@ -440,6 +440,7 @@ class AppRouter extends RootStackRouter {
           initial: true,
         ),
         AutoRoute(page: ResidentalUnitRentalRoute.page),
+        AutoRoute(page: RequestToRenewalHousingContractRoute.page),
       ],
     ),
     AutoRoute(
@@ -457,6 +458,14 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: ResidentalUnitRentalDetailsRoute.page,
       path: RouteNames.residentalUnitRentalDetails,
+    ),
+    AutoRoute(
+      page: RenewalHousingContractNewRequestRoute.page,
+      path: RouteNames.requestToRenewalHousingContractNewRequest,
+    ),
+    AutoRoute(
+      page:RequestToRenewalHousingContractDetailsRoute.page,
+      path: RouteNames.requestToRenewalHousingContractDetails,
     ),
 
     /// --- MEDIA COVERAGE ---

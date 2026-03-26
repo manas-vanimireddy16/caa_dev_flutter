@@ -1,14 +1,15 @@
 part of '../view.dart';
 
 @RoutePage()
-class ResidentalUnitRentalDetailsScreen extends ConsumerStatefulWidget {
+class RequestToRenewalHousingContractDetailsScreen
+    extends ConsumerStatefulWidget {
   final String from;
   final int id;
   final int serviceId;
   final int subServiceId;
   final Service service;
   final SubService subService;
-  const ResidentalUnitRentalDetailsScreen({
+  const RequestToRenewalHousingContractDetailsScreen({
     super.key,
     required this.id,
     required this.serviceId,
@@ -19,11 +20,12 @@ class ResidentalUnitRentalDetailsScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState createState() => _ResidentalUnitRentalDetailsScreenState();
+  ConsumerState createState() =>
+      _RequestToRenewalHousingContractDetailsScreenState();
 }
 
-class _ResidentalUnitRentalDetailsScreenState
-    extends ConsumerState<ResidentalUnitRentalDetailsScreen> {
+class _RequestToRenewalHousingContractDetailsScreenState
+    extends ConsumerState<RequestToRenewalHousingContractDetailsScreen> {
   late _VSControllerParams _providerArgs;
 
   @override

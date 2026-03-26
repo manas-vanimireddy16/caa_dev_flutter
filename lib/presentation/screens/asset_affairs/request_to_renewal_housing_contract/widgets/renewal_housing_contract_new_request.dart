@@ -1,13 +1,13 @@
 part of '../view.dart';
 
 @RoutePage()
-class ResidentalUnitRentalNewRequestScreen extends ConsumerStatefulWidget {
+class RenewalHousingContractNewRequestScreen extends ConsumerStatefulWidget {
   final int serviceId;
   final int subServiceId;
   final Service service;
   final SubService subService;
 
-  const ResidentalUnitRentalNewRequestScreen({
+  const RenewalHousingContractNewRequestScreen({
     super.key,
     required this.serviceId,
     required this.subServiceId,
@@ -16,12 +16,12 @@ class ResidentalUnitRentalNewRequestScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ResidentalUnitRentalNewRequestScreen> createState() =>
-      _ResidentalUnitRentalNewRequestScreenState();
+  ConsumerState<RenewalHousingContractNewRequestScreen> createState() =>
+      _RenewalHousingContractNewRequestScreenState();
 }
 
-class _ResidentalUnitRentalNewRequestScreenState
-    extends ConsumerState<ResidentalUnitRentalNewRequestScreen> {
+class _RenewalHousingContractNewRequestScreenState
+    extends ConsumerState<RenewalHousingContractNewRequestScreen> {
   late _VSControllerParams _providerArgs;
 
   @override
@@ -56,7 +56,7 @@ class _ResidentalUnitRentalNewRequestScreenState
         child: DynamicForm(
           title: 'Performance Management',
           stepTitles: const ['step 1'],
-          steps: [controller.residentalUnitRentalFormFields],
+          steps: [controller.requestForAccommodationFormStep1],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

@@ -247,4 +247,8 @@ class RouteNames {
       '/residentalUnitRentalNewRequest';
   static const String residentalUnitRentalDetails =
       '/residentalUnitRentalDetails';
+  static const String requestToRenewalHousingContractNewRequest =
+      '/requestToRenewalHousingContractNewRequest';
+  static const String requestToRenewalHousingContractDetails =
+      '/requestToRenewalHousingContractDetails';
 }

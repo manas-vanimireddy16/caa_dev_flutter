@@ -3,8 +3,10 @@ import 'dart:developer' as developer;
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../../domain/core/connectivity/connectivity.dart';
 import '../../network.dart';
@@ -13,6 +15,7 @@ part 'interceptors/logging.dart';
 part 'interceptors/no_token.dart';
 part 'interceptors/retry.dart';
 part 'network_client.dart';
+part 'interceptors/internet_connectivity.dart';
 
 class DioNetworkingBox
     implements

@@ -1833,4 +1833,87 @@ class ApiEndPoint {
 
   static const String residentalUnitRentalApprovalTrendBreakdown =
       '/v1/asset-affairs-service/residential-unit-rental/analytics/approval-trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Housing Contract Renewal)
+  static const String renewHousingContractSendRequest =
+      '/v1/asset-affairs-service/housing-contract-renewal/request';
+
+  /// Get my requests
+  static const String renewHousingContractGetRequests =
+      '/v1/asset-affairs-service/housing-contract-renewal/requests';
+
+  /// Get all requests (no user filter)
+  static const String renewHousingContractGetAllRequests =
+      '/v1/asset-affairs-service/housing-contract-renewal/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String renewHousingContractGetActionItems =
+      '/v1/asset-affairs-service/housing-contract-renewal/requests/for-approval';
+
+  /// Get request by ID
+  static String renewHousingContractRequestById(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-renewal/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String renewHousingContractApprove =
+      '/v1/asset-affairs-service/housing-contract-renewal/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String renewHousingContractSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-renewal/request/$requestId/chat';
+
+  static String renewHousingContractChatsById(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-renewal/request/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String renewHousingContractSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-renewal/request/$requestId/attachment';
+
+  /// Get attachments
+  static String renewHousingContractAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-renewal/request/$requestId/attachments';
+
+  /// ⭐ NEW API (from image)
+  /// Delete attachment
+  static String renewHousingContractDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/asset-affairs-service/housing-contract-renewal/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String renewHousingContractKpiCards =
+      '/v1/asset-affairs-service/housing-contract-renewal/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String renewHousingContractApprovalKpiCards =
+      '/v1/asset-affairs-service/housing-contract-renewal/analytics/approval-kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String renewHousingContractStatusBreakdown =
+      '/v1/asset-affairs-service/housing-contract-renewal/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String renewHousingContractApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/housing-contract-renewal/analytics/approval-status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String renewHousingContractTrendBreakdown =
+      '/v1/asset-affairs-service/housing-contract-renewal/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String renewHousingContractApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/housing-contract-renewal/analytics/approval-trend-breakdown';
 }

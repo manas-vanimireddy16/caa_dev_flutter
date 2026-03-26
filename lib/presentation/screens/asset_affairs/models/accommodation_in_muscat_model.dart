@@ -27,6 +27,7 @@ class AccommodationRequestResponse {
 
 class AccommodationRequestModel {
   final BaseRequestModel? base;
+  final String? requestId;
 
   final int? durationOfDays;
   final String? travellingFromRegion;
@@ -37,11 +38,13 @@ class AccommodationRequestModel {
   final String? referenceNumber;
   final String? otherPurposeSpecification;
   final String? officialPurposeOfTravel;
-  final int? numberOfEmployeesTravelling;
+  final int? familySize;
+  final String? unitType;
   final List<AccommodationEmployeeDetails>? employeeDetails;
-
+  final String? locationOfUnit;
   const AccommodationRequestModel({
     this.base,
+    this.requestId,
     this.durationOfDays,
     this.travellingFromRegion,
     this.travelFrom,
@@ -51,7 +54,9 @@ class AccommodationRequestModel {
     this.referenceNumber,
     this.otherPurposeSpecification,
     this.officialPurposeOfTravel,
-    this.numberOfEmployeesTravelling,
+    this.familySize,
+    this.unitType,
+    this.locationOfUnit,
     this.employeeDetails,
   });
 
@@ -63,6 +68,7 @@ class AccommodationRequestModel {
     return AccommodationRequestModel(
       base: BaseRequestModel.fromJson(json),
       durationOfDays: json['duration_of_days'] as int?,
+      requestId: json['request_id'] as String?,
       travellingFromRegion: json['travelling_from_region'] as String?,
       travelFrom: json['travel_from'] as String?,
       travelTo: json['travel_to'] as String?,
@@ -71,8 +77,9 @@ class AccommodationRequestModel {
       referenceNumber: json['reference_number'] as String?,
       otherPurposeSpecification: json['other_purpose_specification'] as String?,
       officialPurposeOfTravel: json['official_purpose_of_travel'] as String?,
-      numberOfEmployeesTravelling:
-          json['number_of_employees_travelling'] as int?,
+      unitType: json['requested_unit_type'] as String?,
+      familySize: json['family_size'] as int?,
+      locationOfUnit: json['location_of_unit'] as String?,
       employeeDetails: (json['employee_details'] as List?)
           ?.map(
             (e) => AccommodationEmployeeDetails.fromJson(
@@ -94,7 +101,7 @@ class AccommodationRequestModel {
       "reference_number": referenceNumber,
       "other_purpose_specification": otherPurposeSpecification,
       "official_purpose_of_travel": officialPurposeOfTravel,
-      "number_of_employees_travelling": numberOfEmployeesTravelling,
+      "number_of_employees_travelling": familySize,
       "employee_details": employeeDetails?.map((e) => e.toJson()).toList(),
     };
   }

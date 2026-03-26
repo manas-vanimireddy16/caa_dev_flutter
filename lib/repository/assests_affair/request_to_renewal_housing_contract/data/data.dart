@@ -16,7 +16,7 @@ import 'package:code_setup/presentation/screens/hr_service/models/required_new_r
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/assests_affair/request_for_accommodation_in_muscat_governate/domain/domain.dart';
-import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
+import 'package:code_setup/repository/assests_affair/request_to_renewal_housing_contract/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/payment_of_cash_allowance_for_leave/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/request_for_human_resource_annual_planning/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/required_new_resource/domain/domain.dart';
@@ -27,8 +27,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 
-class ResidentalUnitRentalRepositoryImple
-    implements ResidentalUnitRentalRepository {
+class RequestToRenewalHousingContractRepositoryImple
+    implements RequestToRenewalHousingContractRepository {
   @override
   Future<List<EmployeeList>> getUsers(int departmentId) async {
     final client = await KAppX.network.secureClient();
@@ -69,11 +69,11 @@ class ResidentalUnitRentalRepositoryImple
   }
 
   @override
-  Future<Map<String, dynamic>> sendResidentalUnitRentalRequest(
+  Future<Map<String, dynamic>> sendRenewalHousingContractRequest(
     Map<String, dynamic> payload,
   ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.sendRequestForResidentalUnitRental;
+    final String url = ApiEndPoint.renewHousingContractSendRequest;
 
     try {
       if (client == null) {
@@ -226,7 +226,7 @@ class ResidentalUnitRentalRepositoryImple
 
   @override
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId) async {
-    String url = ApiEndPoint.residentalUnitRentalKpiCards;
+    String url = ApiEndPoint.renewHousingContractKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -262,7 +262,7 @@ class ResidentalUnitRentalRepositoryImple
     required int serviceId,
     required int subServiceId,
   }) async {
-    String url = ApiEndPoint.residentalUnitRentalApprovalKpiCards;
+    String url = ApiEndPoint.renewHousingContractApprovalKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -309,7 +309,7 @@ class ResidentalUnitRentalRepositoryImple
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.residentalUnitRentalApprovalStatusBreakdown,
+          ApiEndPoint.renewHousingContractApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -352,7 +352,7 @@ class ResidentalUnitRentalRepositoryImple
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.residentalUnitRentalApprovalTrendBreakdown,
+          ApiEndPoint.renewHousingContractApprovalTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -392,7 +392,7 @@ class ResidentalUnitRentalRepositoryImple
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.residentalUnitRentalStatusBreakdown,
+          ApiEndPoint.renewHousingContractStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -435,7 +435,7 @@ class ResidentalUnitRentalRepositoryImple
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.residentalUnitRentalTrendBreakdown,
+          ApiEndPoint.renewHousingContractTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -488,7 +488,7 @@ class ResidentalUnitRentalRepositoryImple
         if (status.isNotEmpty) {
           queryParams['status'] = status;
         }
-        final url = ApiEndPoint.residentalUnitRentalGetRequests;
+        final url = ApiEndPoint.renewHousingContractGetRequests;
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
@@ -545,7 +545,7 @@ class ResidentalUnitRentalRepositoryImple
         }
 
         final response = await client.get(
-          ApiEndPoint.residentalUnitRentalGetActionItems,
+          ApiEndPoint.renewHousingContractGetActionItems,
           queryParameters: queryParams,
         );
 
@@ -585,7 +585,7 @@ class ResidentalUnitRentalRepositoryImple
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.residentalUnitRentalSendChatById(id);
+    final String url = ApiEndPoint.renewHousingContractSendChatById(id);
 
     try {
       if (client != null) {
@@ -618,7 +618,7 @@ class ResidentalUnitRentalRepositoryImple
   @override
   Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.residentalUnitRentalSendAttachmentById(id);
+    final String url = ApiEndPoint.renewHousingContractSendAttachmentById(id);
 
     try {
       if (client != null) {
@@ -651,7 +651,7 @@ class ResidentalUnitRentalRepositoryImple
   @override
   Future<void> onApprove(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.residentalUnitRentalApprove;
+    final String url = ApiEndPoint.renewHousingContractApprove;
 
     try {
       if (client != null) {
@@ -686,7 +686,7 @@ class ResidentalUnitRentalRepositoryImple
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.residentalUnitRentalChatsById(id);
+        final url = ApiEndPoint.renewHousingContractChatsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -714,7 +714,7 @@ class ResidentalUnitRentalRepositoryImple
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.residentalUnitRentalAttachmentsById(id);
+        final url = ApiEndPoint.renewHousingContractAttachmentsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -750,7 +750,7 @@ class ResidentalUnitRentalRepositoryImple
           'service_id': serviceId,
           'sub_service_id': subServiceId,
         };
-        final url = ApiEndPoint.residentalUnitRentalRequestById(id);
+        final url = ApiEndPoint.renewHousingContractRequestById(id);
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
@@ -769,105 +769,6 @@ class ResidentalUnitRentalRepositoryImple
       }
     } catch (e) {
       throw Exception("Error fetching request details: $e");
-    }
-  }
-
-  @override
-  Future<void> onAssignEmployee(Map<String, dynamic> payload) async {
-    final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.requiredNewResourceAssign;
-    try {
-      if (client != null) {
-        final response = await client.put(url, data: payload);
-
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ Assigned Employee successfully');
-          ShowFlutterToast().showFlutterToastSuccess(
-            response.data['message'] ?? 'Assigned Employee successfully',
-          );
-        } else {
-          ShowFlutterToast().showFlutterToastFailure(
-            response.data['message'] ?? 'Failed to Assign Employee',
-          );
-          debugPrint(
-            '⚠️ Failed to send onAssignEmployee request: ${response.statusCode}',
-          );
-        }
-      } else {
-        debugPrint('❌ Client is null — cannot Fail to Assign Employee');
-      }
-    } on DioException catch (e) {
-      log('caught error');
-      final message = e.response?.data['message'] ?? e.message;
-      throw ApiException(message);
-      throw e;
-    } catch (e) {
-      log('error failed to Assigned Employee $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<List<EmployeeSummary>> getEmployeeList({
-    required int departmentId,
-    required int sectionId,
-    required String roleId,
-  }) async {
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final queryParameter = {
-          'role_id': roleId,
-          'section_id': sectionId,
-          'department_id': departmentId,
-        };
-        final url = ApiEndPoint.paymentofCashAllowanceForLeaveAssignEmployees;
-        final response = await client.get(url, queryParameters: queryParameter);
-
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> json = response.data;
-
-          /// Convert JSON → Model
-          final result = EmployeesResponse.fromJson(json);
-
-          /// Return only `data` (so UI can access sub-objects)
-          return result.data;
-        } else {
-          throw Exception('Failed: ${response.statusCode}');
-        }
-      } else {
-        return [];
-      }
-    } catch (e) {
-      throw Exception("Error Employee details: $e");
-    }
-  }
-
-  @override
-  Future<List<Grade>> getGradeList() async {
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final url = ApiEndPoint.requiredNewResourceGradeList;
-        final response = await client.get(url);
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> json = response.data;
-
-          /// Convert JSON → Model
-          final result = GradeResponse.fromJson(json);
-
-          /// Return only `data` (so UI can access sub-objects)
-          return result.data ?? [];
-        } else {
-          throw Exception('Failed: ${response.statusCode}');
-        }
-      } else {
-        return [];
-      }
-    } catch (e) {
-      throw Exception("Error fetching grade list details: $e");
     }
   }
 }

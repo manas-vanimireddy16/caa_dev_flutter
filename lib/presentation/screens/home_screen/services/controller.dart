@@ -65,7 +65,7 @@ class _VSController extends StateNotifier<_ViewState> {
   void initState() {
     // fromDateController = TextEditingController();
     final userData = KAppX.globalProvider.read(userProvider);
-    fetchUserRoles(960); //0); //(40);(1017);(userData?.userId ?? 0);
+    fetchUserRoles(970); //0); //(40);(1017);(userData?.userId ?? 0);
     fetchBookmarks();
   }
 
@@ -372,6 +372,14 @@ class _VSController extends StateNotifier<_ViewState> {
       case 'Request for Accommodation in Muscat Governorate':
         KAppX.router.push(
           RequestForAccommodationInMuscatGovernorateRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Residential Unit Rental':
+        KAppX.router.push(
+          ResidentalUnitRentalRoute(
             service: service ?? Service(),
             subService: subService ?? SubService(),
           ),

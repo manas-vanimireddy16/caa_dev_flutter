@@ -219,9 +219,9 @@ class _VSController extends StateNotifier<_ViewState> {
       // Store user profile data
       await kAuthCred.storeProfileData(user);
       if (user.userId != null) {
-        await fetchUserRoles(960); //(user.userId ?? 0);
+        await fetchUserRoles(970); //(user.userId ?? 0);
 
-        await fetchUserInfo(960); //(
+        await fetchUserInfo(970); //(
         //   user.userId ?? 0,
 
         // You can also store the role locally if needed:

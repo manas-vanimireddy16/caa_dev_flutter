@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:code_setup/modules/domain/core/connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,6 +46,9 @@ class KAppX {
   // static KPermissionBox permission = KPermissionsBoxImpl();
 
   static KNetworkingBoxImpl network = KNetworkingBox.instance;
+
+  // ADD THIS LINE:
+  static final KConnectivity connectivity = KConnectivity.instance;
 
   static KExtendedRouter extendedRouter = KExtendedRouter._();
 }
