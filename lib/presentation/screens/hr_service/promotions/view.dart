@@ -40,7 +40,7 @@ import 'package:code_setup/presentation/screens/hr_service/models/position_model
 import 'package:code_setup/presentation/screens/hr_service/models/promotions_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_threat_reassign.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/hr_service/assignment_decision/domain/domain.dart';

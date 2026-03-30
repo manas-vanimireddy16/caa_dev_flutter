@@ -40,6 +40,8 @@ import 'package:code_setup/presentation/models/selection_dialog_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
+import 'package:code_setup/presentation/screens/asset_affairs/models/residental_unit_apartment_model.dart';
+import 'package:code_setup/presentation/screens/asset_affairs/models/unit_locations_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_list.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
@@ -49,7 +51,7 @@ import 'package:code_setup/presentation/screens/hr_service/models/human_resource
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_threat_reassign.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/assests_affair/request_for_accommodation_in_muscat_governate/domain/domain.dart';

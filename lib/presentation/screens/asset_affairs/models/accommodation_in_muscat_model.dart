@@ -28,7 +28,6 @@ class AccommodationRequestResponse {
 class AccommodationRequestModel {
   final BaseRequestModel? base;
   final String? requestId;
-
   final int? durationOfDays;
   final String? travellingFromRegion;
   final String? travelFrom;
@@ -41,7 +40,18 @@ class AccommodationRequestModel {
   final int? familySize;
   final String? unitType;
   final List<AccommodationEmployeeDetails>? employeeDetails;
+  final String? locationOfStay;
+  final String? reasonForRenewal;
+  final String? requestedRenewalDuration;
   final String? locationOfUnit;
+  final String? approverComment;
+  final String? handoverDate;
+  final String? pendingBillsClearanceStatus;
+  final String? reasonForCancellation;
+  final String? requestedCancellationDate;
+  final String? currentContractEndDate;
+  final String? currentUnitType;
+  final String? currentContractStartDate;
   const AccommodationRequestModel({
     this.base,
     this.requestId,
@@ -58,6 +68,17 @@ class AccommodationRequestModel {
     this.unitType,
     this.locationOfUnit,
     this.employeeDetails,
+    this.locationOfStay,
+    this.reasonForRenewal,
+    this.requestedRenewalDuration,
+    this.approverComment,
+    this.handoverDate,
+    this.pendingBillsClearanceStatus,
+    this.reasonForCancellation,
+    this.requestedCancellationDate,
+    this.currentContractEndDate,
+    this.currentContractStartDate,
+    this.currentUnitType,
   });
 
   factory AccommodationRequestModel.fromJson(Map<String, dynamic>? json) {
@@ -87,6 +108,17 @@ class AccommodationRequestModel {
             ),
           )
           .toList(),
+      locationOfStay: json['location_of_stay'] as String?,
+      reasonForRenewal: json['reason_for_renewal'] as String?,
+      requestedRenewalDuration: json['requested_renewal_duration'] as String?,
+      approverComment: json['approver_comment'],
+      handoverDate: json['handover_date'],
+      pendingBillsClearanceStatus: json['pending_bills_clearance_status'],
+      reasonForCancellation: json['reason_for_cancellation'],
+      requestedCancellationDate: json['requested_cancellation_date'],
+      currentContractEndDate: json['current_contract_end_date'],
+      currentContractStartDate: json['current_contract_start_date'],
+      currentUnitType: json['current_unit_type'] as String?,
     );
   }
 

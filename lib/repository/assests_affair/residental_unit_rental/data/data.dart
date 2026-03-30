@@ -6,6 +6,8 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
+import 'package:code_setup/presentation/screens/asset_affairs/models/residental_unit_apartment_model.dart';
+import 'package:code_setup/presentation/screens/asset_affairs/models/unit_locations_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
@@ -808,39 +810,68 @@ class ResidentalUnitRentalRepositoryImple
   }
 
   @override
-  Future<List<EmployeeSummary>> getEmployeeList({
-    required int departmentId,
-    required int sectionId,
-    required String roleId,
-  }) async {
+  Future<List<ResidentalUnitRentalApartmentModel>> getApartmentTypes() async {
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
-        final queryParameter = {
-          'role_id': roleId,
-          'section_id': sectionId,
-          'department_id': departmentId,
-        };
-        final url = ApiEndPoint.paymentofCashAllowanceForLeaveAssignEmployees;
-        final response = await client.get(url, queryParameters: queryParameter);
+        final url = ApiEndPoint.residentalUnitRentalApartmentTypes;
+        final response = await client.get(url);
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> json = response.data;
+          final List list = json['data'] ?? [];
 
           /// Convert JSON → Model
-          final result = EmployeesResponse.fromJson(json);
+          final result = list
+              .map((e) => ResidentalUnitRentalApartmentModel.fromJson(e))
+              .toList();
 
           /// Return only `data` (so UI can access sub-objects)
-          return result.data;
+          return result;
         } else {
-          throw Exception('Failed: ${response.statusCode}');
+          throw Exception(
+            'Failed to fetch Apartment details: ${response.statusCode}',
+          );
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error Employee details: $e");
+      throw Exception("Error Fetching Apartment details: $e");
+    }
+  }
+
+  @override
+  Future<List<ResidentalUnitRentalLocationModel>> getUnitLocations() async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.residentalUnitRentalUnitLocations;
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+          final List list = json['data'] ?? [];
+
+          /// Convert JSON → Model
+          final result = list
+              .map((e) => ResidentalUnitRentalLocationModel.fromJson(e))
+              .toList();
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result;
+        } else {
+          throw Exception(
+            'Failed to fetch Apartment details: ${response.statusCode}',
+          );
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error Fetching Apartment details: $e");
     }
   }
 

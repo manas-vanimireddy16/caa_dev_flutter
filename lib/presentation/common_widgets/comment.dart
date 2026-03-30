@@ -176,6 +176,7 @@ class CommentEntry extends StatelessWidget {
 
 // ------------------------------------------------------------
 // ADD COMMENT BOX — FIXED & COMPLETE
+
 class AddCommentBox extends StatefulWidget {
   final String from;
   final String source;
@@ -450,9 +451,11 @@ class _AddCommentBoxState extends State<AddCommentBox> {
   @override
   Widget build(BuildContext context) {
     final theme = KAppX.globalProvider.read(KAppX.theme.current).themeBox;
+    final bool isFromActionItems = widget.from.toLowerCase() == 'action items';
 
+    final bool isShowButtons =
+        widget.showButtons && !isCommentMode && isFromActionItems;
     final bool isShowCommentBox = !widget.showButtons || isCommentMode;
-    final bool isShowButtons = widget.showButtons && !isCommentMode;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

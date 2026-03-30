@@ -3,6 +3,8 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
+import 'package:code_setup/presentation/screens/asset_affairs/models/residental_unit_apartment_model.dart';
+import 'package:code_setup/presentation/screens/asset_affairs/models/unit_locations_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/human_resource_annual_plan.dart';
@@ -90,10 +92,8 @@ abstract class ResidentalUnitRentalRepository {
     required int subServiceId,
   });
   Future<void> onAssignEmployee(Map<String, dynamic> payload);
-  Future<List<EmployeeSummary>> getEmployeeList({
-    required int departmentId,
-    required int sectionId,
-    required String roleId,
-  });
+  Future<List<ResidentalUnitRentalApartmentModel>> getApartmentTypes();
+  Future<List<ResidentalUnitRentalLocationModel>> getUnitLocations();
+
   Future<List<Grade>> getGradeList();
 }

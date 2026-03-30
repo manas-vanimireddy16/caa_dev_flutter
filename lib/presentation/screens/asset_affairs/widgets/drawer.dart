@@ -31,22 +31,24 @@ class _DrawerMenu extends StatelessWidget {
         ),
         label: 'Residential Unit Rental',
       ),
-      // DrawerItemData(
-      //   index: 2,
-      //   icon: KImageProvider(
-      //     image: KIcons.playlistAddCheck,
-      //     tintColor: Colors.black,
-      //   ),
-      //   label: 'Secondment Decision',
-      // ),
-      // DrawerItemData(
-      //   index: 3,
-      //   icon: KImageProvider(
-      //     image: KIcons.playlistAddCheck,
-      //     tintColor: Colors.black,
-      //   ),
-      //   label: 'Temporary Assignment Decision',
-      // ),
+
+      DrawerItemData(
+        index: 2,
+        icon: KImageProvider(
+          image: KIcons.playlistAddCheck,
+          tintColor: Colors.black,
+        ),
+        label: 'Request to Renewal of Housing Contract',
+      ),
+
+      DrawerItemData(
+        index: 3,
+        icon: KImageProvider(
+          image: KIcons.playlistAddCheck,
+          tintColor: Colors.black,
+        ),
+        label: 'Cancel a Housing Contract',
+      ),
       // DrawerItemData(
       //   index: 4,
       //   icon: KImageProvider(

@@ -12,10 +12,10 @@ import 'package:code_setup/presentation/screens/aviation_security_Facilitation/m
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/request_data_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_awareness_request_data.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_threat_request_data.dart'
+import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart'
     hide ChatMessageModel;
-import 'package:code_setup/presentation/screens/security_self/models/security_threat_reassign.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/repository/aviation_security_facilitation/airport_entry/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/assignment_decision/domain/domain.dart';
 import 'package:code_setup/repository/security_self/request_to_organize_security_awareness/domain/domain.dart';

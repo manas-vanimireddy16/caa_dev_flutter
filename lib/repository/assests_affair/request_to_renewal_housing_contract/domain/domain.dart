@@ -3,18 +3,9 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/human_resource_annual_plan.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/payment_of_cash_allowance_for_leave_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/required_new_resource_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
-import 'package:code_setup/repository/assests_affair/request_for_accommodation_in_muscat_governate/data/data.dart';
 import 'package:code_setup/repository/assests_affair/request_to_renewal_housing_contract/data/data.dart';
-import 'package:code_setup/repository/hr_service/payment_of_cash_allowance_for_leave/data/data.dart';
-import 'package:code_setup/repository/hr_service/request_for_human_resource_annual_planning/data/data.dart';
-import 'package:code_setup/repository/hr_service/required_new_resource/data/data.dart';
 
 abstract class RequestToRenewalHousingContractRepository {
   factory RequestToRenewalHousingContractRepository() =>

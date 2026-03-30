@@ -66,6 +66,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: SecuritySelfDashboardRoute.page, initial: true),
         AutoRoute(page: SecurityThreatRoute.page),
         AutoRoute(page: OrganizeSecurityAwarenessRoute.page),
+        AutoRoute(page: RequestForProjectApprovalRoute.page),
       ],
     ),
 
@@ -88,6 +89,14 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: OrganizeSecurityAwarenessRequestDetailsTabRoute.page,
       path: RouteNames.organizeSecurityAwarenessRequestDetailsTabScreen,
+    ),
+    AutoRoute(
+      page: RequestForProjectApprovalNewRequestRoute.page,
+      path: RouteNames.requestForProjectApprovalNewRequest,
+    ),
+    AutoRoute(
+      page: RequestForProjectApprovalDetailsRoute.page,
+      path: RouteNames.requestForProjectApprovalDetails,
     ),
 
     /// --- IT SERVICES ---
@@ -441,6 +450,7 @@ class AppRouter extends RootStackRouter {
         ),
         AutoRoute(page: ResidentalUnitRentalRoute.page),
         AutoRoute(page: RequestToRenewalHousingContractRoute.page),
+        AutoRoute(page: CancelHousingContractRoute.page),
       ],
     ),
     AutoRoute(
@@ -464,8 +474,16 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.requestToRenewalHousingContractNewRequest,
     ),
     AutoRoute(
-      page:RequestToRenewalHousingContractDetailsRoute.page,
+      page: RequestToRenewalHousingContractDetailsRoute.page,
       path: RouteNames.requestToRenewalHousingContractDetails,
+    ),
+    AutoRoute(
+      page: CancelHousingContractNewRequestRoute.page,
+      path: RouteNames.cancelHousingContractNewRequest,
+    ),
+    AutoRoute(
+      page: CancelHousingContractDetailsRoute.page,
+      path: RouteNames.cancelHousingContractDetails,
     ),
 
     /// --- MEDIA COVERAGE ---

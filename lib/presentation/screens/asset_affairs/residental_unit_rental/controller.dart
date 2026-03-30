@@ -77,6 +77,8 @@ class _ViewState {
   final List<Grade> gradeList;
   final List<GoalModel> byCycleGoalsData;
   final List<GoalListModel> goalWeightList;
+  final List<ResidentalUnitRentalApartmentModel> apartmentTypes;
+  final List<ResidentalUnitRentalLocationModel> unitLocations;
 
   final List<String> months = [
     'January',
@@ -158,6 +160,8 @@ class _ViewState {
     required this.hrDurationInput,
     required this.hrEditingIndex,
     required this.selectedUsersList,
+    required this.apartmentTypes,
+    required this.unitLocations,
   });
 
   _ViewState.init()
@@ -210,6 +214,8 @@ class _ViewState {
         hrDurationInput: '',
         hrEditingIndex: null,
         selectedUsersList: [],
+        apartmentTypes: [],
+        unitLocations: [],
       );
 
   _ViewState copyWith({
@@ -273,6 +279,8 @@ class _ViewState {
     String? hrDurationInput,
     ValueGetter<int?>? hrEditingIndex,
     List<EmployeeList>? selectedUsersList,
+    List<ResidentalUnitRentalApartmentModel>? apartmentTypes,
+    List<ResidentalUnitRentalLocationModel>? unitLocations,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -328,6 +336,8 @@ class _ViewState {
           ? hrEditingIndex()
           : this.hrEditingIndex,
       selectedUsersList: selectedUsersList ?? this.selectedUsersList,
+      apartmentTypes: apartmentTypes ?? this.apartmentTypes,
+      unitLocations: unitLocations ?? this.unitLocations,
     );
   }
 }
@@ -471,6 +481,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request Submission Date': request?.createdAt.toString() ?? '-',
       'Unit Type': request.unitType ?? '-',
       'Family Size': request?.familySize?.toString() ?? '-',
+      'Duration of Stay': request?.durationOfStay ?? '-',
       'Location of Unit': request.locationOfStay ?? '-',
       // 'Quarter': request?.quarter ?? 'N/A',
     };
@@ -591,17 +602,7 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       visibleWhen: (values) => values['requested_unit_type'] == 'Apartment',
 
-      /// ⭐ STATIC CHECKBOX OPTIONS
-      options: const [
-        'Studio - 100 OMR',
-        '1BHK - 150 OMR',
-        '2BHK - 200 OMR',
-        '3BHK - 250 OMR',
-        // DropdownOption(value: 'Studio', label: 'Studio - 100 OMR'),
-        // DropdownOption(value: '1BHK', label: '1BHK - 150 OMR'),
-        // DropdownOption(value: '2BHK', label: '2BHK - 200 OMR'),
-        // DropdownOption(value: '3BHK', label: '3BHK - 250 OMR'),
-      ],
+      options: getUnitTypeStrings('Apartment'), // ✅ convert to List
     ),
 
     /// ================= VILLA TYPES (CHECKBOX LIST) =================
@@ -612,16 +613,9 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       visibleWhen: (values) => values['requested_unit_type'] == 'Villa',
 
-      options: const [
-        '1 Room Villa - 201 OMR',
-        '2 Room Villa - 350 OMR',
-        '3 Room Villa - 400 OMR',
-
-        // DropdownOption(value: 'Small', label: 'Small Villa'),
-        // DropdownOption(value: 'Medium', label: 'Medium Villa'),
-        // DropdownOption(value: 'Luxury', label: 'Luxury Villa'),
-      ],
+      options: getUnitTypeStrings('Villa'), // ✅ convert to List
     ),
+
     DynamicField(
       name: 'extension_number',
       label: 'Extension Number',
@@ -666,8 +660,8 @@ class _VSController extends StateNotifier<_ViewState> {
       options: List.generate(
         12,
         (i) => DropdownOption(
-          value: '${i + 1} ${i == 0 ? 'Month' : 'Months'}',
-          label: '${i + 1} ${i == 0 ? 'Month' : 'Months'}',
+          value: '${i + 1} ${i == 0 ? 'month' : 'months'}',
+          label: '${i + 1} ${i == 0 ? 'month' : 'months'}',
         ),
       ),
     ),
@@ -682,8 +676,8 @@ class _VSController extends StateNotifier<_ViewState> {
       options: List.generate(
         5,
         (i) => DropdownOption(
-          value: '${i + 1} ${i == 0 ? 'Year' : 'Years'}',
-          label: '${i + 1} ${i == 0 ? 'Year' : 'Years'}',
+          value: '${i + 1} ${i == 0 ? 'year' : 'years'}',
+          label: '${i + 1} ${i == 0 ? 'year' : 'years'}',
         ),
       ),
     ),
@@ -700,8 +694,16 @@ class _VSController extends StateNotifier<_ViewState> {
     DynamicField(
       name: 'unit_location',
       label: 'Location Of Unit',
-      type: FieldType.text,
+      type: FieldType.select,
       required: true,
+      options: state.unitLocations
+          .map(
+            (loc) => DropdownOption(
+              value: loc.locationName,
+              label: loc.locationName ?? '',
+            ),
+          )
+          .toList(),
     ),
 
     /// ================= COMMENTS =================
@@ -718,6 +720,19 @@ class _VSController extends StateNotifier<_ViewState> {
 
   /// ========================= HELPERS =========================
   ///
+
+  Future<void> initialize() async {
+    await Future.wait([fetchApartmentDetails(), fetchUnitLocations()]);
+  }
+
+  List<String> getUnitTypeStrings(String type) {
+    return state.apartmentTypes
+        .where((e) => e.apartmentType == type) // filter
+        .map(
+          (e) => '${e.description} ${e.costPerType} OMR' ?? '',
+        ) // convert to String
+        .toList();
+  }
 
   RequestForAccommodationInMuscatGovernorateTable mapAccommodationTable() {
     final tasks = state.selectedUsersList ?? [];
@@ -981,6 +996,50 @@ class _VSController extends StateNotifier<_ViewState> {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchApartmentDetails({
+    bool isRefresh = false,
+    String searchText = '',
+    String status = '',
+  }) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      // Clear list only if explicitly refreshing or searching
+      if (isRefresh || status.isNotEmpty) {
+        state = state.copyWith(requestData: [], isLoading: false);
+      }
+
+      final requests = await residentalUnitRentalInstance.getApartmentTypes();
+
+      // No merging needed
+      state = state.copyWith(apartmentTypes: requests);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  Future<void> fetchUnitLocations({
+    bool isRefresh = false,
+    String searchText = '',
+    String status = '',
+  }) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      // Clear list only if explicitly refreshing or searching
+      if (isRefresh || status.isNotEmpty) {
+        state = state.copyWith(requestData: [], isLoading: false);
+      }
+
+      final requests = await residentalUnitRentalInstance.getUnitLocations();
+
+      // No merging needed
+      state = state.copyWith(unitLocations: requests);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
@@ -1660,35 +1719,40 @@ class _VSController extends StateNotifier<_ViewState> {
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      "requested_unit_type": requestedUnitType,
-      "request_type": requestedUnitType,
+      "requested_unit_type": values['requested_unit_type'] == 'Apartment'
+          ? '${values['requested_unit_type']} ${values['apartment_types']}'
+          : '${values['requested_unit_type']} ${values['villa_types']}',
 
-      "duration_of_stay": values['duration_type']?.toString() ?? "0",
+      "request_type": values['requested_unit_type'],
+
+      "duration_of_stay": values['duration_type'] == "Years"
+          ? "${values['duration_years']}"
+          : "${values['duration_months']}",
       "preferred_start_date": values['start_date'],
       "family_size": values['family_size']?.toString() ?? "0",
 
       "extension_number": values['extension_number'],
-      "location_of_unit": values['location_of_unit'],
+      "location_of_unit": values['unit_location'],
       "comment": values['comment'] ?? "",
 
       "attachments": _buildAttachments(values),
     };
 
     /// ⭐ CONDITIONAL OBJECT ADD
-    if (requestedUnitType == "Apartment") {
-      payload["apartment_type"] = {
-        "studio": values['apartment_type'] == "studio",
-        "one_bhk": values['apartment_type'] == "one_bhk",
-        "two_bhk": values['apartment_type'] == "two_bhk",
-        "three_bhk": values['apartment_type'] == "three_bhk",
-      };
-    } else if (requestedUnitType == "Villa") {
-      payload["villa_type"] = {
-        "one_room": values['villa_types'] == "one_room",
-        "two_room": values['villa_type_two_room'] == "two_room",
-        "three_room": values['villa_type_three_room'] == "three_room",
-      };
-    }
+    // if (requestedUnitType == "Apartment") {
+    //   payload["apartment_type"] = {
+    //     "studio": values['apartment_type'] == "studio",
+    //     "one_bhk": values['apartment_type'] == "one_bhk",
+    //     "two_bhk": values['apartment_type'] == "two_bhk",
+    //     "three_bhk": values['apartment_type'] == "three_bhk",
+    //   };
+    // } else if (requestedUnitType == "Villa") {
+    //   payload["villa_type"] = {
+    //     "one_room": values['villa_types'] == "one_room",
+    //     "two_room": values['villa_type_two_room'] == "two_room",
+    //     "three_room": values['villa_type_three_room'] == "three_room",
+    //   };
+    // }
 
     return payload;
   }

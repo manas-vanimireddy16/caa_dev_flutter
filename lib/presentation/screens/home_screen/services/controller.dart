@@ -385,6 +385,22 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
+      case 'Request to Renew a Housing Contract':
+        KAppX.router.push(
+          RequestToRenewalHousingContractRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Cancel a Housing Contract':
+        KAppX.router.push(
+          CancelHousingContractRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       // case 'Services':
       //   KAppX.router.push(const Services());
       //   break;

@@ -102,6 +102,10 @@ class RouteNames {
       '/organizeSecurityAwarenessRequest';
   static const String organizeSecurityAwarenessRequestDetailsTabScreen =
       '/organizeSecurityAwarenessRequestDetailsTabScreen';
+  static const String requestForProjectApprovalNewRequest =
+      '/requestForProjectApprovalNewRequest';
+  static const String requestForProjectApprovalDetails =
+      '/requestForProjectApprovalDetails';
 
   // ───────────────────────────────
   // IT SERVICES
@@ -251,4 +255,8 @@ class RouteNames {
       '/requestToRenewalHousingContractNewRequest';
   static const String requestToRenewalHousingContractDetails =
       '/requestToRenewalHousingContractDetails';
+  static const String cancelHousingContractNewRequest =
+      '/cancelHousingContractNewRequest';
+  static const String cancelHousingContractDetails =
+      '/cancelHousingContractDetails';
 }

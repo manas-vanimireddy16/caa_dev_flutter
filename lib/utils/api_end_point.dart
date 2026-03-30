@@ -1833,6 +1833,10 @@ class ApiEndPoint {
 
   static const String residentalUnitRentalApprovalTrendBreakdown =
       '/v1/asset-affairs-service/residential-unit-rental/analytics/approval-trend-breakdown';
+  static const String residentalUnitRentalApartmentTypes =
+      '/v1/asset-affairs-service/admin-config/apartment-types';
+  static const String residentalUnitRentalUnitLocations =
+      'https://caa.altomouhit.com/v1/asset-affairs-service/admin-config/unit-locations';
 
   /// ===================== REQUEST APIs =====================
 
@@ -1916,4 +1920,92 @@ class ApiEndPoint {
   /// Approval trend breakdown
   static const String renewHousingContractApprovalTrendBreakdown =
       '/v1/asset-affairs-service/housing-contract-renewal/analytics/approval-trend-breakdown';
+
+  // ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Housing Contract Cancel)
+  static const String cancelHousingContractSendRequest =
+      '/v1/asset-affairs-service/housing-contract-cancel/request';
+
+  /// Get my requests
+  static const String cancelHousingContractGetRequests =
+      '/v1/asset-affairs-service/housing-contract-cancel/requests';
+
+  /// Get all requests (no user filter)
+  static const String cancelHousingContractGetAllRequests =
+      '/v1/asset-affairs-service/housing-contract-cancel/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String cancelHousingContractGetActionItems =
+      '/v1/asset-affairs-service/housing-contract-cancel/requests/for-approval';
+
+  /// Get request by ID
+  static String cancelHousingContractRequestById(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-cancel/request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// Update request
+  static String cancelHousingContractUpdateRequest(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-cancel/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String cancelHousingContractApprove =
+      '/v1/asset-affairs-service/housing-contract-cancel/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String cancelHousingContractSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-cancel/request/$requestId/chat';
+
+  static String cancelHousingContractChatsById(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-cancel/request/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String cancelHousingContractSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-cancel/request/$requestId/attachment';
+
+  /// Get attachments
+  static String cancelHousingContractAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/housing-contract-cancel/request/$requestId/attachments';
+
+  /// Delete attachment
+  static String cancelHousingContractDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/asset-affairs-service/housing-contract-cancel/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String cancelHousingContractKpiCards =
+      '/v1/asset-affairs-service/housing-contract-cancel/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String cancelHousingContractApprovalKpiCards =
+      '/v1/asset-affairs-service/housing-contract-cancel/analytics/approval-kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String cancelHousingContractStatusBreakdown =
+      '/v1/asset-affairs-service/housing-contract-cancel/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String cancelHousingContractApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/housing-contract-cancel/analytics/approval-status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String cancelHousingContractTrendBreakdown =
+      '/v1/asset-affairs-service/housing-contract-cancel/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String cancelHousingContractApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/housing-contract-cancel/analytics/approval-trend-breakdown';
 }

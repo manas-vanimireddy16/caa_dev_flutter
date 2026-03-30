@@ -364,6 +364,17 @@ class RequestDetailData {
   final String? unitType;
   final int? familySize;
   final String? locationOfStay;
+  final String? durationOfStay;
+  final String? reasonForRenewal;
+  final String? requestedRenewalDuration;
+  final String? approverComment;
+  final String? handoverDate;
+  final String? pendingBillsClearanceStatus;
+  final String? reasonForCancellation;
+  final String? requestedCancellationDate;
+  final String? currentContractEndDate;
+  final String? currentContractStartDate;
+  final String? currentUnitType;
   RequestDetailData({
     this.request,
     this.workflowDetails,
@@ -617,6 +628,17 @@ class RequestDetailData {
     this.unitType,
     this.familySize,
     this.locationOfStay,
+    this.durationOfStay,
+    this.reasonForRenewal,
+    this.requestedRenewalDuration,
+    this.approverComment,
+    this.handoverDate,
+    this.pendingBillsClearanceStatus,
+    this.reasonForCancellation,
+    this.requestedCancellationDate,
+    this.currentContractEndDate,
+    this.currentContractStartDate,
+    this.currentUnitType,
   });
 
   factory RequestDetailData.fromJson(
@@ -966,6 +988,17 @@ class RequestDetailData {
     unitType: json['requested_unit_type'] as String?,
     locationOfStay: json['location_of_stay'] as String?,
     familySize: json['family_size'] as int?,
+    durationOfStay: json['duration_of_stay'] as String?,
+    reasonForRenewal: json['reason_for_renewal'] as String?,
+    requestedRenewalDuration: json['requested_renewal_duration'] as String?,
+    approverComment: json['approver_comment'],
+    handoverDate: json['handover_date'],
+    pendingBillsClearanceStatus: json['pending_bills_clearance_status'],
+    reasonForCancellation: json['reason_for_cancellation'],
+    requestedCancellationDate: json['requested_cancellation_date'],
+    currentContractEndDate: json['current_contract_end_date'],
+    currentContractStartDate: json['current_contract_start_date'],
+    currentUnitType: json['current_unit_type'] as String?,
   );
 
   Map<String, dynamic> toJson() => {
@@ -1316,6 +1349,17 @@ class RequestModel {
   final String? officialPurposeOfTravel;
   final int? numberOfEmployeesTravelling;
   final List<AccommodationEmployeeDetails>? employeeDetails;
+  final String? durationOfStay;
+  final String? locationOfStay;
+  final String? reasonForRenewal;
+  final String? requestedRenewalDuration;
+  final String? approverComment;
+  final String? handoverDate;
+  final String? pendingBillsClearanceStatus;
+  final String? reasonForCancellation;
+  final String? requestedCancellationDate;
+  final String? currentContractEndDate;
+  final String? currentContractStartDate;
 
   // ─────────────────────────────
   // CONSTRUCTOR
@@ -1561,6 +1605,17 @@ class RequestModel {
     this.officialPurposeOfTravel,
     this.numberOfEmployeesTravelling,
     this.employeeDetails,
+    this.durationOfStay,
+    this.locationOfStay,
+    this.reasonForRenewal,
+    this.requestedRenewalDuration,
+    this.approverComment,
+    this.handoverDate,
+    this.pendingBillsClearanceStatus,
+    this.reasonForCancellation,
+    this.requestedCancellationDate,
+    this.currentContractEndDate,
+    this.currentContractStartDate,
   });
 
   // ─────────────────────────────
@@ -1874,6 +1929,17 @@ class RequestModel {
             ),
           )
           .toList(),
+      durationOfStay: json['duration_of_stay'] as String?,
+      locationOfStay: json['location_of_stay'] as String?,
+      reasonForRenewal: json['reason_for_renewal'] as String?,
+      requestedRenewalDuration: json['requested_renewal_duration'] as String?,
+      approverComment: json['approver_comment'],
+      handoverDate: json['handover_date'],
+      pendingBillsClearanceStatus: json['pending_bills_clearance_status'],
+      reasonForCancellation: json['reason_for_cancellation'],
+      requestedCancellationDate: json['requested_cancellation_date'],
+      currentContractEndDate: json['current_contract_end_date'],
+      currentContractStartDate: json['current_contract_start_date'],
     );
   }
 

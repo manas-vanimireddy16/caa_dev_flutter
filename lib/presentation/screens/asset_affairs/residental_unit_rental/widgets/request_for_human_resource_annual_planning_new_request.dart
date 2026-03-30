@@ -28,14 +28,14 @@ class _ResidentalUnitRentalNewRequestScreenState
   void initState() {
     super.initState();
 
-    /// ✅ Create provider params ONCE
     _providerArgs = _VSControllerParams(
       service: widget.service,
       subService: widget.subService,
     );
-    // Future.microtask(() {
-    //   ref.read(_vsProvider(_providerArgs).notifier).fetchUsers();
-    // });
+
+    Future.microtask(() {
+      ref.read(_vsProvider(_providerArgs).notifier).initialize();
+    });
   }
 
   @override

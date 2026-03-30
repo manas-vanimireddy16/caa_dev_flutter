@@ -31,8 +31,8 @@ import 'package:code_setup/presentation/screens/hr_service/models/request_data_m
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/media_services/models/request_data_model.dart';
 import 'package:code_setup/presentation/screens/media_services/request_for_coverage/widgets/request_card.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_awareness_request_data.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_threat_reassign.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/request_data_model.dart';
 import 'package:code_setup/repository/aviation_security_facilitation/airport_entry/domain/domain.dart';

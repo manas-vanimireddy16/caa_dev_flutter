@@ -105,6 +105,7 @@ class _ViewState {
   final String hrDurationInput;
 
   final int? hrEditingIndex;
+  final List<ResidentalUnitRentalLocationModel> unitLocations;
 
   /// FORM KEY
   final formKey = GlobalKey<FormState>();
@@ -158,6 +159,7 @@ class _ViewState {
     required this.hrDurationInput,
     required this.hrEditingIndex,
     required this.selectedUsersList,
+    required this.unitLocations,
   });
 
   _ViewState.init()
@@ -210,6 +212,7 @@ class _ViewState {
         hrDurationInput: '',
         hrEditingIndex: null,
         selectedUsersList: [],
+        unitLocations: [],
       );
 
   _ViewState copyWith({
@@ -273,6 +276,7 @@ class _ViewState {
     String? hrDurationInput,
     ValueGetter<int?>? hrEditingIndex,
     List<EmployeeList>? selectedUsersList,
+    List<ResidentalUnitRentalLocationModel>? unitLocations,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -328,6 +332,7 @@ class _ViewState {
           ? hrEditingIndex()
           : this.hrEditingIndex,
       selectedUsersList: selectedUsersList ?? this.selectedUsersList,
+      unitLocations: unitLocations ?? this.unitLocations,
     );
   }
 }
@@ -405,6 +410,8 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  /// ========================= DASHBOARD GETTERS =========================
+
   List<int> get trendCounts {
     final data = state.trendData.data?.trendData;
     if (data == null || data.isEmpty) {
@@ -441,7 +448,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // 'Cycle Period': item.cyclePeriod ?? '-',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
       'Unit Type': item.unitType ?? '-',
-      'Family Size': item.familySize?.toString() ?? '-',
+
       // 'Tasks Related to Projects': item.tasks?.first.toString() ?? '-',
       // 'Quarter': item.quater ?? '-',
       // // 'Year': item.year?.toString() ?? '-',
@@ -472,6 +479,8 @@ class _VSController extends StateNotifier<_ViewState> {
       'Unit Type': request.unitType ?? '-',
       'Family Size': request?.familySize?.toString() ?? '-',
       'Location of Unit': request.locationOfStay ?? '-',
+      'Reason for Renewal': request.reasonForRenewal ?? '-',
+      'Requested Renewal Duration': request.requestedRenewalDuration ?? '-',
       // 'Quarter': request?.quarter ?? 'N/A',
     };
   }
@@ -523,7 +532,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      ResidentalUnitRentalDetailsRoute(
+      RequestToRenewalHousingContractDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -549,7 +558,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
     state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      ResidentalUnitRentalNewRequestRoute(
+      RenewalHousingContractNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -560,10 +569,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   final renewalHousingContractInstance =
       RequestToRenewalHousingContractRepository();
-  final securityAccessInstance = SecurityAccessRepoistory();
+  final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  final dutyMissionInstance = AnnualDutyMissionRepoistry();
-  List<DynamicField> get requestForAccommodationFormStep1 => [
+  List<DynamicField> get renewalHousingContractFormFields => [
     /// ================= REQUESTED UNIT TYPE =================
     DynamicField(
       name: 'requested_unit_type',
@@ -576,117 +584,53 @@ class _VSController extends StateNotifier<_ViewState> {
       ],
 
       /// ⭐ reset dependent checkbox fields
-      onChanged: (val, ref) {
-        final notifier = ref.read(dynamicFormProvider.notifier);
-
-        notifier.updateValue('apartment_types', <dynamic>[]);
-        notifier.updateValue('villa_types', <dynamic>[]);
-      },
     ),
-
-    /// ================= APARTMENT TYPES (CHECKBOX LIST) =================
     DynamicField(
-      name: 'apartment_types',
-      label: 'Apartment Type',
-      type: FieldType.radio,
+      name: 'current_unit_type',
+      label: 'Current Unit Type',
+      type: FieldType.select,
       required: true,
-      visibleWhen: (values) => values['requested_unit_type'] == 'Apartment',
-
-      /// ⭐ STATIC CHECKBOX OPTIONS
       options: const [
-        'Studio - 100 OMR',
-        '1BHK - 150 OMR',
-        '2BHK - 200 OMR',
-        '3BHK - 250 OMR',
-        // DropdownOption(value: 'Studio', label: 'Studio - 100 OMR'),
-        // DropdownOption(value: '1BHK', label: '1BHK - 150 OMR'),
-        // DropdownOption(value: '2BHK', label: '2BHK - 200 OMR'),
-        // DropdownOption(value: '3BHK', label: '3BHK - 250 OMR'),
+        DropdownOption(value: 'Apartment', label: 'Apartment'),
+        DropdownOption(value: 'Villa', label: 'Villa'),
       ],
-    ),
 
-    /// ================= VILLA TYPES (CHECKBOX LIST) =================
-    DynamicField(
-      name: 'villa_types',
-      label: 'Villa Type',
-      type: FieldType.radio,
-      required: true,
-      visibleWhen: (values) => values['requested_unit_type'] == 'Villa',
-
-      options: const [
-        '1 Room Villa - 201 OMR',
-        '2 Room Villa - 350 OMR',
-        '3 Room Villa - 400 OMR',
-
-        // DropdownOption(value: 'Small', label: 'Small Villa'),
-        // DropdownOption(value: 'Medium', label: 'Medium Villa'),
-        // DropdownOption(value: 'Luxury', label: 'Luxury Villa'),
-      ],
+      /// ⭐ reset dependent checkbox fields
     ),
     DynamicField(
-      name: 'extension_number',
-      label: 'Extension Number',
-      type: FieldType.number,
+      name: 'unit_location',
+      label: 'Location Of Unit',
+      type: FieldType.select,
       required: true,
+      options: state.unitLocations
+          .map(
+            (loc) => DropdownOption(
+              value: loc.locationName,
+              label: loc.locationName ?? '',
+            ),
+          )
+          .toList(),
     ),
 
     /// ================= START DATE =================
     DynamicField(
-      name: 'start_date',
-      label: 'Preferred Start Date',
+      name: 'current_contract_start_date',
+      label: 'Current Contract Start Date',
+      type: FieldType.date,
+      required: true,
+    ),
+    DynamicField(
+      name: 'current_contract_end_date',
+      label: 'Current Contract End Date',
       type: FieldType.date,
       required: true,
     ),
 
-    /// ================= DURATION TYPE =================
     DynamicField(
-      name: 'duration_type',
-      label: 'Duration Type',
-      type: FieldType.select,
+      name: 'requested_renewal_duration',
+      label: 'Requested Renewal Duration',
+      type: FieldType.text,
       required: true,
-      options: const [
-        DropdownOption(value: 'Months', label: 'Months'),
-        DropdownOption(value: 'Years', label: 'Years'),
-      ],
-
-      onChanged: (val, ref) {
-        final notifier = ref.read(dynamicFormProvider.notifier);
-
-        notifier.updateValue('duration_months', null);
-        notifier.updateValue('duration_years', null);
-      },
-    ),
-
-    /// ================= MONTHS FIELD =================
-    DynamicField(
-      name: 'duration_months',
-      label: 'Duration of Months',
-      type: FieldType.select,
-      required: true,
-      visibleWhen: (values) => values['duration_type'] == 'Months',
-      options: List.generate(
-        12,
-        (i) => DropdownOption(
-          value: '${i + 1} ${i == 0 ? 'Month' : 'Months'}',
-          label: '${i + 1} ${i == 0 ? 'Month' : 'Months'}',
-        ),
-      ),
-    ),
-
-    /// ================= YEARS FIELD =================
-    DynamicField(
-      name: 'duration_years',
-      label: 'Duration of Years',
-      type: FieldType.select,
-      required: true,
-      visibleWhen: (values) => values['duration_type'] == 'Years',
-      options: List.generate(
-        5,
-        (i) => DropdownOption(
-          value: '${i + 1} ${i == 0 ? 'Year' : 'Years'}',
-          label: '${i + 1} ${i == 0 ? 'Year' : 'Years'}',
-        ),
-      ),
     ),
 
     /// ================= FAMILY SIZE =================
@@ -696,11 +640,9 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.number,
       required: true,
     ),
-
-    /// ================= LOCATION =================
     DynamicField(
-      name: 'unit_location',
-      label: 'Location Of Unit',
+      name: 'reason_for_renewal',
+      label: 'Reason for Renewal',
       type: FieldType.text,
       required: true,
     ),
@@ -718,8 +660,6 @@ class _VSController extends StateNotifier<_ViewState> {
   ];
 
   /// ========================= HELPERS =========================
-  ///
-
   RequestForAccommodationInMuscatGovernorateTable mapAccommodationTable() {
     final tasks = state.selectedUsersList ?? [];
 
@@ -763,18 +703,25 @@ class _VSController extends StateNotifier<_ViewState> {
 
   /// ========================= API CALLS =========================
 
-  Future<void> fetchUsers() async {
+  Future<void> fetchUnitLocations({
+    bool isRefresh = false,
+    String searchText = '',
+    String status = '',
+  }) async {
+    state = state.copyWith(isLoading: true);
     try {
-      final users = await dutyMissionInstance.getUsers();
+      // Clear list only if explicitly refreshing or searching
+      if (isRefresh || status.isNotEmpty) {
+        state = state.copyWith(requestData: [], isLoading: false);
+      }
 
-      state = state.copyWith(usersList: users);
-      print('✅ Users fetched: ${users.length}');
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-      print('❌ API ERROR: ${apiError.message}');
-    } catch (e, stack) {
-      print('❌ UNKNOWN ERROR: $e');
-      print(stack);
+      final requests = await residentalUnitRentalInstance.getUnitLocations();
+
+      // No merging needed
+      state = state.copyWith(unitLocations: requests);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
@@ -806,18 +753,6 @@ class _VSController extends StateNotifier<_ViewState> {
       state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
-  }
-
-  Future<void> fetchDepartments() async {
-    try {
-      final departments = await securityAccessInstance.getDepartments();
-
-      if (departments != []) {
-        state = state.copyWith(departments: departments);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
   }
 
   Future<void> fetchChatById(int id) async {
@@ -1649,46 +1584,38 @@ class _VSController extends StateNotifier<_ViewState> {
   ) {
     final userInfo = KAppX.globalProvider.read(rolesProvider);
 
-    final requestedUnitType = values['requested_unit_type'];
-
-    /// ⭐ COMMON PAYLOAD
     final payload = {
-      "role_id": userInfo?.roleId,
-      "department_id": userInfo?.departmentId,
-      "section_id": userInfo?.sectionId,
+      /// ⭐ USER INFO
+      "req_user_department_id": userInfo?.departmentId,
+      "req_user_section_id": userInfo?.sectionId,
 
+      /// ⭐ SERVICE INFO
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      "requested_unit_type": requestedUnitType,
-      "request_type": requestedUnitType,
+      /// ⭐ UNIT TYPES
+      "requested_unit_type": values['requested_unit_type'],
+      "current_unit_type": values['current_unit_type'],
 
-      "duration_of_stay": values['duration_type']?.toString() ?? "0",
-      "preferred_start_date": values['start_date'],
-      "family_size": values['family_size']?.toString() ?? "0",
-
-      "extension_number": values['extension_number'],
+      /// ⭐ CONTRACT DETAILS
       "location_of_unit": values['location_of_unit'],
-      "comment": values['comment'] ?? "",
+      "current_contract_start_date": values['current_contract_start_date'],
+      "current_contract_end_date": values['current_contract_end_date'],
+      "requested_renewal_duration": values['requested_renewal_duration']
+          ?.toString(),
 
+      /// ⭐ FAMILY INFO
+      "family_size": values['family_size'],
+
+      /// ⭐ REASON
+      "reason_for_renewal": values['reason_for_renewal'],
+
+      /// ⭐ OPTIONAL COMMENT
+      "comment": values['comments'] ?? "",
+
+      /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
     };
-
-    /// ⭐ CONDITIONAL OBJECT ADD
-    if (requestedUnitType == "Apartment") {
-      payload["apartment_type"] = {
-        "studio": values['apartment_type'] == "studio",
-        "one_bhk": values['apartment_type'] == "one_bhk",
-        "two_bhk": values['apartment_type'] == "two_bhk",
-        "three_bhk": values['apartment_type'] == "three_bhk",
-      };
-    } else if (requestedUnitType == "Villa") {
-      payload["villa_type"] = {
-        "one_room": values['villa_types'] == "one_room",
-        "two_room": values['villa_type_two_room'] == "two_room",
-        "three_room": values['villa_type_three_room'] == "three_room",
-      };
-    }
 
     return payload;
   }

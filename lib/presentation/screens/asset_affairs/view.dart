@@ -58,6 +58,14 @@ class AssetAffairsHomeScreen extends ConsumerWidget {
           subService: SubService(),
         ),
         ResidentalUnitRentalRoute(service: Service(), subService: SubService()),
+        RequestToRenewalHousingContractRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
+        CancelHousingContractRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

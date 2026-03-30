@@ -33,9 +33,9 @@ class _RenewalHousingContractNewRequestScreenState
       service: widget.service,
       subService: widget.subService,
     );
-    // Future.microtask(() {
-    //   ref.read(_vsProvider(_providerArgs).notifier).fetchUsers();
-    // });
+    Future.microtask(() {
+      ref.read(_vsProvider(_providerArgs).notifier).fetchUnitLocations();
+    });
   }
 
   @override
@@ -55,8 +55,8 @@ class _RenewalHousingContractNewRequestScreenState
         ],
         child: DynamicForm(
           title: 'Performance Management',
-          stepTitles: const ['step 1'],
-          steps: [controller.requestForAccommodationFormStep1],
+          stepTitles: const [''],
+          steps: [controller.renewalHousingContractFormFields],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

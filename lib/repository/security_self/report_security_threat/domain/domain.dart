@@ -3,8 +3,8 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/security_access/models/request_model.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_threat_request_data.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_threat_reassign.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/repository/security_access/data/data.dart';
 import 'package:code_setup/repository/security_self/report_security_threat/data/data.dart';
 

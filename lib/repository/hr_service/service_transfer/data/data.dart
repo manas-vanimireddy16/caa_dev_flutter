@@ -14,9 +14,9 @@ import 'package:code_setup/presentation/screens/hr_service/models/employee_model
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/request_data_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_awareness_request_data.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_threat_reassign.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_threat_request_data.dart'
+import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart'
     hide ChatMessageModel;
 import 'package:code_setup/utils/api_end_point.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';

@@ -28,7 +28,7 @@ import 'package:code_setup/presentation/screens/hr_service/models/employee_model
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/media_services/models/request_data_model.dart';
 import 'package:code_setup/presentation/screens/media_services/request_for_coverage/widgets/request_card.dart';
-import 'package:code_setup/presentation/screens/security_self/models/security_threat_reassign.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/repository/hr_service/service_transfer/domain/domain.dart';
 import 'package:code_setup/repository/media_coverage/request_for_coverage/domain/domain.dart';

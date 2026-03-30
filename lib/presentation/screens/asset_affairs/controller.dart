@@ -66,6 +66,10 @@ class _VSController extends StateNotifier<_ViewState> {
         return 'Request For Accommodation In Muscat Governorate';
       case 1:
         return 'Residential Unit Rental';
+      case 2:
+        return 'Request to Renewal of Housing Contract';
+      case 3:
+        return 'Cancel Housing Contract';
       // case 1:
       //   return 'Assignment Decision';
       // case 2:
