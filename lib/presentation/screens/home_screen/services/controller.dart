@@ -65,7 +65,7 @@ class _VSController extends StateNotifier<_ViewState> {
   void initState() {
     // fromDateController = TextEditingController();
     final userData = KAppX.globalProvider.read(userProvider);
-    fetchUserRoles(970); //0); //(40);(1017);(userData?.userId ?? 0);
+    fetchUserRoles(1018); //0); //(40);(1017);(userData?.userId ?? 0);
     fetchBookmarks();
   }
 
@@ -180,10 +180,29 @@ class _VSController extends StateNotifier<_ViewState> {
         );
         break;
       case 'Report Security Threat':
-        KAppX.router.push(SecurityThreatRoute());
+        KAppX.router.push(
+          SecurityThreatRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
         break;
+
       case 'Request to Organize Security Awareness':
-        KAppX.router.push(OrganizeSecurityAwarenessRoute());
+        KAppX.router.push(
+          OrganizeSecurityAwarenessRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Request for Project Approval':
+        KAppX.router.push(
+          RequestForProjectApprovalRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
         break;
       case 'Airport Entry Permit Request':
         KAppX.router.push(
@@ -401,6 +420,13 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
+      case 'Request for VAPT and Infrastructure Review':
+        KAppX.router.push(
+          RequestForVAPTAndInfrastructureReviewRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
       // case 'Services':
       //   KAppX.router.push(const Services());
       //   break;

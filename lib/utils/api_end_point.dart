@@ -2008,4 +2008,184 @@ class ApiEndPoint {
   /// Approval trend breakdown
   static const String cancelHousingContractApprovalTrendBreakdown =
       '/v1/asset-affairs-service/housing-contract-cancel/analytics/approval-trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Project Approval Request)
+  static const String requestForProjectApprovalSendRequest =
+      '/v1/it-service/request-for-project-approval/requests';
+
+  /// Get my requests
+  static const String requestForProjectApprovalGetRequests =
+      '/v1/it-service/request-for-project-approval/requests';
+
+  /// Get all requests (no user filter)
+  static const String requestForProjectApprovalGetAllRequests =
+      '/v1/it-service/request-for-project-approval/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String requestForProjectApprovalGetActionItems =
+      '/v1/it-service/request-for-project-approval/requests/approval';
+
+  /// Get request by ID
+  static String requestForProjectApprovalRequestById(int requestId) =>
+      '/v1/it-service/request-for-project-approval/requests/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// Update request
+  static String requestForProjectApprovalUpdateRequest(int requestId) =>
+      '/v1/it-service/request-for-project-approval/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String requestForProjectApprovalApprove =
+      '/v1/it-service/request-for-project-approval/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String requestForProjectApprovalSendChatById(int requestId) =>
+      '/v1/it-service/request-for-project-approval/requests/$requestId/chat';
+
+  static String requestForProjectApprovalChatsById(int requestId) =>
+      '/v1/it-service/request-for-project-approval/requests/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String requestForProjectApprovalSendAttachmentById(int requestId) =>
+      '/v1/it-service/request-for-project-approval/requests/$requestId/attachment';
+
+  /// Get attachments
+  static String requestForProjectApprovalAttachmentsById(int requestId) =>
+      '/v1/it-service/request-for-project-approval/requests/$requestId/attachments';
+
+  /// Delete attachment
+  static String requestForProjectApprovalDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/it-service/request-for-project-approval/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String requestForProjectApprovalKpiCards =
+      '/v1/it-service/request-for-project-approval/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String requestForProjectApprovalApprovalKpiCards =
+      '/v1/it-service/request-for-project-approval/analytics/approval/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String requestForProjectApprovalStatusBreakdown =
+      '/v1/it-service/request-for-project-approval/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String requestForProjectApprovalApprovalStatusBreakdown =
+      '/v1/it-service/request-for-project-approval/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String requestForProjectApprovalTrendBreakdown =
+      '/v1/it-service/request-for-project-approval/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String requestForProjectApprovalApprovalTrendBreakdown =
+      '/v1/it-service/request-for-project-approval/analytics/approval/trend-breakdown';
+  static const String requestForProjectApprovalProjectEmployeesList =
+      '/v1/it-service/request-for-project-approval/employees';
+  static const String requestForProjectApprovalProjectAssignEmployee =
+      '/v1/it-service/request-for-project-approval/assign';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create VAPT Request)
+  static const String requestForVAPTSendRequest =
+      '/v1/it-service/request-for-vapt/requests';
+
+  /// Get my requests
+  static const String requestForVAPTGetRequests =
+      '/v1/it-service/request-for-vapt/requests';
+
+  /// Get all requests (no user filter)
+  static const String requestForVAPTGetAllRequests =
+      '/v1/it-service/request-for-vapt/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String requestForVAPTGetActionItems =
+      '/v1/it-service/request-for-vapt/requests/approval';
+
+  /// Get request by ID
+  static String requestForVAPTRequestById(int requestId) =>
+      '/v1/it-service/request-for-vapt/requests/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// Update request
+  static String requestForVAPTUpdateRequest(int requestId) =>
+      '/v1/it-service/request-for-vapt/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String requestForVAPTApprove =
+      '/v1/it-service/request-for-vapt/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String requestForVAPTSendChatById(int requestId) =>
+      '/v1/it-service/request-for-vapt/requests/$requestId/chat';
+
+  static String requestForVAPTChatsById(int requestId) =>
+      '/v1/it-service/request-for-vapt/requests/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String requestForVAPTSendAttachmentById(int requestId) =>
+      '/v1/it-service/request-for-vapt/requests/$requestId/attachment';
+
+  /// Get attachments
+  static String requestForVAPTAttachmentsById(int requestId) =>
+      '/v1/it-service/request-for-vapt/requests/$requestId/attachments';
+
+  /// Delete attachment
+  static String requestForVAPTDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/it-service/request-for-vapt/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String requestForVAPTKpiCards =
+      '/v1/it-service/request-for-vapt/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String requestForVAPTApprovalKpiCards =
+      '/v1/it-service/request-for-vapt/analytics/approval/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String requestForVAPTStatusBreakdown =
+      '/v1/it-service/request-for-vapt/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String requestForVAPTApprovalStatusBreakdown =
+      '/v1/it-service/request-for-vapt/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String requestForVAPTTrendBreakdown =
+      '/v1/it-service/request-for-vapt/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String requestForVAPTApprovalTrendBreakdown =
+      '/v1/it-service/request-for-vapt/analytics/approval/trend-breakdown';
 }

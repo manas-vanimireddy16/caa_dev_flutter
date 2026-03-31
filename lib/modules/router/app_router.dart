@@ -67,6 +67,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: SecurityThreatRoute.page),
         AutoRoute(page: OrganizeSecurityAwarenessRoute.page),
         AutoRoute(page: RequestForProjectApprovalRoute.page),
+        AutoRoute(page: RequestForVAPTAndInfrastructureReviewRoute.page),
       ],
     ),
 
@@ -97,6 +98,14 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: RequestForProjectApprovalDetailsRoute.page,
       path: RouteNames.requestForProjectApprovalDetails,
+    ),
+    AutoRoute(
+      page: RequestForVAPTAndInfrastructureReviewNewRequestRoute.page,
+      path: RouteNames.requestForVAPTAndInfrastructureReviewNewRequest,
+    ),
+    AutoRoute(
+      page: RequestForVAPTAndInfrastructureReviewDetailsRoute.page,
+      path: RouteNames.requestForVAPTAndInfrastructureReviewDetails,
     ),
 
     /// --- IT SERVICES ---

@@ -106,6 +106,10 @@ class RouteNames {
       '/requestForProjectApprovalNewRequest';
   static const String requestForProjectApprovalDetails =
       '/requestForProjectApprovalDetails';
+  static const String requestForVAPTAndInfrastructureReviewNewRequest =
+      '/requestForVAPTAndInfrastructureReviewNewRequest';
+  static const String requestForVAPTAndInfrastructureReviewDetails =
+      '/requestForVAPTAndInfrastructureReviewDetails';
 
   // ───────────────────────────────
   // IT SERVICES

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
@@ -26,12 +28,13 @@ import 'package:code_setup/presentation/models/file_upload_model.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/request_for_project_approval.dart';
 import 'package:code_setup/presentation/screens/logistics/models/dashBoardRequest.dart'
     hide ChatMessage, Service;
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
-import 'package:code_setup/repository/security_self/report_security_threat/domain/domain.dart';
+import 'package:code_setup/repository/information_security_services/report_security_threat/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:equatable/equatable.dart';
@@ -44,8 +47,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 part 'widgets/new_security_threat_request.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
-part 'widgets/request_tabs.dart';
 part 'widgets/assign_engineer_dialog.dart';
+
+part 'widgets/request_list.dart';
+part 'widgets/request_tab.dart';
+part 'widgets/ticket_requests_card.dart';
+part 'widgets/request_details_tab.dart';
 
 @RoutePage()
 class SecurityThreatScreen extends ConsumerStatefulWidget {
@@ -68,6 +75,8 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen>
   late FocusNode _focusNode;
   late TabController _tabController;
   late _VSControllerParams _providerArgs;
+    late PageController _pageController;
+
 
   @override
   @override
@@ -85,6 +94,8 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen>
     searchController.addListener(() {
       setState(() {}); // rebuild suffixIcon
     });
+        _pageController = PageController();
+
 
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
@@ -100,6 +111,7 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen>
     searchController.dispose();
     _focusNode.dispose();
     _tabController.dispose();
+      _pageController.dispose();
     super.dispose();
   }
 
@@ -198,208 +210,11 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen>
           ),
           16.toHorizontalSizedBox,
 
-          // Ticket Requests Section
-          Card(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Ticket Requests",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          KAppX.router.push(
-                            SecurityThreatNewRequestRoute(
-                              service: widget.service,
-                              subService: widget.subService,
-                            ),
-                          );
-                        },
-                        child: const Text('New Request'),
-                      ),
-                    ],
-                  ),
-                  12.toHorizontalSizedBox,
-
-                  // Search box
-                  KTextField(
-                    focusNode: _focusNode,
-                    hintText: "Search by ID or Name",
-                    controller: searchController,
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (value) {
-                      // When the user presses 'Search' on the keyboard
-
-                      controller.fetchRequests(
-                        isRefresh: true, // reset pagination
-                        searchText: value, // send search text to API
-                      );
-                    },
-                    onChanged: (value) {
-                      // Optional: to clear results when input becomes empty
-                      if (value.isNotEmpty) {
-                        controller.fetchRequests(
-                          isRefresh: true,
-                          searchText: searchController.text,
-                        );
-                      }
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.search, color: Colors.black),
-                      suffixIcon: searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(
-                                Icons.clear,
-                                color: Colors.black,
-                              ),
-                              onPressed: () {
-                                searchController.clear();
-                                ref.read(searchQueryProvider.notifier).state =
-                                    "";
-                                Future.microtask(() {
-                                  if (!_focusNode.hasFocus) {
-                                    _focusNode.requestFocus();
-                                  }
-                                });
-                              },
-                            )
-                          : null,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  12.toHorizontalSizedBox,
-
-                  // Tabs below the search bar
-                  TabBar(
-                    controller: _tabController,
-                    indicatorColor: Colors.blue,
-                    labelColor: Colors.blue,
-                    unselectedLabelColor: Colors.grey,
-                    tabs: const [
-                      Tab(text: "My Requests"),
-                      Tab(text: "Action Items"),
-                    ],
-                  ),
-
-                  // Tab content
-                  SizedBox(
-                    height: 400, // adjust height as needed
-                    child: TabBarView(
-                      controller: _tabController,
-                      // physics:   const NeverScrollableScrollPhysics(), // ❌ disables swipe
-                      children: [
-                        // Tab 0
-                        Consumer(
-                          builder: (context, ref, _) {
-                            final data = state.securityThreatRequestData;
-
-                            return state.isLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : ListView.builder(
-                                    itemCount: data.length,
-                                    itemBuilder: (context, index) {
-                                      final item = data[index];
-                                      return RequestCard(
-                                        from: 'hotelreservation',
-                                        data: {
-                                          'id': item.id,
-                                          'status': item.status,
-                                          'User Name':
-                                              item
-                                                  .createdByUser
-                                                  ?.employeeName ??
-                                              'NA',
-                                          'Date': item.createdAt,
-                                          'Approver Name':
-                                              active
-                                                  ?.approverUser
-                                                  ?.employeeName ??
-                                              '',
-                                        },
-                                        onTap: () async {
-                                          KAppX.router.push(
-                                            SecurityThreatRequestDetailsTabRoute(
-                                              from: 'employee',
-                                              id: item.id ?? 0,
-                                              service: widget.service,
-                                              subService: widget.subService,
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                          },
-                        ),
-
-                        // Tab 1
-                        Consumer(
-                          builder: (context, ref, _) {
-                            final data = state.securityThreatActionItemsData;
-
-                            return state.isLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : ListView.builder(
-                                    itemCount: data.length,
-                                    itemBuilder: (context, index) {
-                                      final item = data[index];
-                                      return RequestCard(
-                                        from: 'hotelreservation',
-                                        data: {
-                                          'id': item.id,
-                                          'status': item.status,
-                                          'User Name':
-                                              item
-                                                  .createdByUser
-                                                  ?.employeeName ??
-                                              'NA',
-                                          'Date': item.createdAt,
-                                          'Approver Name':
-                                              active
-                                                  ?.approverUser
-                                                  ?.employeeName ??
-                                              '',
-                                        },
-                                        onTap: () async {
-                                          KAppX.router.push(
-                                            SecurityThreatRequestDetailsTabRoute(
-                                              from: 'action items',
-                                              id: item.id ?? 0,
-                                              service: widget.service,
-                                              subService: widget.subService,
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          /// MAIN CARD
+          TicketRequestsCard(
+            providerArgs: _providerArgs,
+            focusNode: _focusNode,
+            pageController: _pageController,
           ),
         ],
       ),

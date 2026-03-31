@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
@@ -32,8 +34,8 @@ import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.da
 import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
-import 'package:code_setup/repository/security_self/report_security_threat/domain/domain.dart';
-import 'package:code_setup/repository/security_self/request_to_organize_security_awareness/domain/domain.dart';
+import 'package:code_setup/repository/information_security_services/report_security_threat/domain/domain.dart';
+import 'package:code_setup/repository/information_security_services/request_to_organize_security_awareness/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:equatable/equatable.dart';
@@ -48,8 +50,11 @@ import 'package:intl/intl.dart';
 part 'widgets/organize_security_awareness_new_request.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
-part 'widgets/request_tabs.dart';
 part 'widgets/assign_engineer_dialog.dart';
+part 'widgets/request_list.dart';
+part 'widgets/request_tab.dart';
+part 'widgets/ticket_requests_card.dart';
+part 'widgets/request_details_tab.dart';
 
 @RoutePage()
 class OrganizeSecurityAwarenessScreen extends ConsumerStatefulWidget {
@@ -73,6 +78,7 @@ class _OrganizeSecurityAwarenessScreenState
   late FocusNode _focusNode;
   late TabController _tabController;
   late _VSControllerParams _providerArgs;
+  late PageController _pageController;
 
   @override
   void initState() {
@@ -81,6 +87,7 @@ class _OrganizeSecurityAwarenessScreenState
       service: widget.service,
       subService: widget.subService,
     );
+    _pageController = PageController();
     searchController = TextEditingController(
       text: ref.read(searchQueryProvider),
     );
@@ -109,33 +116,14 @@ class _OrganizeSecurityAwarenessScreenState
     searchController.dispose();
     _focusNode.dispose();
     _tabController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentYear = DateTime.now().year;
-    final filterLabelList = List.generate(
-      6,
-      (index) => (currentYear - index).toString(),
-    );
-
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
-    final active = controller.getActiveApprovalLevel(
-      state.requestDetails.approvalDetails ?? [],
-    );
-    final statsList = StatSummaryHelper.buildStatList(
-      state.kpiData.data?.toJson(),
-    );
-    final statsApproverList = StatSummaryHelper.buildStatList(
-      state.approvalKpiData.data?.toJson(),
-    );
-
-    // // Keep TabController in sync with provider
-    // if (_tabController.index != selectedTab) {
-    //   _tabController.index = selectedTab;
-    // }
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -144,272 +132,38 @@ class _OrganizeSecurityAwarenessScreenState
         padding: const EdgeInsets.all(12),
         children: [
           // KPI Cards
-          StatSummaryRow(
-            stats: state.tabIndex == 0 ? statsList : statsApproverList,
-          ),
-
+          StatSummaryRow(stats: controller.currentStats),
           20.toHorizontalSizedBox,
 
-          // Status breakdown
+          /// Status Breakdown
           RequestStatusBreakdownCard(
             data: state.tabIndex == 0
-                ? state.statusBreakdown.data?.breakdown ?? []
-                : state.approvalStatusBreakdown.data?.breakdown ??
-                      [], // for action items
-            breakdown: state.statusBreakdown.data,
+                ? controller.statusBreakdownList
+                : controller.approvalStatusBreakdownList,
             title: "Requests Status Breakdown",
-
-            onChanged: (value) {
-              // send the text to your controller’s search function
-              state.tabIndex == 0
-                  ? controller.fetchStatusBreakdown(value ?? '')
-                  : controller.fetchApprovalStatusBreakdown(value ?? '');
-            },
+            onChanged: controller.onStatusFilterChanged,
+            breakdown: state.statusBreakdown.data,
           ),
-          16.toHorizontalSizedBox,
 
-          // Trend breakdown
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
-                ? state.trendData.data?.trendData
-                          ?.map((e) => e.count ?? 0)
-                          .toList() ??
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                : state.approvalTrendData.data?.trendData
-                          ?.map((e) => e.count ?? 0)
-                          .toList() ??
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            monthLabels: [
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-            ],
+                ? controller.trendCounts
+                : controller.approvalTrendCounts,
+            monthLabels: state.months,
             metric: "Total Tickets",
-            // selectedYear: '2025',
+            selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
-            // onYearTap: () => debugPrint("Year dropdown tapped"),
-            onChanged: (value) {
-              if (value != null) {
-                state.tabIndex == 0
-                    ? controller.fetchTrendBreakDown(value)
-                    : controller.fetchApprovalTrendBreakDown(value);
-              }
-            },
-            filterLabelList: filterLabelList,
+            filterLabelList: controller.filterLabelList,
+            onChanged: controller.onTrendFilterChanged,
           ),
+
           16.toHorizontalSizedBox,
 
           // Ticket Requests Section
-          Card(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Ticket Requests",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          KAppX.router.push(
-                            OrganizeSecurityAwarenessNewRequestRoute(
-                              service: widget.service,
-                              subService: widget.subService,
-                            ),
-                          );
-                        },
-                        child: const Text('New Request'),
-                      ),
-                    ],
-                  ),
-                  12.toHorizontalSizedBox,
-
-                  // Search box
-                  KTextField(
-                    focusNode: _focusNode,
-                    hintText: "Search by ID or Name",
-                    controller: searchController,
-                    // textInputAction: TextInputAction.search,
-                    onSubmitted: (value) {
-                      // When the user presses 'Search' on the keyboard
-
-                      controller.fetchRequests(
-                        isRefresh: true, // reset pagination
-                        searchText: value, // send search text to API
-                      );
-                    },
-                    onChanged: (value) {
-                      // Optional: to clear results when input becomes empty
-                      if (value.isNotEmpty) {
-                        controller.fetchRequests(
-                          isRefresh: true,
-                          searchText: searchController.text,
-                        );
-                      }
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.search, color: Colors.black),
-                      suffixIcon: searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(
-                                Icons.clear,
-                                color: Colors.black,
-                              ),
-                              onPressed: () {
-                                searchController.clear();
-                                ref.read(searchQueryProvider.notifier).state =
-                                    "";
-                                Future.microtask(() {
-                                  if (!_focusNode.hasFocus) {
-                                    _focusNode.requestFocus();
-                                  }
-                                });
-                              },
-                            )
-                          : null,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  12.toHorizontalSizedBox,
-
-                  // Tabs below the search bar
-                  TabBar(
-                    controller: _tabController,
-                    indicatorColor: Colors.blue,
-                    labelColor: Colors.blue,
-                    unselectedLabelColor: Colors.grey,
-                    tabs: const [
-                      Tab(text: "My Requests"),
-                      Tab(text: "Action Items"),
-                    ],
-                  ),
-
-                  // Tab content
-                  SizedBox(
-                    height: 400, // adjust height as needed
-                    child: TabBarView(
-                      controller: _tabController,
-                      // physics:   const NeverScrollableScrollPhysics(), // ❌ disables swipe
-                      children: [
-                        // Tab 0
-                        Consumer(
-                          builder: (context, ref, _) {
-                            final data = state.securityThreatRequestData;
-
-                            return state.isLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : ListView.builder(
-                                    itemCount: data.length,
-                                    itemBuilder: (context, index) {
-                                      final item = data[index];
-                                      return RequestCard(
-                                        from: 'hotelreservation',
-                                        data: {
-                                          'id': item.id,
-                                          'status': item.status,
-                                          'User Name':
-                                              item
-                                                  .createdByUser
-                                                  ?.employeeName ??
-                                              'NA',
-                                          'Date': item.createdAt,
-                                          'Approver Name':
-                                              active
-                                                  ?.approverUser
-                                                  ?.employeeName ??
-                                              '',
-                                        },
-                                        onTap: () async {
-                                          KAppX.router.push(
-                                            OrganizeSecurityAwarenessRequestDetailsTabRoute(
-                                              from: 'employee',
-                                              id: item.id ?? 0,
-                                              service: widget.service,
-                                              subService: widget.subService,
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                          },
-                        ),
-
-                        // Tab 1
-                        Consumer(
-                          builder: (context, ref, _) {
-                            final data = state.securityThreatActionItemsData;
-
-                            return state.isLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : ListView.builder(
-                                    itemCount: data.length,
-                                    itemBuilder: (context, index) {
-                                      final item = data[index];
-                                      return RequestCard(
-                                        from: 'hotelreservation',
-                                        data: {
-                                          'id': item.id,
-                                          'status': item.status,
-                                          'User Name':
-                                              item
-                                                  .createdByUser
-                                                  ?.employeeName ??
-                                              'NA',
-                                          'Date': item.createdAt,
-                                          'Approver Name':
-                                              active
-                                                  ?.approverUser
-                                                  ?.employeeName ??
-                                              '',
-                                        },
-                                        onTap: () async {
-                                          KAppX.router.push(
-                                            OrganizeSecurityAwarenessRequestDetailsTabRoute(
-                                              from: 'action items',
-                                              id: item.id ?? 0,
-                                              service: widget.service,
-                                              subService: widget.subService,
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          TicketRequestsCard(
+            providerArgs: _providerArgs,
+            focusNode: _focusNode,
+            pageController: _pageController,
           ),
         ],
       ),

@@ -6,7 +6,7 @@ import 'package:code_setup/presentation/screens/security_access/models/request_m
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/repository/security_access/data/data.dart';
-import 'package:code_setup/repository/security_self/report_security_threat/data/data.dart';
+import 'package:code_setup/repository/information_security_services/report_security_threat/data/data.dart';
 
 abstract class SecurityThreatRepoistory {
   factory SecurityThreatRepoistory() => SecurityThreatRepoistoryImple();

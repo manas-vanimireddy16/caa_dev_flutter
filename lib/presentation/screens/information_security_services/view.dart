@@ -63,6 +63,10 @@ class SecuritySelfHomePage extends ConsumerWidget {
           service: Service(),
           subService: SubService(),
         ),
+        RequestForVAPTAndInfrastructureReviewRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

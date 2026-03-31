@@ -1,4 +1,5 @@
 import 'package:code_setup/presentation/models/details_models.dart';
+import 'package:code_setup/utils/mappers/approval_detail_mapper.dart';
 
 class BaseRequestModel {
   final int? id;
@@ -109,9 +110,12 @@ class BaseRequestModel {
           ?.map((e) => WorkflowDetailModel.fromJson(e))
           .toList(),
 
-      approvalDetails: (json['approval_details'] as List?)
-          ?.map((e) => ApprovalDetailModel.fromJson(e))
-          .toList(),
+      approvalDetails: (json['approval_details'] as List?)?.map((e) {
+        final normalizedJson = ApprovalDetailMapper.normalize(
+          e as Map<String, dynamic>,
+        );
+        return ApprovalDetailModel.fromJson(normalizedJson);
+      }).toList(),
 
       chatMessages: (json['chat_messages'] as List?)
           ?.map((e) => ChatMessageModel.fromJson(e))

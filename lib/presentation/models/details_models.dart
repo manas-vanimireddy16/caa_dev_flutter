@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/human_resource_annual_plan.dart';
+import 'package:code_setup/utils/mappers/approval_detail_mapper.dart';
 
 RequestDetailModel welcomeFromJson(String str) =>
     RequestDetailModel.fromJson(json.decode(str));
@@ -655,13 +656,21 @@ class RequestDetailData {
               .toList()
         : [],
 
-    approvalDetails: (json['approval_details'] ?? json['approvals']) == null
-        ? []
-        : List<ApprovalDetailModel>.from(
-            (json['approval_details'] ?? json['approvals']).map(
-              (x) => ApprovalDetailModel.fromJson(x),
-            ),
-          ),
+    // approvalDetails: (json['approval_details'] ?? json['approvals']) == null
+    //     ? []
+    //     : List<ApprovalDetailModel>.from(
+    //         (json['approval_details'] ?? json['approvals']).map(
+    //           (x) => ApprovalDetailModel.fromJson(x),
+    //         ),
+    //       ),
+    approvalDetails: ((json['approval_details'] ?? json['approvals']) as List?)
+        ?.map((e) {
+          final normalizedJson = ApprovalDetailMapper.normalize(
+            e as Map<String, dynamic>,
+          );
+          return ApprovalDetailModel.fromJson(normalizedJson);
+        })
+        .toList(),
 
     chatMessages: json["chat_messages"] == null
         ? []
@@ -1360,6 +1369,14 @@ class RequestModel {
   final String? requestedCancellationDate;
   final String? currentContractEndDate;
   final String? currentContractStartDate;
+  final String? phone;
+  final String? titleOfProject;
+  final String? applicationUrl;
+  final String? ipAddress;
+  final String? link;
+  final String? submissionDate;
+  final String? applicationName;
+  final String? requestClassification;
 
   // ─────────────────────────────
   // CONSTRUCTOR
@@ -1616,6 +1633,14 @@ class RequestModel {
     this.requestedCancellationDate,
     this.currentContractEndDate,
     this.currentContractStartDate,
+    this.phone,
+    this.titleOfProject,
+    this.applicationUrl,
+    this.ipAddress,
+    this.link,
+    this.submissionDate,
+    this.applicationName,
+    this.requestClassification,
   });
 
   // ─────────────────────────────
@@ -1940,6 +1965,14 @@ class RequestModel {
       requestedCancellationDate: json['requested_cancellation_date'],
       currentContractEndDate: json['current_contract_end_date'],
       currentContractStartDate: json['current_contract_start_date'],
+      phone: json['phone'] as String?,
+      titleOfProject: json['title_of_project'] as String?,
+      applicationUrl: json['application_url'] as String?,
+      ipAddress: json['ip_address'] as String?,
+      link: json['link'] as String?,
+      submissionDate: json['submission_date'] as String?,
+      applicationName: json['application_name'] as String?,
+      requestClassification: json['request_classification'] as String?,
     );
   }
 

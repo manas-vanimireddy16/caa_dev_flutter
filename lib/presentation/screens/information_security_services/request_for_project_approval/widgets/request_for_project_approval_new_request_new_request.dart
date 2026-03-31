@@ -56,14 +56,14 @@ class _RequestForProjectApprovalNewRequestScreenState
         child: DynamicForm(
           title: 'Performance Management',
           stepTitles: const [''],
-          steps: [controller.renewalHousingContractFormFields],
+          steps: [controller.projectApprovalFormFields],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {
           //   return state.hrTasks.isNotEmpty;
           // },
           onSubmit: (values) async {
-            await controller.submitPerformanceManagementRequest(
+            await controller.submitProjectApprovalRequest(
               widget.serviceId,
               widget.subServiceId,
               values,

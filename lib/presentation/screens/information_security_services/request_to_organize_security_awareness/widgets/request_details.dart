@@ -117,7 +117,7 @@ class _OrganizeSecurityAwarenessRequestDetailsTabScreenState
                 ),
 
                 5.toHorizontalSizedBox,
-                RequestTabs(
+                RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
                   subService: widget.subService,
@@ -128,28 +128,11 @@ class _OrganizeSecurityAwarenessRequestDetailsTabScreenState
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
                   CommonRequestDetails(
-                    statusInfo: {
-                      "Request Date": request?.createdAt.toString() ?? 'N/A',
-                      "Status": request?.status ?? "N/A",
-                      "Approver": active?.approverUser?.email ?? 'N/A',
+                    statusInfo: controller.buildStatusInformation(),
 
-                      "Assigned To": active?.approverRole?.name ?? 'N/A',
-                    },
-                    requestInfo: {
-                      'Request For': request?.description ?? 'N/A',
-
-                      'Service Type': request?.service?.name ?? 'N/A',
-                      'Sub Service Type':
-                          request?.subService?.subServiceName ?? 'N/A',
-                      'Description': request?.description ?? 'N/A',
-                    },
-                    technicalInfo: {
-                      'Extension Number':
-                          request?.createdByUser?.extensionNumber.toString() ??
-                          'N/A',
-                    },
-                    // from: 'salalah',
-                    // data: state.requestDetails,
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
+                    // table: controller.mapAccommodationTableForDetails(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(

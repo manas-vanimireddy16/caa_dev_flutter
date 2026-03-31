@@ -64,7 +64,7 @@ class _RequestForProjectApprovalDetailsScreenState
           // final request = state.requestDetails.request == null
           //     ? null
           //     : state.requestDetails;
-          final request = state.requestDetails;
+          final request = state.requestDetails.request;
           final requestId = request?.id;
           final List<AttachmentModel> attachments = state.attachmentsById;
           final chats = state.chatById;
@@ -144,6 +144,12 @@ class _RequestForProjectApprovalDetailsScreenState
                       await controller.sendChatMessage(
                         serviceId: widget.serviceId,
                         subServiceId: widget.subServiceId,
+                      );
+                    },
+                    onAssign: () async {
+                      controller.showAssignEngineerDialog(
+                        approverId: approverId ?? 0,
+                        context: context,
                       );
                     },
 

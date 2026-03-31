@@ -55,8 +55,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<ThreatRequestDetail> securityThreatRequestData;
-  final List<ThreatRequestDetail> securityThreatActionItemsData;
+  final List<ThreatRequestDetail> requestData;
+  final List<ThreatRequestDetail> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final List<PendingApprovalUser> engineersList;
@@ -93,8 +93,8 @@ class _ViewState {
     required this.tabIndex,
     required this.approvalStatusBreakdown,
     required this.approvalTrendData,
-    required this.securityThreatRequestData,
-    required this.securityThreatActionItemsData,
+    required this.requestData,
+    required this.actionItems,
     required this.requestDetails,
     required this.requestDetailTab,
     required this.threatOption,
@@ -123,8 +123,8 @@ class _ViewState {
         tabIndex: 0,
         approvalStatusBreakdown: StatusBreakdownModel(),
         approvalTrendData: TrendBreakdownModel(),
-        securityThreatRequestData: [],
-        securityThreatActionItemsData: [],
+        requestData: [],
+        actionItems: [],
         requestDetails: RequestDetailData(),
         requestDetailTab: 0,
         threatOption: '',
@@ -152,8 +152,8 @@ class _ViewState {
     StatusBreakdownModel? approvalStatusBreakdown,
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
-    List<ThreatRequestDetail>? securityThreatRequestData,
-    List<ThreatRequestDetail>? securityThreatActionItemsData,
+    List<ThreatRequestDetail>? requestData,
+    List<ThreatRequestDetail>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? threatOption,
@@ -181,10 +181,8 @@ class _ViewState {
       approvalStatusBreakdown:
           approvalStatusBreakdown ?? this.approvalStatusBreakdown,
       approvalTrendData: approvalTrendData ?? this.approvalTrendData,
-      securityThreatRequestData:
-          securityThreatRequestData ?? this.securityThreatRequestData,
-      securityThreatActionItemsData:
-          securityThreatActionItemsData ?? this.securityThreatActionItemsData,
+      requestData: requestData ?? this.requestData,
+      actionItems: actionItems ?? this.actionItems,
       requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
       threatOption: threatOption ?? this.threatOption,
@@ -203,13 +201,20 @@ class _VSController extends StateNotifier<_ViewState> {
     : super(_ViewState.init()) {
     params = _VSControllerParams(service: service, subService: subService);
   }
+
+  Timer? _searchDebounce;
+
   late TextEditingController contactNumberController;
   late TextEditingController descriptionController;
   late TextEditingController chatController;
+  late TextEditingController searchController;
+
   Future<void> initState() async {
     contactNumberController = TextEditingController();
     descriptionController = TextEditingController();
     chatController = TextEditingController();
+    searchController = TextEditingController();
+
     fetchDepartmentName();
     fetchKpi();
     fetchStatusBreakdown('monthly');
@@ -224,6 +229,215 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchAllMyRequests();
     // fetchStatusBreakDown('weekly');
     // fetchTrendBreakDown('2025');
+  }
+
+  int _searchVersion = 0;
+
+  void onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    final int currentVersion = ++_searchVersion;
+
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
+      if (state.tabIndex == 0) {
+        await fetchRequests(isRefresh: true, searchText: value);
+      } else {
+        await fetchActionItems(isRefresh: true, searchText: value);
+      }
+
+      if (currentVersion != _searchVersion) return; // ignore old response
+    });
+  }
+
+  int get currentYear => DateTime.now().year;
+
+  List<String> get filterLabelList =>
+      List.generate(6, (index) => (currentYear - index).toString());
+  List<StatSummaryData> get requestStatsList =>
+      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+
+  List<StatSummaryData> get approverStatsList =>
+      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+
+  List<StatSummaryData> get currentStats =>
+      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  void onStatusFilterChanged(String? value) {
+    if (state.tabIndex == 0) {
+      fetchStatusBreakdown(value ?? '');
+    } else {
+      fetchApprovalStatusBreakdown(value ?? '');
+    }
+  }
+
+  void onTrendFilterChanged(String? value) {
+    if (value == null) return;
+
+    if (state.tabIndex == 0) {
+      fetchTrendBreakDown(value);
+    } else {
+      fetchApprovalTrendBreakDown(value);
+    }
+  }
+
+  List<int> get trendCounts {
+    final data = state.trendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<int> get approvalTrendCounts {
+    final data = state.approvalTrendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<ChartData> get statusBreakdownList {
+    return state.statusBreakdown.data?.breakdown ?? [];
+  }
+
+  List<ChartData> get approvalStatusBreakdownList {
+    return state.approvalStatusBreakdown.data?.breakdown ?? [];
+  }
+
+  Map<String, String> buildRequestCardData(ThreatRequestDetail item) {
+    final approverMap = resolveApproverMap(item.approvalDetails ?? []);
+
+    return {
+      'Request Id': item?.id?.toString() ?? '-',
+      'status': item.status ?? '-',
+      'Request By': item.createdByUser?.employeeName ?? '-',
+      // 'Cycle Period': item.cyclePeriod ?? '-',
+      'Request Submission Date': item?.createdAt.toString() ?? '-',
+      // 'Current Contract Start Date': item. ?? '-',
+      // 'Current Contract End Date': item.currentContractEndDate ?? '-',
+      // 'Requested cancellation Date': item.requestedCancellationDate ?? '-',
+      // 'Handover Date': item.handoverDate ?? '-',
+      // 'Current Unit Type': item.currentUnitType ?? '-',
+      // 'Tasks Related to Projects': item.tasks?.first.toString() ?? '-',
+      // 'Quarter': item.quater ?? '-',
+      // // 'Year': item.year?.toString() ?? '-',
+
+      /// ================= EMPLOYEE INFO =================
+
+      /// 👇 APPROVER (SINGLE LINE)
+      if (approverMap.containsKey('role')) ...{
+        'Approver': approverMap['role'] ?? '-',
+      } else if (approverMap.containsKey('department')) ...{
+        'Approver': _buildDepartmentSection(approverMap),
+      },
+    };
+  }
+
+  Map<String, String> buildRequestInformationData() {
+    final request = state.requestDetails.request;
+    return {
+      /// ───── RIGHT COLUMN ─────
+      "Service Type": request?.service?.name ?? 'N/A',
+
+      /// ───── LEFT COLUMN ─────
+      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
+
+      'Extension Number':
+          request?.createdByUser?.extensionNumber.toString() ?? '0',
+      'Request Submission Date': request?.createdAt.toString() ?? '-',
+      // 'Unit Type': request.currentUnitType ?? '-',
+      'Current Contract Start Date': request?.currentContractStartDate ?? '-',
+      'Current Contract End Date': request?.currentContractEndDate ?? '-',
+      'Requested cancellation Date': request?.requestedCancellationDate ?? '-',
+      'Handover Date': request?.handoverDate ?? '-',
+      // 'Quarter': request?.quarter ?? 'N/A',
+    };
+  }
+
+  Map<String, String> buildStatusInformation() {
+    final request = state.requestDetails.request;
+    final approvals = state.requestDetails.approvalDetails;
+    final nextApprover = resolveApproverMap(approvals);
+    return {
+      "Approval Status": request?.status ?? 'N/A',
+      "Requested Date": request?.createdAt ?? 'N/A',
+      // "Last Updated":
+      //     request?.updatedAt?.split('T').first ?? 'N/A',
+      if (nextApprover.containsKey('department'))
+        'Department': nextApprover['department']!,
+      if (nextApprover.containsKey('section'))
+        'Section': nextApprover['section']!,
+
+      if (nextApprover.containsKey('name'))
+        'Approver Name': nextApprover['name']!,
+      if (nextApprover.containsKey('email'))
+        'Approver Email': nextApprover['email']!,
+    };
+  }
+
+  Map<String, String> buildTechnicalInformation() {
+    final request = state.requestDetails.request;
+    return {
+      'Extension Number':
+          request?.createdByUser?.extensionNumber.toString() ?? '0',
+    };
+  }
+
+  String _buildDepartmentSection(Map<String, String> approverMap) {
+    final department = approverMap['department'];
+    final section = approverMap['section'];
+
+    if ((department ?? '').isNotEmpty && (section ?? '').isNotEmpty) {
+      return '$department - $section';
+    }
+
+    return department ?? '-';
+  }
+
+  Future<void> openRequestDetails(
+    int id, {
+    bool fromActionItems = false,
+  }) async {
+    updateRequestTab(0);
+
+    await KAppX.router.push(
+      RequestForProjectApprovalDetailsRoute(
+        id: id,
+        from: fromActionItems ? 'action items' : '',
+        service: service,
+        subService: subService,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      ),
+    );
+
+    await refreshAfterReturn();
+  }
+
+  Future<void> refreshAfterReturn() async {
+    await Future.wait([
+      fetchRequests(),
+      fetchKpi(),
+      fetchStatusBreakdown('weekly'),
+      fetchTrendBreakDown(DateTime.now().year.toString()),
+    ]);
+  }
+
+  void openNewRequestForm() {
+    // fetchbyCycleGoals(cycle: 'Jan-Jun');
+    // state = state.copyWith(selectedUsersList: []);
+    KAppX.router.push(
+      RequestForProjectApprovalNewRequestRoute(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+        service: service,
+        subService: subService,
+      ),
+    );
+  }
+
+  void updateRequestTab(int index) {
+    state = state.copyWith(requestDetailTab: index);
   }
 
   final securityThreatInstance = SecurityThreatRepoistory();
@@ -360,7 +574,7 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       // Clear list only if explicitly refreshing or searching
       if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(securityThreatRequestData: []);
+        state = state.copyWith(requestData: []);
       }
 
       final requests = await securityThreatInstance.getRequests(
@@ -371,7 +585,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(securityThreatRequestData: requests);
+      state = state.copyWith(requestData: requests);
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -386,7 +600,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     try {
       if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(securityThreatActionItemsData: []);
+        state = state.copyWith(actionItems: []);
       }
 
       final items = await securityThreatInstance.getActionItems(
@@ -397,10 +611,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(
-        securityThreatActionItemsData: items,
-        isLoading: false,
-      );
+      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }
@@ -448,6 +659,96 @@ class _VSController extends StateNotifier<_ViewState> {
         // sectionId: sectionId,
       ),
     );
+  }
+
+  bool _isPendingOrInProgress(String? status) {
+    final s = status?.toLowerCase();
+    return s == 'in progress';
+  }
+
+  bool _isCompleted(String? status) {
+    return status?.toLowerCase() == 'completed' ||
+        status?.toLowerCase() == 'approved';
+  }
+
+  DateTime _parseDate(String? value) {
+    try {
+      return DateTime.parse(value ?? '');
+    } catch (_) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+  }
+
+  Map<String, String> resolveApproverMap(List<ApprovalDetailModel>? approvals) {
+    if (approvals == null || approvals.isEmpty) {
+      return {};
+    }
+
+    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    final pendingList = approvals
+        .where((a) => _isPendingOrInProgress(a.approvalStatus))
+        .toList();
+
+    if (pendingList.isNotEmpty) {
+      pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
+      final next = pendingList.first;
+
+      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
+      if (next.approverRoleId != null) {
+        final name = next.approverUser?.employeeName;
+        final email = next.approverUser?.email;
+        final roleName = next.approverRole?.name;
+
+        if ((name ?? '').isNotEmpty) {
+          return {
+            'name': name!,
+            if ((email ?? '').isNotEmpty) 'email': email!,
+            if ((roleName ?? '').isNotEmpty) 'role': roleName!,
+          };
+        }
+      }
+
+      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
+      final department = next.department?.departmentName;
+      final section = next.section?.sectionName;
+
+      if ((department ?? '').isNotEmpty) {
+        return {
+          'department': department!,
+          if ((section ?? '').isNotEmpty) 'section': section!,
+        };
+      }
+
+      return {};
+    }
+
+    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
+    final completedList = approvals
+        .where((a) => _isCompleted(a.approvalStatus))
+        .toList();
+
+    if (completedList.isEmpty) {
+      return {};
+    }
+
+    completedList.sort((a, b) {
+      final levelCompare = (a.level ?? 0).compareTo(b.level ?? 0);
+      if (levelCompare != 0) return levelCompare;
+      return _parseDate(a.updatedAt).compareTo(_parseDate(b.updatedAt));
+    });
+
+    final last = completedList.last;
+
+    final name =
+        last.approvedByUser?.employeeName ?? last.approverUser?.employeeName;
+
+    final email = last.approverUser?.email;
+
+    if ((name ?? '').isNotEmpty) {
+      return {'name': name!, if ((email ?? '').isNotEmpty) 'email': email!};
+    }
+
+    return {};
   }
 
   Future<void> assignEngineer({
@@ -610,10 +911,6 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
-
-  void updateRequestTab(int index) {
-    state = state.copyWith(requestDetailTab: index);
-  }
 
   void updateTabIndex(int index) {
     state = state.copyWith(tabIndex: index);

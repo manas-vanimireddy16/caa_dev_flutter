@@ -15,7 +15,7 @@ class SettingsController extends StateNotifier<SettingsState> {
     initializeMsal();
     final user = KAppX.globalProvider.read(userInfoProvider);
     final int id = int.tryParse(user?.data?.id ?? '') ?? 0;
-    fetchUserRoles(970); // //(1017);(id); //(40);(id); //
+    fetchUserRoles(1018); // //(1017);(id); //(40);(id); //
   }
 
   SettingsController(this.ref) : super(SettingsState.initial());

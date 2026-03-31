@@ -70,6 +70,8 @@ class _VSController extends StateNotifier<_ViewState> {
         return 'Request to Organize Security Awareness';
       case 3:
         return 'Request for Project Approval';
+      case 4:
+        return 'Request for VAPT and Infrastructure Review';
 
       default:
         return '  Home';

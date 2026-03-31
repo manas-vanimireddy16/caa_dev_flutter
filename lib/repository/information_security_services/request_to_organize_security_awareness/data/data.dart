@@ -5,13 +5,16 @@ import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
+import 'package:code_setup/presentation/models/master_roles.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/security_access/models/request_model.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/repository/security_access/domain/domain.dart';
-import 'package:code_setup/repository/security_self/report_security_threat/domain/domain.dart';
+import 'package:code_setup/repository/information_security_services/report_security_threat/domain/domain.dart';
+import 'package:code_setup/repository/information_security_services/request_to_organize_security_awareness/domain/domain.dart';
 import 'package:code_setup/utils/api_end_point.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
@@ -19,30 +22,34 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 
-class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
+class OrganizeSecurityAwarenessRepoistoryImple
+    implements OrganizeSecurityAwarenessRepoistory {
   @override
-  Future<void> sendSecurityThreatRequest(Map<String, dynamic> payload) async {
+  Future<void> sendSecurityAwarenessRequest(
+    Map<String, dynamic> payload,
+  ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.reportSecurityThreatPostRequest;
+    final String url = ApiEndPoint.organizeSecurityAwarenessPostRequest;
     try {
       if (client != null) {
         final response = await client.post(url, data: payload);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ New VPN ticket sent successfully');
+          debugPrint('✅ New SecurityAwareness request sent successfully');
           ShowFlutterToast().showFlutterToastSuccess(
             response.data['message'] ?? 'Request sent successfully',
           );
         } else {
           ShowFlutterToast().showFlutterToastFailure(
-            response.data['message'] ?? 'Failed to send VPN request',
+            response.data['message'] ??
+                'Failed to send SecurityAwareness request',
           );
           debugPrint(
-            '⚠️ Failed to send vehicle request: ${response.statusCode}',
+            '⚠️ Failed to send SecurityAwareness request: ${response.statusCode}',
           );
         }
       } else {
-        debugPrint('❌ Client is null — cannot send vehicle request');
+        debugPrint('❌ Client is null — cannot send SecurityAwareness request');
       }
     } on DioException catch (e) {
       log('caught error');
@@ -50,7 +57,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
       throw ApiException(message);
       throw e;
     } catch (e) {
-      log('error fetching status breakdown $e');
+      log('error SecurityAwareness request $e');
       throw ApiException(e.toString());
     }
   }
@@ -152,7 +159,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
 
   @override
   Future<KPIResponse?> getKpiData() async {
-    String url = ApiEndPoint.reportSecurityThreatKpi;
+    String url = ApiEndPoint.organizeSecurityAwarenessKpi;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -245,7 +252,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
         final queryParams = {'time_period': period};
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.reportSecurityThreatStatusBreakdown,
+          ApiEndPoint.organizeSecurityAwarenessStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -280,7 +287,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.reportSecurityThreatTrendBreakdown,
+          ApiEndPoint.organizeSecurityAwarenessTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -448,7 +455,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
 
   @override
   Future<KPIResponse?> getApprovalKpiData() async {
-    String url = ApiEndPoint.reportSecurityThreatApprovalKpi;
+    String url = ApiEndPoint.organizeSecurityAwarenessApprovalKpi;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -485,7 +492,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
         final queryParams = {'time_period': period};
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.reportSecurityThreatApprovalStatusBreakdown,
+          ApiEndPoint.organizeSecurityAwarenessApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -522,7 +529,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.reportSecurityThreatApprovalTrendBreakdown,
+          ApiEndPoint.organizeSecurityAwarenessApprovalTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -547,7 +554,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<List<ThreatRequestDetail>> getRequests({
+  Future<List<OrganizeSecurityAwarenessRequestData>> getRequests({
     required int offset,
     required int limit,
     // String sortBy = 'created_at',
@@ -559,7 +566,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.reportSecurityThreatRequests;
+        final url = ApiEndPoint.organizeSecurityAwarenessRequests;
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -568,7 +575,9 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
 
           return list
               .map(
-                (e) => ThreatRequestDetail.fromJson(e as Map<String, dynamic>),
+                (e) => OrganizeSecurityAwarenessRequestData.fromJson(
+                  e as Map<String, dynamic>,
+                ),
               )
               .toList();
         } else {
@@ -583,7 +592,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<List<ThreatRequestDetail>> getActionItems({
+  Future<List<OrganizeSecurityAwarenessRequestData>> getActionItems({
     required int offset,
     required int limit,
     String status = '',
@@ -608,7 +617,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
         }
 
         final response = await client.get(
-          ApiEndPoint.reportSecurityThreatActionItems,
+          ApiEndPoint.organizeSecurityAwarenessActionItems,
           queryParameters: queryParams,
         );
 
@@ -620,8 +629,9 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
           /// Parse each Action Item
           final actionItems = list
               .map(
-                (item) =>
-                    ThreatRequestDetail.fromJson(item as Map<String, dynamic>),
+                (item) => OrganizeSecurityAwarenessRequestData.fromJson(
+                  item as Map<String, dynamic>,
+                ),
               )
               .toList();
 
@@ -644,7 +654,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<List<ThreatRequestDetail>> getCombinedRequests({
+  Future<List<OrganizeSecurityAwarenessRequestData>> getCombinedRequests({
     required int offset,
     required int limit,
     // String sortBy = 'created_at',
@@ -665,7 +675,9 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
 
           return list
               .map(
-                (e) => ThreatRequestDetail.fromJson(e as Map<String, dynamic>),
+                (e) => OrganizeSecurityAwarenessRequestData.fromJson(
+                  e as Map<String, dynamic>,
+                ),
               )
               .toList();
         } else {
@@ -746,7 +758,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.reportSecurityThreatRequestById(id);
+        final url = ApiEndPoint.organizeSecurityAwarenessRequestById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -775,7 +787,9 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
     String type,
   ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.reportSecurityThreatRequestById(id);
+    final String url = ApiEndPoint.organizeSecurityAwarenessChatById(
+      id.toString(),
+    );
 
     try {
       if (client != null) {
@@ -805,7 +819,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   @override
   Future<void> onClose(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.securityAccessApproval;
+    final String url = ApiEndPoint.organizeSecurityAwarenessApproval;
 
     try {
       if (client != null) {
@@ -835,15 +849,47 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<List<PendingApprovalUser>> getEngineersList() async {
+  Future<void> onEventChange(
+    int requestId,
+    Map<String, dynamic> payload,
+  ) async {
     final client = await KAppX.network.secureClient();
-    final userInfo = KAppX.globalProvider.read(rolesProvider);
+    final String url = ApiEndPoint.eventDateChange(requestId);
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.reportSecurityThreatEngineers(
-          userInfo?.roleId ?? 0,
-        );
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          // ShowFlutterToast().showFlutterToastSuccess(
+          //   '${response.data['message']}',
+          // );
+          debugPrint('✅ Request sent successfully');
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          // ShowFlutterToast().showFlutterToastFailure(
+          //   '${response.statusMessage}',
+          // );
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  @override
+  Future<List<PendingApprovalUser>> getEngineersList(int id) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.reportSecurityThreatEngineers(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -867,9 +913,37 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
+  Future<List<MasterRolesModel>> getRolesList() async {
+    final client = await KAppX.network.secureClient();
+    final userInfo = KAppX.globalProvider.read(rolesProvider);
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.masterRoles;
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          final List<dynamic> list = data['data'];
+
+          return list
+              .map((e) => MasterRolesModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception('Failed to roles list ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching roles list: $e");
+    }
+  }
+
+  @override
   Future<void> onAssignEngineer(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.reportSecurityThreatAssignToEngineer;
+    final String url = ApiEndPoint.organizeSecurityAwarenessAssign;
     try {
       if (client != null) {
         final response = await client.put(url, data: payload);

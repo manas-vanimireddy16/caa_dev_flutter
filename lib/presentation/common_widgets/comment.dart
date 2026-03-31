@@ -2,6 +2,7 @@
 
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/models/buttons_enum.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
@@ -318,6 +319,8 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                 KAppX.router.push(
                   OrganizeSecurityAwarenessNewRequestRoute(
                     source: widget.source,
+                    service: Service(),
+                    subService: SubService(),
                   ),
                 );
                 return;

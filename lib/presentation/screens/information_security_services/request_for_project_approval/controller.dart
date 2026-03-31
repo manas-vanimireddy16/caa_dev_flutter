@@ -48,8 +48,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<AccommodationRequestModel> requestData;
-  final List<AccommodationRequestModel> actionItems;
+  final List<RequestForProjectApprovalModel> requestData;
+  final List<RequestForProjectApprovalModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final List<PendingApprovalUser> engineersList;
@@ -104,6 +104,10 @@ class _ViewState {
   final String hrFrequencyInput;
   final String hrDurationInput;
   final List<ResidentalUnitRentalLocationModel> unitLocations;
+  final userDepartmentName = KAppX.globalProvider
+      .read(userProvider)
+      ?.departmentName
+      .toString();
 
   final int? hrEditingIndex;
 
@@ -233,8 +237,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<AccommodationRequestModel>? requestData,
-    List<AccommodationRequestModel>? actionItems,
+    List<RequestForProjectApprovalModel>? requestData,
+    List<RequestForProjectApprovalModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -436,7 +440,9 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(AccommodationRequestModel item) {
+  Map<String, String> buildRequestCardData(
+    RequestForProjectApprovalModel item,
+  ) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
@@ -445,14 +451,9 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       // 'Cycle Period': item.cyclePeriod ?? '-',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
-      'Current Contract Start Date': item.currentContractStartDate ?? '-',
-      'Current Contract End Date': item.currentContractEndDate ?? '-',
-      'Requested cancellation Date': item.requestedCancellationDate ?? '-',
-      'Handover Date': item.handoverDate ?? '-',
-      'Current Unit Type': item.currentUnitType ?? '-',
-      // 'Tasks Related to Projects': item.tasks?.first.toString() ?? '-',
-      // 'Quarter': item.quater ?? '-',
-      // // 'Year': item.year?.toString() ?? '-',
+      'Title of project': item.titleOfProject ?? '-',
+      'Date of submission': item.dateOfSubmission ?? '-',
+      'Phone': item.phone ?? '-',
 
       /// ================= EMPLOYEE INFO =================
 
@@ -466,7 +467,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildRequestInformationData() {
-    final request = state.requestDetails;
+    final request = state.requestDetails.request;
     return {
       /// ───── RIGHT COLUMN ─────
       "Service Type": request?.service?.name ?? 'N/A',
@@ -474,20 +475,15 @@ class _VSController extends StateNotifier<_ViewState> {
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
 
-      'Extension Number':
-          request?.createdByUser?.extensionNumber.toString() ?? '0',
-      'Request Submission Date': request?.createdAt.toString() ?? '-',
-      'Unit Type': request.currentUnitType ?? '-',
-      'Current Contract Start Date': request?.currentContractStartDate ?? '-',
-      'Current Contract End Date': request?.currentContractEndDate ?? '-',
-      'Requested cancellation Date': request?.requestedCancellationDate ?? '-',
-      'Handover Date': request?.handoverDate ?? '-',
+      'Title of project': request?.titleOfProject ?? '-',
+      'Date of submission': request?.dateOfSubmission ?? '-',
+      'Phone': request?.phone ?? '-',
       // 'Quarter': request?.quarter ?? 'N/A',
     };
   }
 
   Map<String, String> buildStatusInformation() {
-    final request = state.requestDetails;
+    final request = state.requestDetails.request;
     final approvals = state.requestDetails.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
     return {
@@ -508,7 +504,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildTechnicalInformation() {
-    final request = state.requestDetails;
+    final request = state.requestDetails.request;
     return {
       'Extension Number':
           request?.createdByUser?.extensionNumber.toString() ?? '0',
@@ -533,7 +529,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      CancelHousingContractDetailsRoute(
+      RequestForProjectApprovalDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -559,7 +555,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
     state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      CancelHousingContractNewRequestRoute(
+      RequestForProjectApprovalNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -568,89 +564,65 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final cancelHousingContractInstance = CancelHousingContractRepository();
+  final requestForProjectApprovalInstance =
+      RequestForProjectApprovalRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
   final securityAccessInstance = SecurityAccessRepoistory();
 
-  List<DynamicField> get renewalHousingContractFormFields => [
-    /// ================= REQUESTED UNIT TYPE =================
+  List<DynamicField> get projectApprovalFormFields => [
+    /// ================= TITLE =================
     DynamicField(
-      name: 'current_unit_type',
-      label: 'Current Unit Type',
-      type: FieldType.select,
+      name: 'title',
+      label: 'Title of project',
+      type: FieldType.text,
       required: true,
-      options: const [
-        DropdownOption(value: 'Apartment', label: 'Apartment'),
-        DropdownOption(value: 'Villa', label: 'Villa'),
-      ],
-
-      /// ⭐ reset dependent checkbox fields
     ),
+
+    /// ================= DATE =================
     DynamicField(
-      name: 'unit_location',
-      label: 'Location Of Unit',
-      type: FieldType.select,
+      name: 'date_of_submission',
+      label: 'Date of submission',
+      type: FieldType.date,
       required: true,
-      options: state.unitLocations
+      initialValue: DateTime.now().toIso8601String(),
+    ),
+
+    /// ================= PHONE =================
+    DynamicField(
+      name: 'phone_number',
+      label: 'Phone Number',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= DEPARTMENT =================
+    DynamicField(
+      name: 'department',
+      label: 'Department',
+      type: FieldType.select,
+      // required: true,
+      initialValue: state.userDepartmentName.toString(),
+      options: state.departments
           .map(
-            (loc) => DropdownOption(
-              value: loc.locationName,
-              label: loc.locationName ?? '',
+            (dept) => DropdownOption(
+              value: dept.id.toString(),
+              label: dept.id.toString(),
             ),
           )
           .toList(),
     ),
 
-    /// ================= START DATE =================
+    /// ================= DESCRIPTION =================
     DynamicField(
-      name: 'current_contract_start_date',
-      label: 'Current Contract Start Date',
-      type: FieldType.date,
-      required: true,
-    ),
-    DynamicField(
-      name: 'current_contract_end_date',
-      label: 'Current Contract End Date',
-      type: FieldType.date,
-      required: true,
-    ),
-
-    DynamicField(
-      name: 'requested_cancellation_date',
-      label: 'Requested Cancellation Date',
-      type: FieldType.date,
-      required: true,
-    ),
-
-    DynamicField(
-      name: 'handing_over_date',
-      label: 'Handing Over Date',
-      type: FieldType.date,
-      required: true,
-    ),
-    DynamicField(
-      name: 'reason_for_cancellation',
-      label: 'Reason for Cancellation',
+      name: 'description',
+      label: 'Description',
       type: FieldType.text,
-      required: true,
+      required: false,
+      // ⭐ makes it textarea-like
     ),
 
-    DynamicField(
-      name: 'pending_bills_clearance_status',
-      label: 'Pending Bills Clearance Status',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: 'Yes', label: 'Yes'),
-        DropdownOption(value: 'No', label: 'No'),
-      ],
-
-      /// ⭐ reset dependent checkbox fields
-    ),
-
-    /// ================= COMMENTS =================
-    DynamicField(name: 'comments', label: 'Comments', type: FieldType.text),
+    /// ================= ATTACHMENTS =================
     DynamicField(
       name: 'attachments',
       label: 'Attachments (Optional)',
@@ -731,7 +703,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await cancelHousingContractInstance.getRequestsById(
+      final requests = await requestForProjectApprovalInstance.getRequestsById(
         id: id,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -739,6 +711,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       if (requests != null) {
         state = state.copyWith(requestDetails: requests, isLoading: false);
+        // fetchAssignEmployeesList();
 
         fetchChatById(id);
         fetchAttachmentsById(id);
@@ -749,6 +722,10 @@ class _VSController extends StateNotifier<_ViewState> {
           requests,
           requests.approvalDetails ?? [],
         );
+        if (actionType == ActionButtonsType.assignReject) {
+          fetchAssignEmployeesList();
+          debugPrint('this user can only approve');
+        }
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
@@ -756,6 +733,30 @@ class _VSController extends StateNotifier<_ViewState> {
       state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
+  }
+
+  Future<void> fetchAssignEmployeesList() async {
+    try {
+      // final id = findRoleId();
+      final user = KAppX.globalProvider.read(rolesProvider);
+      final employeeList = await requestForProjectApprovalInstance
+          .getEmployeeList(
+            departmentId: user?.departmentId ?? 0,
+
+            sectionId: user?.sectionId ?? 0,
+            // roleId: id.toString(),
+          );
+
+      if (employeeList != null) {
+        final selectionItems = _mapToSelectionItems(employeeList);
+        state = state.copyWith(
+          employeeList: employeeList,
+          selectionItems: selectionItems,
+        );
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {}
   }
 
   Future<void> fetchDepartments() async {
@@ -772,7 +773,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await cancelHousingContractInstance.getchatById(id);
+      final requests = await requestForProjectApprovalInstance.getchatById(id);
       if (requests != null) {
         state = state.copyWith(chatById: requests);
       }
@@ -786,7 +787,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await cancelHousingContractInstance
+      final attachments = await requestForProjectApprovalInstance
           .getAttachmentsById(id);
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
@@ -799,22 +800,10 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchLocations() async {
-    try {
-      final locations = await cancelHousingContractInstance.getLocations();
-
-      if (locations != null) {
-        state = state.copyWith(locations: locations.data);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await cancelHousingContractInstance.getKpiData(
+      final kpis = await requestForProjectApprovalInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -832,7 +821,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await cancelHousingContractInstance
+      final data = await requestForProjectApprovalInstance
           .getApprovalTrendBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -852,7 +841,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await cancelHousingContractInstance
+      final statusBreakdown = await requestForProjectApprovalInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -876,7 +865,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await cancelHousingContractInstance
+      final statusBreakdown = await requestForProjectApprovalInstance
           .getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -900,11 +889,12 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await cancelHousingContractInstance.getTrendBreakdownData(
-        period: period,
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
-      );
+      final data = await requestForProjectApprovalInstance
+          .getTrendBreakdownData(
+            period: period,
+            serviceId: service.id ?? 0,
+            subServiceId: subService.id ?? 0,
+          );
 
       if (data != null) {
         state = state.copyWith(trendData: data, isLoading: false);
@@ -919,7 +909,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await cancelHousingContractInstance.getApprovalKpiData(
+      final kpis = await requestForProjectApprovalInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
@@ -946,7 +936,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(requestData: [], isLoading: false);
       }
 
-      final requests = await cancelHousingContractInstance.getRequests(
+      final requests = await requestForProjectApprovalInstance.getRequests(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -975,7 +965,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await cancelHousingContractInstance.getActionItems(
+      final items = await requestForProjectApprovalInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -1049,7 +1039,7 @@ class _VSController extends StateNotifier<_ViewState> {
     required int subServiceId,
   }) async {
     try {
-      final requestId = state.requestDetails.id;
+      final requestId = state.requestDetails.request?.id;
       if (requestId == null) {
         throw Exception("Request ID missing");
       }
@@ -1071,7 +1061,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await cancelHousingContractInstance
+        final uploadedFiles = await requestForProjectApprovalInstance
             .uploadAttachments(state.attachments);
 
         if (uploadedFiles.isEmpty) {
@@ -1102,7 +1092,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await cancelHousingContractInstance.sendAttachment(payload, requestId);
+        await requestForProjectApprovalInstance.sendAttachment(
+          payload,
+          requestId,
+        );
       }
 
       /// ------------------------------------------------------------
@@ -1123,7 +1116,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await cancelHousingContractInstance.sendChat(payload, requestId);
+        await requestForProjectApprovalInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -1155,7 +1148,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await cancelHousingContractInstance.onApprove(payload);
+      await requestForProjectApprovalInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       fetchactionItems();
@@ -1200,7 +1193,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await cancelHousingContractInstance.onApprove(payload);
+      await requestForProjectApprovalInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
@@ -1227,7 +1220,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await cancelHousingContractInstance.onSendInProgress(payload);
+      // await requestForProjectApprovalInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1237,6 +1230,70 @@ class _VSController extends StateNotifier<_ViewState> {
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  Future<void> assignEngineer({
+    required int engineerUserId,
+    required int approverId,
+
+    String comment = "Assigning engineer",
+  }) async {
+    try {
+      final client = await KAppX.network.secureClient();
+      if (client == null) return;
+      final userInfo = KAppX.globalProvider.read(rolesProvider);
+      final payload = {
+        "request_id": state.requestDetails.request?.id,
+        "approval_id": approverId,
+        "assigned_to_user_id": engineerUserId,
+        "comment": "assigning",
+      };
+      {}
+      print(payload);
+
+      await requestForProjectApprovalInstance.onAssignEmployee(payload);
+
+      // Refresh details after assigning
+      // await fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
+    } catch (e) {
+      print("Error assigning engineer: $e");
+    }
+  }
+
+  List<SelectionDialogItem> _mapToSelectionItems(
+    List<EmployeeSummary> employees,
+  ) {
+    return employees.map((e) {
+      return SelectionDialogItem(
+        id: e.userId ?? 0,
+        name: e.employeeName ?? '',
+        taskCount: e.inProgressCount ?? 0,
+      );
+    }).toList();
+  }
+
+  void showAssignEngineerDialog({
+    required BuildContext context,
+    required int approverId,
+  }) {
+    KAppX.extendedRouter.dialog.showKDialog(
+      builder: (_) => SelectionDialog(
+        config: SelectionDialogConfig(
+          title: "Assign to Engineer",
+          items: state.selectionItems,
+          isLoading: state.selectionItems.isEmpty,
+          onItemSelected: (item) async {
+            await assignEngineer(
+              engineerUserId: item.id,
+              approverId: approverId,
+            );
+
+            KAppX.router.pop(); // close dialog
+            KAppX.router.pop(); // close details
+          },
+        ),
+      ),
+    );
   }
 
   bool canUserActOnLevel({required ApprovalDetailModel approval}) {
@@ -1372,7 +1429,10 @@ class _VSController extends StateNotifier<_ViewState> {
     final int approvalLevel = level.level ?? 0;
     final bool ishasReplace = level.isReplace ?? false;
 
-    if (level != null) {
+    if (isManager == true) {
+      debugPrint('this user can only approve');
+      return ActionButtonsType.assignReject;
+    } else if (level != null) {
       debugPrint('this user can approve and reject');
       return ActionButtonsType.approveReject;
     }
@@ -1597,34 +1657,18 @@ class _VSController extends StateNotifier<_ViewState> {
     int subServiceId,
     Map<String, dynamic> values,
   ) {
-    final userInfo = KAppX.globalProvider.read(rolesProvider);
-
+    final userInfo = KAppX.globalProvider.read(userInfoProvider);
     final payload = {
-      /// ⭐ USER INFO
-      "req_user_department_id": userInfo?.departmentId,
-      "req_user_section_id": userInfo?.sectionId,
-
       /// ⭐ SERVICE INFO
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      /// ⭐ UNIT INFO
-      "current_unit_type": values['current_unit_type'],
-
-      /// ⭐ CONTRACT DETAILS
-      "location_of_unit": values['location_of_unit'],
-      "current_contract_start_date": values['current_contract_start_date'],
-      "current_contract_end_date": values['current_contract_end_date'],
-
-      /// ⭐ CANCELLATION DETAILS
-      "requested_cancellation_date":
-          values['requested_cancellation_date'], // ⚠️ mapping fix
-      "reason_for_cancellation": values['reason_for_cancellation'],
-      "pending_bills_clearance_status":
-          values['pending_bills_clearance_status'],
-      "handover_date": values['handing_over_date'], // ⚠️ key fix
-      /// ⭐ OPTIONAL COMMENT
-      "comment": values['comments'] ?? "",
+      /// ⭐ FORM DATA (MAPPED CORRECTLY)
+      "title_of_project": values['title'], // 🔥 mapping fix
+      "date_of_submission": values['date_of_submission'],
+      "phone": values['phone_number'], // 🔥 mapping fix
+      "department_id": userInfo?.data?.department?.id, // 🔥 mapping fix
+      "description": values['description'] ?? "",
 
       /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
@@ -1633,7 +1677,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return payload;
   }
 
-  Future<void> submitPerformanceManagementRequest(
+  Future<void> submitProjectApprovalRequest(
     int serviceId,
     int subServiceId,
     Map<String, dynamic> values,
@@ -1650,8 +1694,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await cancelHousingContractInstance
-          .sendCancelHousingContractRequest(payload);
+      final response = await requestForProjectApprovalInstance
+          .sendProjectApprovalRequest(payload);
 
       if (response['status'] == 'success') {
         _refreshDashboard();

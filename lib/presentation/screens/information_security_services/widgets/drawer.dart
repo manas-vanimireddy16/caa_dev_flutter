@@ -40,6 +40,11 @@ class _DrawerMenu extends StatelessWidget {
         icon: KImageProvider(image: KIcons.eventNote),
         label: 'Request for Project Approval',
       ),
+      DrawerItemData(
+        index: 4,
+        icon: KImageProvider(image: KIcons.security),
+        label: 'Request for VAPT and Infrastructure Review',
+      ),
     ];
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)
