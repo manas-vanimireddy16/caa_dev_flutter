@@ -40,8 +40,8 @@ part 'widgets/drawer.dart';
 // part 'my_profile_page/widget/my_profile_widget.dart';
 
 @RoutePage()
-class SecuritySelfHomePage extends ConsumerWidget {
-  const SecuritySelfHomePage({super.key});
+class LegalConsultationServicesHomeScreen extends ConsumerWidget {
+  const LegalConsultationServicesHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,31 +53,50 @@ class SecuritySelfHomePage extends ConsumerWidget {
 
     return AutoTabsRouter.builder(
       routes: [
-        SecuritySelfDashboardRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
-        SecurityThreatRoute(service: Service(), subService: SubService()),
-        OrganizeSecurityAwarenessRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
-        RequestForProjectApprovalRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
-        RequestForVAPTAndInfrastructureReviewRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
-        RequestForInternalAuditRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
-        CyberSecurityRiskManagementRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
+        // AssignmentDecisionDashboardRoute(),
+        // AssignmentDecisionRoute(service: Service(), subService: SubService()),
+        // SecondmentDecisionRoute(service: Service(), subService: SubService()),
+        // TemporaryAssignmentDecisionRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // ServiceTransferRoute(service: Service(), subService: SubService()),
+        // RequestforDutyMissionRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // RequestforDutyMissionPlannedRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // RequestforDutyMissionUnplannedRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // TransferFromOneJobtoAnotherJobNatureRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // PaymentofShiftAllowanceRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // PaymentofCashAllowanceForLeaveRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // RequiredNewResourceRoute(service: Service(), subService: SubService()),
+        // PromotionsRoute(service: Service(), subService: SubService()),
+        // AnnualIncrementRoute(service: Service(), subService: SubService()),
+        // SkillsEnhancementRoute(service: Service(), subService: SubService()),
+        // PerformanceManagementRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // RequestForHumanResourceAnnualPlanningRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

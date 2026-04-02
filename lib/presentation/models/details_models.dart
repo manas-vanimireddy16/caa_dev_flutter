@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/human_resource_annual_plan.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/cyber_security_risk_management_model.dart';
 import 'package:code_setup/utils/mappers/approval_detail_mapper.dart';
 
 RequestDetailModel welcomeFromJson(String str) =>
@@ -29,6 +30,8 @@ class RequestDetailModel {
 
 class RequestDetailData {
   RequestModel? request;
+  final CyberSecurityRiskModel? risk;
+
   List<WorkflowDetailModel>? workflowDetails;
   List<ApprovalDetailModel>? approvalDetails;
   List<ChatMessageModel>? chatMessages;
@@ -378,6 +381,7 @@ class RequestDetailData {
   final String? currentUnitType;
   RequestDetailData({
     this.request,
+    this.risk,
     this.workflowDetails,
     this.approvalDetails,
     this.chatMessages,
@@ -648,6 +652,9 @@ class RequestDetailData {
     request: json["request"] == null
         ? null
         : RequestModel.fromJson(json["request"]),
+    risk: json['risks'] != null
+        ? CyberSecurityRiskModel.fromJson(json['risks'] as Map<String, dynamic>)
+        : null,
 
     workflowDetails:
         (json["workflow_details"] ?? json["workflow_logs"] ?? []) is List
@@ -1377,6 +1384,8 @@ class RequestModel {
   final String? submissionDate;
   final String? applicationName;
   final String? requestClassification;
+  final String? applicationToBeAudited;
+  final String? applicationToBeAuditedOther;
 
   // ─────────────────────────────
   // CONSTRUCTOR
@@ -1641,6 +1650,8 @@ class RequestModel {
     this.submissionDate,
     this.applicationName,
     this.requestClassification,
+    this.applicationToBeAudited,
+    this.applicationToBeAuditedOther,
   });
 
   // ─────────────────────────────
@@ -1973,6 +1984,9 @@ class RequestModel {
       submissionDate: json['submission_date'] as String?,
       applicationName: json['application_name'] as String?,
       requestClassification: json['request_classification'] as String?,
+      applicationToBeAudited: json['application_to_be_audited'] as String?,
+      applicationToBeAuditedOther:
+          json['application_to_be_audited_other'] as String?,
     );
   }
 

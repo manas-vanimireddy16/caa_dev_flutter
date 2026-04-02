@@ -68,6 +68,8 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: OrganizeSecurityAwarenessRoute.page),
         AutoRoute(page: RequestForProjectApprovalRoute.page),
         AutoRoute(page: RequestForVAPTAndInfrastructureReviewRoute.page),
+        AutoRoute(page: RequestForInternalAuditRoute.page),
+        AutoRoute(page: CyberSecurityRiskManagementRoute.page),
       ],
     ),
 
@@ -106,6 +108,22 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: RequestForVAPTAndInfrastructureReviewDetailsRoute.page,
       path: RouteNames.requestForVAPTAndInfrastructureReviewDetails,
+    ),
+    AutoRoute(
+      page: RequestForInternalAuditNewRequestRoute.page,
+      path: RouteNames.requestForInternalAuditNewRequest,
+    ),
+    AutoRoute(
+      page: RequestForInternalAuditDetailsRoute.page,
+      path: RouteNames.requestForInternalAuditDetails,
+    ),
+    AutoRoute(
+      page: CyberSecurityRiskManagementNewRequestRoute.page,
+      path: RouteNames.cyberSecurityRiskManagementNewRequest,
+    ),
+    AutoRoute(
+      page: CyberSecurityRiskManagementDetailsRoute.page,
+      path: RouteNames.cyberSecurityRiskManagementDetails,
     ),
 
     /// --- IT SERVICES ---
@@ -561,6 +579,23 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: RequestForStudyLeaveDetailsRoute.page,
       path: RouteNames.requestForStudyLeaveDetails,
+    ),
+
+    /// --- Assignment Decision ---
+    AutoRoute(
+      page: LegalConsultationServicesHomeRoute.page,
+      path: RouteNames.homeRouteLegalConsultationServices,
+      children: [
+        AutoRoute(page: RequestForLegalContractReviewRoute.page, initial: true),
+      ],
+    ),
+    AutoRoute(
+      page: RequestForLegalContractReviewDetailsRoute.page,
+      path: RouteNames.legalConsultationServicesRequestDetails,
+    ),
+    AutoRoute(
+      page: RequestForLegalContractReviewNewRequestRoute.page,
+      path: RouteNames.legalConsultationServicesNewRequest,
     ),
   ];
 

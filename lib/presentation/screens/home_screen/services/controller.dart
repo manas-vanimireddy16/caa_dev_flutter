@@ -65,7 +65,7 @@ class _VSController extends StateNotifier<_ViewState> {
   void initState() {
     // fromDateController = TextEditingController();
     final userData = KAppX.globalProvider.read(userProvider);
-    fetchUserRoles(1018); //0); //(40);(1017);(userData?.userId ?? 0);
+    fetchUserRoles(953); //0); //(40);(1017);(userData?.userId ?? 0);
     fetchBookmarks();
   }
 
@@ -427,6 +427,30 @@ class _VSController extends StateNotifier<_ViewState> {
             subService: subService ?? SubService(),
           ),
         );
+      case 'Request for Internal Audit (Cyber Security Audit)':
+        KAppX.router.push(
+          RequestForInternalAuditRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Cyber Security Risk Management':
+        KAppX.router.push(
+          CyberSecurityRiskManagementRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Request for Legal Consultation Review':
+        KAppX.router.push(
+          RequestForLegalContractReviewRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       // case 'Services':
       //   KAppX.router.push(const Services());
       //   break;

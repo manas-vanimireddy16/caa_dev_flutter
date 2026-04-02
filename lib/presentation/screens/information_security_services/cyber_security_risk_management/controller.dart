@@ -31,7 +31,6 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
-  final String selectedPriority;
 
   final List<FileUploadItem> selectedFileUrl;
   final List<Map<String, dynamic>> attachments;
@@ -48,35 +47,15 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<RequestForVAPTModel> requestData;
-  final List<RequestForVAPTModel> actionItems;
+  final List<CyberSecurityRiskRequestModel> requestData;
+  final List<CyberSecurityRiskRequestModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
-  final List<PendingApprovalUser> engineersList;
   final int approvalId;
 
-  final bool isFormValid;
   final bool isButtonDisabled;
   final List<ChatMessageModel> chatById;
   final List<AttachmentModel> attachmentsById;
-  final List<Position> positionsList;
-  final List<EmployeeList> usersList;
-  final List<EmployeeList> selectedUsersList;
-  final String selectedPositionName;
-  final EmployeeList? selectedUser;
-  final String selectedUserName;
-  final String selectedSalaryDetails;
-
-  final int? selectedUserId;
-  final List<EmployeeSummary> employeeList;
-  final bool isStartDateSelected;
-
-  final String selectedRequestType;
-  final List<AllowanceEmployee> allowanceEmployees;
-  final List<DepartmentModel> departments;
-  final List<Grade> gradeList;
-  final List<GoalModel> byCycleGoalsData;
-  final List<GoalListModel> goalWeightList;
 
   final List<String> months = [
     'January',
@@ -93,30 +72,11 @@ class _ViewState {
     'December',
   ];
 
-  final List<LocationModel> locations;
-
-  final List<MasterRolesModel> rolesList;
-  final List<SelectionDialogItem> selectionItems;
-  final List<HrTask> hrTasks;
-
-  final String hrTaskInput;
-  final String hrResponsibilityInput;
-  final String hrFrequencyInput;
-  final String hrDurationInput;
-  final List<ResidentalUnitRentalLocationModel> unitLocations;
-  final userDepartmentName = KAppX.globalProvider
-      .read(userProvider)
-      ?.departmentName
-      .toString();
-
-  final int? hrEditingIndex;
-
   /// FORM KEY
   final formKey = GlobalKey<FormState>();
 
   _ViewState({
     required this.isLoading,
-    required this.selectedPriority,
     required this.selectedFileUrl,
     required this.attachments,
     required this.kpiData,
@@ -132,44 +92,15 @@ class _ViewState {
     required this.actionItems,
     required this.requestDetails,
     required this.requestDetailTab,
-    required this.engineersList,
     required this.approvalId,
-    required this.isFormValid,
     required this.isButtonDisabled,
     required this.chatById,
-    required this.positionsList,
-    required this.selectedPositionName,
-    this.selectedUserId,
-    required this.usersList,
-    required this.selectedUserName,
-    this.selectedUser,
-    required this.employeeList,
-    required this.isStartDateSelected,
-    required this.selectedSalaryDetails,
-    required this.selectedRequestType,
-    required this.allowanceEmployees,
-    required this.departments,
-    required this.locations,
     required this.attachmentsById,
-    required this.rolesList,
-    required this.selectionItems,
-    required this.gradeList,
-    required this.byCycleGoalsData,
-    required this.goalWeightList,
-    required this.hrTasks,
-    required this.hrTaskInput,
-    required this.hrResponsibilityInput,
-    required this.hrFrequencyInput,
-    required this.hrDurationInput,
-    required this.hrEditingIndex,
-    required this.selectedUsersList,
-    required this.unitLocations,
   });
 
   _ViewState.init()
     : this(
         isLoading: false,
-        selectedPriority: '',
         selectedFileUrl: [],
         attachments: [],
         kpiData: KPIResponse(),
@@ -185,38 +116,11 @@ class _ViewState {
         actionItems: [],
         requestDetails: RequestDetailData(),
         requestDetailTab: 0,
-        engineersList: [],
         approvalId: 0,
-        isFormValid: false,
         isButtonDisabled: false,
         chatById: [],
-        positionsList: [],
-        selectedPositionName: '',
-        selectedUserId: null,
-        usersList: [],
-        selectedUserName: '',
-        selectedUser: null,
-        employeeList: [],
-        isStartDateSelected: false,
-        selectedSalaryDetails: '',
-        selectedRequestType: '',
-        allowanceEmployees: [],
-        departments: [],
-        locations: [],
+
         attachmentsById: [],
-        rolesList: [],
-        selectionItems: [],
-        gradeList: [],
-        byCycleGoalsData: [],
-        goalWeightList: [],
-        hrTasks: const [],
-        hrTaskInput: '',
-        hrResponsibilityInput: '',
-        hrFrequencyInput: '',
-        hrDurationInput: '',
-        hrEditingIndex: null,
-        selectedUsersList: [],
-        unitLocations: [],
       );
 
   _ViewState copyWith({
@@ -237,8 +141,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<RequestForVAPTModel>? requestData,
-    List<RequestForVAPTModel>? actionItems,
+    List<CyberSecurityRiskRequestModel>? requestData,
+    List<CyberSecurityRiskRequestModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -281,10 +185,10 @@ class _ViewState {
     ValueGetter<int?>? hrEditingIndex,
     List<EmployeeList>? selectedUsersList,
     List<ResidentalUnitRentalLocationModel>? unitLocations,
+    List<SectionModel>? sections,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
-      selectedPriority: selectedPriority ?? this.selectedPriority,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
@@ -301,42 +205,10 @@ class _ViewState {
       actionItems: actionItems ?? this.actionItems,
       requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
-      engineersList: engineersList ?? this.engineersList,
       approvalId: approvalId ?? this.approvalId,
-      isFormValid: isFormValid ?? this.isFormValid,
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
       chatById: chatById ?? this.chatById,
-      positionsList: positionsList ?? this.positionsList,
-      selectedPositionName: selectedPositionName ?? this.selectedPositionName,
-      selectedUserId: selectedUserId ?? this.selectedUserId,
-      usersList: usersList ?? this.usersList,
-      selectedUserName: selectedUserName ?? this.selectedUserName,
-      selectedUser: selectedUser ?? this.selectedUser,
-      employeeList: employeeList ?? this.employeeList,
-      isStartDateSelected: isStartDateSelected ?? this.isStartDateSelected,
-      selectedSalaryDetails:
-          selectedSalaryDetails ?? this.selectedSalaryDetails,
-      selectedRequestType: selectedRequestType ?? this.selectedRequestType,
-      allowanceEmployees: allowanceEmployees ?? this.allowanceEmployees,
-      departments: departments ?? this.departments,
-      locations: locations ?? this.locations,
       attachmentsById: attachmentsById ?? this.attachmentsById,
-      rolesList: rolesList ?? this.rolesList,
-      selectionItems: selectionItems ?? this.selectionItems,
-      gradeList: gradeList ?? this.gradeList,
-      byCycleGoalsData: byCycleGoalsData ?? this.byCycleGoalsData,
-      goalWeightList: goalWeightList ?? this.goalWeightList,
-      hrTasks: hrTasks ?? this.hrTasks,
-      hrTaskInput: hrTaskInput ?? this.hrTaskInput,
-      hrResponsibilityInput:
-          hrResponsibilityInput ?? this.hrResponsibilityInput,
-      hrFrequencyInput: hrFrequencyInput ?? this.hrFrequencyInput,
-      hrDurationInput: hrDurationInput ?? this.hrDurationInput,
-      hrEditingIndex: hrEditingIndex != null
-          ? hrEditingIndex()
-          : this.hrEditingIndex,
-      selectedUsersList: selectedUsersList ?? this.selectedUsersList,
-      unitLocations: unitLocations ?? this.unitLocations,
     );
   }
 }
@@ -440,7 +312,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(RequestForVAPTModel item) {
+  Map<String, String> buildRequestCardData(CyberSecurityRiskRequestModel item) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
@@ -449,10 +321,12 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       // 'Cycle Period': item.cyclePeriod ?? '-',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
-      'Type of Request': item.typeOfRequest ?? '-',
-      'Request Classification': item.requestClassification ?? '-',
-      'Application Name': item.applicationName ?? '-',
-      'Date of Submission': item.submissionDate.toString() ?? '-',
+      'Asset CIA Impact': item.risk?.assetCiaImpact?.toString() ?? '-',
+      'Asset Value': item.risk?.assetValue?.toString() ?? '-',
+      'Asset Availability': item.risk?.availability?.toString() ?? '-',
+      'Business Impact': item.risk?.businessImpact.toString() ?? '-',
+      'Likelihood': item.risk?.likelihood.toString() ?? '-',
+      'Risk Owner': item.risk?.riskOwner ?? '-',
 
       /// ================= EMPLOYEE INFO =================
 
@@ -467,19 +341,21 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails.request;
+    final risk = state.requestDetails.risk;
     return {
       /// ───── RIGHT COLUMN ─────
       "Service Type": request?.service?.name ?? 'N/A',
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      'Type of Request': request?.typeOfRequest ?? '-',
       'Request Classification': request?.requestClassification ?? '-',
-      'Application Name': request?.applicationName ?? '-',
       'Date of Submission': request?.submissionDate.toString() ?? '-',
-      'Application URL': request?.applicationUrl ?? '-',
-      'IP Address': request?.ipAddress ?? '-',
-      'Remarks': request?.remarks ?? '-',
+      'Asset CIA Impact': risk?.assetCiaImpact?.toString() ?? '-',
+      'Asset Value': risk?.assetValue?.toString() ?? '-',
+      'Asset Availability': risk?.availability?.toString() ?? '-',
+      'Business Impact': risk?.businessImpact.toString() ?? '-',
+      'Likelihood': risk?.likelihood.toString() ?? '-',
+      'Risk Owner': risk?.riskOwner ?? '-',
     };
   }
 
@@ -530,7 +406,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      RequestForVAPTAndInfrastructureReviewDetailsRoute(
+      CyberSecurityRiskManagementDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -554,9 +430,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void openNewRequestForm() {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
-    state = state.copyWith(selectedUsersList: []);
+    // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      RequestForVAPTAndInfrastructureReviewNewRequestRoute(
+      CyberSecurityRiskManagementNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -565,171 +441,221 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final requestForVAPTInstance =
-      RequestForVAPTAndInfrastructureReviewRepository();
+  final requestForInternalAuditInstance =
+      CyberSecurityRiskManagementRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  final securityAccessInstance = SecurityAccessRepoistory();
-  List<DynamicField> get vaptFormFields => [
-    /// ================= TYPE OF REQUEST =================
+  List<DynamicField> get cyberSecurityRiskManagementFormFields => [
+    /// ================= RISK NO =================
     DynamicField(
-      name: 'type_of_request',
-      label: 'Type of Request',
+      name: 'risk_no',
+      label: 'Risk No.',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= IMPACTED CATEGORY =================
+    DynamicField(
+      name: 'impacted_category',
+      label: 'Impacted Category',
       type: FieldType.select,
       required: true,
       options: const [
-        DropdownOption(value: 'VAPT', label: 'VAPT'),
-
-        DropdownOption(
-          value: 'Infrastructure Review',
-          label: 'Infrastructure Review',
-        ),
+        DropdownOption(value: 'People', label: 'People'),
+        DropdownOption(value: 'Technology', label: 'Technology'),
+        DropdownOption(value: 'Process', label: 'Process'),
+        DropdownOption(value: 'Place', label: 'Place'),
       ],
     ),
 
-    /// ================= REQUEST CLASSIFICATION =================
+    /// ================= IMPACT AREA =================
     DynamicField(
-      name: 'request_classification',
-      label: 'Request Classification',
+      name: 'impact_area',
+      label: 'Impact Area',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= THREAT =================
+    DynamicField(
+      name: 'threat',
+      label: 'Threat',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= VULNERABILITY =================
+    DynamicField(
+      name: 'vulnerability',
+      label: 'Vulnerability',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= RISK DESCRIPTION =================
+    DynamicField(
+      name: 'risk_description',
+      label: 'Risk Description',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= RISK OWNER =================
+    DynamicField(
+      name: 'risk_owner',
+      label: 'Risk Owner',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= CONFIDENTIALITY =================
+    DynamicField(
+      name: 'confidentiality',
+      label: 'Confidentiality',
       type: FieldType.select,
       required: true,
       options: const [
-        DropdownOption(value: 'New', label: 'New'),
-        DropdownOption(value: 'Review', label: 'Review'),
+        DropdownOption(value: '1', label: '1'),
+        DropdownOption(value: '2', label: '2'),
+        DropdownOption(value: '3', label: '3'),
+        DropdownOption(value: '4', label: '4'),
+        DropdownOption(value: '5', label: '5'),
       ],
     ),
 
-    /// ================= APPLICATION NAME =================
+    /// ================= INTEGRITY =================
     DynamicField(
-      name: 'application_name',
-      label: 'Application Name',
+      name: 'integrity',
+      label: 'Integrity',
+      type: FieldType.select,
+      required: true,
+      options: const [
+        DropdownOption(value: '1', label: '1'),
+        DropdownOption(value: '2', label: '2'),
+        DropdownOption(value: '3', label: '3'),
+
+        DropdownOption(value: '4', label: '4'),
+        DropdownOption(value: '5', label: '5'),
+      ],
+    ),
+
+    /// ================= AVAILABILITY =================
+    DynamicField(
+      name: 'availability',
+      label: 'Availability',
+      type: FieldType.select,
+      required: true,
+      options: const [
+        DropdownOption(value: '1', label: '1'),
+        DropdownOption(value: '2', label: '2'),
+        DropdownOption(value: '3', label: '3'),
+
+        DropdownOption(value: '4', label: '4'),
+        DropdownOption(value: '5', label: '5'),
+      ],
+    ),
+
+    /// ================= ASSET VALUE =================
+    DynamicField(
+      name: 'asset_value',
+      label: 'Asset Value',
+      type: FieldType.number,
+      required: true,
+      disabled: true,
+      initialValue: '0',
+    ),
+
+    /// ================= LIKELIHOOD =================
+    DynamicField(
+      name: 'likelihood',
+      label: 'Likelihood',
+      type: FieldType.select,
+      required: true,
+      options: const [
+        DropdownOption(value: '1', label: '1'),
+        DropdownOption(value: '2', label: '2'),
+        DropdownOption(value: '3', label: '3'),
+
+        DropdownOption(value: '4', label: '4'),
+        DropdownOption(value: '5', label: '5'),
+      ],
+    ),
+
+    /// ================= BUSINESS IMPACT =================
+    DynamicField(
+      name: 'business_impact',
+      label: 'Business Impact',
+      type: FieldType.select,
+      required: true,
+      options: const [
+        DropdownOption(value: '1', label: '1'),
+        DropdownOption(value: '2', label: '2'),
+        DropdownOption(value: '3', label: '3'),
+
+        DropdownOption(value: '4', label: '4'),
+        DropdownOption(value: '5', label: '5'),
+      ],
+    ),
+
+    /// ================= RISK VALUE =================
+    DynamicField(
+      name: 'risk_value',
+      label: 'Risk Value',
+      type: FieldType.number,
+      required: true,
+      disabled: true,
+      initialValue: '0',
+    ),
+
+    /// ================= EXISTING CONTROLS =================
+    DynamicField(
+      name: 'existing_controls',
+      label: 'Existing Controls',
       type: FieldType.text,
       required: true,
     ),
 
-    /// ================= LINK =================
+    /// ================= START DATE =================
     DynamicField(
-      name: 'link',
-      label: 'Link (if applicable)',
-      type: FieldType.text,
-      required: false,
-    ),
-
-    /// ================= IP ADDRESS =================
-    DynamicField(
-      name: 'ip_address',
-      label: 'IP Address (if applicable)',
-      type: FieldType.text,
-      required: false,
-    ),
-
-    /// ================= APPLICATION URL =================
-    DynamicField(
-      name: 'application_url',
-      label: 'Application URL (Optional)',
-      type: FieldType.text,
-      required: false,
-    ),
-
-    /// ================= SUBMISSION DATE =================
-    DynamicField(
-      name: 'submission_date',
-      label: 'Submission Date',
+      name: 'start_date',
+      label: 'Start Date',
       type: FieldType.date,
       required: true,
-      initialValue: DateTime.now().toIso8601String(),
     ),
 
-    /// ================= REMARKS =================
+    /// ================= END DATE =================
     DynamicField(
-      name: 'remarks',
-      label: 'Remarks (Optional)',
+      name: 'end_date',
+      label: 'End Date',
+      type: FieldType.date,
+      required: true,
+    ),
+
+    /// ================= ISO CONTROL REFERENCE =================
+    DynamicField(
+      name: 'iso_control_reference',
+      label: 'ISO Control Reference',
       type: FieldType.text,
       required: false,
     ),
 
-    /// ================= ATTACHMENTS =================
+    /// ================= RISK TREATMENT PLAN =================
     DynamicField(
-      name: 'attachments',
-      label: 'Attachments (Optional)',
-      type: FieldType.file,
-      required: false,
-      maxFileSizeInMB: 10,
-      allowedExtensions: ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],
+      name: 'risk_treatment_plan',
+      label: 'Risk Treatment Plan',
+      type: FieldType.text,
+      required: true,
     ),
   ];
 
   /// ========================= HELPERS =========================
 
-  RequestForAccommodationInMuscatGovernorateTable mapAccommodationTable() {
-    final tasks = state.selectedUsersList ?? [];
-
-    final rows = tasks.map((task) {
-      return ReusableTableRow(
-        cells: [
-          task.id.toString(),
-          task.employeeName ?? "-",
-          task.position?.name ?? "-",
-          task.grade.toString() ?? "-",
-          task.mobile ?? "-",
-        ],
-        // expandedTitle: task.taskRelatedToProjects,
-        // expandedDescription: task.dailyResponsibilities,
-      );
-    }).toList();
-
-    return RequestForAccommodationInMuscatGovernorateTable(rows: rows);
-  }
-
-  RequestForAccommodationInMuscatGovernorateTable
-  mapAccommodationTableForDetails() {
-    final tasks = state.requestDetails?.employeeDetails ?? [];
-
-    final rows = tasks.map((task) {
-      return ReusableTableRow(
-        cells: [
-          task?.employeeId.toString() ?? "-",
-          task?.employeeName ?? "-",
-          task?.designation ?? "-",
-          task?.grade.toString() ?? "-",
-          task?.contactNumber ?? "-",
-        ],
-        // expandedTitle: task.taskRelatedToProjects,
-        // expandedDescription: task.dailyResponsibilities,
-      );
-    }).toList();
-
-    return RequestForAccommodationInMuscatGovernorateTable(rows: rows);
-  }
-
   /// ========================= API CALLS =========================
-
-  Future<void> fetchUnitLocations({
-    bool isRefresh = false,
-    String searchText = '',
-    String status = '',
-  }) async {
-    state = state.copyWith(isLoading: true);
-    try {
-      // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
-
-      final requests = await residentalUnitRentalInstance.getUnitLocations();
-
-      // No merging needed
-      state = state.copyWith(unitLocations: requests);
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-      Fluttertoast.showToast(msg: e.toString());
-    }
-  }
 
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await requestForVAPTInstance.getRequestsById(
+      final requests = await requestForInternalAuditInstance.getRequestsById(
         id: id,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -761,21 +687,9 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchDepartments() async {
-    try {
-      final departments = await securityAccessInstance.getDepartments();
-
-      if (departments != []) {
-        state = state.copyWith(departments: departments);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await requestForVAPTInstance.getchatById(id);
+      final requests = await requestForInternalAuditInstance.getchatById(id);
       if (requests != null) {
         final chats = requests.reversed.toList();
         state = state.copyWith(chatById: chats);
@@ -790,7 +704,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await requestForVAPTInstance.getAttachmentsById(id);
+      final attachments = await requestForInternalAuditInstance
+          .getAttachmentsById(id);
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
       }
@@ -805,7 +720,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await requestForVAPTInstance.getKpiData(
+      final kpis = await requestForInternalAuditInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -823,11 +738,12 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await requestForVAPTInstance.getApprovalTrendBreakdownData(
-        period: period,
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
-      );
+      final data = await requestForInternalAuditInstance
+          .getApprovalTrendBreakdownData(
+            period: period,
+            serviceId: service.id ?? 0,
+            subServiceId: subService.id ?? 0,
+          );
 
       if (data != null) {
         state = state.copyWith(approvalTrendData: data, isLoading: false);
@@ -842,7 +758,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await requestForVAPTInstance
+      final statusBreakdown = await requestForInternalAuditInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -866,7 +782,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await requestForVAPTInstance
+      final statusBreakdown = await requestForInternalAuditInstance
           .getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -890,7 +806,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await requestForVAPTInstance.getTrendBreakdownData(
+      final data = await requestForInternalAuditInstance.getTrendBreakdownData(
         period: period,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -909,7 +825,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await requestForVAPTInstance.getApprovalKpiData(
+      final kpis = await requestForInternalAuditInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
@@ -936,7 +852,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(requestData: [], isLoading: false);
       }
 
-      final requests = await requestForVAPTInstance.getRequests(
+      final requests = await requestForInternalAuditInstance.getRequests(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -965,7 +881,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await requestForVAPTInstance.getActionItems(
+      final items = await requestForInternalAuditInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -1061,9 +977,8 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await requestForVAPTInstance.uploadAttachments(
-          state.attachments,
-        );
+        final uploadedFiles = await requestForInternalAuditInstance
+            .uploadAttachments(state.attachments);
 
         if (uploadedFiles.isEmpty) {
           throw Exception("File upload failed");
@@ -1093,7 +1008,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await requestForVAPTInstance.sendAttachment(payload, requestId);
+        await requestForInternalAuditInstance.sendAttachment(
+          payload,
+          requestId,
+        );
       }
 
       /// ------------------------------------------------------------
@@ -1114,7 +1032,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await requestForVAPTInstance.sendChat(payload, requestId);
+        await requestForInternalAuditInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -1146,7 +1064,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await requestForVAPTInstance.onApprove(payload);
+      await requestForInternalAuditInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       fetchactionItems();
@@ -1191,7 +1109,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await requestForVAPTInstance.onApprove(payload);
+      await requestForInternalAuditInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
@@ -1218,7 +1136,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await requestForVAPTInstance.onSendInProgress(payload);
+      // await requestForInternalAuditInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1574,18 +1492,6 @@ class _VSController extends StateNotifier<_ViewState> {
         .toList();
   }
 
-  List<Map<String, dynamic>> _buildTasks(String extensionNumber) {
-    return state.hrTasks.map((e) {
-      return {
-        "task_related_to_projects": e.task,
-        "extension_number": extensionNumber,
-        "daily_responsibilities": e.responsibility,
-        "repeat_frequency": e.frequency,
-        "duration": e.duration,
-      };
-    }).toList();
-  }
-
   Map<String, dynamic> _buildPayload(
     int serviceId,
     int subServiceId,
@@ -1602,21 +1508,52 @@ class _VSController extends StateNotifier<_ViewState> {
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      /// ⭐ FORM DATA (UI → API MAPPING)
-      "type_of_request": values['type_of_request'],
-      "request_classification": values['request_classification'],
-      "application_name": values['application_name'],
-      "link": values['link'] ?? "",
-      "ip_address": values['ip_address'] ?? "",
-      "application_url": values['application_url'] ?? "",
-      "submission_date": values['submission_date'],
-      "remarks": values['remarks'] ?? "",
+      /// ⭐ COMMON DESCRIPTION (TOP LEVEL)
+      "description": values['description'] ?? "",
 
-      /// ⭐ ATTACHMENTS
+      /// ⭐ RISKS ARRAY (🔥 MAIN PART)
+      "risks": [
+        {
+          "risk_no": values['risk_no'],
+          "impacted_category": values['impacted_category'],
+          "impact_area": values['impact_area'],
+          "threat": values['threat'],
+          "vulnerability": values['vulnerability'],
+          "risk_description": values['risk_description'],
+          "risk_owner": values['risk_owner'],
+
+          /// ⭐ CIA
+          "confidentiality": _toInt(values['confidentiality']),
+          "integrity": _toInt(values['integrity']),
+          "availability": _toInt(values['availability']),
+
+          /// ⭐ DERIVED
+          "asset_cia_impact": values['asset_cia_impact'],
+          "asset_value": _toInt(values['asset_value']),
+
+          /// ⭐ RISK CALC
+          "likelihood": _toInt(values['likelihood']),
+          "business_impact": _toInt(values['business_impact']),
+          "risk_value": values['risk_value'],
+
+          /// ⭐ OTHER
+          "existing_controls": values['existing_controls'],
+          "start_date": values['start_date'],
+          "end_date": values['end_date'],
+          "iso_control_reference": values['iso_control_reference'] ?? "",
+          "risk_treatment_plan": values['risk_treatment_plan'],
+        },
+      ],
+
+      /// ⭐ ATTACHMENTS (if needed)
       "attachments": _buildAttachments(values),
     };
 
     return payload;
+  }
+
+  int _toInt(dynamic value) {
+    return int.tryParse(value?.toString() ?? '0') ?? 0;
   }
 
   Future<void> submitProjectApprovalRequest(
@@ -1636,7 +1573,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await requestForVAPTInstance.sendVAPTNewRequest(payload);
+      final response = await requestForInternalAuditInstance
+          .sendCyberSecurityRiskManagementNewRequest(payload);
 
       if (response['status'] == 'success') {
         _refreshDashboard();

@@ -235,7 +235,7 @@ class DashboardRepositoryImplementation implements DashboardRepository {
     final client = Dio();
 
     try {
-      final url = 'https://drupal.swiftinsights.ai/api/caa-announcements';
+      final url = ApiEndPoint.caaDrupal;
       final response = await client.get(url);
 
       if (response.statusCode == 200) {

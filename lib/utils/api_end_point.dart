@@ -3,6 +3,7 @@ class ApiEndPoint {
 
   ///upload files
   static const String uploadFiles = '/v1/user-service/upload';
+  static const String caaDrupal = '/api/caa-drupal';
 
   /// authentication
   static const String authMobileSignin = '/auth/mobilesignin';
@@ -13,6 +14,11 @@ class ApiEndPoint {
   static const String rolesListing = '/v1/user-service/master/roles/listing';
 
   static const String masterRoles = '/v1/user-service/master/roles/listing';
+
+  static const String sections = '/v1/user-service/master/sections/listing';
+
+  static const String departmentsList =
+      '/v1/user-service/master/departments/listing';
 
   ///Salalah
   static const String sendSalalahRequest =
@@ -2188,4 +2194,180 @@ class ApiEndPoint {
   /// Approval trend breakdown
   static const String requestForVAPTApprovalTrendBreakdown =
       '/v1/it-service/request-for-vapt/analytics/approval/trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Internal Audit Request)
+  static const String requestForInternalAuditSendRequest =
+      '/v1/it-service/cyber-security-audit/requests';
+
+  /// Get my requests
+  static const String requestForInternalAuditGetRequests =
+      '/v1/it-service/cyber-security-audit/requests';
+
+  /// Get all requests (no user filter)
+  static const String requestForInternalAuditGetAllRequests =
+      '/v1/it-service/cyber-security-audit/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String requestForInternalAuditGetActionItems =
+      '/v1/it-service/cyber-security-audit/requests/approval';
+
+  /// Get request by ID
+  static String requestForInternalAuditRequestById(int requestId) =>
+      '/v1/it-service/cyber-security-audit/requests/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// Update request
+  static String requestForInternalAuditUpdateRequest(int requestId) =>
+      '/v1/it-service/cyber-security-audit/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String requestForInternalAuditApprove =
+      '/v1/it-service/cyber-security-audit/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String requestForInternalAuditSendChatById(int requestId) =>
+      '/v1/it-service/cyber-security-audit/requests/$requestId/chat';
+
+  static String requestForInternalAuditChatsById(int requestId) =>
+      '/v1/it-service/cyber-security-audit/requests/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String requestForInternalAuditSendAttachmentById(int requestId) =>
+      '/v1/it-service/cyber-security-audit/requests/$requestId/attachment';
+
+  /// Get attachments
+  static String requestForInternalAuditAttachmentsById(int requestId) =>
+      '/v1/it-service/cyber-security-audit/requests/$requestId/attachments';
+
+  /// Delete attachment
+  static String requestForInternalAuditDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/it-service/cyber-security-audit/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String requestForInternalAuditKpiCards =
+      '/v1/it-service/cyber-security-audit/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String requestForInternalAuditApprovalKpiCards =
+      '/v1/it-service/cyber-security-audit/analytics/approval/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String requestForInternalAuditStatusBreakdown =
+      '/v1/it-service/cyber-security-audit/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String requestForInternalAuditApprovalStatusBreakdown =
+      '/v1/it-service/cyber-security-audit/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String requestForInternalAuditTrendBreakdown =
+      '/v1/it-service/cyber-security-audit/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String requestForInternalAuditApprovalTrendBreakdown =
+      '/v1/it-service/cyber-security-audit/analytics/approval/trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String cyberSecurityRiskManagementSendRequest =
+      '/v1/it-service/cyber-security-risk-management/requests';
+
+  /// Get my requests
+  static const String cyberSecurityRiskManagementGetRequests =
+      '/v1/it-service/cyber-security-risk-management/requests';
+
+  /// Get all requests (no user filter)
+  static const String cyberSecurityRiskManagementGetAllRequests =
+      '/v1/it-service/cyber-security-risk-management/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String cyberSecurityRiskManagementGetActionItems =
+      '/v1/it-service/cyber-security-risk-management/requests/approval';
+
+  /// Get request by ID
+  static String cyberSecurityRiskManagementRequestById(int requestId) =>
+      '/v1/it-service/cyber-security-risk-management/requests/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// Update request
+  static String cyberSecurityRiskManagementUpdateRequest(int requestId) =>
+      '/v1/it-service/cyber-security-risk-management/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String cyberSecurityRiskManagementApprove =
+      '/v1/it-service/cyber-security-risk-management/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String cyberSecurityRiskManagementSendChatById(int requestId) =>
+      '/v1/it-service/cyber-security-risk-management/requests/$requestId/chat';
+
+  static String cyberSecurityRiskManagementChatsById(int requestId) =>
+      '/v1/it-service/cyber-security-risk-management/requests/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String cyberSecurityRiskManagementSendAttachmentById(int requestId) =>
+      '/v1/it-service/cyber-security-risk-management/requests/$requestId/attachment';
+
+  /// Get attachments
+  static String cyberSecurityRiskManagementAttachmentsById(int requestId) =>
+      '/v1/it-service/cyber-security-risk-management/requests/$requestId/attachments';
+
+  /// Delete attachment
+  static String cyberSecurityRiskManagementDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/it-service/cyber-security-risk-management/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String cyberSecurityRiskManagementKpiCards =
+      '/v1/it-service/cyber-security-risk-management/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String cyberSecurityRiskManagementApprovalKpiCards =
+      '/v1/it-service/cyber-security-risk-management/analytics/approval/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String cyberSecurityRiskManagementStatusBreakdown =
+      '/v1/it-service/cyber-security-risk-management/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String cyberSecurityRiskManagementApprovalStatusBreakdown =
+      '/v1/it-service/cyber-security-risk-management/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String cyberSecurityRiskManagementTrendBreakdown =
+      '/v1/it-service/cyber-security-risk-management/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String cyberSecurityRiskManagementApprovalTrendBreakdown =
+      '/v1/it-service/cyber-security-risk-management/analytics/approval/trend-breakdown';
 }

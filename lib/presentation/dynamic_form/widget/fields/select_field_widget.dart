@@ -42,7 +42,13 @@ class SelectFieldWidget extends ConsumerWidget {
       onChanged: field.disabled
           ? (_) {}
           : (val) {
+              /// 1️⃣ update form state
               notifier.updateValue(field.name, val);
+
+              /// 2️⃣ trigger field-level onChanged (IMPORTANT FIX)
+              if (field.onChanged != null) {
+                field.onChanged!(val, ref);
+              }
             },
     );
   }

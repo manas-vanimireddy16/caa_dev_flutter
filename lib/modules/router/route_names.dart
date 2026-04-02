@@ -110,6 +110,14 @@ class RouteNames {
       '/requestForVAPTAndInfrastructureReviewNewRequest';
   static const String requestForVAPTAndInfrastructureReviewDetails =
       '/requestForVAPTAndInfrastructureReviewDetails';
+  static const String requestForInternalAuditNewRequest =
+      '/requestForInternalAuditNewRequest';
+  static const String requestForInternalAuditDetails =
+      '/requestForInternalAuditDetails';
+  static const String cyberSecurityRiskManagementNewRequest =
+      '/cyberSecurityRiskManagementNewRequest';
+  static const String cyberSecurityRiskManagementDetails =
+      '/cyberSecurityRiskManagementDetails';
 
   // ───────────────────────────────
   // IT SERVICES
@@ -263,4 +271,12 @@ class RouteNames {
       '/cancelHousingContractNewRequest';
   static const String cancelHousingContractDetails =
       '/cancelHousingContractDetails';
+
+  /// Legal Consultation Services
+  static const String homeRouteLegalConsultationServices =
+      '/homeRouteLegalConsultationServices';
+  static const String legalConsultationServicesNewRequest =
+      '/legalConsultationServicesNewRequest';
+  static const String legalConsultationServicesRequestDetails =
+      '/legalConsultationServicesRequestDetails';
 }

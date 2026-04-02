@@ -45,6 +45,16 @@ class _DrawerMenu extends StatelessWidget {
         icon: KImageProvider(image: KIcons.security),
         label: 'Request for VAPT and Infrastructure Review',
       ),
+      DrawerItemData(
+        index: 5,
+        icon: KImageProvider(image: KIcons.security),
+        label: 'Request for Internal Audit (Cyber Security Audit) ',
+      ),
+      DrawerItemData(
+        index: 6,
+        icon: KImageProvider(image: KIcons.security),
+        label: 'Cyber Security Risk Management',
+      ),
     ];
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)

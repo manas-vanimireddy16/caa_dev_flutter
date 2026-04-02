@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/common_widgets/RadioButton.dart';
 import 'package:code_setup/presentation/common_widgets/requestCard.dart';
@@ -10,27 +13,42 @@ import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/models/activity_feed_model.dart';
+import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
-import 'package:code_setup/presentation/models/request_detail.dart';
+import 'package:code_setup/presentation/models/request_detail.dart'
+    hide Service, RequestDetailData;
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/hotel_reservation/models/request_data.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/request_for_vapt_model.dart';
 import 'package:code_setup/repository/housing_accommodation_service/dashboard/domain/domain.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
+import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 part 'controller.dart';
+// part 'widgets/request_details.dart';
+part 'widgets/request_list.dart';
+part 'widgets/request_tab.dart';
+part 'widgets/ticket_requests_card.dart';
+// part 'widgets/stat_summary_row.dart';
 // part 'widgets/remarksSend.dart';
 // part 'widgets/request_details.dart';
 
 @RoutePage()
 class SecuritySelfDashboardScreen extends ConsumerStatefulWidget {
-  const SecuritySelfDashboardScreen({super.key});
+  final Service service;
+  final SubService subService;
+  const SecuritySelfDashboardScreen({
+    super.key,
+    required this.service,
+    required this.subService,
+  });
 
   @override
   ConsumerState<SecuritySelfDashboardScreen> createState() =>
@@ -43,6 +61,7 @@ class _SecuritySelfDashboardScreenState
   late TextEditingController searchController;
   late FocusNode _focusNode;
   late TabController _tabController;
+  late _VSControllerParams _providerArgs;
 
   @override
   void initState() {
@@ -55,6 +74,11 @@ class _SecuritySelfDashboardScreenState
     searchController.addListener(() {
       setState(() {}); // rebuild suffixIcon
     });
+
+    _providerArgs = _VSControllerParams(
+      service: widget.service,
+      subService: widget.subService,
+    );
 
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
@@ -79,8 +103,8 @@ class _SecuritySelfDashboardScreenState
     // final selectedTab = ref.watch(selectedrequesteventTabProvider);
     // final data = ref.watch(filteredDataProvider);
     // final selectedService = ref.watch(bottomNavIndexProvider);
-    final state = ref.watch(_vsProvider);
-    final controller = ref.read(_vsProvider.notifier);
+    final state = ref.watch(_vsProvider(_providerArgs));
+    final controller = ref.read(_vsProvider(_providerArgs).notifier);
     final statsList = StatSummaryHelper.buildStatList(
       state.kpiData.data?.toJson(),
     );
@@ -193,8 +217,8 @@ class _SecuritySelfDashboardScreenState
                         // Tab 0
                         Consumer(
                           builder: (context, ref, _) {
-                            final data = state
-                                .hotelReservationRequestData; //state.dashboardMyRequests;
+                            final data =
+                                state.requestData; //state.dashboardMyRequests;
                             return ListView.builder(
                               itemCount: data.length,
                               itemBuilder: (context, index) {
@@ -228,7 +252,7 @@ class _SecuritySelfDashboardScreenState
                         // Tab 1
                         Consumer(
                           builder: (context, ref, _) {
-                            final data = state.hotelReservationActionItemsData;
+                            final data = state.actionItems;
                             return ListView.builder(
                               itemCount: data.length,
                               itemBuilder: (context, index) {

@@ -393,6 +393,36 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
     }
 
     state = state.copyWith(values: values);
+
+    /// -----------------------------
+    /// ASSET VALUE AUTO CALC (CIA)
+    /// -----------------------------
+    if (key == 'confidentiality' ||
+        key == 'integrity' ||
+        key == 'availability') {
+      final c = int.tryParse(values['confidentiality']?.toString() ?? '0') ?? 0;
+      final i = int.tryParse(values['integrity']?.toString() ?? '0') ?? 0;
+      final a = int.tryParse(values['availability']?.toString() ?? '0') ?? 0;
+
+      if (c != 0 && i != 0 && a != 0) {
+        values['asset_value'] = ((c + i + a) / 3).toString();
+      } else {
+        values['asset_value'] = '0';
+      }
+    }
+
+    if (key == 'business_impact' || key == 'likelihood') {
+      final l = int.tryParse(values['confidentiality']?.toString() ?? '0') ?? 0;
+      final b = int.tryParse(values['integrity']?.toString() ?? '0') ?? 0;
+      final assetValue =
+          double.tryParse(values['asset_value']?.toString() ?? '0') ?? 0;
+      if (l != 0 && b != 0) {
+        final riskRating = (l * b * assetValue).toString();
+        values['risk_value'] = riskRating;
+      } else {
+        values['risk_value'] = '0';
+      }
+    }
   }
 
   /// ------------------------------------------------

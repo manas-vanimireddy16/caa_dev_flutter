@@ -5,165 +5,111 @@ final selectedrequesteventTabProvider = StateProvider<int>((ref) => 0);
 // Stores search text
 final searchQueryProvider = StateProvider<String>((ref) => "");
 
-final List<Map<String, dynamic>> dataList = [
-  {
-    'id': 101,
-    'status': 'Approved',
-    'Service Type': 'Vehicle Hire',
-    'Purpose of Travel': 'Client Meeting in Delhi',
-    'Date': '28-10-2025',
-    'Approver': 'Operations Manager',
-  },
-  {
-    'id': 102,
-    'status': 'Pending',
-    'Service Type': 'Hotel Booking',
-    'Purpose of Travel': 'Training Workshop',
-    'Date': '29-10-2025',
-    'Approver': 'HR Head',
-  },
-  {
-    'id': 103,
-    'status': 'Rejected',
-    'Service Type': 'Flight Ticket',
-    'Purpose of Travel': 'Conference in Mumbai',
-    'Date': '30-10-2025',
-    'Approver': 'Admin Supervisor',
-  },
-  {
-    'id': 104,
-    'status': 'Approved',
-    'Service Type': 'Local Conveyance',
-    'Purpose of Travel': 'Branch Visit',
-    'Date': '01-11-2025',
-    'Approver': 'Finance Officer',
-  },
-  {
-    'id': 105,
-    'status': 'Pending',
-    'Service Type': 'Accommodation',
-    'Purpose of Travel': 'Annual Conference',
-    'Date': '02-11-2025',
-    'Approver': 'Admin Executive',
-  },
-];
+class _VSControllerParams extends Equatable {
+  final Service service;
+  final SubService subService;
 
-final StatusData sampleStatusData = StatusData(
-  timePeriod: "October 2025",
-  totalRequests: 150,
-  approved: 90,
-  pending: 40,
-  rejected: 20,
-  breakdown: [
-    ChartData(status: "Approved", count: 90, percentage: 60.0),
-    ChartData(status: "Pending", count: 40, percentage: 26.7),
-    ChartData(status: "Rejected", count: 20, percentage: 13.3),
-  ],
-);
+  const _VSControllerParams({required this.service, required this.subService});
 
-final List<ActivitiesFeedData> mockActivities = [
-  ActivitiesFeedData(
-    id: 1,
-    requestNumber: 'REQ-001',
-    title: 'Vehicle Maintenance Request',
-    status: 'Approved',
-    subType: 'Maintenance',
-    type: 'Logistics',
-    category: 'Vehicle',
-    timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-    createdAt: DateTime.now().subtract(const Duration(days: 1)),
-  ),
-  ActivitiesFeedData(
-    id: 2,
-    requestNumber: 'REQ-002',
-    title: 'Office Supplies Request',
-    status: 'Pending',
-    subType: 'Procurement',
-    type: 'Inventory',
-    category: 'Stationery',
-    timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-    createdAt: DateTime.now().subtract(const Duration(days: 2)),
-  ),
-  ActivitiesFeedData(
-    id: 3,
-    requestNumber: 'REQ-003',
-    title: 'IT Equipment Repair',
-    status: 'In Progress',
-    subType: 'Repair',
-    type: 'IT Support',
-    category: 'Hardware',
-    timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
-    createdAt: DateTime.now().subtract(const Duration(days: 3)),
-  ),
-];
+  @override
+  List<Object?> get props => [service, subService];
+}
 
-///====================================================
-///
-///
-final _vsProvider =
-    StateNotifierProvider.autoDispose<_VSController, _ViewState>((ref) {
-      final stateController = _VSController();
-      stateController.initState();
-      return stateController;
+final _vsProvider = StateNotifierProvider.autoDispose
+    .family<_VSController, _ViewState, _VSControllerParams>((ref, params) {
+      final controller = _VSController(
+        service: params.service,
+        subService: params.subService,
+      );
+      controller.initState();
+      return controller;
     });
 
 class _ViewState {
   final bool isLoading;
 
-  final List<HotelReservationRequestModel> hotelReservationRequestData;
-  final List<HotelReservationRequestModel> hotelReservationActionItemsData;
-  final RequestDetailModel requestDataById;
+  final List<HotelReservationRequestModel> requestData;
+  final List<HotelReservationRequestModel> actionItems;
+  final RequestDetailData requestDetails;
   final KPIResponse kpiData;
   final KPIResponse approvalKpiData;
   final int tabIndex;
-
+  final TrendBreakdownModel trendData;
+  final TrendBreakdownModel approvalTrendData;
+  final StatusBreakdownModel statusBreakdown;
+  final StatusBreakdownModel approvalStatusBreakdown;
+  final int requestDetailTab;
   _ViewState({
     required this.isLoading,
     required this.approvalKpiData,
-    required this.requestDataById,
-    required this.hotelReservationRequestData,
-    required this.hotelReservationActionItemsData,
+    required this.requestDetails,
+    required this.requestData,
+    required this.actionItems,
     required this.kpiData,
     required this.tabIndex,
+    required this.trendData,
+    required this.approvalTrendData,
+    required this.statusBreakdown,
+    required this.approvalStatusBreakdown,
+    required this.requestDetailTab,
   });
 
   _ViewState.init()
     : this(
         isLoading: false,
-        requestDataById: RequestDetailModel(),
-        hotelReservationRequestData: [],
-        hotelReservationActionItemsData: [],
+        requestDetails: RequestDetailData(),
+        requestData: [],
+        actionItems: [],
         kpiData: KPIResponse(),
         approvalKpiData: KPIResponse(),
         tabIndex: 0,
+        trendData: TrendBreakdownModel(),
+        approvalTrendData: TrendBreakdownModel(),
+        statusBreakdown: StatusBreakdownModel(),
+        approvalStatusBreakdown: StatusBreakdownModel(),
+        requestDetailTab: 0,
       );
 
   _ViewState copyWith({
     bool? isLoading,
-    RequestDetailModel? requestDataById,
-    List<HotelReservationRequestModel>? hotelReservationRequestData,
-    List<HotelReservationRequestModel>? hotelReservationActionItemsData,
+    RequestDetailData? requestDetails,
+    List<HotelReservationRequestModel>? requestData,
+    List<HotelReservationRequestModel>? actionItems,
     KPIResponse? kpiData,
     KPIResponse? approvalKpiData,
     int? tabIndex,
+    TrendBreakdownModel? trendData,
+    TrendBreakdownModel? approvalTrendData,
+    StatusBreakdownModel? statusBreakdown,
+    int? requestDetailTab,
+    StatusBreakdownModel? approvalStatusBreakdown,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
-      requestDataById: requestDataById ?? this.requestDataById,
-      hotelReservationRequestData:
-          hotelReservationRequestData ?? this.hotelReservationRequestData,
-      hotelReservationActionItemsData:
-          hotelReservationActionItemsData ??
-          this.hotelReservationActionItemsData,
+      requestDetails: requestDetails ?? this.requestDetails,
+      requestData: requestData ?? this.requestData,
+      actionItems: actionItems ?? this.actionItems,
       kpiData: kpiData ?? this.kpiData,
       approvalKpiData: approvalKpiData ?? this.approvalKpiData,
       tabIndex: tabIndex ?? this.tabIndex,
+      trendData: trendData ?? this.trendData,
+      approvalTrendData: approvalTrendData ?? this.approvalTrendData,
+      statusBreakdown: statusBreakdown ?? this.statusBreakdown,
+      approvalStatusBreakdown:
+          approvalStatusBreakdown ?? this.approvalStatusBreakdown,
+      requestDetailTab: requestDetailTab ?? this.requestDetailTab,
     );
   }
 }
 
 class _VSController extends StateNotifier<_ViewState> {
-  _VSController() : super(_ViewState.init());
+  final Service service;
+  final SubService subService;
+  late final _VSControllerParams params;
+  _VSController({required this.service, required this.subService})
+    : super(_ViewState.init()) {
+    params = _VSControllerParams(service: service, subService: subService);
+  }
   late TextEditingController personNameController;
   late TextEditingController contactNumberController;
   late TextEditingController departmentController;
@@ -175,6 +121,8 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController vehicleRequiredLocationController;
   late TextEditingController contactNumberForeignController;
   late TextEditingController chatController;
+  Timer? _searchDebounce;
+  late TextEditingController searchController;
 
   void initState() {
     personNameController = TextEditingController();
@@ -189,10 +137,318 @@ class _VSController extends StateNotifier<_ViewState> {
     contactNumberForeignController = TextEditingController();
     descriptionController = TextEditingController();
     chatController = TextEditingController();
+    searchController = TextEditingController();
     fetchKpi();
     fetchApprovalKpi();
     fetchRequests();
     fetchActionItems();
+  }
+
+  int _searchVersion = 0;
+
+  void onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    final int currentVersion = ++_searchVersion;
+
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
+      if (state.tabIndex == 0) {
+        await fetchRequests(isRefresh: true, searchText: value);
+      } else {
+        await fetchActionItems(isRefresh: true, searchText: value);
+      }
+
+      if (currentVersion != _searchVersion) return; // ignore old response
+    });
+  }
+
+  int get currentYear => DateTime.now().year;
+
+  List<String> get filterLabelList =>
+      List.generate(6, (index) => (currentYear - index).toString());
+  List<StatSummaryData> get requestStatsList =>
+      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+
+  List<StatSummaryData> get approverStatsList =>
+      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+
+  List<StatSummaryData> get currentStats =>
+      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  void onStatusFilterChanged(String? value) {
+    if (state.tabIndex == 0) {
+      // fetchStatusBreakdown(value ?? '');
+    } else {
+      // fetchApprovalStatusBreakdown(value ?? '');
+    }
+  }
+
+  void onTrendFilterChanged(String? value) {
+    if (value == null) return;
+
+    if (state.tabIndex == 0) {
+      // fetchTrendBreakDown(value);
+    } else {
+      // fetchApprovalTrendBreakDown(value);
+    }
+  }
+
+  List<int> get trendCounts {
+    final data = state.trendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<int> get approvalTrendCounts {
+    final data = state.approvalTrendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<ChartData> get statusBreakdownList {
+    return state.statusBreakdown.data?.breakdown ?? [];
+  }
+
+  List<ChartData> get approvalStatusBreakdownList {
+    return state.approvalStatusBreakdown.data?.breakdown ?? [];
+  }
+
+  bool _isPendingOrInProgress(String? status) {
+    final s = status?.toLowerCase();
+    return s == 'in progress';
+  }
+
+  bool _isCompleted(String? status) {
+    return status?.toLowerCase() == 'completed' ||
+        status?.toLowerCase() == 'approved';
+  }
+
+  DateTime _parseDate(String? value) {
+    try {
+      return DateTime.parse(value ?? '');
+    } catch (_) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+  }
+
+  Map<String, String> resolveApproverMap(List<ApprovalDetailModel>? approvals) {
+    if (approvals == null || approvals.isEmpty) {
+      return {};
+    }
+
+    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    final pendingList = approvals
+        .where((a) => _isPendingOrInProgress(a.approvalStatus))
+        .toList();
+
+    if (pendingList.isNotEmpty) {
+      pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
+      final next = pendingList.first;
+
+      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
+      if (next.approverRoleId != null) {
+        final name = next.approverUser?.employeeName;
+        final email = next.approverUser?.email;
+        final roleName = next.approverRole?.name;
+
+        if ((name ?? '').isNotEmpty) {
+          return {
+            'name': name!,
+            if ((email ?? '').isNotEmpty) 'email': email!,
+            if ((roleName ?? '').isNotEmpty) 'role': roleName!,
+          };
+        }
+      }
+
+      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
+      final department = next.department?.departmentName;
+      final section = next.section?.sectionName;
+
+      if ((department ?? '').isNotEmpty) {
+        return {
+          'department': department!,
+          if ((section ?? '').isNotEmpty) 'section': section!,
+        };
+      }
+
+      return {};
+    }
+
+    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
+    final completedList = approvals
+        .where((a) => _isCompleted(a.approvalStatus))
+        .toList();
+
+    if (completedList.isEmpty) {
+      return {};
+    }
+
+    completedList.sort((a, b) {
+      final levelCompare = (a.level ?? 0).compareTo(b.level ?? 0);
+      if (levelCompare != 0) return levelCompare;
+      return _parseDate(a.updatedAt).compareTo(_parseDate(b.updatedAt));
+    });
+
+    final last = completedList.last;
+
+    final name =
+        last.approvedByUser?.employeeName ?? last.approverUser?.employeeName;
+
+    final email = last.approverUser?.email;
+
+    if ((name ?? '').isNotEmpty) {
+      return {'name': name!, if ((email ?? '').isNotEmpty) 'email': email!};
+    }
+
+    return {};
+  }
+
+  Map<String, String> buildRequestCardData(HotelReservationRequestModel item) {
+    final approverMap = resolveApproverMap(item.approvalDetails ?? []);
+
+    return {
+      'Request Id': item.id?.toString() ?? '-',
+      'status': item.status ?? '-',
+      'Request By': item.createdByUser?.employeeName ?? '-',
+      // 'Cycle Period': item.cyclePeriod ?? '-',
+      'Request Submission Date': item.createdAt?.toString() ?? '-',
+      // 'Type of Request': item.typeOfRequest ?? '-',
+      // 'Request Classification': item.requestClassification ?? '-',
+      // 'Application Name': item.applicationName ?? '-',
+      // 'Date of Submission': item.submissionDate.toString() ?? '-',
+
+      /// ================= EMPLOYEE INFO =================
+
+      /// 👇 APPROVER (SINGLE LINE)
+      if (approverMap.containsKey('role')) ...{
+        'Approver': approverMap['role'] ?? '-',
+      } else if (approverMap.containsKey('department')) ...{
+        'Approver': _buildDepartmentSection(approverMap),
+      },
+    };
+  }
+
+  Map<String, String> buildRequestInformationData() {
+    final request = state.requestDetails.request;
+    return {
+      /// ───── RIGHT COLUMN ─────
+      "Service Type": request?.service?.name ?? 'N/A',
+
+      /// ───── LEFT COLUMN ─────
+      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
+      'Type of Request': request?.typeOfRequest ?? '-',
+      'Request Classification': request?.requestClassification ?? '-',
+      'Application Name': request?.applicationName ?? '-',
+      'Date of Submission': request?.submissionDate.toString() ?? '-',
+      'Application URL': request?.applicationUrl ?? '-',
+      'IP Address': request?.ipAddress ?? '-',
+      'Remarks': request?.remarks ?? '-',
+    };
+  }
+
+  Map<String, String> buildStatusInformation() {
+    final request = state.requestDetails.request;
+    final approvals = state.requestDetails.approvalDetails;
+    final nextApprover = resolveApproverMap(approvals);
+    return {
+      "Approval Status": request?.status ?? 'N/A',
+      "Requested Date": request?.createdAt ?? 'N/A',
+      // "Last Updated":
+      //     request?.updatedAt?.split('T').first ?? 'N/A',
+      if (nextApprover.containsKey('department'))
+        'Department': nextApprover['department']!,
+      if (nextApprover.containsKey('section'))
+        'Section': nextApprover['section']!,
+
+      if (nextApprover.containsKey('name'))
+        'Approver Name': nextApprover['name']!,
+      if (nextApprover.containsKey('email'))
+        'Approver Email': nextApprover['email']!,
+    };
+  }
+
+  Map<String, String> buildTechnicalInformation() {
+    final request = state.requestDetails.request;
+    return {
+      'Extension Number':
+          request?.createdByUser?.extensionNumber.toString() ?? '0',
+    };
+  }
+
+  String _buildDepartmentSection(Map<String, String> approverMap) {
+    final department = approverMap['department'];
+    final section = approverMap['section'];
+
+    if ((department ?? '').isNotEmpty && (section ?? '').isNotEmpty) {
+      return '$department - $section';
+    }
+
+    return department ?? '-';
+  }
+
+  void updateRequestTab(int index) {
+    state = state.copyWith(requestDetailTab: index);
+  }
+
+  Future<void> openRequestDetails(
+    int id, {
+    bool fromActionItems = false,
+  }) async {
+    updateRequestTab(0);
+
+    await KAppX.router.push(
+      RequestForInternalAuditDetailsRoute(
+        id: id,
+        from: fromActionItems ? 'action items' : '',
+        service: service,
+        subService: subService,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      ),
+    );
+
+    await refreshAfterReturn();
+  }
+
+  Future<void> refreshAfterReturn() async {
+    await Future.wait([
+      fetchRequests(),
+      fetchKpi(),
+      // fetchStatusBreakdown('weekly'),
+      // fetchTrendBreakDown(DateTime.now().year.toString()),
+    ]);
+  }
+
+  void openNewRequestForm() {
+    // fetchbyCycleGoals(cycle: 'Jan-Jun');
+    // state = state.copyWith(selectedUsersList: []);
+    KAppX.router.push(
+      RequestForInternalAuditNewRequestRoute(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+        service: service,
+        subService: subService,
+      ),
+    );
+  }
+
+  void updateTabIndex(int index) {
+    state = state.copyWith(tabIndex: index);
+    if (index == 0) {
+      fetchRequests();
+      fetchKpi();
+      // fetchStatusBreakdown('weekly');
+      // fetchTrendBreakDown('2026');
+    } else {
+      // fetchactionItems();
+      fetchApprovalKpi();
+      // fetchApprovalStatusBreakdown('monthly');
+      // fetchApprovalTrendBreakDown('2026');
+    }
   }
 
   final hotelReservationinstance = HotelReservationDashboardRepoistory();
@@ -205,7 +461,7 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       // Clear list only if explicitly refreshing or searching
       if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(hotelReservationRequestData: []);
+        state = state.copyWith(requestData: []);
       }
 
       final requests = await hotelReservationinstance.getRequests(
@@ -216,7 +472,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(hotelReservationRequestData: requests);
+      state = state.copyWith(requestData: requests);
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -231,7 +487,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     try {
       if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(hotelReservationActionItemsData: []);
+        state = state.copyWith(actionItems: []);
       }
 
       final items = await hotelReservationinstance.getActionItems(
@@ -242,10 +498,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(
-        hotelReservationActionItemsData: items,
-        isLoading: false,
-      );
+      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }

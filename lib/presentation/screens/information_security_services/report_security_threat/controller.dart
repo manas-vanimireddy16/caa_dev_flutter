@@ -68,6 +68,20 @@ class _ViewState {
     "Application & System Threat",
     "Other's",
   ];
+  List<String> months = [
+    'jan',
+    'feb',
+    'mar',
+    'apr',
+    'may',
+    'jun',
+    'jul',
+    'aug',
+    'sep',
+    'oct',
+    'nov',
+    'dec',
+  ];
 
   final String departmentName;
 
