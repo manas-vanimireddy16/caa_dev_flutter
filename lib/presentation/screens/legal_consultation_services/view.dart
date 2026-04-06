@@ -54,7 +54,10 @@ class LegalConsultationServicesHomeScreen extends ConsumerWidget {
     return AutoTabsRouter.builder(
       routes: [
         // AssignmentDecisionDashboardRoute(),
-        // AssignmentDecisionRoute(service: Service(), subService: SubService()),
+        RequestForLegalContractReviewRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
         // SecondmentDecisionRoute(service: Service(), subService: SubService()),
         // TemporaryAssignmentDecisionRoute(
         //   service: Service(),

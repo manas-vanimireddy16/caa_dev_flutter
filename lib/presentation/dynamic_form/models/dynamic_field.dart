@@ -1,3 +1,4 @@
+import 'package:code_setup/presentation/dynamic_form/models/acknowledgement_item.dart';
 import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +22,7 @@ class DynamicField {
   final int? maxFiles; // for file upload field
   final int? maxFileSizeInMB; // for file upload field
   final List<String>? allowedExtensions;
+  final List<AcknowledgementItem>? acknowledgements;
 
   const DynamicField({
     required this.name,
@@ -37,6 +39,7 @@ class DynamicField {
     this.maxFiles,
     this.maxFileSizeInMB,
     this.allowedExtensions,
+    this.acknowledgements,
   });
 }
 

@@ -62,8 +62,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
   String titleForIndex(int index) {
     switch (index) {
-      // case 0:
-      //   return 'Dashboard';
+      case 0:
+        return 'Request For Legal Contract Review';
       // case 1:
       //   return 'Assignment Decision';
       // case 2:

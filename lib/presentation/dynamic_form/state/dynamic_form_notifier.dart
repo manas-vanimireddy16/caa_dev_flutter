@@ -276,6 +276,7 @@
 //   }
 // }
 
+import 'package:code_setup/presentation/dynamic_form/models/acknowledgement_item.dart';
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
@@ -303,10 +304,24 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
     final allFields = steps.expand((e) => e);
     final initialValues = <String, dynamic>{};
 
+    // for (final field in allFields) {
+    //   /// ⭐ VERY IMPORTANT
+    //   _fieldsMap[field.name] = field;
+
+    //   initialValues[field.name] =
+    //       apiValues?[field.name] ?? field.initialValue ?? _defaultValue(field);
+    // }
     for (final field in allFields) {
-      /// ⭐ VERY IMPORTANT
       _fieldsMap[field.name] = field;
 
+      /// 🔥 ADD THIS BLOCK
+      if (field.type == FieldType.acknowledgement) {
+        initialValues[field.name] =
+            apiValues?[field.name] ?? field.acknowledgements ?? [];
+        continue;
+      }
+
+      /// existing logic
       initialValues[field.name] =
           apiValues?[field.name] ?? field.initialValue ?? _defaultValue(field);
     }
@@ -477,7 +492,9 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
     for (final field in fields) {
       final value = state.values[field.name];
 
-      /// FILE VALIDATION
+      /// -----------------------------
+      /// ✅ FILE VALIDATION
+      /// -----------------------------
       if (field.type == FieldType.file && field.required) {
         final files = value as List<FileUploadItem>?;
 
@@ -487,7 +504,31 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
         continue;
       }
 
-      /// UNIVERSAL REQUIRED VALIDATION
+      /// -----------------------------
+      /// ✅ ACKNOWLEDGEMENT VALIDATION (ADD HERE)
+      /// -----------------------------
+      if (field.type == FieldType.acknowledgement) {
+        final items = value as List<AcknowledgementItem>?;
+
+        if (items == null || items.isEmpty) {
+          errors[field.name] = '${field.label} is required';
+        } else {
+          final hasUncheckedRequired = items.any(
+            (item) => item.isRequired && !item.isChecked,
+          );
+
+          if (hasUncheckedRequired) {
+            errors[field.name] = 'Please accept all required acknowledgements';
+          }
+        }
+
+        /// 🚨 VERY IMPORTANT
+        continue; // skip universal validation
+      }
+
+      /// -----------------------------
+      /// ✅ UNIVERSAL REQUIRED VALIDATION
+      /// -----------------------------
       if (field.required) {
         bool isEmpty = false;
 
@@ -534,6 +575,8 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
       case FieldType.checkbox:
       case FieldType.multiselect:
         return <dynamic>[];
+      case FieldType.acknowledgement:
+        return <AcknowledgementItem>[];
       case FieldType.toggle:
         return false;
       default:

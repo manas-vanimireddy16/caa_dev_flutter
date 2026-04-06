@@ -1,20 +1,3 @@
-// import 'package:auto_route/auto_route.dart';
-// import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-// import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-// import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-// import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-// import 'package:code_setup/presentation/screens/approvals/common_widgets.dart';
-// import 'package:code_setup/presentation/screens/logistics/models/logistics_detail_model.dart';
-// import 'package:code_setup/presentation/screens/logistics/view.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/attachments_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_details_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_history_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_tabs.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/workflow_tab.dart';
-// import 'package:code_setup/utils/app_extensions/app_extension.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 part of '../view.dart';
 
 @RoutePage()
@@ -77,15 +60,12 @@ class _AssignaTasktoEmployeeDetailsScreenState
           if (state.requestDetails == null || state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          final userInfo = KAppX.globalProvider.read(rolesProvider);
 
           // final request = state.requestDetails.request == null
           //     ? null
           //     : state.requestDetails;
           final request = state.requestDetails.request;
           final requestId = request?.id;
-          final List<WorkflowDetailModel> workflows =
-              state.requestDetails.workflowDetails ?? [];
           final List<AttachmentModel> attachments =
               state.requestDetails.attachments ?? [];
           final chats = state.chatById;
@@ -128,7 +108,7 @@ class _AssignaTasktoEmployeeDetailsScreenState
                 ),
 
                 5.toHorizontalSizedBox,
-                RequestTabs(
+                RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
                   subService: widget.subService,
@@ -139,33 +119,11 @@ class _AssignaTasktoEmployeeDetailsScreenState
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
                   CommonRequestDetails(
-                    statusInfo: {
-                      "Request Date": request?.createdAt.toString() ?? 'N/A',
-                      "Status": request?.status ?? "N/A",
-                      "Approver": nextApprover?.approverUser?.email ?? 'N/A',
+                    statusInfo: controller.buildStatusInformation(),
 
-                      "Assigned To":
-                          nextApprover?.approverUser?.employeeName ?? 'N/A',
-                    },
-                    requestInfo: {
-                      // Dates
-                      'Priority': request?.priority ?? 'N/A',
-                      'Task Title': request?.taskTitle ?? 'N/A',
-
-                      // Request details
-                      'Task Description': request?.taskDescription ?? 'N/A',
-                      'Completion Date': request?.completionDate ?? 'N/A',
-                      'Assigned Employee':
-                          request?.assignedEmployeeName ?? 'N/A',
-                    },
-
-                    technicalInfo: {
-                      'Extension Number':
-                          request?.createdByUser?.extensionNumber.toString() ??
-                          'N/A',
-                    },
-                    // from: 'salalah',
-                    // data: state.requestDetails,
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
+                    // table: controller.mapAccommodationTableForDetails(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(

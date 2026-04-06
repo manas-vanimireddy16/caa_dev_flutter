@@ -2370,4 +2370,92 @@ class ApiEndPoint {
   /// Approval trend breakdown
   static const String cyberSecurityRiskManagementApprovalTrendBreakdown =
       '/v1/it-service/cyber-security-risk-management/analytics/approval/trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String legalContractReviewSendRequest =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/requests';
+
+  /// Get my requests
+  static const String legalContractReviewGetRequests =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/requests';
+
+  /// Get all requests (no user filter)
+  static const String legalContractReviewGetAllRequests =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String legalContractReviewGetActionItems =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/requests/approval';
+
+  /// Get request by ID
+  static String legalContractReviewRequestById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/requests/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// Update request
+  static String legalContractReviewUpdateRequest(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String legalContractReviewApprove =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String legalContractReviewSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/requests/$requestId/chat';
+
+  static String legalContractReviewChatsById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/requests/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String legalContractReviewSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/requests/$requestId/attachment';
+
+  /// Get attachments
+  static String legalContractReviewAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/requests/$requestId/attachments';
+
+  /// Delete attachment
+  static String legalContractReviewDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String legalContractReviewKpiCards =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String legalContractReviewApprovalKpiCards =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/analytics/approval/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String legalContractReviewStatusBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String legalContractReviewApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String legalContractReviewTrendBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String legalContractReviewApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/analytics/approval/trend-breakdown';
 }

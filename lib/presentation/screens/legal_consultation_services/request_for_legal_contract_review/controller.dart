@@ -47,8 +47,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<CyberSecurityRiskRequestModel> requestData;
-  final List<CyberSecurityRiskRequestModel> actionItems;
+  final List<LegalRequestModel> requestData;
+  final List<LegalRequestModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final int approvalId;
@@ -141,8 +141,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<CyberSecurityRiskRequestModel>? requestData,
-    List<CyberSecurityRiskRequestModel>? actionItems,
+    List<LegalRequestModel>? requestData,
+    List<LegalRequestModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -312,7 +312,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(CyberSecurityRiskRequestModel item) {
+  Map<String, String> buildRequestCardData(LegalRequestModel item) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
@@ -321,12 +321,8 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       // 'Cycle Period': item.cyclePeriod ?? '-',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
-      'Asset CIA Impact': item.risk?.assetCiaImpact?.toString() ?? '-',
-      'Asset Value': item.risk?.assetValue?.toString() ?? '-',
-      'Asset Availability': item.risk?.availability?.toString() ?? '-',
-      'Business Impact': item.risk?.businessImpact.toString() ?? '-',
-      'Likelihood': item.risk?.likelihood.toString() ?? '-',
-      'Risk Owner': item.risk?.riskOwner ?? '-',
+      'Request Title': item.requestTitle ?? '-',
+      'Request Type': item.requestType ?? '-',
 
       /// ================= EMPLOYEE INFO =================
 
@@ -350,12 +346,8 @@ class _VSController extends StateNotifier<_ViewState> {
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
       'Request Classification': request?.requestClassification ?? '-',
       'Date of Submission': request?.submissionDate.toString() ?? '-',
-      'Asset CIA Impact': risk?.assetCiaImpact?.toString() ?? '-',
-      'Asset Value': risk?.assetValue?.toString() ?? '-',
-      'Asset Availability': risk?.availability?.toString() ?? '-',
-      'Business Impact': risk?.businessImpact.toString() ?? '-',
-      'Likelihood': risk?.likelihood.toString() ?? '-',
-      'Risk Owner': risk?.riskOwner ?? '-',
+      'Request Title': request?.requestTitle ?? '-',
+      'Request Type': request?.requestType ?? '-',
     };
   }
 
@@ -441,210 +433,78 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final requestForInternalAuditInstance =
-      CyberSecurityRiskManagementRepository();
+  final legalContractReviewInstance = LegalContractReviewRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
-
-  List<DynamicField> get cyberSecurityRiskManagementFormFields => [
-    /// ================= RISK NO =================
+  List<DynamicField> get legalRequestFormFields => [
+    /// ================= SUBMISSION DATE =================
     DynamicField(
-      name: 'risk_no',
-      label: 'Risk No.',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= IMPACTED CATEGORY =================
-    DynamicField(
-      name: 'impacted_category',
-      label: 'Impacted Category',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: 'People', label: 'People'),
-        DropdownOption(value: 'Technology', label: 'Technology'),
-        DropdownOption(value: 'Process', label: 'Process'),
-        DropdownOption(value: 'Place', label: 'Place'),
-      ],
-    ),
-
-    /// ================= IMPACT AREA =================
-    DynamicField(
-      name: 'impact_area',
-      label: 'Impact Area',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= THREAT =================
-    DynamicField(
-      name: 'threat',
-      label: 'Threat',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= VULNERABILITY =================
-    DynamicField(
-      name: 'vulnerability',
-      label: 'Vulnerability',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= RISK DESCRIPTION =================
-    DynamicField(
-      name: 'risk_description',
-      label: 'Risk Description',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= RISK OWNER =================
-    DynamicField(
-      name: 'risk_owner',
-      label: 'Risk Owner',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= CONFIDENTIALITY =================
-    DynamicField(
-      name: 'confidentiality',
-      label: 'Confidentiality',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: '1', label: '1'),
-        DropdownOption(value: '2', label: '2'),
-        DropdownOption(value: '3', label: '3'),
-        DropdownOption(value: '4', label: '4'),
-        DropdownOption(value: '5', label: '5'),
-      ],
-    ),
-
-    /// ================= INTEGRITY =================
-    DynamicField(
-      name: 'integrity',
-      label: 'Integrity',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: '1', label: '1'),
-        DropdownOption(value: '2', label: '2'),
-        DropdownOption(value: '3', label: '3'),
-
-        DropdownOption(value: '4', label: '4'),
-        DropdownOption(value: '5', label: '5'),
-      ],
-    ),
-
-    /// ================= AVAILABILITY =================
-    DynamicField(
-      name: 'availability',
-      label: 'Availability',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: '1', label: '1'),
-        DropdownOption(value: '2', label: '2'),
-        DropdownOption(value: '3', label: '3'),
-
-        DropdownOption(value: '4', label: '4'),
-        DropdownOption(value: '5', label: '5'),
-      ],
-    ),
-
-    /// ================= ASSET VALUE =================
-    DynamicField(
-      name: 'asset_value',
-      label: 'Asset Value',
-      type: FieldType.number,
-      required: true,
-      disabled: true,
-      initialValue: '0',
-    ),
-
-    /// ================= LIKELIHOOD =================
-    DynamicField(
-      name: 'likelihood',
-      label: 'Likelihood',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: '1', label: '1'),
-        DropdownOption(value: '2', label: '2'),
-        DropdownOption(value: '3', label: '3'),
-
-        DropdownOption(value: '4', label: '4'),
-        DropdownOption(value: '5', label: '5'),
-      ],
-    ),
-
-    /// ================= BUSINESS IMPACT =================
-    DynamicField(
-      name: 'business_impact',
-      label: 'Business Impact',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: '1', label: '1'),
-        DropdownOption(value: '2', label: '2'),
-        DropdownOption(value: '3', label: '3'),
-
-        DropdownOption(value: '4', label: '4'),
-        DropdownOption(value: '5', label: '5'),
-      ],
-    ),
-
-    /// ================= RISK VALUE =================
-    DynamicField(
-      name: 'risk_value',
-      label: 'Risk Value',
-      type: FieldType.number,
-      required: true,
-      disabled: true,
-      initialValue: '0',
-    ),
-
-    /// ================= EXISTING CONTROLS =================
-    DynamicField(
-      name: 'existing_controls',
-      label: 'Existing Controls',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= START DATE =================
-    DynamicField(
-      name: 'start_date',
-      label: 'Start Date',
+      name: 'submission_date',
+      label: 'Submission Date',
       type: FieldType.date,
       required: true,
+      // disabled: true,
     ),
 
-    /// ================= END DATE =================
+    /// ================= REQUEST TITLE =================
     DynamicField(
-      name: 'end_date',
-      label: 'End Date',
-      type: FieldType.date,
+      name: 'request_title',
+      label: 'Request Title',
+      type: FieldType.text,
       required: true,
     ),
 
-    /// ================= ISO CONTROL REFERENCE =================
+    /// ================= REQUEST TYPE =================
     DynamicField(
-      name: 'iso_control_reference',
-      label: 'ISO Control Reference',
+      name: 'request_type',
+      label: 'Request Type',
+      type: FieldType.select,
+      required: true,
+      options: const [
+        DropdownOption(value: 'Contract', label: 'Contract'),
+        DropdownOption(value: 'Project Report', label: 'Project Report'),
+        DropdownOption(value: 'Agreement', label: 'Agreement'),
+        DropdownOption(value: 'Other', label: 'Other'),
+      ],
+    ),
+
+    /// ================= DEPARTMENT / HOS =================
+    DynamicField(
+      name: 'department_name',
+      label: 'Department / HOS Name',
+      type: FieldType.select,
+      initialValue: 'dfghjhv',
+      // required: true,
+      // options will come from API or user profile
+    ),
+
+    /// ================= DESCRIPTION =================
+    DynamicField(
+      name: 'description',
+      label: 'Description',
       type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= ATTACHMENT =================
+    DynamicField(
+      name: 'attachments',
+      label: 'Attachment',
+      type: FieldType.file,
       required: false,
     ),
 
-    /// ================= RISK TREATMENT PLAN =================
+    /// ================= ACKNOWLEDGEMENT =================
     DynamicField(
-      name: 'risk_treatment_plan',
-      label: 'Risk Treatment Plan',
-      type: FieldType.text,
+      name: 'acknowledgement',
+      label: 'Acknowledgement',
+      type: FieldType.acknowledgement,
       required: true,
+      acknowledgements: [
+        AcknowledgementItem(
+          id: 'review',
+          text: 'Employee confirms that the document is ready for legal review',
+        ),
+      ],
     ),
   ];
 
@@ -653,7 +513,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await requestForInternalAuditInstance.getRequestsById(
+      final requests = await legalContractReviewInstance.getRequestsById(
         id: id,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -687,7 +547,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await requestForInternalAuditInstance.getchatById(id);
+      final requests = await legalContractReviewInstance.getchatById(id);
       if (requests != null) {
         final chats = requests.reversed.toList();
         state = state.copyWith(chatById: chats);
@@ -702,8 +562,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await requestForInternalAuditInstance
-          .getAttachmentsById(id);
+      final attachments = await legalContractReviewInstance.getAttachmentsById(
+        id,
+      );
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
       }
@@ -718,7 +579,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await requestForInternalAuditInstance.getKpiData(
+      final kpis = await legalContractReviewInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -736,7 +597,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await requestForInternalAuditInstance
+      final data = await legalContractReviewInstance
           .getApprovalTrendBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -756,7 +617,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await requestForInternalAuditInstance
+      final statusBreakdown = await legalContractReviewInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -780,7 +641,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await requestForInternalAuditInstance
+      final statusBreakdown = await legalContractReviewInstance
           .getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -804,7 +665,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await requestForInternalAuditInstance.getTrendBreakdownData(
+      final data = await legalContractReviewInstance.getTrendBreakdownData(
         period: period,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -823,7 +684,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await requestForInternalAuditInstance.getApprovalKpiData(
+      final kpis = await legalContractReviewInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
@@ -850,7 +711,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(requestData: [], isLoading: false);
       }
 
-      final requests = await requestForInternalAuditInstance.getRequests(
+      final requests = await legalContractReviewInstance.getRequests(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -879,7 +740,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await requestForInternalAuditInstance.getActionItems(
+      final items = await legalContractReviewInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -975,7 +836,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await requestForInternalAuditInstance
+        final uploadedFiles = await legalContractReviewInstance
             .uploadAttachments(state.attachments);
 
         if (uploadedFiles.isEmpty) {
@@ -1006,10 +867,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await requestForInternalAuditInstance.sendAttachment(
-          payload,
-          requestId,
-        );
+        await legalContractReviewInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -1030,7 +888,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await requestForInternalAuditInstance.sendChat(payload, requestId);
+        await legalContractReviewInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -1062,7 +920,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await requestForInternalAuditInstance.onApprove(payload);
+      await legalContractReviewInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       fetchactionItems();
@@ -1107,7 +965,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await requestForInternalAuditInstance.onApprove(payload);
+      await legalContractReviewInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
@@ -1134,7 +992,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await requestForInternalAuditInstance.onSendInProgress(payload);
+      // await legalContractReviewInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1498,52 +1356,27 @@ class _VSController extends StateNotifier<_ViewState> {
     final userInfo = KAppX.globalProvider.read(userInfoProvider);
 
     final payload = {
-      /// ⭐ USER INFO
-      "req_user_department_id": userInfo?.data?.department?.id?.toString(),
-      "req_user_section_id": userInfo?.data?.section?.id?.toString(),
-
       /// ⭐ SERVICE INFO
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      /// ⭐ COMMON DESCRIPTION (TOP LEVEL)
+      /// ⭐ REQUEST DETAILS
+      "request_title": values['request_title'] ?? "",
+      "request_type": values['request_type'] ?? "",
       "description": values['description'] ?? "",
 
-      /// ⭐ RISKS ARRAY (🔥 MAIN PART)
-      "risks": [
-        {
-          "risk_no": values['risk_no'],
-          "impacted_category": values['impacted_category'],
-          "impact_area": values['impact_area'],
-          "threat": values['threat'],
-          "vulnerability": values['vulnerability'],
-          "risk_description": values['risk_description'],
-          "risk_owner": values['risk_owner'],
+      /// ⭐ USER / DEPARTMENT INFO
+      "department_id": userInfo?.data?.department?.id,
+      "hos_or_department_name":
+          userInfo?.data?.department?.departmentName ?? "",
 
-          /// ⭐ CIA
-          "confidentiality": _toInt(values['confidentiality']),
-          "integrity": _toInt(values['integrity']),
-          "availability": _toInt(values['availability']),
+      /// ⭐ ACKNOWLEDGEMENT
+      "acknowledgement": values['acknowledgement'] ?? false,
 
-          /// ⭐ DERIVED
-          "asset_cia_impact": values['asset_cia_impact'],
-          "asset_value": _toInt(values['asset_value']),
+      /// ⭐ DATE
+      "submission_date": values['submission_date'],
 
-          /// ⭐ RISK CALC
-          "likelihood": _toInt(values['likelihood']),
-          "business_impact": _toInt(values['business_impact']),
-          "risk_value": values['risk_value'],
-
-          /// ⭐ OTHER
-          "existing_controls": values['existing_controls'],
-          "start_date": values['start_date'],
-          "end_date": values['end_date'],
-          "iso_control_reference": values['iso_control_reference'] ?? "",
-          "risk_treatment_plan": values['risk_treatment_plan'],
-        },
-      ],
-
-      /// ⭐ ATTACHMENTS (if needed)
+      /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
     };
 
@@ -1571,8 +1404,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await requestForInternalAuditInstance
-          .sendCyberSecurityRiskManagementNewRequest(payload);
+      final response = await legalContractReviewInstance
+          .sendLegalContractReviewNewRequest(payload);
 
       if (response['status'] == 'success') {
         _refreshDashboard();

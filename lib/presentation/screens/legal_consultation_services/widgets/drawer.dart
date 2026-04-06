@@ -17,11 +17,11 @@ class _DrawerMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      // DrawerItemData(
-      //   index: 0,
-      //   icon: KImageProvider(image: KIcons.dashboard),
-      //   label: 'Dashboard',
-      // ),
+      DrawerItemData(
+        index: 0,
+        icon: KImageProvider(image: KIcons.dashboard),
+        label: 'Request For Legal Contract Review',
+      ),
       // DrawerItemData(
       //   index: 1,
       //   icon: KImageProvider(

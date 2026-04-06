@@ -14,4 +14,5 @@ enum FieldType {
   rating,
   file,
   custom,
+  acknowledgement,
 }

@@ -57,7 +57,7 @@ class _RequestForLegalContractReviewNewRequestScreenState
         child: DynamicForm(
           title: 'Performance Management',
           stepTitles: const [''],
-          steps: [controller.cyberSecurityRiskManagementFormFields],
+          steps: [controller.legalRequestFormFields],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

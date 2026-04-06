@@ -61,8 +61,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<TaskItem> assignaTasktoEmployeeRequestDataRequestData;
-  final List<TaskItem> assignaTasktoEmployeeActionItemsData;
+  final List<TaskItem> requestData;
+  final List<TaskItem> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final List<PendingApprovalUser> engineersList;
@@ -83,6 +83,20 @@ class _ViewState {
   final bool isStartDateSelected;
 
   final String selectedRequestType;
+  final List<String> months = [
+    'jan',
+    'feb',
+    'mar',
+    'apr',
+    'may',
+    'jun',
+    'jul',
+    'aug',
+    'sep',
+    'oct',
+    'nov',
+    'dec',
+  ];
 
   /// FORM KEY
   final formKey = GlobalKey<FormState>();
@@ -100,8 +114,8 @@ class _ViewState {
     required this.tabIndex,
     required this.approvalStatusBreakdown,
     required this.approvalTrendData,
-    required this.assignaTasktoEmployeeRequestDataRequestData,
-    required this.assignaTasktoEmployeeActionItemsData,
+    required this.requestData,
+    required this.actionItems,
     required this.requestDetails,
     required this.requestDetailTab,
     required this.engineersList,
@@ -135,8 +149,8 @@ class _ViewState {
         tabIndex: 0,
         approvalStatusBreakdown: StatusBreakdownModel(),
         approvalTrendData: TrendBreakdownModel(),
-        assignaTasktoEmployeeRequestDataRequestData: [],
-        assignaTasktoEmployeeActionItemsData: [],
+        requestData: [],
+        actionItems: [],
         requestDetails: RequestDetailData(),
         requestDetailTab: 0,
         engineersList: [],
@@ -173,8 +187,8 @@ class _ViewState {
     StatusBreakdownModel? approvalStatusBreakdown,
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
-    List<TaskItem>? assignaTasktoEmployeeRequestDataRequestData,
-    List<TaskItem>? assignaTasktoEmployeeActionItemsData,
+    List<TaskItem>? requestData,
+    List<TaskItem>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -215,12 +229,8 @@ class _ViewState {
       approvalStatusBreakdown:
           approvalStatusBreakdown ?? this.approvalStatusBreakdown,
       approvalTrendData: approvalTrendData ?? this.approvalTrendData,
-      assignaTasktoEmployeeRequestDataRequestData:
-          assignaTasktoEmployeeRequestDataRequestData ??
-          this.assignaTasktoEmployeeRequestDataRequestData,
-      assignaTasktoEmployeeActionItemsData:
-          assignaTasktoEmployeeActionItemsData ??
-          this.assignaTasktoEmployeeActionItemsData,
+      requestData: requestData ?? this.requestData,
+      actionItems: actionItems ?? this.actionItems,
       requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
       engineersList: engineersList ?? this.engineersList,
@@ -270,6 +280,8 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController taskTitleController;
   late TextEditingController allowancePercentageController;
   late TextEditingController socialServiceFundContribution;
+  late TextEditingController searchController;
+  Timer? _searchDebounce;
 
   void initState() {
     chatController = TextEditingController();
@@ -292,6 +304,7 @@ class _VSController extends StateNotifier<_ViewState> {
     taskTitleController = TextEditingController();
     allowancePercentageController = TextEditingController();
     socialServiceFundContribution = TextEditingController();
+    searchController = TextEditingController();
 
     phoneController.addListener(_validateForm);
     completionController.addListener(_validateForm);
@@ -316,6 +329,297 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalStatusBreakdown('monthly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+  }
+
+  int _searchVersion = 0;
+
+  void onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    final int currentVersion = ++_searchVersion;
+
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
+      if (state.tabIndex == 0) {
+        await fetchRequests(isRefresh: true, searchText: value);
+      } else {
+        await fetchActionItems(isRefresh: true, searchText: value);
+      }
+
+      if (currentVersion != _searchVersion) return; // ignore old response
+    });
+  }
+
+  int get currentYear => DateTime.now().year;
+
+  List<String> get filterLabelList =>
+      List.generate(6, (index) => (currentYear - index).toString());
+  List<StatSummaryData> get requestStatsList =>
+      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+
+  List<StatSummaryData> get approverStatsList =>
+      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+
+  List<StatSummaryData> get currentStats =>
+      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  void onStatusFilterChanged(String? value) {
+    if (state.tabIndex == 0) {
+      fetchStatusBreakdown(value ?? '');
+    } else {
+      fetchApprovalStatusBreakdown(value ?? '');
+    }
+  }
+
+  void onTrendFilterChanged(String? value) {
+    if (value == null) return;
+
+    if (state.tabIndex == 0) {
+      fetchTrendBreakDown(value);
+    } else {
+      fetchApprovalTrendBreakDown(value);
+    }
+  }
+
+  List<int> get trendCounts {
+    final data = state.trendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<int> get approvalTrendCounts {
+    final data = state.approvalTrendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<ChartData> get statusBreakdownList {
+    return state.statusBreakdown.data?.breakdown ?? [];
+  }
+
+  List<ChartData> get approvalStatusBreakdownList {
+    return state.approvalStatusBreakdown.data?.breakdown ?? [];
+  }
+
+  bool _isPendingOrInProgress(String? status) {
+    final s = status?.toLowerCase();
+    return s == 'in progress';
+  }
+
+  bool _isCompleted(String? status) {
+    return status?.toLowerCase() == 'completed' ||
+        status?.toLowerCase() == 'approved';
+  }
+
+  DateTime _parseDate(String? value) {
+    try {
+      return DateTime.parse(value ?? '');
+    } catch (_) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+  }
+
+  Map<String, String> resolveApproverMap(List<ApprovalDetailModel>? approvals) {
+    if (approvals == null || approvals.isEmpty) {
+      return {};
+    }
+
+    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    final pendingList = approvals
+        .where((a) => _isPendingOrInProgress(a.approvalStatus))
+        .toList();
+
+    if (pendingList.isNotEmpty) {
+      pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
+      final next = pendingList.first;
+
+      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
+      if (next.approverRoleId != null) {
+        final name = next.approverUser?.employeeName;
+        final email = next.approverUser?.email;
+        final roleName = next.approverRole?.name;
+
+        if ((name ?? '').isNotEmpty) {
+          return {
+            'name': name!,
+            if ((email ?? '').isNotEmpty) 'email': email!,
+            if ((roleName ?? '').isNotEmpty) 'role': roleName!,
+          };
+        }
+      }
+
+      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
+      final department = next.department?.departmentName;
+      final section = next.section?.sectionName;
+
+      if ((department ?? '').isNotEmpty) {
+        return {
+          'department': department!,
+          if ((section ?? '').isNotEmpty) 'section': section!,
+        };
+      }
+
+      return {};
+    }
+
+    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
+    final completedList = approvals
+        .where((a) => _isCompleted(a.approvalStatus))
+        .toList();
+
+    if (completedList.isEmpty) {
+      return {};
+    }
+
+    completedList.sort((a, b) {
+      final levelCompare = (a.level ?? 0).compareTo(b.level ?? 0);
+      if (levelCompare != 0) return levelCompare;
+      return _parseDate(a.updatedAt).compareTo(_parseDate(b.updatedAt));
+    });
+
+    final last = completedList.last;
+
+    final name =
+        last.approvedByUser?.employeeName ?? last.approverUser?.employeeName;
+
+    final email = last.approverUser?.email;
+
+    if ((name ?? '').isNotEmpty) {
+      return {'name': name!, if ((email ?? '').isNotEmpty) 'email': email!};
+    }
+
+    return {};
+  }
+
+  Map<String, String> buildRequestCardData(TaskItem item) {
+    final approverMap = resolveApproverMap(item.approvalDetails ?? []);
+
+    return {
+      'Request Id': item.id?.toString() ?? '-',
+      'status': item.status ?? '-',
+      'Request By': item.createdByUser?.employeeName ?? '-',
+      // 'Cycle Period': item.cyclePeriod ?? '-',
+      'Request Submission Date': item.createdAt.toString() ?? '-',
+      // 'Asset CIA Impact': item.assetCiaImpact?.toString() ?? '-',
+      // 'Asset Value': item.assetValue?.toString() ?? '-',
+      // 'Asset Availability': item.availability?.toString() ?? '-',
+      // 'Business Impact': item.businessImpact.toString() ?? '-',
+      // 'Likelihood': item.likelihood?.toString() ?? '-',
+      // 'Risk Owner': item.risk?.riskOwner ?? '-',
+
+      /// ================= EMPLOYEE INFO =================
+
+      /// 👇 APPROVER (SINGLE LINE)
+      if (approverMap.containsKey('role')) ...{
+        'Approver': approverMap['role'] ?? '-',
+      } else if (approverMap.containsKey('department')) ...{
+        'Approver': _buildDepartmentSection(approverMap),
+      },
+    };
+  }
+
+  Map<String, String> buildRequestInformationData() {
+    final request = state.requestDetails.request;
+    final risk = state.requestDetails.risk;
+    return {
+      /// ───── RIGHT COLUMN ─────
+      "Service Type": request?.service?.name ?? 'N/A',
+
+      /// ───── LEFT COLUMN ─────
+      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
+      'Priority': request?.priority ?? 'N/A',
+      'Task Title': request?.taskTitle ?? 'N/A',
+
+      // Request details
+      'Task Description': request?.taskDescription ?? 'N/A',
+      'Completion Date': request?.completionDate ?? 'N/A',
+      'Assigned Employee': request?.assignedEmployeeName ?? 'N/A',
+    };
+  }
+
+  Map<String, String> buildStatusInformation() {
+    final request = state.requestDetails.request;
+    final approvals = state.requestDetails.approvalDetails;
+    final nextApprover = resolveApproverMap(approvals);
+    return {
+      "Approval Status": request?.status ?? 'N/A',
+      "Requested Date": request?.createdAt ?? 'N/A',
+      // "Last Updated":
+      //     request?.updatedAt?.split('T').first ?? 'N/A',
+      if (nextApprover.containsKey('department'))
+        'Department': nextApprover['department']!,
+      if (nextApprover.containsKey('section'))
+        'Section': nextApprover['section']!,
+
+      if (nextApprover.containsKey('name'))
+        'Approver Name': nextApprover['name']!,
+      if (nextApprover.containsKey('email'))
+        'Approver Email': nextApprover['email']!,
+    };
+  }
+
+  Map<String, String> buildTechnicalInformation() {
+    final request = state.requestDetails.request;
+    return {
+      'Extension Number':
+          request?.createdByUser?.extensionNumber.toString() ?? '0',
+    };
+  }
+
+  String _buildDepartmentSection(Map<String, String> approverMap) {
+    final department = approverMap['department'];
+    final section = approverMap['section'];
+
+    if ((department ?? '').isNotEmpty && (section ?? '').isNotEmpty) {
+      return '$department - $section';
+    }
+
+    return department ?? '-';
+  }
+
+  Future<void> openRequestDetails(
+    int id, {
+    bool fromActionItems = false,
+  }) async {
+    updateRequestTab(0);
+
+    await KAppX.router.push(
+      CyberSecurityRiskManagementDetailsRoute(
+        id: id,
+        from: fromActionItems ? 'action items' : '',
+        service: service,
+        subService: subService,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      ),
+    );
+
+    await refreshAfterReturn();
+  }
+
+  Future<void> refreshAfterReturn() async {
+    await Future.wait([
+      fetchRequests(),
+      fetchKpi(),
+      fetchStatusBreakdown('weekly'),
+      fetchTrendBreakDown(DateTime.now().year.toString()),
+    ]);
+  }
+
+  void openNewRequestForm() {
+    // fetchbyCycleGoals(cycle: 'Jan-Jun');
+    // state = state.copyWith(selectedUsersList: []);
+    KAppX.router.push(
+      CyberSecurityRiskManagementNewRequestRoute(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+        service: service,
+        subService: subService,
+      ),
+    );
   }
 
   void _validateForm() {
@@ -629,7 +933,7 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       // Clear list only if explicitly refreshing or searching
       if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(assignaTasktoEmployeeRequestDataRequestData: []);
+        state = state.copyWith(requestData: []);
       }
 
       final requests = await assignatasktoemployeeInstance.getRequests(
@@ -640,9 +944,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(
-        assignaTasktoEmployeeRequestDataRequestData: requests,
-      );
+      state = state.copyWith(requestData: requests);
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -657,7 +959,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     try {
       if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(assignaTasktoEmployeeActionItemsData: []);
+        state = state.copyWith(actionItems: []);
       }
 
       final items = await assignatasktoemployeeInstance.getActionItems(
@@ -668,10 +970,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(
-        assignaTasktoEmployeeActionItemsData: items,
-        isLoading: false,
-      );
+      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }
@@ -1088,9 +1387,6 @@ class _VSController extends StateNotifier<_ViewState> {
   void updateTabIndex(int index) {
     state = state.copyWith(tabIndex: index);
   }
-
-  void onPriorityChange(String value) =>
-      state = state.copyWith(selectedPriority: value);
 
   void onSelectedAcknowledgements(List<String> value) =>
       state = state.copyWith(acknowledgement: value);

@@ -1387,6 +1387,10 @@ class RequestModel {
   final String? applicationToBeAudited;
   final String? applicationToBeAuditedOther;
 
+  final bool? acknowledgement;
+  final String? hosOrDepartmentName;
+  final String? requestTitle;
+
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1652,6 +1656,9 @@ class RequestModel {
     this.requestClassification,
     this.applicationToBeAudited,
     this.applicationToBeAuditedOther,
+    this.acknowledgement,
+    this.hosOrDepartmentName,
+    this.requestTitle,
   });
 
   // ─────────────────────────────
@@ -1987,6 +1994,9 @@ class RequestModel {
       applicationToBeAudited: json['application_to_be_audited'] as String?,
       applicationToBeAuditedOther:
           json['application_to_be_audited_other'] as String?,
+      acknowledgement: json['acknowledgement'] as bool?,
+      hosOrDepartmentName: json['hos_or_department_name'] as String?,
+      requestTitle: json['request_title'] as String?,
     );
   }
 

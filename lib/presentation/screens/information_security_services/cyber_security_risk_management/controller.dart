@@ -646,6 +646,35 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: true,
     ),
+
+    //     DynamicField(
+    //       name: 'acknowledgements',
+    //       label: 'Confirmations',
+    //       type: FieldType.acknowledgement,
+    //       required: true,
+    //       acknowledgements: [
+    //         AcknowledgementItem(
+    //           id: 'terms',
+    //           text: 'I agree to Terms & Conditions',
+    //           hasAction: true,
+    //           onTap: (context) async {
+    //             return await KAppX.extendedRouter.dialog.showKDialog<bool>(
+    //               context: context,
+    //               builder: (_) => const CommonPolicyDialog(
+    //                 title: 'Terms & Conditions',
+    //                 content: '''
+    // 1. You agree to provide accurate information.
+    // 2. Your data may be used for processing requests.
+    // 3. Misuse of the system may lead to account suspension.
+    // 4. Company policies must be followed at all times.
+    //         ''',
+    //               ),
+    //             );
+    //           },
+    //         ),
+    //         AcknowledgementItem(id: 'policy', text: 'I confirm company policies'),
+    //       ],
+    //     ),
   ];
 
   /// ========================= HELPERS =========================
