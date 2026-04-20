@@ -60,18 +60,11 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  String titleForIndex(int index) {
-    switch (index) {
-      case 0:
-        return 'Salalah';
-      case 1:
-        return 'Muscat';
-      case 2:
-        return 'VPN';
-
-      default:
-        return '  Home';
+  String titleForIndex(int index, List filteredItems) {
+    if (index < filteredItems.length) {
+      return filteredItems[index]["name"];
     }
+    return "Home";
   }
 }
 

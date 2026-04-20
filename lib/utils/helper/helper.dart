@@ -17,3 +17,7 @@ String formatDate(String? raw) {
     return raw;
   }
 }
+
+String formatDateForCreateRequest() {
+  return DateFormat("yyyy-MM-dd").format(DateTime.now());
+}

@@ -9,160 +9,174 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i73;
-import 'package:code_setup/modules/domain/models/roles_model.dart' as _i76;
-import 'package:code_setup/presentation/app.dart' as _i28;
+import 'package:auto_route/auto_route.dart' as _i80;
+import 'package:code_setup/modules/domain/models/roles_model.dart' as _i83;
+import 'package:code_setup/presentation/app.dart' as _i30;
 import 'package:code_setup/presentation/bottomNavigationBar/bottom_nav.dart'
-    as _i22;
-import 'package:code_setup/presentation/onboarding/login/view.dart' as _i31;
+    as _i23;
+import 'package:code_setup/presentation/onboarding/login/view.dart' as _i33;
 import 'package:code_setup/presentation/screens/asset_affairs/cancel_housing_contract/view.dart'
-    as _i14;
+    as _i15;
 import 'package:code_setup/presentation/screens/asset_affairs/request_for_accommodation_in_muscat_governorate/view.dart'
-    as _i46;
+    as _i50;
 import 'package:code_setup/presentation/screens/asset_affairs/request_to_renewal_housing_contract/view.dart'
-    as _i42;
+    as _i44;
 import 'package:code_setup/presentation/screens/asset_affairs/residental_unit_rental/view.dart'
-    as _i60;
-import 'package:code_setup/presentation/screens/asset_affairs/view.dart' as _i8;
+    as _i66;
+import 'package:code_setup/presentation/screens/asset_affairs/view.dart' as _i9;
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/airport_entry_permit_request/view.dart'
     as _i3;
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/dashboard/view.dart'
-    as _i12;
-import 'package:code_setup/presentation/screens/aviation_security_Facilitation/view.dart'
     as _i13;
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/view.dart'
+    as _i14;
 import 'package:code_setup/presentation/screens/home_screen/approvals/request_details/view.dart'
-    as _i43;
+    as _i46;
 import 'package:code_setup/presentation/screens/home_screen/approvals/view.dart'
-    as _i7;
+    as _i8;
 import 'package:code_setup/presentation/screens/home_screen/dashboard/dashboard.dart'
     as _i4;
 import 'package:code_setup/presentation/screens/home_screen/services/view.dart'
-    as _i65;
+    as _i71;
 import 'package:code_setup/presentation/screens/home_screen/settings/view.dart'
-    as _i66;
-import 'package:code_setup/presentation/screens/home_screen/view.dart' as _i17;
+    as _i72;
+import 'package:code_setup/presentation/screens/home_screen/view.dart' as _i18;
 import 'package:code_setup/presentation/screens/hotel_reservation/dashboard/view.dart'
-    as _i18;
-import 'package:code_setup/presentation/screens/hotel_reservation/request_for_hotel/view.dart'
-    as _i20;
-import 'package:code_setup/presentation/screens/hotel_reservation/view.dart'
     as _i19;
+import 'package:code_setup/presentation/screens/hotel_reservation/request_for_hotel/view.dart'
+    as _i21;
+import 'package:code_setup/presentation/screens/hotel_reservation/view.dart'
+    as _i20;
 import 'package:code_setup/presentation/screens/hr_service/annual_increment/view.dart'
     as _i5;
 import 'package:code_setup/presentation/screens/hr_service/assignment_decision/view.dart'
-    as _i11;
+    as _i12;
 import 'package:code_setup/presentation/screens/hr_service/dashboard/view.dart'
-    as _i10;
+    as _i11;
 import 'package:code_setup/presentation/screens/hr_service/payment_of_cash_allowance_for_leave/view.dart'
-    as _i38;
-import 'package:code_setup/presentation/screens/hr_service/payment_of_shift_allowance/view.dart'
     as _i39;
-import 'package:code_setup/presentation/screens/hr_service/performance_management/view.dart'
+import 'package:code_setup/presentation/screens/hr_service/payment_of_shift_allowance/view.dart'
     as _i40;
-import 'package:code_setup/presentation/screens/hr_service/promotions/view.dart'
+import 'package:code_setup/presentation/screens/hr_service/performance_management/view.dart'
     as _i41;
+import 'package:code_setup/presentation/screens/hr_service/promotions/view.dart'
+    as _i42;
 import 'package:code_setup/presentation/screens/hr_service/request_for_duty_mission/view.dart'
-    as _i55;
-import 'package:code_setup/presentation/screens/hr_service/request_for_duty_mission_planned/view.dart'
-    as _i56;
-import 'package:code_setup/presentation/screens/hr_service/request_for_duty_mission_unplanned/view.dart'
-    as _i57;
-import 'package:code_setup/presentation/screens/hr_service/request_for_human_resource_annual_planning/view.dart'
-    as _i47;
-import 'package:code_setup/presentation/screens/hr_service/required_new_resource/view.dart'
-    as _i59;
-import 'package:code_setup/presentation/screens/hr_service/secondment_decision/view.dart'
-    as _i34;
-import 'package:code_setup/presentation/screens/hr_service/service_transfer/view.dart'
-    as _i35;
-import 'package:code_setup/presentation/screens/hr_service/skills_enhancement/view.dart'
-    as _i67;
-import 'package:code_setup/presentation/screens/hr_service/temporary_assignment_decision/view.dart'
-    as _i36;
-import 'package:code_setup/presentation/screens/hr_service/transfer_from_one_job_to_another_job_nature/view.dart'
-    as _i71;
-import 'package:code_setup/presentation/screens/hr_service/view.dart' as _i16;
-import 'package:code_setup/presentation/screens/information_security_services/cyber_security_risk_management/view.dart'
-    as _i15;
-import 'package:code_setup/presentation/screens/information_security_services/dashboard/view.dart'
-    as _i62;
-import 'package:code_setup/presentation/screens/information_security_services/report_security_threat/view.dart'
-    as _i64;
-import 'package:code_setup/presentation/screens/information_security_services/request_for_internal_audit/view.dart'
-    as _i48;
-import 'package:code_setup/presentation/screens/information_security_services/request_for_project_approval/view.dart'
-    as _i50;
-import 'package:code_setup/presentation/screens/information_security_services/request_for_VAPT_and_infrastructure_review/view.dart'
-    as _i52;
-import 'package:code_setup/presentation/screens/information_security_services/request_to_organize_security_awareness/view.dart'
-    as _i37;
-import 'package:code_setup/presentation/screens/information_security_services/view.dart'
-    as _i63;
-import 'package:code_setup/presentation/screens/it_services/muscat/view.dart'
-    as _i32;
-import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart'
-    as _i78;
-import 'package:code_setup/presentation/screens/it_services/salalah/view.dart'
     as _i61;
-import 'package:code_setup/presentation/screens/it_services/view.dart' as _i21;
+import 'package:code_setup/presentation/screens/hr_service/request_for_duty_mission_planned/view.dart'
+    as _i62;
+import 'package:code_setup/presentation/screens/hr_service/request_for_duty_mission_unplanned/view.dart'
+    as _i63;
+import 'package:code_setup/presentation/screens/hr_service/request_for_human_resource_annual_planning/view.dart'
+    as _i52;
+import 'package:code_setup/presentation/screens/hr_service/required_new_resource/view.dart'
+    as _i65;
+import 'package:code_setup/presentation/screens/hr_service/secondment_decision/view.dart'
+    as _i35;
+import 'package:code_setup/presentation/screens/hr_service/service_transfer/view.dart'
+    as _i36;
+import 'package:code_setup/presentation/screens/hr_service/skills_enhancement/view.dart'
+    as _i73;
+import 'package:code_setup/presentation/screens/hr_service/temporary_assignment_decision/view.dart'
+    as _i37;
+import 'package:code_setup/presentation/screens/hr_service/transfer_from_one_job_to_another_job_nature/view.dart'
+    as _i78;
+import 'package:code_setup/presentation/screens/hr_service/view.dart' as _i17;
+import 'package:code_setup/presentation/screens/information_security_services/cyber_security_risk_management/view.dart'
+    as _i16;
+import 'package:code_setup/presentation/screens/information_security_services/dashboard/view.dart'
+    as _i68;
+import 'package:code_setup/presentation/screens/information_security_services/report_security_threat/view.dart'
+    as _i70;
+import 'package:code_setup/presentation/screens/information_security_services/request_for_internal_audit/view.dart'
+    as _i53;
+import 'package:code_setup/presentation/screens/information_security_services/request_for_project_approval/view.dart'
+    as _i55;
+import 'package:code_setup/presentation/screens/information_security_services/request_for_VAPT_and_infrastructure_review/view.dart'
+    as _i57;
+import 'package:code_setup/presentation/screens/information_security_services/request_to_organize_security_awareness/view.dart'
+    as _i38;
+import 'package:code_setup/presentation/screens/information_security_services/view.dart'
+    as _i69;
+import 'package:code_setup/presentation/screens/it_services/muscat/view.dart'
+    as _i34;
+import 'package:code_setup/presentation/screens/it_services/request_event_support/view.dart'
+    as _i48;
+import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart'
+    as _i85;
+import 'package:code_setup/presentation/screens/it_services/salalah/view.dart'
+    as _i67;
+import 'package:code_setup/presentation/screens/it_services/view.dart' as _i22;
 import 'package:code_setup/presentation/screens/it_services/vpn/view.dart'
-    as _i72;
-import 'package:code_setup/presentation/screens/legal_consultation_services/request_for_legal_contract_review/view.dart'
-    as _i49;
-import 'package:code_setup/presentation/screens/legal_consultation_services/view.dart'
-    as _i23;
-import 'package:code_setup/presentation/screens/logistics/foreign_request/view.dart'
+    as _i79;
+import 'package:code_setup/presentation/screens/legal_consultation_services/appeal_against_administrative_decisions/view.dart'
+    as _i7;
+import 'package:code_setup/presentation/screens/legal_consultation_services/legal_consultation_and_review_of_administrative_decisions/view.dart'
     as _i25;
-import 'package:code_setup/presentation/screens/logistics/logistics_dashboard/view.dart'
-    as _i24;
-import 'package:code_setup/presentation/screens/logistics/logistics_employee/view.dart'
-    as _i27;
-import 'package:code_setup/presentation/screens/logistics/view.dart' as _i26;
-import 'package:code_setup/presentation/screens/media_services/dashboard/view.dart'
-    as _i30;
-import 'package:code_setup/presentation/screens/media_services/request_for_coverage/view.dart'
+import 'package:code_setup/presentation/screens/legal_consultation_services/raise_legal_complaint/view.dart'
+    as _i43;
+import 'package:code_setup/presentation/screens/legal_consultation_services/request_for_legal_contract_review/view.dart'
     as _i54;
-import 'package:code_setup/presentation/screens/media_services/view.dart'
+import 'package:code_setup/presentation/screens/legal_consultation_services/view.dart'
+    as _i24;
+import 'package:code_setup/presentation/screens/logistics/foreign_request/view.dart'
+    as _i27;
+import 'package:code_setup/presentation/screens/logistics/logistics_dashboard/view.dart'
+    as _i26;
+import 'package:code_setup/presentation/screens/logistics/logistics_employee/view.dart'
     as _i29;
+import 'package:code_setup/presentation/screens/logistics/view.dart' as _i28;
+import 'package:code_setup/presentation/screens/media_services/dashboard/view.dart'
+    as _i32;
+import 'package:code_setup/presentation/screens/media_services/request_for_coverage/view.dart'
+    as _i60;
+import 'package:code_setup/presentation/screens/media_services/view.dart'
+    as _i31;
 import 'package:code_setup/presentation/screens/request_details/view.dart'
-    as _i44;
-import 'package:code_setup/presentation/screens/reuest_event_support/view.dart'
-    as _i33;
+    as _i47;
 import 'package:code_setup/presentation/screens/security_access/access_card/view.dart'
     as _i2;
 import 'package:code_setup/presentation/screens/security_access/dashboard/view.dart'
     as _i1;
 import 'package:code_setup/presentation/screens/security_access/view.dart'
-    as _i45;
+    as _i49;
 import 'package:code_setup/presentation/screens/task_management/assign_a_task_to_employee/view.dart'
-    as _i9;
+    as _i10;
 import 'package:code_setup/presentation/screens/task_management/view.dart'
-    as _i70;
+    as _i77;
+import 'package:code_setup/presentation/screens/tender_service/request_a_tender_service/view.dart'
+    as _i58;
+import 'package:code_setup/presentation/screens/tender_service/request_service_to_respond_to_enquires/view.dart'
+    as _i45;
+import 'package:code_setup/presentation/screens/tender_service/view.dart'
+    as _i74;
 import 'package:code_setup/presentation/screens/training_and_development/annual_training_plan/view.dart'
     as _i6;
 import 'package:code_setup/presentation/screens/training_and_development/dashboard/view.dart'
-    as _i68;
-import 'package:code_setup/presentation/screens/training_and_development/request_for_study_leave/view.dart'
+    as _i75;
+import 'package:code_setup/presentation/screens/training_and_development/request_for_cancellation/view.dart'
     as _i51;
+import 'package:code_setup/presentation/screens/training_and_development/request_for_study_leave/view.dart'
+    as _i56;
 import 'package:code_setup/presentation/screens/training_and_development/request_for_training_room_booking/view.dart'
-    as _i58;
+    as _i64;
 import 'package:code_setup/presentation/screens/training_and_development/request_training/view.dart'
-    as _i53;
+    as _i59;
 import 'package:code_setup/presentation/screens/training_and_development/view.dart'
-    as _i69;
-import 'package:flutter/cupertino.dart' as _i77;
-import 'package:flutter/foundation.dart' as _i75;
-import 'package:flutter/material.dart' as _i74;
+    as _i76;
+import 'package:flutter/cupertino.dart' as _i84;
+import 'package:flutter/foundation.dart' as _i82;
+import 'package:flutter/material.dart' as _i81;
 
 /// generated route for
 /// [_i1.AccessCardDashboardScreen]
-class AccessCardDashboardRoute extends _i73.PageRouteInfo<void> {
-  const AccessCardDashboardRoute({List<_i73.PageRouteInfo>? children})
+class AccessCardDashboardRoute extends _i80.PageRouteInfo<void> {
+  const AccessCardDashboardRoute({List<_i80.PageRouteInfo>? children})
     : super(AccessCardDashboardRoute.name, initialChildren: children);
 
   static const String name = 'AccessCardDashboardRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       return const _i1.AccessCardDashboardScreen();
@@ -172,13 +186,13 @@ class AccessCardDashboardRoute extends _i73.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.AccessCardNewRequestScreen]
-class AccessCardNewRequestRoute extends _i73.PageRouteInfo<void> {
-  const AccessCardNewRequestRoute({List<_i73.PageRouteInfo>? children})
+class AccessCardNewRequestRoute extends _i80.PageRouteInfo<void> {
+  const AccessCardNewRequestRoute({List<_i80.PageRouteInfo>? children})
     : super(AccessCardNewRequestRoute.name, initialChildren: children);
 
   static const String name = 'AccessCardNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       return const _i2.AccessCardNewRequestScreen();
@@ -189,12 +203,12 @@ class AccessCardNewRequestRoute extends _i73.PageRouteInfo<void> {
 /// generated route for
 /// [_i2.AccessCardRequestDetailsTabScreen]
 class AccessCardRequestDetailsTabRoute
-    extends _i73.PageRouteInfo<AccessCardRequestDetailsTabRouteArgs> {
+    extends _i80.PageRouteInfo<AccessCardRequestDetailsTabRouteArgs> {
   AccessCardRequestDetailsTabRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int id,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AccessCardRequestDetailsTabRoute.name,
          args: AccessCardRequestDetailsTabRouteArgs(
@@ -207,7 +221,7 @@ class AccessCardRequestDetailsTabRoute
 
   static const String name = 'AccessCardRequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AccessCardRequestDetailsTabRouteArgs>();
@@ -227,7 +241,7 @@ class AccessCardRequestDetailsTabRouteArgs {
     this.from = '',
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int id;
 
@@ -251,13 +265,13 @@ class AccessCardRequestDetailsTabRouteArgs {
 
 /// generated route for
 /// [_i2.AccessCardRequestScreen]
-class AccessCardRequestRoute extends _i73.PageRouteInfo<void> {
-  const AccessCardRequestRoute({List<_i73.PageRouteInfo>? children})
+class AccessCardRequestRoute extends _i80.PageRouteInfo<void> {
+  const AccessCardRequestRoute({List<_i80.PageRouteInfo>? children})
     : super(AccessCardRequestRoute.name, initialChildren: children);
 
   static const String name = 'AccessCardRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       return const _i2.AccessCardRequestScreen();
@@ -268,12 +282,12 @@ class AccessCardRequestRoute extends _i73.PageRouteInfo<void> {
 /// generated route for
 /// [_i3.AirportEntryPermitScreen]
 class AirportEntryPermitRoute
-    extends _i73.PageRouteInfo<AirportEntryPermitRouteArgs> {
+    extends _i80.PageRouteInfo<AirportEntryPermitRouteArgs> {
   AirportEntryPermitRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AirportEntryPermitRoute.name,
          args: AirportEntryPermitRouteArgs(
@@ -286,7 +300,7 @@ class AirportEntryPermitRoute
 
   static const String name = 'AirportEntryPermitRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AirportEntryPermitRouteArgs>();
@@ -306,11 +320,11 @@ class AirportEntryPermitRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -333,14 +347,16 @@ class AirportEntryPermitRouteArgs {
 /// generated route for
 /// [_i3.AirportEntryRequestDetailsTabScreen]
 class AirportEntryRequestDetailsTabRoute
-    extends _i73.PageRouteInfo<AirportEntryRequestDetailsTabRouteArgs> {
+    extends _i80.PageRouteInfo<AirportEntryRequestDetailsTabRouteArgs> {
   AirportEntryRequestDetailsTabRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AirportEntryRequestDetailsTabRoute.name,
          args: AirportEntryRequestDetailsTabRouteArgs(
@@ -348,6 +364,8 @@ class AirportEntryRequestDetailsTabRoute
            id: id,
            serviceId: serviceId,
            subServiceId: subServiceId,
+           service: service,
+           subService: subService,
            from: from,
          ),
          initialChildren: children,
@@ -355,7 +373,7 @@ class AirportEntryRequestDetailsTabRoute
 
   static const String name = 'AirportEntryRequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AirportEntryRequestDetailsTabRouteArgs>();
@@ -364,6 +382,8 @@ class AirportEntryRequestDetailsTabRoute
         id: args.id,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
         from: args.from,
       );
     },
@@ -376,10 +396,12 @@ class AirportEntryRequestDetailsTabRouteArgs {
     required this.id,
     required this.serviceId,
     required this.subServiceId,
+    required this.service,
+    required this.subService,
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -387,11 +409,15 @@ class AirportEntryRequestDetailsTabRouteArgs {
 
   final int subServiceId;
 
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
   final String from;
 
   @override
   String toString() {
-    return 'AirportEntryRequestDetailsTabRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, from: $from}';
+    return 'AirportEntryRequestDetailsTabRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
   }
 
   @override
@@ -402,6 +428,8 @@ class AirportEntryRequestDetailsTabRouteArgs {
         id == other.id &&
         serviceId == other.serviceId &&
         subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService &&
         from == other.from;
   }
 
@@ -411,18 +439,20 @@ class AirportEntryRequestDetailsTabRouteArgs {
       id.hashCode ^
       serviceId.hashCode ^
       subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
       from.hashCode;
 }
 
 /// generated route for
 /// [_i4.AnnouncementScreen]
-class AnnouncementRoute extends _i73.PageRouteInfo<void> {
-  const AnnouncementRoute({List<_i73.PageRouteInfo>? children})
+class AnnouncementRoute extends _i80.PageRouteInfo<void> {
+  const AnnouncementRoute({List<_i80.PageRouteInfo>? children})
     : super(AnnouncementRoute.name, initialChildren: children);
 
   static const String name = 'AnnouncementRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       return const _i4.AnnouncementScreen();
@@ -433,16 +463,16 @@ class AnnouncementRoute extends _i73.PageRouteInfo<void> {
 /// generated route for
 /// [_i5.AnnualIncrementDetailsScreen]
 class AnnualIncrementDetailsRoute
-    extends _i73.PageRouteInfo<AnnualIncrementDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<AnnualIncrementDetailsRouteArgs> {
   AnnualIncrementDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AnnualIncrementDetailsRoute.name,
          args: AnnualIncrementDetailsRouteArgs(
@@ -459,7 +489,7 @@ class AnnualIncrementDetailsRoute
 
   static const String name = 'AnnualIncrementDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AnnualIncrementDetailsRouteArgs>();
@@ -487,7 +517,7 @@ class AnnualIncrementDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -495,9 +525,9 @@ class AnnualIncrementDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -533,14 +563,14 @@ class AnnualIncrementDetailsRouteArgs {
 /// generated route for
 /// [_i5.AnnualIncrementNewRequestScreen]
 class AnnualIncrementNewRequestRoute
-    extends _i73.PageRouteInfo<AnnualIncrementNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<AnnualIncrementNewRequestRouteArgs> {
   AnnualIncrementNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AnnualIncrementNewRequestRoute.name,
          args: AnnualIncrementNewRequestRouteArgs(
@@ -555,7 +585,7 @@ class AnnualIncrementNewRequestRoute
 
   static const String name = 'AnnualIncrementNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AnnualIncrementNewRequestRouteArgs>();
@@ -579,15 +609,15 @@ class AnnualIncrementNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -617,12 +647,12 @@ class AnnualIncrementNewRequestRouteArgs {
 /// generated route for
 /// [_i5.AnnualIncrementScreen]
 class AnnualIncrementRoute
-    extends _i73.PageRouteInfo<AnnualIncrementRouteArgs> {
+    extends _i80.PageRouteInfo<AnnualIncrementRouteArgs> {
   AnnualIncrementRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AnnualIncrementRoute.name,
          args: AnnualIncrementRouteArgs(
@@ -635,7 +665,7 @@ class AnnualIncrementRoute
 
   static const String name = 'AnnualIncrementRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AnnualIncrementRouteArgs>();
@@ -655,11 +685,11 @@ class AnnualIncrementRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -682,16 +712,16 @@ class AnnualIncrementRouteArgs {
 /// generated route for
 /// [_i6.AnnualTrainingPlanDetailsScreen]
 class AnnualTrainingPlanDetailsRoute
-    extends _i73.PageRouteInfo<AnnualTrainingPlanDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<AnnualTrainingPlanDetailsRouteArgs> {
   AnnualTrainingPlanDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AnnualTrainingPlanDetailsRoute.name,
          args: AnnualTrainingPlanDetailsRouteArgs(
@@ -708,7 +738,7 @@ class AnnualTrainingPlanDetailsRoute
 
   static const String name = 'AnnualTrainingPlanDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AnnualTrainingPlanDetailsRouteArgs>();
@@ -736,7 +766,7 @@ class AnnualTrainingPlanDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -744,9 +774,9 @@ class AnnualTrainingPlanDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -782,14 +812,14 @@ class AnnualTrainingPlanDetailsRouteArgs {
 /// generated route for
 /// [_i6.AnnualTrainingPlanRequestScreen]
 class AnnualTrainingPlanRequestRoute
-    extends _i73.PageRouteInfo<AnnualTrainingPlanRequestRouteArgs> {
+    extends _i80.PageRouteInfo<AnnualTrainingPlanRequestRouteArgs> {
   AnnualTrainingPlanRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AnnualTrainingPlanRequestRoute.name,
          args: AnnualTrainingPlanRequestRouteArgs(
@@ -804,7 +834,7 @@ class AnnualTrainingPlanRequestRoute
 
   static const String name = 'AnnualTrainingPlanRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AnnualTrainingPlanRequestRouteArgs>();
@@ -828,15 +858,15 @@ class AnnualTrainingPlanRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -866,12 +896,12 @@ class AnnualTrainingPlanRequestRouteArgs {
 /// generated route for
 /// [_i6.AnnualTrainingPlanScreen]
 class AnnualTrainingPlanRoute
-    extends _i73.PageRouteInfo<AnnualTrainingPlanRouteArgs> {
+    extends _i80.PageRouteInfo<AnnualTrainingPlanRouteArgs> {
   AnnualTrainingPlanRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AnnualTrainingPlanRoute.name,
          args: AnnualTrainingPlanRouteArgs(
@@ -884,7 +914,7 @@ class AnnualTrainingPlanRoute
 
   static const String name = 'AnnualTrainingPlanRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AnnualTrainingPlanRouteArgs>();
@@ -904,11 +934,11 @@ class AnnualTrainingPlanRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -929,48 +959,308 @@ class AnnualTrainingPlanRouteArgs {
 }
 
 /// generated route for
-/// [_i7.ApprovalsList]
-class ApprovalsList extends _i73.PageRouteInfo<void> {
-  const ApprovalsList({List<_i73.PageRouteInfo>? children})
+/// [_i7.AppealAgainstAdministrativeDecisionsDetailsScreen]
+class AppealAgainstAdministrativeDecisionsDetailsRoute
+    extends
+        _i80.PageRouteInfo<
+          AppealAgainstAdministrativeDecisionsDetailsRouteArgs
+        > {
+  AppealAgainstAdministrativeDecisionsDetailsRoute({
+    _i81.Key? key,
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    String from = '',
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         AppealAgainstAdministrativeDecisionsDetailsRoute.name,
+         args: AppealAgainstAdministrativeDecisionsDetailsRouteArgs(
+           key: key,
+           id: id,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+           from: from,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'AppealAgainstAdministrativeDecisionsDetailsRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data
+          .argsAs<AppealAgainstAdministrativeDecisionsDetailsRouteArgs>();
+      return _i7.AppealAgainstAdministrativeDecisionsDetailsScreen(
+        key: args.key,
+        id: args.id,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+        from: args.from,
+      );
+    },
+  );
+}
+
+class AppealAgainstAdministrativeDecisionsDetailsRouteArgs {
+  const AppealAgainstAdministrativeDecisionsDetailsRouteArgs({
+    this.key,
+    required this.id,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+    this.from = '',
+  });
+
+  final _i81.Key? key;
+
+  final int id;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  final String from;
+
+  @override
+  String toString() {
+    return 'AppealAgainstAdministrativeDecisionsDetailsRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! AppealAgainstAdministrativeDecisionsDetailsRouteArgs)
+      return false;
+    return key == other.key &&
+        id == other.id &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService &&
+        from == other.from;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      id.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      from.hashCode;
+}
+
+/// generated route for
+/// [_i7.AppealAgainstAdministrativeDecisionsNewRequestScreen]
+class AppealAgainstAdministrativeDecisionsNewRequestRoute
+    extends
+        _i80.PageRouteInfo<
+          AppealAgainstAdministrativeDecisionsNewRequestRouteArgs
+        > {
+  AppealAgainstAdministrativeDecisionsNewRequestRoute({
+    _i81.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         AppealAgainstAdministrativeDecisionsNewRequestRoute.name,
+         args: AppealAgainstAdministrativeDecisionsNewRequestRouteArgs(
+           key: key,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name =
+      'AppealAgainstAdministrativeDecisionsNewRequestRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data
+          .argsAs<AppealAgainstAdministrativeDecisionsNewRequestRouteArgs>();
+      return _i7.AppealAgainstAdministrativeDecisionsNewRequestScreen(
+        key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class AppealAgainstAdministrativeDecisionsNewRequestRouteArgs {
+  const AppealAgainstAdministrativeDecisionsNewRequestRouteArgs({
+    this.key,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'AppealAgainstAdministrativeDecisionsNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! AppealAgainstAdministrativeDecisionsNewRequestRouteArgs)
+      return false;
+    return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
+}
+
+/// generated route for
+/// [_i7.AppealAgainstAdministrativeDecisionsScreen]
+class AppealAgainstAdministrativeDecisionsRoute
+    extends _i80.PageRouteInfo<AppealAgainstAdministrativeDecisionsRouteArgs> {
+  AppealAgainstAdministrativeDecisionsRoute({
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         AppealAgainstAdministrativeDecisionsRoute.name,
+         args: AppealAgainstAdministrativeDecisionsRouteArgs(
+           key: key,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'AppealAgainstAdministrativeDecisionsRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<AppealAgainstAdministrativeDecisionsRouteArgs>();
+      return _i7.AppealAgainstAdministrativeDecisionsScreen(
+        key: args.key,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class AppealAgainstAdministrativeDecisionsRouteArgs {
+  const AppealAgainstAdministrativeDecisionsRouteArgs({
+    this.key,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'AppealAgainstAdministrativeDecisionsRouteArgs{key: $key, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! AppealAgainstAdministrativeDecisionsRouteArgs) return false;
+    return key == other.key &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+}
+
+/// generated route for
+/// [_i8.ApprovalsList]
+class ApprovalsList extends _i80.PageRouteInfo<void> {
+  const ApprovalsList({List<_i80.PageRouteInfo>? children})
     : super(ApprovalsList.name, initialChildren: children);
 
   static const String name = 'ApprovalsList';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i7.ApprovalsList();
+      return const _i8.ApprovalsList();
     },
   );
 }
 
 /// generated route for
-/// [_i8.AssetAffairsHomeScreen]
-class AssetAffairsHomeRoute extends _i73.PageRouteInfo<void> {
-  const AssetAffairsHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i9.AssetAffairsHomeScreen]
+class AssetAffairsHomeRoute extends _i80.PageRouteInfo<void> {
+  const AssetAffairsHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(AssetAffairsHomeRoute.name, initialChildren: children);
 
   static const String name = 'AssetAffairsHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i8.AssetAffairsHomeScreen();
+      return const _i9.AssetAffairsHomeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i9.AssignaTasktoEmployeeDetailsRequestScreen]
+/// [_i10.AssignaTasktoEmployeeDetailsRequestScreen]
 class AssignaTasktoEmployeeDetailsRequestRoute
-    extends _i73.PageRouteInfo<AssignaTasktoEmployeeDetailsRequestRouteArgs> {
+    extends _i80.PageRouteInfo<AssignaTasktoEmployeeDetailsRequestRouteArgs> {
   AssignaTasktoEmployeeDetailsRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AssignaTasktoEmployeeDetailsRequestRoute.name,
          args: AssignaTasktoEmployeeDetailsRequestRouteArgs(
@@ -985,11 +1275,11 @@ class AssignaTasktoEmployeeDetailsRequestRoute
 
   static const String name = 'AssignaTasktoEmployeeDetailsRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AssignaTasktoEmployeeDetailsRequestRouteArgs>();
-      return _i9.AssignaTasktoEmployeeDetailsRequestScreen(
+      return _i10.AssignaTasktoEmployeeDetailsRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -1009,15 +1299,15 @@ class AssignaTasktoEmployeeDetailsRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -1045,18 +1335,18 @@ class AssignaTasktoEmployeeDetailsRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i9.AssignaTasktoEmployeeDetailsScreen]
+/// [_i10.AssignaTasktoEmployeeDetailsScreen]
 class AssignaTasktoEmployeeDetailsRoute
-    extends _i73.PageRouteInfo<AssignaTasktoEmployeeDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<AssignaTasktoEmployeeDetailsRouteArgs> {
   AssignaTasktoEmployeeDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AssignaTasktoEmployeeDetailsRoute.name,
          args: AssignaTasktoEmployeeDetailsRouteArgs(
@@ -1073,11 +1363,11 @@ class AssignaTasktoEmployeeDetailsRoute
 
   static const String name = 'AssignaTasktoEmployeeDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AssignaTasktoEmployeeDetailsRouteArgs>();
-      return _i9.AssignaTasktoEmployeeDetailsScreen(
+      return _i10.AssignaTasktoEmployeeDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -1101,7 +1391,7 @@ class AssignaTasktoEmployeeDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -1109,9 +1399,9 @@ class AssignaTasktoEmployeeDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -1145,14 +1435,14 @@ class AssignaTasktoEmployeeDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i9.AssignaTasktoEmployeeScreen]
+/// [_i10.AssignaTasktoEmployeeScreen]
 class AssignaTasktoEmployeeRoute
-    extends _i73.PageRouteInfo<AssignaTasktoEmployeeRouteArgs> {
+    extends _i80.PageRouteInfo<AssignaTasktoEmployeeRouteArgs> {
   AssignaTasktoEmployeeRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AssignaTasktoEmployeeRoute.name,
          args: AssignaTasktoEmployeeRouteArgs(
@@ -1165,11 +1455,11 @@ class AssignaTasktoEmployeeRoute
 
   static const String name = 'AssignaTasktoEmployeeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AssignaTasktoEmployeeRouteArgs>();
-      return _i9.AssignaTasktoEmployeeScreen(
+      return _i10.AssignaTasktoEmployeeScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -1185,11 +1475,11 @@ class AssignaTasktoEmployeeRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -1210,34 +1500,34 @@ class AssignaTasktoEmployeeRouteArgs {
 }
 
 /// generated route for
-/// [_i10.AssignmentDecisionDashboardScreen]
-class AssignmentDecisionDashboardRoute extends _i73.PageRouteInfo<void> {
-  const AssignmentDecisionDashboardRoute({List<_i73.PageRouteInfo>? children})
+/// [_i11.AssignmentDecisionDashboardScreen]
+class AssignmentDecisionDashboardRoute extends _i80.PageRouteInfo<void> {
+  const AssignmentDecisionDashboardRoute({List<_i80.PageRouteInfo>? children})
     : super(AssignmentDecisionDashboardRoute.name, initialChildren: children);
 
   static const String name = 'AssignmentDecisionDashboardRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i10.AssignmentDecisionDashboardScreen();
+      return const _i11.AssignmentDecisionDashboardScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i11.AssignmentDecisionDetailsScreen]
+/// [_i12.AssignmentDecisionDetailsScreen]
 class AssignmentDecisionDetailsRoute
-    extends _i73.PageRouteInfo<AssignmentDecisionDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<AssignmentDecisionDetailsRouteArgs> {
   AssignmentDecisionDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AssignmentDecisionDetailsRoute.name,
          args: AssignmentDecisionDetailsRouteArgs(
@@ -1254,11 +1544,11 @@ class AssignmentDecisionDetailsRoute
 
   static const String name = 'AssignmentDecisionDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AssignmentDecisionDetailsRouteArgs>();
-      return _i11.AssignmentDecisionDetailsScreen(
+      return _i12.AssignmentDecisionDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -1282,7 +1572,7 @@ class AssignmentDecisionDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -1290,9 +1580,9 @@ class AssignmentDecisionDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -1326,14 +1616,14 @@ class AssignmentDecisionDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i11.AssignmentDecisionScreen]
+/// [_i12.AssignmentDecisionScreen]
 class AssignmentDecisionRoute
-    extends _i73.PageRouteInfo<AssignmentDecisionRouteArgs> {
+    extends _i80.PageRouteInfo<AssignmentDecisionRouteArgs> {
   AssignmentDecisionRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AssignmentDecisionRoute.name,
          args: AssignmentDecisionRouteArgs(
@@ -1346,11 +1636,11 @@ class AssignmentDecisionRoute
 
   static const String name = 'AssignmentDecisionRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<AssignmentDecisionRouteArgs>();
-      return _i11.AssignmentDecisionScreen(
+      return _i12.AssignmentDecisionScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -1366,11 +1656,11 @@ class AssignmentDecisionRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -1391,11 +1681,11 @@ class AssignmentDecisionRouteArgs {
 }
 
 /// generated route for
-/// [_i12.AviationSecurityFacilitationDashboardScreen]
+/// [_i13.AviationSecurityFacilitationDashboardScreen]
 class AviationSecurityFacilitationDashboardRoute
-    extends _i73.PageRouteInfo<void> {
+    extends _i80.PageRouteInfo<void> {
   const AviationSecurityFacilitationDashboardRoute({
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AviationSecurityFacilitationDashboardRoute.name,
          initialChildren: children,
@@ -1403,19 +1693,19 @@ class AviationSecurityFacilitationDashboardRoute
 
   static const String name = 'AviationSecurityFacilitationDashboardRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i12.AviationSecurityFacilitationDashboardScreen();
+      return const _i13.AviationSecurityFacilitationDashboardScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i13.AviationSecurityFacilitationHomeScreen]
-class AviationSecurityFacilitationHomeRoute extends _i73.PageRouteInfo<void> {
+/// [_i14.AviationSecurityFacilitationHomeScreen]
+class AviationSecurityFacilitationHomeRoute extends _i80.PageRouteInfo<void> {
   const AviationSecurityFacilitationHomeRoute({
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          AviationSecurityFacilitationHomeRoute.name,
          initialChildren: children,
@@ -1423,27 +1713,27 @@ class AviationSecurityFacilitationHomeRoute extends _i73.PageRouteInfo<void> {
 
   static const String name = 'AviationSecurityFacilitationHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i13.AviationSecurityFacilitationHomeScreen();
+      return const _i14.AviationSecurityFacilitationHomeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i14.CancelHousingContractDetailsScreen]
+/// [_i15.CancelHousingContractDetailsScreen]
 class CancelHousingContractDetailsRoute
-    extends _i73.PageRouteInfo<CancelHousingContractDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<CancelHousingContractDetailsRouteArgs> {
   CancelHousingContractDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          CancelHousingContractDetailsRoute.name,
          args: CancelHousingContractDetailsRouteArgs(
@@ -1460,11 +1750,11 @@ class CancelHousingContractDetailsRoute
 
   static const String name = 'CancelHousingContractDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<CancelHousingContractDetailsRouteArgs>();
-      return _i14.CancelHousingContractDetailsScreen(
+      return _i15.CancelHousingContractDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -1488,7 +1778,7 @@ class CancelHousingContractDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -1496,9 +1786,9 @@ class CancelHousingContractDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -1532,16 +1822,16 @@ class CancelHousingContractDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i14.CancelHousingContractNewRequestScreen]
+/// [_i15.CancelHousingContractNewRequestScreen]
 class CancelHousingContractNewRequestRoute
-    extends _i73.PageRouteInfo<CancelHousingContractNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<CancelHousingContractNewRequestRouteArgs> {
   CancelHousingContractNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          CancelHousingContractNewRequestRoute.name,
          args: CancelHousingContractNewRequestRouteArgs(
@@ -1556,11 +1846,11 @@ class CancelHousingContractNewRequestRoute
 
   static const String name = 'CancelHousingContractNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<CancelHousingContractNewRequestRouteArgs>();
-      return _i14.CancelHousingContractNewRequestScreen(
+      return _i15.CancelHousingContractNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -1580,15 +1870,15 @@ class CancelHousingContractNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -1616,14 +1906,14 @@ class CancelHousingContractNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i14.CancelHousingContractScreen]
+/// [_i15.CancelHousingContractScreen]
 class CancelHousingContractRoute
-    extends _i73.PageRouteInfo<CancelHousingContractRouteArgs> {
+    extends _i80.PageRouteInfo<CancelHousingContractRouteArgs> {
   CancelHousingContractRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          CancelHousingContractRoute.name,
          args: CancelHousingContractRouteArgs(
@@ -1636,11 +1926,11 @@ class CancelHousingContractRoute
 
   static const String name = 'CancelHousingContractRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<CancelHousingContractRouteArgs>();
-      return _i14.CancelHousingContractScreen(
+      return _i15.CancelHousingContractScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -1656,11 +1946,11 @@ class CancelHousingContractRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -1681,18 +1971,18 @@ class CancelHousingContractRouteArgs {
 }
 
 /// generated route for
-/// [_i15.CyberSecurityRiskManagementDetailsScreen]
+/// [_i16.CyberSecurityRiskManagementDetailsScreen]
 class CyberSecurityRiskManagementDetailsRoute
-    extends _i73.PageRouteInfo<CyberSecurityRiskManagementDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<CyberSecurityRiskManagementDetailsRouteArgs> {
   CyberSecurityRiskManagementDetailsRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          CyberSecurityRiskManagementDetailsRoute.name,
          args: CyberSecurityRiskManagementDetailsRouteArgs(
@@ -1709,11 +1999,11 @@ class CyberSecurityRiskManagementDetailsRoute
 
   static const String name = 'CyberSecurityRiskManagementDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<CyberSecurityRiskManagementDetailsRouteArgs>();
-      return _i15.CyberSecurityRiskManagementDetailsScreen(
+      return _i16.CyberSecurityRiskManagementDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -1737,7 +2027,7 @@ class CyberSecurityRiskManagementDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int id;
 
@@ -1745,9 +2035,9 @@ class CyberSecurityRiskManagementDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -1781,16 +2071,16 @@ class CyberSecurityRiskManagementDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i15.CyberSecurityRiskManagementNewRequestScreen]
+/// [_i16.CyberSecurityRiskManagementNewRequestScreen]
 class CyberSecurityRiskManagementNewRequestRoute
-    extends _i73.PageRouteInfo<CyberSecurityRiskManagementNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<CyberSecurityRiskManagementNewRequestRouteArgs> {
   CyberSecurityRiskManagementNewRequestRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          CyberSecurityRiskManagementNewRequestRoute.name,
          args: CyberSecurityRiskManagementNewRequestRouteArgs(
@@ -1805,12 +2095,12 @@ class CyberSecurityRiskManagementNewRequestRoute
 
   static const String name = 'CyberSecurityRiskManagementNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<CyberSecurityRiskManagementNewRequestRouteArgs>();
-      return _i15.CyberSecurityRiskManagementNewRequestScreen(
+      return _i16.CyberSecurityRiskManagementNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -1830,15 +2120,15 @@ class CyberSecurityRiskManagementNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -1866,14 +2156,14 @@ class CyberSecurityRiskManagementNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i15.CyberSecurityRiskManagementScreen]
+/// [_i16.CyberSecurityRiskManagementScreen]
 class CyberSecurityRiskManagementRoute
-    extends _i73.PageRouteInfo<CyberSecurityRiskManagementRouteArgs> {
+    extends _i80.PageRouteInfo<CyberSecurityRiskManagementRouteArgs> {
   CyberSecurityRiskManagementRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          CyberSecurityRiskManagementRoute.name,
          args: CyberSecurityRiskManagementRouteArgs(
@@ -1886,11 +2176,11 @@ class CyberSecurityRiskManagementRoute
 
   static const String name = 'CyberSecurityRiskManagementRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<CyberSecurityRiskManagementRouteArgs>();
-      return _i15.CyberSecurityRiskManagementScreen(
+      return _i16.CyberSecurityRiskManagementScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -1906,11 +2196,11 @@ class CyberSecurityRiskManagementRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -1931,46 +2221,46 @@ class CyberSecurityRiskManagementRouteArgs {
 }
 
 /// generated route for
-/// [_i16.HRServiceHomeScreen]
-class HRServiceHomeRoute extends _i73.PageRouteInfo<void> {
-  const HRServiceHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i17.HRServiceHomeScreen]
+class HRServiceHomeRoute extends _i80.PageRouteInfo<void> {
+  const HRServiceHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(HRServiceHomeRoute.name, initialChildren: children);
 
   static const String name = 'HRServiceHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i16.HRServiceHomeScreen();
+      return const _i17.HRServiceHomeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i17.HomePage]
-class HomeRoute extends _i73.PageRouteInfo<void> {
-  const HomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i18.HomePage]
+class HomeRoute extends _i80.PageRouteInfo<void> {
+  const HomeRoute({List<_i80.PageRouteInfo>? children})
     : super(HomeRoute.name, initialChildren: children);
 
   static const String name = 'HomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i17.HomePage();
+      return const _i18.HomePage();
     },
   );
 }
 
 /// generated route for
-/// [_i18.HotelReservationDashboardScreen]
+/// [_i19.HotelReservationDashboardScreen]
 class HotelReservationDashboardRoute
-    extends _i73.PageRouteInfo<HotelReservationDashboardRouteArgs> {
+    extends _i80.PageRouteInfo<HotelReservationDashboardRouteArgs> {
   HotelReservationDashboardRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          HotelReservationDashboardRoute.name,
          args: HotelReservationDashboardRouteArgs(
@@ -1983,11 +2273,11 @@ class HotelReservationDashboardRoute
 
   static const String name = 'HotelReservationDashboardRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<HotelReservationDashboardRouteArgs>();
-      return _i18.HotelReservationDashboardScreen(
+      return _i19.HotelReservationDashboardScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -2003,11 +2293,11 @@ class HotelReservationDashboardRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -2028,32 +2318,32 @@ class HotelReservationDashboardRouteArgs {
 }
 
 /// generated route for
-/// [_i19.HotelReservationHomeScreen]
-class HotelReservationHomeRoute extends _i73.PageRouteInfo<void> {
-  const HotelReservationHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i20.HotelReservationHomeScreen]
+class HotelReservationHomeRoute extends _i80.PageRouteInfo<void> {
+  const HotelReservationHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(HotelReservationHomeRoute.name, initialChildren: children);
 
   static const String name = 'HotelReservationHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i19.HotelReservationHomeScreen();
+      return const _i20.HotelReservationHomeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i20.HotelReservationNewRequestScreen]
+/// [_i21.HotelReservationNewRequestScreen]
 class HotelReservationNewRequestRoute
-    extends _i73.PageRouteInfo<HotelReservationNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<HotelReservationNewRequestRouteArgs> {
   HotelReservationNewRequestRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          HotelReservationNewRequestRoute.name,
          args: HotelReservationNewRequestRouteArgs(
@@ -2068,11 +2358,11 @@ class HotelReservationNewRequestRoute
 
   static const String name = 'HotelReservationNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<HotelReservationNewRequestRouteArgs>();
-      return _i20.HotelReservationNewRequestScreen(
+      return _i21.HotelReservationNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -2092,15 +2382,15 @@ class HotelReservationNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -2128,18 +2418,18 @@ class HotelReservationNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i20.HotelReservationRequestDetailsTabScreen]
+/// [_i21.HotelReservationRequestDetailsTabScreen]
 class HotelReservationRequestDetailsTabRoute
-    extends _i73.PageRouteInfo<HotelReservationRequestDetailsTabRouteArgs> {
+    extends _i80.PageRouteInfo<HotelReservationRequestDetailsTabRouteArgs> {
   HotelReservationRequestDetailsTabRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int id,
     String from = '',
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          HotelReservationRequestDetailsTabRoute.name,
          args: HotelReservationRequestDetailsTabRouteArgs(
@@ -2156,11 +2446,11 @@ class HotelReservationRequestDetailsTabRoute
 
   static const String name = 'HotelReservationRequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<HotelReservationRequestDetailsTabRouteArgs>();
-      return _i20.HotelReservationRequestDetailsTabScreen(
+      return _i21.HotelReservationRequestDetailsTabScreen(
         key: args.key,
         id: args.id,
         from: args.from,
@@ -2184,7 +2474,7 @@ class HotelReservationRequestDetailsTabRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int id;
 
@@ -2194,9 +2484,9 @@ class HotelReservationRequestDetailsTabRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -2228,14 +2518,14 @@ class HotelReservationRequestDetailsTabRouteArgs {
 }
 
 /// generated route for
-/// [_i20.HotelReservationScreen]
+/// [_i21.HotelReservationScreen]
 class HotelReservationRoute
-    extends _i73.PageRouteInfo<HotelReservationRouteArgs> {
+    extends _i80.PageRouteInfo<HotelReservationRouteArgs> {
   HotelReservationRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          HotelReservationRoute.name,
          args: HotelReservationRouteArgs(
@@ -2248,11 +2538,11 @@ class HotelReservationRoute
 
   static const String name = 'HotelReservationRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<HotelReservationRouteArgs>();
-      return _i20.HotelReservationScreen(
+      return _i21.HotelReservationScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -2268,11 +2558,11 @@ class HotelReservationRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -2293,29 +2583,29 @@ class HotelReservationRouteArgs {
 }
 
 /// generated route for
-/// [_i21.ITServicesHomeScreen]
-class ITServicesHomeRoute extends _i73.PageRouteInfo<void> {
-  const ITServicesHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i22.ITServicesHomeScreen]
+class ITServicesHomeRoute extends _i80.PageRouteInfo<void> {
+  const ITServicesHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(ITServicesHomeRoute.name, initialChildren: children);
 
   static const String name = 'ITServicesHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i21.ITServicesHomeScreen();
+      return const _i22.ITServicesHomeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i22.KBottomNavigatorScreen]
+/// [_i23.KBottomNavigatorScreen]
 class KBottomNavigatorRoute
-    extends _i73.PageRouteInfo<KBottomNavigatorRouteArgs> {
+    extends _i80.PageRouteInfo<KBottomNavigatorRouteArgs> {
   KBottomNavigatorRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     String? fromPage,
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          KBottomNavigatorRoute.name,
          args: KBottomNavigatorRouteArgs(key: key, fromPage: fromPage),
@@ -2324,13 +2614,13 @@ class KBottomNavigatorRoute
 
   static const String name = 'KBottomNavigatorRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<KBottomNavigatorRouteArgs>(
         orElse: () => const KBottomNavigatorRouteArgs(),
       );
-      return _i22.KBottomNavigatorScreen(
+      return _i23.KBottomNavigatorScreen(
         key: args.key,
         fromPage: args.fromPage,
       );
@@ -2341,7 +2631,7 @@ class KBottomNavigatorRoute
 class KBottomNavigatorRouteArgs {
   const KBottomNavigatorRouteArgs({this.key, this.fromPage});
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final String? fromPage;
 
@@ -2362,46 +2652,324 @@ class KBottomNavigatorRouteArgs {
 }
 
 /// generated route for
-/// [_i23.LegalConsultationServicesHomeScreen]
-class LegalConsultationServicesHomeRoute extends _i73.PageRouteInfo<void> {
-  const LegalConsultationServicesHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i24.LegalConsultationServicesHomeScreen]
+class LegalConsultationServicesHomeRoute extends _i80.PageRouteInfo<void> {
+  const LegalConsultationServicesHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(LegalConsultationServicesHomeRoute.name, initialChildren: children);
 
   static const String name = 'LegalConsultationServicesHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i23.LegalConsultationServicesHomeScreen();
+      return const _i24.LegalConsultationServicesHomeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i24.LogisticsDashboardScreen]
-class LogisticsDashboardRoute extends _i73.PageRouteInfo<void> {
-  const LogisticsDashboardRoute({List<_i73.PageRouteInfo>? children})
+/// [_i25.LegalConsultationandReviewofAdministrativeDecisionsDetailsScreen]
+class LegalConsultationandReviewofAdministrativeDecisionsDetailsRoute
+    extends
+        _i80.PageRouteInfo<
+          LegalConsultationandReviewofAdministrativeDecisionsDetailsRouteArgs
+        > {
+  LegalConsultationandReviewofAdministrativeDecisionsDetailsRoute({
+    _i81.Key? key,
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    String from = '',
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         LegalConsultationandReviewofAdministrativeDecisionsDetailsRoute.name,
+         args:
+             LegalConsultationandReviewofAdministrativeDecisionsDetailsRouteArgs(
+               key: key,
+               id: id,
+               serviceId: serviceId,
+               subServiceId: subServiceId,
+               service: service,
+               subService: subService,
+               from: from,
+             ),
+         initialChildren: children,
+       );
+
+  static const String name =
+      'LegalConsultationandReviewofAdministrativeDecisionsDetailsRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data
+          .argsAs<
+            LegalConsultationandReviewofAdministrativeDecisionsDetailsRouteArgs
+          >();
+      return _i25.LegalConsultationandReviewofAdministrativeDecisionsDetailsScreen(
+        key: args.key,
+        id: args.id,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+        from: args.from,
+      );
+    },
+  );
+}
+
+class LegalConsultationandReviewofAdministrativeDecisionsDetailsRouteArgs {
+  const LegalConsultationandReviewofAdministrativeDecisionsDetailsRouteArgs({
+    this.key,
+    required this.id,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+    this.from = '',
+  });
+
+  final _i81.Key? key;
+
+  final int id;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  final String from;
+
+  @override
+  String toString() {
+    return 'LegalConsultationandReviewofAdministrativeDecisionsDetailsRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other
+        is! LegalConsultationandReviewofAdministrativeDecisionsDetailsRouteArgs)
+      return false;
+    return key == other.key &&
+        id == other.id &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService &&
+        from == other.from;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      id.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      from.hashCode;
+}
+
+/// generated route for
+/// [_i25.LegalConsultationandReviewofAdministrativeDecisionsNewRequestScreen]
+class LegalConsultationandReviewofAdministrativeDecisionsNewRequestRoute
+    extends
+        _i80.PageRouteInfo<
+          LegalConsultationandReviewofAdministrativeDecisionsNewRequestRouteArgs
+        > {
+  LegalConsultationandReviewofAdministrativeDecisionsNewRequestRoute({
+    _i81.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         LegalConsultationandReviewofAdministrativeDecisionsNewRequestRoute
+             .name,
+         args:
+             LegalConsultationandReviewofAdministrativeDecisionsNewRequestRouteArgs(
+               key: key,
+               serviceId: serviceId,
+               subServiceId: subServiceId,
+               service: service,
+               subService: subService,
+             ),
+         initialChildren: children,
+       );
+
+  static const String name =
+      'LegalConsultationandReviewofAdministrativeDecisionsNewRequestRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data
+          .argsAs<
+            LegalConsultationandReviewofAdministrativeDecisionsNewRequestRouteArgs
+          >();
+      return _i25.LegalConsultationandReviewofAdministrativeDecisionsNewRequestScreen(
+        key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class LegalConsultationandReviewofAdministrativeDecisionsNewRequestRouteArgs {
+  const LegalConsultationandReviewofAdministrativeDecisionsNewRequestRouteArgs({
+    this.key,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'LegalConsultationandReviewofAdministrativeDecisionsNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other
+        is! LegalConsultationandReviewofAdministrativeDecisionsNewRequestRouteArgs)
+      return false;
+    return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
+}
+
+/// generated route for
+/// [_i25.LegalConsultationandReviewofAdministrativeDecisionsScreen]
+class LegalConsultationandReviewofAdministrativeDecisionsRoute
+    extends
+        _i80.PageRouteInfo<
+          LegalConsultationandReviewofAdministrativeDecisionsRouteArgs
+        > {
+  LegalConsultationandReviewofAdministrativeDecisionsRoute({
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         LegalConsultationandReviewofAdministrativeDecisionsRoute.name,
+         args: LegalConsultationandReviewofAdministrativeDecisionsRouteArgs(
+           key: key,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name =
+      'LegalConsultationandReviewofAdministrativeDecisionsRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data
+          .argsAs<
+            LegalConsultationandReviewofAdministrativeDecisionsRouteArgs
+          >();
+      return _i25.LegalConsultationandReviewofAdministrativeDecisionsScreen(
+        key: args.key,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class LegalConsultationandReviewofAdministrativeDecisionsRouteArgs {
+  const LegalConsultationandReviewofAdministrativeDecisionsRouteArgs({
+    this.key,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'LegalConsultationandReviewofAdministrativeDecisionsRouteArgs{key: $key, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! LegalConsultationandReviewofAdministrativeDecisionsRouteArgs)
+      return false;
+    return key == other.key &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+}
+
+/// generated route for
+/// [_i26.LogisticsDashboardScreen]
+class LogisticsDashboardRoute extends _i80.PageRouteInfo<void> {
+  const LogisticsDashboardRoute({List<_i80.PageRouteInfo>? children})
     : super(LogisticsDashboardRoute.name, initialChildren: children);
 
   static const String name = 'LogisticsDashboardRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i24.LogisticsDashboardScreen();
+      return const _i26.LogisticsDashboardScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i25.LogisticsForeignRequestDetailsTabScreen]
+/// [_i27.LogisticsForeignRequestDetailsTabScreen]
 class LogisticsForeignRequestDetailsTabRoute
-    extends _i73.PageRouteInfo<LogisticsForeignRequestDetailsTabRouteArgs> {
+    extends _i80.PageRouteInfo<LogisticsForeignRequestDetailsTabRouteArgs> {
   LogisticsForeignRequestDetailsTabRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     String from = '',
     required int id,
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          LogisticsForeignRequestDetailsTabRoute.name,
          args: LogisticsForeignRequestDetailsTabRouteArgs(
@@ -2414,11 +2982,11 @@ class LogisticsForeignRequestDetailsTabRoute
 
   static const String name = 'LogisticsForeignRequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<LogisticsForeignRequestDetailsTabRouteArgs>();
-      return _i25.LogisticsForeignRequestDetailsTabScreen(
+      return _i27.LogisticsForeignRequestDetailsTabScreen(
         key: args.key,
         from: args.from,
         id: args.id,
@@ -2434,7 +3002,7 @@ class LogisticsForeignRequestDetailsTabRouteArgs {
     required this.id,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final String from;
 
@@ -2457,10 +3025,10 @@ class LogisticsForeignRequestDetailsTabRouteArgs {
 }
 
 /// generated route for
-/// [_i25.LogisticsForeignersRequestPortalScreen]
-class LogisticsForeignersRequestPortalRoute extends _i73.PageRouteInfo<void> {
+/// [_i27.LogisticsForeignersRequestPortalScreen]
+class LogisticsForeignersRequestPortalRoute extends _i80.PageRouteInfo<void> {
   const LogisticsForeignersRequestPortalRoute({
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          LogisticsForeignersRequestPortalRoute.name,
          initialChildren: children,
@@ -2468,35 +3036,35 @@ class LogisticsForeignersRequestPortalRoute extends _i73.PageRouteInfo<void> {
 
   static const String name = 'LogisticsForeignersRequestPortalRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i25.LogisticsForeignersRequestPortalScreen();
+      return const _i27.LogisticsForeignersRequestPortalScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i26.LogisticsHomePage]
-class LogisticsHomeRoute extends _i73.PageRouteInfo<void> {
-  const LogisticsHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i28.LogisticsHomePage]
+class LogisticsHomeRoute extends _i80.PageRouteInfo<void> {
+  const LogisticsHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(LogisticsHomeRoute.name, initialChildren: children);
 
   static const String name = 'LogisticsHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i26.LogisticsHomePage();
+      return const _i28.LogisticsHomePage();
     },
   );
 }
 
 /// generated route for
-/// [_i25.LogisticsPassengersVehicleRequestScreen]
-class LogisticsPassengersVehicleRequestRoute extends _i73.PageRouteInfo<void> {
+/// [_i27.LogisticsPassengersVehicleRequestScreen]
+class LogisticsPassengersVehicleRequestRoute extends _i80.PageRouteInfo<void> {
   const LogisticsPassengersVehicleRequestRoute({
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          LogisticsPassengersVehicleRequestRoute.name,
          initialChildren: children,
@@ -2504,23 +3072,23 @@ class LogisticsPassengersVehicleRequestRoute extends _i73.PageRouteInfo<void> {
 
   static const String name = 'LogisticsPassengersVehicleRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i25.LogisticsPassengersVehicleRequestScreen();
+      return const _i27.LogisticsPassengersVehicleRequestScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i27.LogisticsRequestDetailsTabScreen]
+/// [_i29.LogisticsRequestDetailsTabScreen]
 class LogisticsRequestDetailsTabRoute
-    extends _i73.PageRouteInfo<LogisticsRequestDetailsTabRouteArgs> {
+    extends _i80.PageRouteInfo<LogisticsRequestDetailsTabRouteArgs> {
   LogisticsRequestDetailsTabRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     String from = '',
     required int id,
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          LogisticsRequestDetailsTabRoute.name,
          args: LogisticsRequestDetailsTabRouteArgs(
@@ -2533,11 +3101,11 @@ class LogisticsRequestDetailsTabRoute
 
   static const String name = 'LogisticsRequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<LogisticsRequestDetailsTabRouteArgs>();
-      return _i27.LogisticsRequestDetailsTabScreen(
+      return _i29.LogisticsRequestDetailsTabScreen(
         key: args.key,
         from: args.from,
         id: args.id,
@@ -2553,7 +3121,7 @@ class LogisticsRequestDetailsTabRouteArgs {
     required this.id,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final String from;
 
@@ -2576,78 +3144,78 @@ class LogisticsRequestDetailsTabRouteArgs {
 }
 
 /// generated route for
-/// [_i27.LogisticsRequestPortalScreen]
-class LogisticsRequestPortalRoute extends _i73.PageRouteInfo<void> {
-  const LogisticsRequestPortalRoute({List<_i73.PageRouteInfo>? children})
+/// [_i29.LogisticsRequestPortalScreen]
+class LogisticsRequestPortalRoute extends _i80.PageRouteInfo<void> {
+  const LogisticsRequestPortalRoute({List<_i80.PageRouteInfo>? children})
     : super(LogisticsRequestPortalRoute.name, initialChildren: children);
 
   static const String name = 'LogisticsRequestPortalRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i27.LogisticsRequestPortalScreen();
+      return const _i29.LogisticsRequestPortalScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i27.LogisticsVehicleRequestScreen]
-class LogisticsVehicleRequestRoute extends _i73.PageRouteInfo<void> {
-  const LogisticsVehicleRequestRoute({List<_i73.PageRouteInfo>? children})
+/// [_i29.LogisticsVehicleRequestScreen]
+class LogisticsVehicleRequestRoute extends _i80.PageRouteInfo<void> {
+  const LogisticsVehicleRequestRoute({List<_i80.PageRouteInfo>? children})
     : super(LogisticsVehicleRequestRoute.name, initialChildren: children);
 
   static const String name = 'LogisticsVehicleRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i27.LogisticsVehicleRequestScreen();
+      return const _i29.LogisticsVehicleRequestScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i28.MainPage]
-class MainRoute extends _i73.PageRouteInfo<void> {
-  const MainRoute({List<_i73.PageRouteInfo>? children})
+/// [_i30.MainPage]
+class MainRoute extends _i80.PageRouteInfo<void> {
+  const MainRoute({List<_i80.PageRouteInfo>? children})
     : super(MainRoute.name, initialChildren: children);
 
   static const String name = 'MainRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i28.MainPage();
+      return const _i30.MainPage();
     },
   );
 }
 
 /// generated route for
-/// [_i29.MediaCoverageHomeScreen]
-class MediaCoverageHomeRoute extends _i73.PageRouteInfo<void> {
-  const MediaCoverageHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i31.MediaCoverageHomeScreen]
+class MediaCoverageHomeRoute extends _i80.PageRouteInfo<void> {
+  const MediaCoverageHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(MediaCoverageHomeRoute.name, initialChildren: children);
 
   static const String name = 'MediaCoverageHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i29.MediaCoverageHomeScreen();
+      return const _i31.MediaCoverageHomeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i30.MediaServicesDashboardScreen]
+/// [_i32.MediaServicesDashboardScreen]
 class MediaServicesDashboardRoute
-    extends _i73.PageRouteInfo<MediaServicesDashboardRouteArgs> {
+    extends _i80.PageRouteInfo<MediaServicesDashboardRouteArgs> {
   MediaServicesDashboardRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          MediaServicesDashboardRoute.name,
          args: MediaServicesDashboardRouteArgs(
@@ -2660,11 +3228,11 @@ class MediaServicesDashboardRoute
 
   static const String name = 'MediaServicesDashboardRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<MediaServicesDashboardRouteArgs>();
-      return _i30.MediaServicesDashboardScreen(
+      return _i32.MediaServicesDashboardScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -2680,11 +3248,11 @@ class MediaServicesDashboardRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -2705,29 +3273,29 @@ class MediaServicesDashboardRouteArgs {
 }
 
 /// generated route for
-/// [_i31.MicrosoftLoginPage]
-class MicrosoftLoginRoute extends _i73.PageRouteInfo<void> {
-  const MicrosoftLoginRoute({List<_i73.PageRouteInfo>? children})
+/// [_i33.MicrosoftLoginPage]
+class MicrosoftLoginRoute extends _i80.PageRouteInfo<void> {
+  const MicrosoftLoginRoute({List<_i80.PageRouteInfo>? children})
     : super(MicrosoftLoginRoute.name, initialChildren: children);
 
   static const String name = 'MicrosoftLoginRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i31.MicrosoftLoginPage();
+      return const _i33.MicrosoftLoginPage();
     },
   );
 }
 
 /// generated route for
-/// [_i32.MuscatDashboard]
-class MuscatDashboard extends _i73.PageRouteInfo<MuscatDashboardArgs> {
+/// [_i34.MuscatDashboard]
+class MuscatDashboard extends _i80.PageRouteInfo<MuscatDashboardArgs> {
   MuscatDashboard({
-    _i77.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i84.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          MuscatDashboard.name,
          args: MuscatDashboardArgs(
@@ -2740,11 +3308,11 @@ class MuscatDashboard extends _i73.PageRouteInfo<MuscatDashboardArgs> {
 
   static const String name = 'MuscatDashboard';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<MuscatDashboardArgs>();
-      return _i32.MuscatDashboard(
+      return _i34.MuscatDashboard(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -2760,11 +3328,11 @@ class MuscatDashboardArgs {
     required this.subService,
   });
 
-  final _i77.Key? key;
+  final _i84.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -2785,14 +3353,14 @@ class MuscatDashboardArgs {
 }
 
 /// generated route for
-/// [_i32.MuscatEmployeeNewRequestScreen]
+/// [_i34.MuscatEmployeeNewRequestScreen]
 class MuscatEmployeeNewRequestRoute
-    extends _i73.PageRouteInfo<MuscatEmployeeNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<MuscatEmployeeNewRequestRouteArgs> {
   MuscatEmployeeNewRequestRoute({
-    _i77.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i84.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          MuscatEmployeeNewRequestRoute.name,
          args: MuscatEmployeeNewRequestRouteArgs(
@@ -2805,11 +3373,11 @@ class MuscatEmployeeNewRequestRoute
 
   static const String name = 'MuscatEmployeeNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<MuscatEmployeeNewRequestRouteArgs>();
-      return _i32.MuscatEmployeeNewRequestScreen(
+      return _i34.MuscatEmployeeNewRequestScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -2825,11 +3393,11 @@ class MuscatEmployeeNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i77.Key? key;
+  final _i84.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -2850,15 +3418,15 @@ class MuscatEmployeeNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i32.MuscatRequestDetailsTabScreen]
+/// [_i34.MuscatRequestDetailsTabScreen]
 class MuscatRequestDetailsTabRoute
-    extends _i73.PageRouteInfo<MuscatRequestDetailsTabRouteArgs> {
+    extends _i80.PageRouteInfo<MuscatRequestDetailsTabRouteArgs> {
   MuscatRequestDetailsTabRoute({
-    _i77.Key? key,
+    _i84.Key? key,
     required int id,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          MuscatRequestDetailsTabRoute.name,
          args: MuscatRequestDetailsTabRouteArgs(
@@ -2872,11 +3440,11 @@ class MuscatRequestDetailsTabRoute
 
   static const String name = 'MuscatRequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<MuscatRequestDetailsTabRouteArgs>();
-      return _i32.MuscatRequestDetailsTabScreen(
+      return _i34.MuscatRequestDetailsTabScreen(
         key: args.key,
         id: args.id,
         service: args.service,
@@ -2894,13 +3462,13 @@ class MuscatRequestDetailsTabRouteArgs {
     required this.subService,
   });
 
-  final _i77.Key? key;
+  final _i84.Key? key;
 
   final int id;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -2923,14 +3491,14 @@ class MuscatRequestDetailsTabRouteArgs {
 }
 
 /// generated route for
-/// [_i32.MuscutHOSNewRequestScreen]
+/// [_i34.MuscutHOSNewRequestScreen]
 class MuscutHOSNewRequestRoute
-    extends _i73.PageRouteInfo<MuscutHOSNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<MuscutHOSNewRequestRouteArgs> {
   MuscutHOSNewRequestRoute({
-    _i77.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i84.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          MuscutHOSNewRequestRoute.name,
          args: MuscutHOSNewRequestRouteArgs(
@@ -2943,11 +3511,11 @@ class MuscutHOSNewRequestRoute
 
   static const String name = 'MuscutHOSNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<MuscutHOSNewRequestRouteArgs>();
-      return _i32.MuscutHOSNewRequestScreen(
+      return _i34.MuscutHOSNewRequestScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -2963,11 +3531,11 @@ class MuscutHOSNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i77.Key? key;
+  final _i84.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -2988,16 +3556,16 @@ class MuscutHOSNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i11.NewAssignmentDecisionScreen]
+/// [_i12.NewAssignmentDecisionScreen]
 class NewAssignmentDecisionRoute
-    extends _i73.PageRouteInfo<NewAssignmentDecisionRouteArgs> {
+    extends _i80.PageRouteInfo<NewAssignmentDecisionRouteArgs> {
   NewAssignmentDecisionRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          NewAssignmentDecisionRoute.name,
          args: NewAssignmentDecisionRouteArgs(
@@ -3012,11 +3580,11 @@ class NewAssignmentDecisionRoute
 
   static const String name = 'NewAssignmentDecisionRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NewAssignmentDecisionRouteArgs>();
-      return _i11.NewAssignmentDecisionScreen(
+      return _i12.NewAssignmentDecisionScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -3036,15 +3604,15 @@ class NewAssignmentDecisionRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -3074,25 +3642,29 @@ class NewAssignmentDecisionRouteArgs {
 /// generated route for
 /// [_i3.NewRequestForAirportEntryPermitScreen]
 class NewRequestForAirportEntryPermitRoute
-    extends _i73.PageRouteInfo<NewRequestForAirportEntryPermitRouteArgs> {
+    extends _i80.PageRouteInfo<NewRequestForAirportEntryPermitRouteArgs> {
   NewRequestForAirportEntryPermitRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          NewRequestForAirportEntryPermitRoute.name,
          args: NewRequestForAirportEntryPermitRouteArgs(
            key: key,
            serviceId: serviceId,
            subServiceId: subServiceId,
+           service: service,
+           subService: subService,
          ),
          initialChildren: children,
        );
 
   static const String name = 'NewRequestForAirportEntryPermitRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NewRequestForAirportEntryPermitRouteArgs>();
@@ -3100,6 +3672,8 @@ class NewRequestForAirportEntryPermitRoute
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
       );
     },
   );
@@ -3110,17 +3684,23 @@ class NewRequestForAirportEntryPermitRouteArgs {
     this.key,
     required this.serviceId,
     required this.subServiceId,
+    required this.service,
+    required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
   @override
   String toString() {
-    return 'NewRequestForAirportEntryPermitRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId}';
+    return 'NewRequestForAirportEntryPermitRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
   }
 
   @override
@@ -3129,40 +3709,31 @@ class NewRequestForAirportEntryPermitRouteArgs {
     if (other is! NewRequestForAirportEntryPermitRouteArgs) return false;
     return key == other.key &&
         serviceId == other.serviceId &&
-        subServiceId == other.subServiceId;
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
   }
 
   @override
-  int get hashCode => key.hashCode ^ serviceId.hashCode ^ subServiceId.hashCode;
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
 }
 
 /// generated route for
-/// [_i33.NewRequestRequestSupportScreen]
-class NewRequestRequestSupportRoute extends _i73.PageRouteInfo<void> {
-  const NewRequestRequestSupportRoute({List<_i73.PageRouteInfo>? children})
-    : super(NewRequestRequestSupportRoute.name, initialChildren: children);
-
-  static const String name = 'NewRequestRequestSupportRoute';
-
-  static _i73.PageInfo page = _i73.PageInfo(
-    name,
-    builder: (data) {
-      return const _i33.NewRequestRequestSupportScreen();
-    },
-  );
-}
-
-/// generated route for
-/// [_i34.NewSecondmentDecisionRequestScreen]
+/// [_i35.NewSecondmentDecisionRequestScreen]
 class NewSecondmentDecisionRequestRoute
-    extends _i73.PageRouteInfo<NewSecondmentDecisionRequestRouteArgs> {
+    extends _i80.PageRouteInfo<NewSecondmentDecisionRequestRouteArgs> {
   NewSecondmentDecisionRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          NewSecondmentDecisionRequestRoute.name,
          args: NewSecondmentDecisionRequestRouteArgs(
@@ -3177,11 +3748,11 @@ class NewSecondmentDecisionRequestRoute
 
   static const String name = 'NewSecondmentDecisionRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NewSecondmentDecisionRequestRouteArgs>();
-      return _i34.NewSecondmentDecisionRequestScreen(
+      return _i35.NewSecondmentDecisionRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -3201,15 +3772,15 @@ class NewSecondmentDecisionRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -3237,16 +3808,16 @@ class NewSecondmentDecisionRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i35.NewServiceTransferRequestScreen]
+/// [_i36.NewServiceTransferRequestScreen]
 class NewServiceTransferRequestRoute
-    extends _i73.PageRouteInfo<NewServiceTransferRequestRouteArgs> {
+    extends _i80.PageRouteInfo<NewServiceTransferRequestRouteArgs> {
   NewServiceTransferRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          NewServiceTransferRequestRoute.name,
          args: NewServiceTransferRequestRouteArgs(
@@ -3261,11 +3832,11 @@ class NewServiceTransferRequestRoute
 
   static const String name = 'NewServiceTransferRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NewServiceTransferRequestRouteArgs>();
-      return _i35.NewServiceTransferRequestScreen(
+      return _i36.NewServiceTransferRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -3285,15 +3856,15 @@ class NewServiceTransferRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -3321,16 +3892,16 @@ class NewServiceTransferRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i36.NewTemporaryAssignmentDecisionRequestScreen]
+/// [_i37.NewTemporaryAssignmentDecisionRequestScreen]
 class NewTemporaryAssignmentDecisionRequestRoute
-    extends _i73.PageRouteInfo<NewTemporaryAssignmentDecisionRequestRouteArgs> {
+    extends _i80.PageRouteInfo<NewTemporaryAssignmentDecisionRequestRouteArgs> {
   NewTemporaryAssignmentDecisionRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          NewTemporaryAssignmentDecisionRequestRoute.name,
          args: NewTemporaryAssignmentDecisionRequestRouteArgs(
@@ -3345,12 +3916,12 @@ class NewTemporaryAssignmentDecisionRequestRoute
 
   static const String name = 'NewTemporaryAssignmentDecisionRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<NewTemporaryAssignmentDecisionRequestRouteArgs>();
-      return _i36.NewTemporaryAssignmentDecisionRequestScreen(
+      return _i37.NewTemporaryAssignmentDecisionRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -3370,15 +3941,15 @@ class NewTemporaryAssignmentDecisionRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -3406,15 +3977,15 @@ class NewTemporaryAssignmentDecisionRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i37.OrganizeSecurityAwarenessNewRequestScreen]
+/// [_i38.OrganizeSecurityAwarenessNewRequestScreen]
 class OrganizeSecurityAwarenessNewRequestRoute
-    extends _i73.PageRouteInfo<OrganizeSecurityAwarenessNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<OrganizeSecurityAwarenessNewRequestRouteArgs> {
   OrganizeSecurityAwarenessNewRequestRoute({
     String source = '',
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          OrganizeSecurityAwarenessNewRequestRoute.name,
          args: OrganizeSecurityAwarenessNewRequestRouteArgs(
@@ -3428,11 +3999,11 @@ class OrganizeSecurityAwarenessNewRequestRoute
 
   static const String name = 'OrganizeSecurityAwarenessNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<OrganizeSecurityAwarenessNewRequestRouteArgs>();
-      return _i37.OrganizeSecurityAwarenessNewRequestScreen(
+      return _i38.OrganizeSecurityAwarenessNewRequestScreen(
         source: args.source,
         key: args.key,
         service: args.service,
@@ -3452,11 +4023,11 @@ class OrganizeSecurityAwarenessNewRequestRouteArgs {
 
   final String source;
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -3479,19 +4050,19 @@ class OrganizeSecurityAwarenessNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i37.OrganizeSecurityAwarenessRequestDetailsTabScreen]
+/// [_i38.OrganizeSecurityAwarenessRequestDetailsTabScreen]
 class OrganizeSecurityAwarenessRequestDetailsTabRoute
     extends
-        _i73.PageRouteInfo<
+        _i80.PageRouteInfo<
           OrganizeSecurityAwarenessRequestDetailsTabRouteArgs
         > {
   OrganizeSecurityAwarenessRequestDetailsTabRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int id,
     String from = '',
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          OrganizeSecurityAwarenessRequestDetailsTabRoute.name,
          args: OrganizeSecurityAwarenessRequestDetailsTabRouteArgs(
@@ -3506,12 +4077,12 @@ class OrganizeSecurityAwarenessRequestDetailsTabRoute
 
   static const String name = 'OrganizeSecurityAwarenessRequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<OrganizeSecurityAwarenessRequestDetailsTabRouteArgs>();
-      return _i37.OrganizeSecurityAwarenessRequestDetailsTabScreen(
+      return _i38.OrganizeSecurityAwarenessRequestDetailsTabScreen(
         key: args.key,
         id: args.id,
         from: args.from,
@@ -3531,15 +4102,15 @@ class OrganizeSecurityAwarenessRequestDetailsTabRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int id;
 
   final String from;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -3568,14 +4139,14 @@ class OrganizeSecurityAwarenessRequestDetailsTabRouteArgs {
 }
 
 /// generated route for
-/// [_i37.OrganizeSecurityAwarenessScreen]
+/// [_i38.OrganizeSecurityAwarenessScreen]
 class OrganizeSecurityAwarenessRoute
-    extends _i73.PageRouteInfo<OrganizeSecurityAwarenessRouteArgs> {
+    extends _i80.PageRouteInfo<OrganizeSecurityAwarenessRouteArgs> {
   OrganizeSecurityAwarenessRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          OrganizeSecurityAwarenessRoute.name,
          args: OrganizeSecurityAwarenessRouteArgs(
@@ -3588,11 +4159,11 @@ class OrganizeSecurityAwarenessRoute
 
   static const String name = 'OrganizeSecurityAwarenessRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<OrganizeSecurityAwarenessRouteArgs>();
-      return _i37.OrganizeSecurityAwarenessScreen(
+      return _i38.OrganizeSecurityAwarenessScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -3608,11 +4179,11 @@ class OrganizeSecurityAwarenessRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -3633,18 +4204,18 @@ class OrganizeSecurityAwarenessRouteArgs {
 }
 
 /// generated route for
-/// [_i38.PaymentofCashAllowanceForLeaveDetailsScreen]
+/// [_i39.PaymentofCashAllowanceForLeaveDetailsScreen]
 class PaymentofCashAllowanceForLeaveDetailsRoute
-    extends _i73.PageRouteInfo<PaymentofCashAllowanceForLeaveDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<PaymentofCashAllowanceForLeaveDetailsRouteArgs> {
   PaymentofCashAllowanceForLeaveDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PaymentofCashAllowanceForLeaveDetailsRoute.name,
          args: PaymentofCashAllowanceForLeaveDetailsRouteArgs(
@@ -3661,12 +4232,12 @@ class PaymentofCashAllowanceForLeaveDetailsRoute
 
   static const String name = 'PaymentofCashAllowanceForLeaveDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<PaymentofCashAllowanceForLeaveDetailsRouteArgs>();
-      return _i38.PaymentofCashAllowanceForLeaveDetailsScreen(
+      return _i39.PaymentofCashAllowanceForLeaveDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -3690,7 +4261,7 @@ class PaymentofCashAllowanceForLeaveDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -3698,9 +4269,9 @@ class PaymentofCashAllowanceForLeaveDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -3734,17 +4305,17 @@ class PaymentofCashAllowanceForLeaveDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i38.PaymentofCashAllowanceForLeaveNewRequestScreen]
+/// [_i39.PaymentofCashAllowanceForLeaveNewRequestScreen]
 class PaymentofCashAllowanceForLeaveNewRequestRoute
     extends
-        _i73.PageRouteInfo<PaymentofCashAllowanceForLeaveNewRequestRouteArgs> {
+        _i80.PageRouteInfo<PaymentofCashAllowanceForLeaveNewRequestRouteArgs> {
   PaymentofCashAllowanceForLeaveNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PaymentofCashAllowanceForLeaveNewRequestRoute.name,
          args: PaymentofCashAllowanceForLeaveNewRequestRouteArgs(
@@ -3759,12 +4330,12 @@ class PaymentofCashAllowanceForLeaveNewRequestRoute
 
   static const String name = 'PaymentofCashAllowanceForLeaveNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<PaymentofCashAllowanceForLeaveNewRequestRouteArgs>();
-      return _i38.PaymentofCashAllowanceForLeaveNewRequestScreen(
+      return _i39.PaymentofCashAllowanceForLeaveNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -3784,15 +4355,15 @@ class PaymentofCashAllowanceForLeaveNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -3821,14 +4392,14 @@ class PaymentofCashAllowanceForLeaveNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i38.PaymentofCashAllowanceForLeaveScreen]
+/// [_i39.PaymentofCashAllowanceForLeaveScreen]
 class PaymentofCashAllowanceForLeaveRoute
-    extends _i73.PageRouteInfo<PaymentofCashAllowanceForLeaveRouteArgs> {
+    extends _i80.PageRouteInfo<PaymentofCashAllowanceForLeaveRouteArgs> {
   PaymentofCashAllowanceForLeaveRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PaymentofCashAllowanceForLeaveRoute.name,
          args: PaymentofCashAllowanceForLeaveRouteArgs(
@@ -3841,11 +4412,11 @@ class PaymentofCashAllowanceForLeaveRoute
 
   static const String name = 'PaymentofCashAllowanceForLeaveRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PaymentofCashAllowanceForLeaveRouteArgs>();
-      return _i38.PaymentofCashAllowanceForLeaveScreen(
+      return _i39.PaymentofCashAllowanceForLeaveScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -3861,11 +4432,11 @@ class PaymentofCashAllowanceForLeaveRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -3886,18 +4457,18 @@ class PaymentofCashAllowanceForLeaveRouteArgs {
 }
 
 /// generated route for
-/// [_i39.PaymentofShiftAllowanceDetailsScreen]
+/// [_i40.PaymentofShiftAllowanceDetailsScreen]
 class PaymentofShiftAllowanceDetailsRoute
-    extends _i73.PageRouteInfo<PaymentofShiftAllowanceDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<PaymentofShiftAllowanceDetailsRouteArgs> {
   PaymentofShiftAllowanceDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PaymentofShiftAllowanceDetailsRoute.name,
          args: PaymentofShiftAllowanceDetailsRouteArgs(
@@ -3914,11 +4485,11 @@ class PaymentofShiftAllowanceDetailsRoute
 
   static const String name = 'PaymentofShiftAllowanceDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PaymentofShiftAllowanceDetailsRouteArgs>();
-      return _i39.PaymentofShiftAllowanceDetailsScreen(
+      return _i40.PaymentofShiftAllowanceDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -3942,7 +4513,7 @@ class PaymentofShiftAllowanceDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -3950,9 +4521,9 @@ class PaymentofShiftAllowanceDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -3986,16 +4557,16 @@ class PaymentofShiftAllowanceDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i39.PaymentofShiftAllowanceNewRequestScreen]
+/// [_i40.PaymentofShiftAllowanceNewRequestScreen]
 class PaymentofShiftAllowanceNewRequestRoute
-    extends _i73.PageRouteInfo<PaymentofShiftAllowanceNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<PaymentofShiftAllowanceNewRequestRouteArgs> {
   PaymentofShiftAllowanceNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PaymentofShiftAllowanceNewRequestRoute.name,
          args: PaymentofShiftAllowanceNewRequestRouteArgs(
@@ -4010,11 +4581,11 @@ class PaymentofShiftAllowanceNewRequestRoute
 
   static const String name = 'PaymentofShiftAllowanceNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PaymentofShiftAllowanceNewRequestRouteArgs>();
-      return _i39.PaymentofShiftAllowanceNewRequestScreen(
+      return _i40.PaymentofShiftAllowanceNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -4034,15 +4605,15 @@ class PaymentofShiftAllowanceNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -4070,14 +4641,14 @@ class PaymentofShiftAllowanceNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i39.PaymentofShiftAllowanceScreen]
+/// [_i40.PaymentofShiftAllowanceScreen]
 class PaymentofShiftAllowanceRoute
-    extends _i73.PageRouteInfo<PaymentofShiftAllowanceRouteArgs> {
+    extends _i80.PageRouteInfo<PaymentofShiftAllowanceRouteArgs> {
   PaymentofShiftAllowanceRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PaymentofShiftAllowanceRoute.name,
          args: PaymentofShiftAllowanceRouteArgs(
@@ -4090,11 +4661,11 @@ class PaymentofShiftAllowanceRoute
 
   static const String name = 'PaymentofShiftAllowanceRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PaymentofShiftAllowanceRouteArgs>();
-      return _i39.PaymentofShiftAllowanceScreen(
+      return _i40.PaymentofShiftAllowanceScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -4110,11 +4681,11 @@ class PaymentofShiftAllowanceRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -4135,18 +4706,18 @@ class PaymentofShiftAllowanceRouteArgs {
 }
 
 /// generated route for
-/// [_i40.PerformanceManagementDetailsScreen]
+/// [_i41.PerformanceManagementDetailsScreen]
 class PerformanceManagementDetailsRoute
-    extends _i73.PageRouteInfo<PerformanceManagementDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<PerformanceManagementDetailsRouteArgs> {
   PerformanceManagementDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PerformanceManagementDetailsRoute.name,
          args: PerformanceManagementDetailsRouteArgs(
@@ -4163,11 +4734,11 @@ class PerformanceManagementDetailsRoute
 
   static const String name = 'PerformanceManagementDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PerformanceManagementDetailsRouteArgs>();
-      return _i40.PerformanceManagementDetailsScreen(
+      return _i41.PerformanceManagementDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -4191,7 +4762,7 @@ class PerformanceManagementDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -4199,9 +4770,9 @@ class PerformanceManagementDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -4235,16 +4806,16 @@ class PerformanceManagementDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i40.PerformanceManagementNewRequestScreen]
+/// [_i41.PerformanceManagementNewRequestScreen]
 class PerformanceManagementNewRequestRoute
-    extends _i73.PageRouteInfo<PerformanceManagementNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<PerformanceManagementNewRequestRouteArgs> {
   PerformanceManagementNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PerformanceManagementNewRequestRoute.name,
          args: PerformanceManagementNewRequestRouteArgs(
@@ -4259,11 +4830,11 @@ class PerformanceManagementNewRequestRoute
 
   static const String name = 'PerformanceManagementNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PerformanceManagementNewRequestRouteArgs>();
-      return _i40.PerformanceManagementNewRequestScreen(
+      return _i41.PerformanceManagementNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -4283,15 +4854,15 @@ class PerformanceManagementNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -4319,14 +4890,14 @@ class PerformanceManagementNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i40.PerformanceManagementScreen]
+/// [_i41.PerformanceManagementScreen]
 class PerformanceManagementRoute
-    extends _i73.PageRouteInfo<PerformanceManagementRouteArgs> {
+    extends _i80.PageRouteInfo<PerformanceManagementRouteArgs> {
   PerformanceManagementRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PerformanceManagementRoute.name,
          args: PerformanceManagementRouteArgs(
@@ -4339,11 +4910,11 @@ class PerformanceManagementRoute
 
   static const String name = 'PerformanceManagementRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PerformanceManagementRouteArgs>();
-      return _i40.PerformanceManagementScreen(
+      return _i41.PerformanceManagementScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -4359,11 +4930,11 @@ class PerformanceManagementRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -4384,18 +4955,18 @@ class PerformanceManagementRouteArgs {
 }
 
 /// generated route for
-/// [_i41.PromotionsDetailsScreen]
+/// [_i42.PromotionsDetailsScreen]
 class PromotionsDetailsRoute
-    extends _i73.PageRouteInfo<PromotionsDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<PromotionsDetailsRouteArgs> {
   PromotionsDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PromotionsDetailsRoute.name,
          args: PromotionsDetailsRouteArgs(
@@ -4412,11 +4983,11 @@ class PromotionsDetailsRoute
 
   static const String name = 'PromotionsDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PromotionsDetailsRouteArgs>();
-      return _i41.PromotionsDetailsScreen(
+      return _i42.PromotionsDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -4440,7 +5011,7 @@ class PromotionsDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -4448,9 +5019,9 @@ class PromotionsDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -4484,16 +5055,16 @@ class PromotionsDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i41.PromotionsNewRequestScreen]
+/// [_i42.PromotionsNewRequestScreen]
 class PromotionsNewRequestRoute
-    extends _i73.PageRouteInfo<PromotionsNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<PromotionsNewRequestRouteArgs> {
   PromotionsNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PromotionsNewRequestRoute.name,
          args: PromotionsNewRequestRouteArgs(
@@ -4508,11 +5079,11 @@ class PromotionsNewRequestRoute
 
   static const String name = 'PromotionsNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PromotionsNewRequestRouteArgs>();
-      return _i41.PromotionsNewRequestScreen(
+      return _i42.PromotionsNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -4532,15 +5103,15 @@ class PromotionsNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -4568,13 +5139,13 @@ class PromotionsNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i41.PromotionsScreen]
-class PromotionsRoute extends _i73.PageRouteInfo<PromotionsRouteArgs> {
+/// [_i42.PromotionsScreen]
+class PromotionsRoute extends _i80.PageRouteInfo<PromotionsRouteArgs> {
   PromotionsRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          PromotionsRoute.name,
          args: PromotionsRouteArgs(
@@ -4587,11 +5158,11 @@ class PromotionsRoute extends _i73.PageRouteInfo<PromotionsRouteArgs> {
 
   static const String name = 'PromotionsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PromotionsRouteArgs>();
-      return _i41.PromotionsScreen(
+      return _i42.PromotionsScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -4607,11 +5178,11 @@ class PromotionsRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -4632,16 +5203,265 @@ class PromotionsRouteArgs {
 }
 
 /// generated route for
-/// [_i42.RenewalHousingContractNewRequestScreen]
-class RenewalHousingContractNewRequestRoute
-    extends _i73.PageRouteInfo<RenewalHousingContractNewRequestRouteArgs> {
-  RenewalHousingContractNewRequestRoute({
-    _i75.Key? key,
+/// [_i43.RaiseLegalComplaintDetailsScreen]
+class RaiseLegalComplaintDetailsRoute
+    extends _i80.PageRouteInfo<RaiseLegalComplaintDetailsRouteArgs> {
+  RaiseLegalComplaintDetailsRoute({
+    _i81.Key? key,
+    required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    String from = '',
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RaiseLegalComplaintDetailsRoute.name,
+         args: RaiseLegalComplaintDetailsRouteArgs(
+           key: key,
+           id: id,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+           from: from,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RaiseLegalComplaintDetailsRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RaiseLegalComplaintDetailsRouteArgs>();
+      return _i43.RaiseLegalComplaintDetailsScreen(
+        key: args.key,
+        id: args.id,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+        from: args.from,
+      );
+    },
+  );
+}
+
+class RaiseLegalComplaintDetailsRouteArgs {
+  const RaiseLegalComplaintDetailsRouteArgs({
+    this.key,
+    required this.id,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+    this.from = '',
+  });
+
+  final _i81.Key? key;
+
+  final int id;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  final String from;
+
+  @override
+  String toString() {
+    return 'RaiseLegalComplaintDetailsRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RaiseLegalComplaintDetailsRouteArgs) return false;
+    return key == other.key &&
+        id == other.id &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService &&
+        from == other.from;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      id.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      from.hashCode;
+}
+
+/// generated route for
+/// [_i43.RaiseLegalComplaintNewRequestScreen]
+class RaiseLegalComplaintNewRequestRoute
+    extends _i80.PageRouteInfo<RaiseLegalComplaintNewRequestRouteArgs> {
+  RaiseLegalComplaintNewRequestRoute({
+    _i81.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RaiseLegalComplaintNewRequestRoute.name,
+         args: RaiseLegalComplaintNewRequestRouteArgs(
+           key: key,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RaiseLegalComplaintNewRequestRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RaiseLegalComplaintNewRequestRouteArgs>();
+      return _i43.RaiseLegalComplaintNewRequestScreen(
+        key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class RaiseLegalComplaintNewRequestRouteArgs {
+  const RaiseLegalComplaintNewRequestRouteArgs({
+    this.key,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'RaiseLegalComplaintNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RaiseLegalComplaintNewRequestRouteArgs) return false;
+    return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
+}
+
+/// generated route for
+/// [_i43.RaiseLegalComplaintScreen]
+class RaiseLegalComplaintRoute
+    extends _i80.PageRouteInfo<RaiseLegalComplaintRouteArgs> {
+  RaiseLegalComplaintRoute({
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RaiseLegalComplaintRoute.name,
+         args: RaiseLegalComplaintRouteArgs(
+           key: key,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RaiseLegalComplaintRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RaiseLegalComplaintRouteArgs>();
+      return _i43.RaiseLegalComplaintScreen(
+        key: args.key,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class RaiseLegalComplaintRouteArgs {
+  const RaiseLegalComplaintRouteArgs({
+    this.key,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'RaiseLegalComplaintRouteArgs{key: $key, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RaiseLegalComplaintRouteArgs) return false;
+    return key == other.key &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+}
+
+/// generated route for
+/// [_i44.RenewalHousingContractNewRequestScreen]
+class RenewalHousingContractNewRequestRoute
+    extends _i80.PageRouteInfo<RenewalHousingContractNewRequestRouteArgs> {
+  RenewalHousingContractNewRequestRoute({
+    _i82.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RenewalHousingContractNewRequestRoute.name,
          args: RenewalHousingContractNewRequestRouteArgs(
@@ -4656,11 +5476,11 @@ class RenewalHousingContractNewRequestRoute
 
   static const String name = 'RenewalHousingContractNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RenewalHousingContractNewRequestRouteArgs>();
-      return _i42.RenewalHousingContractNewRequestScreen(
+      return _i44.RenewalHousingContractNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -4680,15 +5500,15 @@ class RenewalHousingContractNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -4716,30 +5536,290 @@ class RenewalHousingContractNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i43.RequestDetailScreen]
-class RequestDetailRoute extends _i73.PageRouteInfo<void> {
-  const RequestDetailRoute({List<_i73.PageRouteInfo>? children})
+/// [_i45.RequestAServiceToRespondToEnquiriesDetailsScreen]
+class RequestAServiceToRespondToEnquiriesDetailsRoute
+    extends
+        _i80.PageRouteInfo<
+          RequestAServiceToRespondToEnquiriesDetailsRouteArgs
+        > {
+  RequestAServiceToRespondToEnquiriesDetailsRoute({
+    _i81.Key? key,
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    String from = '',
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestAServiceToRespondToEnquiriesDetailsRoute.name,
+         args: RequestAServiceToRespondToEnquiriesDetailsRouteArgs(
+           key: key,
+           id: id,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+           from: from,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RequestAServiceToRespondToEnquiriesDetailsRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data
+          .argsAs<RequestAServiceToRespondToEnquiriesDetailsRouteArgs>();
+      return _i45.RequestAServiceToRespondToEnquiriesDetailsScreen(
+        key: args.key,
+        id: args.id,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+        from: args.from,
+      );
+    },
+  );
+}
+
+class RequestAServiceToRespondToEnquiriesDetailsRouteArgs {
+  const RequestAServiceToRespondToEnquiriesDetailsRouteArgs({
+    this.key,
+    required this.id,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+    this.from = '',
+  });
+
+  final _i81.Key? key;
+
+  final int id;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  final String from;
+
+  @override
+  String toString() {
+    return 'RequestAServiceToRespondToEnquiriesDetailsRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestAServiceToRespondToEnquiriesDetailsRouteArgs)
+      return false;
+    return key == other.key &&
+        id == other.id &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService &&
+        from == other.from;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      id.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      from.hashCode;
+}
+
+/// generated route for
+/// [_i45.RequestAServiceToRespondToEnquiriesNewRequestScreen]
+class RequestAServiceToRespondToEnquiriesNewRequestRoute
+    extends
+        _i80.PageRouteInfo<
+          RequestAServiceToRespondToEnquiriesNewRequestRouteArgs
+        > {
+  RequestAServiceToRespondToEnquiriesNewRequestRoute({
+    _i81.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestAServiceToRespondToEnquiriesNewRequestRoute.name,
+         args: RequestAServiceToRespondToEnquiriesNewRequestRouteArgs(
+           key: key,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name =
+      'RequestAServiceToRespondToEnquiriesNewRequestRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data
+          .argsAs<RequestAServiceToRespondToEnquiriesNewRequestRouteArgs>();
+      return _i45.RequestAServiceToRespondToEnquiriesNewRequestScreen(
+        key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class RequestAServiceToRespondToEnquiriesNewRequestRouteArgs {
+  const RequestAServiceToRespondToEnquiriesNewRequestRouteArgs({
+    this.key,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'RequestAServiceToRespondToEnquiriesNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestAServiceToRespondToEnquiriesNewRequestRouteArgs)
+      return false;
+    return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
+}
+
+/// generated route for
+/// [_i45.RequestAServiceToRespondToEnquiriesScreen]
+class RequestAServiceToRespondToEnquiriesRoute
+    extends _i80.PageRouteInfo<RequestAServiceToRespondToEnquiriesRouteArgs> {
+  RequestAServiceToRespondToEnquiriesRoute({
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestAServiceToRespondToEnquiriesRoute.name,
+         args: RequestAServiceToRespondToEnquiriesRouteArgs(
+           key: key,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RequestAServiceToRespondToEnquiriesRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RequestAServiceToRespondToEnquiriesRouteArgs>();
+      return _i45.RequestAServiceToRespondToEnquiriesScreen(
+        key: args.key,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class RequestAServiceToRespondToEnquiriesRouteArgs {
+  const RequestAServiceToRespondToEnquiriesRouteArgs({
+    this.key,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'RequestAServiceToRespondToEnquiriesRouteArgs{key: $key, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestAServiceToRespondToEnquiriesRouteArgs) return false;
+    return key == other.key &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+}
+
+/// generated route for
+/// [_i46.RequestDetailScreen]
+class RequestDetailRoute extends _i80.PageRouteInfo<void> {
+  const RequestDetailRoute({List<_i80.PageRouteInfo>? children})
     : super(RequestDetailRoute.name, initialChildren: children);
 
   static const String name = 'RequestDetailRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i43.RequestDetailScreen();
+      return const _i46.RequestDetailScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i44.RequestDetailsTabScreen]
+/// [_i47.RequestDetailsTabScreen]
 class RequestDetailsTabRoute
-    extends _i73.PageRouteInfo<RequestDetailsTabRouteArgs> {
+    extends _i80.PageRouteInfo<RequestDetailsTabRouteArgs> {
   RequestDetailsTabRoute({
-    _i74.Key? key,
-    required _i78.SalalahRequestDetailData data,
+    _i81.Key? key,
+    required _i85.SalalahRequestDetailData data,
     required int id,
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestDetailsTabRoute.name,
          args: RequestDetailsTabRouteArgs(key: key, data: data, id: id),
@@ -4748,11 +5828,11 @@ class RequestDetailsTabRoute
 
   static const String name = 'RequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestDetailsTabRouteArgs>();
-      return _i44.RequestDetailsTabScreen(
+      return _i47.RequestDetailsTabScreen(
         key: args.key,
         data: args.data,
         id: args.id,
@@ -4768,9 +5848,9 @@ class RequestDetailsTabRouteArgs {
     required this.id,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i78.SalalahRequestDetailData data;
+  final _i85.SalalahRequestDetailData data;
 
   final int id;
 
@@ -4791,69 +5871,286 @@ class RequestDetailsTabRouteArgs {
 }
 
 /// generated route for
-/// [_i33.RequestEventDashboardScreen]
-class RequestEventDashboardRoute extends _i73.PageRouteInfo<void> {
-  const RequestEventDashboardRoute({List<_i73.PageRouteInfo>? children})
-    : super(RequestEventDashboardRoute.name, initialChildren: children);
+/// [_i48.RequestEventSupportDetailsScreen]
+class RequestEventSupportDetailsRoute
+    extends _i80.PageRouteInfo<RequestEventSupportDetailsRouteArgs> {
+  RequestEventSupportDetailsRoute({
+    _i81.Key? key,
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    String from = '',
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestEventSupportDetailsRoute.name,
+         args: RequestEventSupportDetailsRouteArgs(
+           key: key,
+           id: id,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+           from: from,
+         ),
+         initialChildren: children,
+       );
 
-  static const String name = 'RequestEventDashboardRoute';
+  static const String name = 'RequestEventSupportDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i33.RequestEventDashboardScreen();
+      final args = data.argsAs<RequestEventSupportDetailsRouteArgs>();
+      return _i48.RequestEventSupportDetailsScreen(
+        key: args.key,
+        id: args.id,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+        from: args.from,
+      );
     },
   );
 }
 
+class RequestEventSupportDetailsRouteArgs {
+  const RequestEventSupportDetailsRouteArgs({
+    this.key,
+    required this.id,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+    this.from = '',
+  });
+
+  final _i81.Key? key;
+
+  final int id;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  final String from;
+
+  @override
+  String toString() {
+    return 'RequestEventSupportDetailsRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestEventSupportDetailsRouteArgs) return false;
+    return key == other.key &&
+        id == other.id &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService &&
+        from == other.from;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      id.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      from.hashCode;
+}
+
 /// generated route for
-/// [_i33.RequestEventSupportScreen]
-class RequestEventSupportRoute extends _i73.PageRouteInfo<void> {
-  const RequestEventSupportRoute({List<_i73.PageRouteInfo>? children})
-    : super(RequestEventSupportRoute.name, initialChildren: children);
+/// [_i48.RequestEventSupportNewRequestScreen]
+class RequestEventSupportNewRequestRoute
+    extends _i80.PageRouteInfo<RequestEventSupportNewRequestRouteArgs> {
+  RequestEventSupportNewRequestRoute({
+    _i81.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestEventSupportNewRequestRoute.name,
+         args: RequestEventSupportNewRequestRouteArgs(
+           key: key,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RequestEventSupportNewRequestRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RequestEventSupportNewRequestRouteArgs>();
+      return _i48.RequestEventSupportNewRequestScreen(
+        key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class RequestEventSupportNewRequestRouteArgs {
+  const RequestEventSupportNewRequestRouteArgs({
+    this.key,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'RequestEventSupportNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestEventSupportNewRequestRouteArgs) return false;
+    return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
+}
+
+/// generated route for
+/// [_i48.RequestEventSupportScreen]
+class RequestEventSupportRoute
+    extends _i80.PageRouteInfo<RequestEventSupportRouteArgs> {
+  RequestEventSupportRoute({
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestEventSupportRoute.name,
+         args: RequestEventSupportRouteArgs(
+           key: key,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'RequestEventSupportRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i33.RequestEventSupportScreen();
+      final args = data.argsAs<RequestEventSupportRouteArgs>();
+      return _i48.RequestEventSupportScreen(
+        key: args.key,
+        service: args.service,
+        subService: args.subService,
+      );
     },
   );
 }
 
+class RequestEventSupportRouteArgs {
+  const RequestEventSupportRouteArgs({
+    this.key,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'RequestEventSupportRouteArgs{key: $key, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestEventSupportRouteArgs) return false;
+    return key == other.key &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+}
+
 /// generated route for
-/// [_i45.RequestForAccessHomePage]
-class RequestForAccessHomeRoute extends _i73.PageRouteInfo<void> {
-  const RequestForAccessHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i49.RequestForAccessHomePage]
+class RequestForAccessHomeRoute extends _i80.PageRouteInfo<void> {
+  const RequestForAccessHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(RequestForAccessHomeRoute.name, initialChildren: children);
 
   static const String name = 'RequestForAccessHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i45.RequestForAccessHomePage();
+      return const _i49.RequestForAccessHomePage();
     },
   );
 }
 
 /// generated route for
-/// [_i46.RequestForAccommodationInMuscatGovernorateDetailsScreen]
+/// [_i50.RequestForAccommodationInMuscatGovernorateDetailsScreen]
 class RequestForAccommodationInMuscatGovernorateDetailsRoute
     extends
-        _i73.PageRouteInfo<
+        _i80.PageRouteInfo<
           RequestForAccommodationInMuscatGovernorateDetailsRouteArgs
         > {
   RequestForAccommodationInMuscatGovernorateDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForAccommodationInMuscatGovernorateDetailsRoute.name,
          args: RequestForAccommodationInMuscatGovernorateDetailsRouteArgs(
@@ -4871,12 +6168,12 @@ class RequestForAccommodationInMuscatGovernorateDetailsRoute
   static const String name =
       'RequestForAccommodationInMuscatGovernorateDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestForAccommodationInMuscatGovernorateDetailsRouteArgs>();
-      return _i46.RequestForAccommodationInMuscatGovernorateDetailsScreen(
+      return _i50.RequestForAccommodationInMuscatGovernorateDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -4900,7 +6197,7 @@ class RequestForAccommodationInMuscatGovernorateDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -4908,9 +6205,9 @@ class RequestForAccommodationInMuscatGovernorateDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -4945,19 +6242,19 @@ class RequestForAccommodationInMuscatGovernorateDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i46.RequestForAccommodationInMuscatGovernorateNewRequestScreen]
+/// [_i50.RequestForAccommodationInMuscatGovernorateNewRequestScreen]
 class RequestForAccommodationInMuscatGovernorateNewRequestRoute
     extends
-        _i73.PageRouteInfo<
+        _i80.PageRouteInfo<
           RequestForAccommodationInMuscatGovernorateNewRequestRouteArgs
         > {
   RequestForAccommodationInMuscatGovernorateNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForAccommodationInMuscatGovernorateNewRequestRoute.name,
          args: RequestForAccommodationInMuscatGovernorateNewRequestRouteArgs(
@@ -4973,14 +6270,14 @@ class RequestForAccommodationInMuscatGovernorateNewRequestRoute
   static const String name =
       'RequestForAccommodationInMuscatGovernorateNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<
             RequestForAccommodationInMuscatGovernorateNewRequestRouteArgs
           >();
-      return _i46.RequestForAccommodationInMuscatGovernorateNewRequestScreen(
+      return _i50.RequestForAccommodationInMuscatGovernorateNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -5000,15 +6297,15 @@ class RequestForAccommodationInMuscatGovernorateNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -5037,17 +6334,17 @@ class RequestForAccommodationInMuscatGovernorateNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i46.RequestForAccommodationInMuscatGovernorateScreen]
+/// [_i50.RequestForAccommodationInMuscatGovernorateScreen]
 class RequestForAccommodationInMuscatGovernorateRoute
     extends
-        _i73.PageRouteInfo<
+        _i80.PageRouteInfo<
           RequestForAccommodationInMuscatGovernorateRouteArgs
         > {
   RequestForAccommodationInMuscatGovernorateRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForAccommodationInMuscatGovernorateRoute.name,
          args: RequestForAccommodationInMuscatGovernorateRouteArgs(
@@ -5060,12 +6357,12 @@ class RequestForAccommodationInMuscatGovernorateRoute
 
   static const String name = 'RequestForAccommodationInMuscatGovernorateRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestForAccommodationInMuscatGovernorateRouteArgs>();
-      return _i46.RequestForAccommodationInMuscatGovernorateScreen(
+      return _i50.RequestForAccommodationInMuscatGovernorateScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -5081,11 +6378,11 @@ class RequestForAccommodationInMuscatGovernorateRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -5107,21 +6404,270 @@ class RequestForAccommodationInMuscatGovernorateRouteArgs {
 }
 
 /// generated route for
-/// [_i47.RequestForHumanResourceAnnualPlanningDetailsScreen]
-class RequestForHumanResourceAnnualPlanningDetailsRoute
-    extends
-        _i73.PageRouteInfo<
-          RequestForHumanResourceAnnualPlanningDetailsRouteArgs
-        > {
-  RequestForHumanResourceAnnualPlanningDetailsRoute({
-    _i75.Key? key,
+/// [_i51.RequestForCancellationDetailsScreen]
+class RequestForCancellationDetailsRoute
+    extends _i80.PageRouteInfo<RequestForCancellationDetailsRouteArgs> {
+  RequestForCancellationDetailsRoute({
+    _i81.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestForCancellationDetailsRoute.name,
+         args: RequestForCancellationDetailsRouteArgs(
+           key: key,
+           id: id,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+           from: from,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RequestForCancellationDetailsRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RequestForCancellationDetailsRouteArgs>();
+      return _i51.RequestForCancellationDetailsScreen(
+        key: args.key,
+        id: args.id,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+        from: args.from,
+      );
+    },
+  );
+}
+
+class RequestForCancellationDetailsRouteArgs {
+  const RequestForCancellationDetailsRouteArgs({
+    this.key,
+    required this.id,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+    this.from = '',
+  });
+
+  final _i81.Key? key;
+
+  final int id;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  final String from;
+
+  @override
+  String toString() {
+    return 'RequestForCancellationDetailsRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestForCancellationDetailsRouteArgs) return false;
+    return key == other.key &&
+        id == other.id &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService &&
+        from == other.from;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      id.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      from.hashCode;
+}
+
+/// generated route for
+/// [_i51.RequestForCancellationNewRequestScreen]
+class RequestForCancellationNewRequestRoute
+    extends _i80.PageRouteInfo<RequestForCancellationNewRequestRouteArgs> {
+  RequestForCancellationNewRequestRoute({
+    _i81.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestForCancellationNewRequestRoute.name,
+         args: RequestForCancellationNewRequestRouteArgs(
+           key: key,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RequestForCancellationNewRequestRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RequestForCancellationNewRequestRouteArgs>();
+      return _i51.RequestForCancellationNewRequestScreen(
+        key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class RequestForCancellationNewRequestRouteArgs {
+  const RequestForCancellationNewRequestRouteArgs({
+    this.key,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'RequestForCancellationNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestForCancellationNewRequestRouteArgs) return false;
+    return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
+}
+
+/// generated route for
+/// [_i51.RequestForCancellationScreen]
+class RequestForCancellationRoute
+    extends _i80.PageRouteInfo<RequestForCancellationRouteArgs> {
+  RequestForCancellationRoute({
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestForCancellationRoute.name,
+         args: RequestForCancellationRouteArgs(
+           key: key,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RequestForCancellationRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RequestForCancellationRouteArgs>();
+      return _i51.RequestForCancellationScreen(
+        key: args.key,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class RequestForCancellationRouteArgs {
+  const RequestForCancellationRouteArgs({
+    this.key,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'RequestForCancellationRouteArgs{key: $key, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestForCancellationRouteArgs) return false;
+    return key == other.key &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+}
+
+/// generated route for
+/// [_i52.RequestForHumanResourceAnnualPlanningDetailsScreen]
+class RequestForHumanResourceAnnualPlanningDetailsRoute
+    extends
+        _i80.PageRouteInfo<
+          RequestForHumanResourceAnnualPlanningDetailsRouteArgs
+        > {
+  RequestForHumanResourceAnnualPlanningDetailsRoute({
+    _i82.Key? key,
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    String from = '',
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForHumanResourceAnnualPlanningDetailsRoute.name,
          args: RequestForHumanResourceAnnualPlanningDetailsRouteArgs(
@@ -5139,12 +6685,12 @@ class RequestForHumanResourceAnnualPlanningDetailsRoute
   static const String name =
       'RequestForHumanResourceAnnualPlanningDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestForHumanResourceAnnualPlanningDetailsRouteArgs>();
-      return _i47.RequestForHumanResourceAnnualPlanningDetailsScreen(
+      return _i52.RequestForHumanResourceAnnualPlanningDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -5168,7 +6714,7 @@ class RequestForHumanResourceAnnualPlanningDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -5176,9 +6722,9 @@ class RequestForHumanResourceAnnualPlanningDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -5213,19 +6759,19 @@ class RequestForHumanResourceAnnualPlanningDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i47.RequestForHumanResourceAnnualPlanningNewRequestScreen]
+/// [_i52.RequestForHumanResourceAnnualPlanningNewRequestScreen]
 class RequestForHumanResourceAnnualPlanningNewRequestRoute
     extends
-        _i73.PageRouteInfo<
+        _i80.PageRouteInfo<
           RequestForHumanResourceAnnualPlanningNewRequestRouteArgs
         > {
   RequestForHumanResourceAnnualPlanningNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForHumanResourceAnnualPlanningNewRequestRoute.name,
          args: RequestForHumanResourceAnnualPlanningNewRequestRouteArgs(
@@ -5241,12 +6787,12 @@ class RequestForHumanResourceAnnualPlanningNewRequestRoute
   static const String name =
       'RequestForHumanResourceAnnualPlanningNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestForHumanResourceAnnualPlanningNewRequestRouteArgs>();
-      return _i47.RequestForHumanResourceAnnualPlanningNewRequestScreen(
+      return _i52.RequestForHumanResourceAnnualPlanningNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -5266,15 +6812,15 @@ class RequestForHumanResourceAnnualPlanningNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -5303,14 +6849,14 @@ class RequestForHumanResourceAnnualPlanningNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i47.RequestForHumanResourceAnnualPlanningScreen]
+/// [_i52.RequestForHumanResourceAnnualPlanningScreen]
 class RequestForHumanResourceAnnualPlanningRoute
-    extends _i73.PageRouteInfo<RequestForHumanResourceAnnualPlanningRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForHumanResourceAnnualPlanningRouteArgs> {
   RequestForHumanResourceAnnualPlanningRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForHumanResourceAnnualPlanningRoute.name,
          args: RequestForHumanResourceAnnualPlanningRouteArgs(
@@ -5323,12 +6869,12 @@ class RequestForHumanResourceAnnualPlanningRoute
 
   static const String name = 'RequestForHumanResourceAnnualPlanningRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestForHumanResourceAnnualPlanningRouteArgs>();
-      return _i47.RequestForHumanResourceAnnualPlanningScreen(
+      return _i52.RequestForHumanResourceAnnualPlanningScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -5344,11 +6890,11 @@ class RequestForHumanResourceAnnualPlanningRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -5369,18 +6915,18 @@ class RequestForHumanResourceAnnualPlanningRouteArgs {
 }
 
 /// generated route for
-/// [_i48.RequestForInternalAuditDetailsScreen]
+/// [_i53.RequestForInternalAuditDetailsScreen]
 class RequestForInternalAuditDetailsRoute
-    extends _i73.PageRouteInfo<RequestForInternalAuditDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForInternalAuditDetailsRouteArgs> {
   RequestForInternalAuditDetailsRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForInternalAuditDetailsRoute.name,
          args: RequestForInternalAuditDetailsRouteArgs(
@@ -5397,11 +6943,11 @@ class RequestForInternalAuditDetailsRoute
 
   static const String name = 'RequestForInternalAuditDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForInternalAuditDetailsRouteArgs>();
-      return _i48.RequestForInternalAuditDetailsScreen(
+      return _i53.RequestForInternalAuditDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -5425,7 +6971,7 @@ class RequestForInternalAuditDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int id;
 
@@ -5433,9 +6979,9 @@ class RequestForInternalAuditDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -5469,16 +7015,16 @@ class RequestForInternalAuditDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i48.RequestForInternalAuditNewRequestScreen]
+/// [_i53.RequestForInternalAuditNewRequestScreen]
 class RequestForInternalAuditNewRequestRoute
-    extends _i73.PageRouteInfo<RequestForInternalAuditNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForInternalAuditNewRequestRouteArgs> {
   RequestForInternalAuditNewRequestRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForInternalAuditNewRequestRoute.name,
          args: RequestForInternalAuditNewRequestRouteArgs(
@@ -5493,11 +7039,11 @@ class RequestForInternalAuditNewRequestRoute
 
   static const String name = 'RequestForInternalAuditNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForInternalAuditNewRequestRouteArgs>();
-      return _i48.RequestForInternalAuditNewRequestScreen(
+      return _i53.RequestForInternalAuditNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -5517,15 +7063,15 @@ class RequestForInternalAuditNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -5553,14 +7099,14 @@ class RequestForInternalAuditNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i48.RequestForInternalAuditScreen]
+/// [_i53.RequestForInternalAuditScreen]
 class RequestForInternalAuditRoute
-    extends _i73.PageRouteInfo<RequestForInternalAuditRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForInternalAuditRouteArgs> {
   RequestForInternalAuditRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForInternalAuditRoute.name,
          args: RequestForInternalAuditRouteArgs(
@@ -5573,11 +7119,11 @@ class RequestForInternalAuditRoute
 
   static const String name = 'RequestForInternalAuditRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForInternalAuditRouteArgs>();
-      return _i48.RequestForInternalAuditScreen(
+      return _i53.RequestForInternalAuditScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -5593,11 +7139,11 @@ class RequestForInternalAuditRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -5618,18 +7164,18 @@ class RequestForInternalAuditRouteArgs {
 }
 
 /// generated route for
-/// [_i49.RequestForLegalContractReviewDetailsScreen]
+/// [_i54.RequestForLegalContractReviewDetailsScreen]
 class RequestForLegalContractReviewDetailsRoute
-    extends _i73.PageRouteInfo<RequestForLegalContractReviewDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForLegalContractReviewDetailsRouteArgs> {
   RequestForLegalContractReviewDetailsRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForLegalContractReviewDetailsRoute.name,
          args: RequestForLegalContractReviewDetailsRouteArgs(
@@ -5646,11 +7192,11 @@ class RequestForLegalContractReviewDetailsRoute
 
   static const String name = 'RequestForLegalContractReviewDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForLegalContractReviewDetailsRouteArgs>();
-      return _i49.RequestForLegalContractReviewDetailsScreen(
+      return _i54.RequestForLegalContractReviewDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -5674,7 +7220,7 @@ class RequestForLegalContractReviewDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int id;
 
@@ -5682,9 +7228,9 @@ class RequestForLegalContractReviewDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -5718,17 +7264,17 @@ class RequestForLegalContractReviewDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i49.RequestForLegalContractReviewNewRequestScreen]
+/// [_i54.RequestForLegalContractReviewNewRequestScreen]
 class RequestForLegalContractReviewNewRequestRoute
     extends
-        _i73.PageRouteInfo<RequestForLegalContractReviewNewRequestRouteArgs> {
+        _i80.PageRouteInfo<RequestForLegalContractReviewNewRequestRouteArgs> {
   RequestForLegalContractReviewNewRequestRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForLegalContractReviewNewRequestRoute.name,
          args: RequestForLegalContractReviewNewRequestRouteArgs(
@@ -5743,12 +7289,12 @@ class RequestForLegalContractReviewNewRequestRoute
 
   static const String name = 'RequestForLegalContractReviewNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestForLegalContractReviewNewRequestRouteArgs>();
-      return _i49.RequestForLegalContractReviewNewRequestScreen(
+      return _i54.RequestForLegalContractReviewNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -5768,15 +7314,15 @@ class RequestForLegalContractReviewNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -5805,14 +7351,14 @@ class RequestForLegalContractReviewNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i49.RequestForLegalContractReviewScreen]
+/// [_i54.RequestForLegalContractReviewScreen]
 class RequestForLegalContractReviewRoute
-    extends _i73.PageRouteInfo<RequestForLegalContractReviewRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForLegalContractReviewRouteArgs> {
   RequestForLegalContractReviewRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForLegalContractReviewRoute.name,
          args: RequestForLegalContractReviewRouteArgs(
@@ -5825,11 +7371,11 @@ class RequestForLegalContractReviewRoute
 
   static const String name = 'RequestForLegalContractReviewRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForLegalContractReviewRouteArgs>();
-      return _i49.RequestForLegalContractReviewScreen(
+      return _i54.RequestForLegalContractReviewScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -5845,11 +7391,11 @@ class RequestForLegalContractReviewRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -5870,18 +7416,18 @@ class RequestForLegalContractReviewRouteArgs {
 }
 
 /// generated route for
-/// [_i50.RequestForProjectApprovalDetailsScreen]
+/// [_i55.RequestForProjectApprovalDetailsScreen]
 class RequestForProjectApprovalDetailsRoute
-    extends _i73.PageRouteInfo<RequestForProjectApprovalDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForProjectApprovalDetailsRouteArgs> {
   RequestForProjectApprovalDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForProjectApprovalDetailsRoute.name,
          args: RequestForProjectApprovalDetailsRouteArgs(
@@ -5898,11 +7444,11 @@ class RequestForProjectApprovalDetailsRoute
 
   static const String name = 'RequestForProjectApprovalDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForProjectApprovalDetailsRouteArgs>();
-      return _i50.RequestForProjectApprovalDetailsScreen(
+      return _i55.RequestForProjectApprovalDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -5926,7 +7472,7 @@ class RequestForProjectApprovalDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -5934,9 +7480,9 @@ class RequestForProjectApprovalDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -5970,16 +7516,16 @@ class RequestForProjectApprovalDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i50.RequestForProjectApprovalNewRequestScreen]
+/// [_i55.RequestForProjectApprovalNewRequestScreen]
 class RequestForProjectApprovalNewRequestRoute
-    extends _i73.PageRouteInfo<RequestForProjectApprovalNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForProjectApprovalNewRequestRouteArgs> {
   RequestForProjectApprovalNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForProjectApprovalNewRequestRoute.name,
          args: RequestForProjectApprovalNewRequestRouteArgs(
@@ -5994,11 +7540,11 @@ class RequestForProjectApprovalNewRequestRoute
 
   static const String name = 'RequestForProjectApprovalNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForProjectApprovalNewRequestRouteArgs>();
-      return _i50.RequestForProjectApprovalNewRequestScreen(
+      return _i55.RequestForProjectApprovalNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -6018,15 +7564,15 @@ class RequestForProjectApprovalNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -6054,14 +7600,14 @@ class RequestForProjectApprovalNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i50.RequestForProjectApprovalScreen]
+/// [_i55.RequestForProjectApprovalScreen]
 class RequestForProjectApprovalRoute
-    extends _i73.PageRouteInfo<RequestForProjectApprovalRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForProjectApprovalRouteArgs> {
   RequestForProjectApprovalRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForProjectApprovalRoute.name,
          args: RequestForProjectApprovalRouteArgs(
@@ -6074,11 +7620,11 @@ class RequestForProjectApprovalRoute
 
   static const String name = 'RequestForProjectApprovalRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForProjectApprovalRouteArgs>();
-      return _i50.RequestForProjectApprovalScreen(
+      return _i55.RequestForProjectApprovalScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -6094,11 +7640,11 @@ class RequestForProjectApprovalRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -6119,18 +7665,18 @@ class RequestForProjectApprovalRouteArgs {
 }
 
 /// generated route for
-/// [_i51.RequestForStudyLeaveDetailsScreen]
+/// [_i56.RequestForStudyLeaveDetailsScreen]
 class RequestForStudyLeaveDetailsRoute
-    extends _i73.PageRouteInfo<RequestForStudyLeaveDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForStudyLeaveDetailsRouteArgs> {
   RequestForStudyLeaveDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForStudyLeaveDetailsRoute.name,
          args: RequestForStudyLeaveDetailsRouteArgs(
@@ -6147,11 +7693,11 @@ class RequestForStudyLeaveDetailsRoute
 
   static const String name = 'RequestForStudyLeaveDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForStudyLeaveDetailsRouteArgs>();
-      return _i51.RequestForStudyLeaveDetailsScreen(
+      return _i56.RequestForStudyLeaveDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -6175,7 +7721,7 @@ class RequestForStudyLeaveDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -6183,9 +7729,9 @@ class RequestForStudyLeaveDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -6219,16 +7765,16 @@ class RequestForStudyLeaveDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i51.RequestForStudyLeaveNewRequestScreen]
+/// [_i56.RequestForStudyLeaveNewRequestScreen]
 class RequestForStudyLeaveNewRequestRoute
-    extends _i73.PageRouteInfo<RequestForStudyLeaveNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForStudyLeaveNewRequestRouteArgs> {
   RequestForStudyLeaveNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForStudyLeaveNewRequestRoute.name,
          args: RequestForStudyLeaveNewRequestRouteArgs(
@@ -6243,11 +7789,11 @@ class RequestForStudyLeaveNewRequestRoute
 
   static const String name = 'RequestForStudyLeaveNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForStudyLeaveNewRequestRouteArgs>();
-      return _i51.RequestForStudyLeaveNewRequestScreen(
+      return _i56.RequestForStudyLeaveNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -6267,15 +7813,15 @@ class RequestForStudyLeaveNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -6303,14 +7849,14 @@ class RequestForStudyLeaveNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i51.RequestForStudyLeaveScreen]
+/// [_i56.RequestForStudyLeaveScreen]
 class RequestForStudyLeaveRoute
-    extends _i73.PageRouteInfo<RequestForStudyLeaveRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForStudyLeaveRouteArgs> {
   RequestForStudyLeaveRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForStudyLeaveRoute.name,
          args: RequestForStudyLeaveRouteArgs(
@@ -6323,11 +7869,11 @@ class RequestForStudyLeaveRoute
 
   static const String name = 'RequestForStudyLeaveRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestForStudyLeaveRouteArgs>();
-      return _i51.RequestForStudyLeaveScreen(
+      return _i56.RequestForStudyLeaveScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -6343,11 +7889,11 @@ class RequestForStudyLeaveRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -6368,21 +7914,21 @@ class RequestForStudyLeaveRouteArgs {
 }
 
 /// generated route for
-/// [_i52.RequestForVAPTAndInfrastructureReviewDetailsScreen]
+/// [_i57.RequestForVAPTAndInfrastructureReviewDetailsScreen]
 class RequestForVAPTAndInfrastructureReviewDetailsRoute
     extends
-        _i73.PageRouteInfo<
+        _i80.PageRouteInfo<
           RequestForVAPTAndInfrastructureReviewDetailsRouteArgs
         > {
   RequestForVAPTAndInfrastructureReviewDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForVAPTAndInfrastructureReviewDetailsRoute.name,
          args: RequestForVAPTAndInfrastructureReviewDetailsRouteArgs(
@@ -6400,12 +7946,12 @@ class RequestForVAPTAndInfrastructureReviewDetailsRoute
   static const String name =
       'RequestForVAPTAndInfrastructureReviewDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestForVAPTAndInfrastructureReviewDetailsRouteArgs>();
-      return _i52.RequestForVAPTAndInfrastructureReviewDetailsScreen(
+      return _i57.RequestForVAPTAndInfrastructureReviewDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -6429,7 +7975,7 @@ class RequestForVAPTAndInfrastructureReviewDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -6437,9 +7983,9 @@ class RequestForVAPTAndInfrastructureReviewDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -6474,19 +8020,19 @@ class RequestForVAPTAndInfrastructureReviewDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i52.RequestForVAPTAndInfrastructureReviewNewRequestScreen]
+/// [_i57.RequestForVAPTAndInfrastructureReviewNewRequestScreen]
 class RequestForVAPTAndInfrastructureReviewNewRequestRoute
     extends
-        _i73.PageRouteInfo<
+        _i80.PageRouteInfo<
           RequestForVAPTAndInfrastructureReviewNewRequestRouteArgs
         > {
   RequestForVAPTAndInfrastructureReviewNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForVAPTAndInfrastructureReviewNewRequestRoute.name,
          args: RequestForVAPTAndInfrastructureReviewNewRequestRouteArgs(
@@ -6502,12 +8048,12 @@ class RequestForVAPTAndInfrastructureReviewNewRequestRoute
   static const String name =
       'RequestForVAPTAndInfrastructureReviewNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestForVAPTAndInfrastructureReviewNewRequestRouteArgs>();
-      return _i52.RequestForVAPTAndInfrastructureReviewNewRequestScreen(
+      return _i57.RequestForVAPTAndInfrastructureReviewNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -6527,15 +8073,15 @@ class RequestForVAPTAndInfrastructureReviewNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -6564,14 +8110,14 @@ class RequestForVAPTAndInfrastructureReviewNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i52.RequestForVAPTAndInfrastructureReviewScreen]
+/// [_i57.RequestForVAPTAndInfrastructureReviewScreen]
 class RequestForVAPTAndInfrastructureReviewRoute
-    extends _i73.PageRouteInfo<RequestForVAPTAndInfrastructureReviewRouteArgs> {
+    extends _i80.PageRouteInfo<RequestForVAPTAndInfrastructureReviewRouteArgs> {
   RequestForVAPTAndInfrastructureReviewRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestForVAPTAndInfrastructureReviewRoute.name,
          args: RequestForVAPTAndInfrastructureReviewRouteArgs(
@@ -6584,12 +8130,12 @@ class RequestForVAPTAndInfrastructureReviewRoute
 
   static const String name = 'RequestForVAPTAndInfrastructureReviewRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestForVAPTAndInfrastructureReviewRouteArgs>();
-      return _i52.RequestForVAPTAndInfrastructureReviewScreen(
+      return _i57.RequestForVAPTAndInfrastructureReviewScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -6605,11 +8151,11 @@ class RequestForVAPTAndInfrastructureReviewRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -6630,35 +8176,268 @@ class RequestForVAPTAndInfrastructureReviewRouteArgs {
 }
 
 /// generated route for
-/// [_i33.RequestPortalScreen]
-class RequestPortalRoute extends _i73.PageRouteInfo<void> {
-  const RequestPortalRoute({List<_i73.PageRouteInfo>? children})
-    : super(RequestPortalRoute.name, initialChildren: children);
+/// [_i58.RequestTenderServiceDetailsScreen]
+class RequestTenderServiceDetailsRoute
+    extends _i80.PageRouteInfo<RequestTenderServiceDetailsRouteArgs> {
+  RequestTenderServiceDetailsRoute({
+    _i81.Key? key,
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    String from = '',
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestTenderServiceDetailsRoute.name,
+         args: RequestTenderServiceDetailsRouteArgs(
+           key: key,
+           id: id,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+           from: from,
+         ),
+         initialChildren: children,
+       );
 
-  static const String name = 'RequestPortalRoute';
+  static const String name = 'RequestTenderServiceDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i33.RequestPortalScreen();
+      final args = data.argsAs<RequestTenderServiceDetailsRouteArgs>();
+      return _i58.RequestTenderServiceDetailsScreen(
+        key: args.key,
+        id: args.id,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+        from: args.from,
+      );
     },
   );
 }
 
+class RequestTenderServiceDetailsRouteArgs {
+  const RequestTenderServiceDetailsRouteArgs({
+    this.key,
+    required this.id,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+    this.from = '',
+  });
+
+  final _i81.Key? key;
+
+  final int id;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  final String from;
+
+  @override
+  String toString() {
+    return 'RequestTenderServiceDetailsRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestTenderServiceDetailsRouteArgs) return false;
+    return key == other.key &&
+        id == other.id &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService &&
+        from == other.from;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      id.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      from.hashCode;
+}
+
 /// generated route for
-/// [_i42.RequestToRenewalHousingContractDetailsScreen]
+/// [_i58.RequestTenderServiceNewRequestScreen]
+class RequestTenderServiceNewRequestRoute
+    extends _i80.PageRouteInfo<RequestTenderServiceNewRequestRouteArgs> {
+  RequestTenderServiceNewRequestRoute({
+    _i81.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestTenderServiceNewRequestRoute.name,
+         args: RequestTenderServiceNewRequestRouteArgs(
+           key: key,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RequestTenderServiceNewRequestRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RequestTenderServiceNewRequestRouteArgs>();
+      return _i58.RequestTenderServiceNewRequestScreen(
+        key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class RequestTenderServiceNewRequestRouteArgs {
+  const RequestTenderServiceNewRequestRouteArgs({
+    this.key,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'RequestTenderServiceNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestTenderServiceNewRequestRouteArgs) return false;
+    return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
+}
+
+/// generated route for
+/// [_i58.RequestTenderServiceScreen]
+class RequestTenderServiceRoute
+    extends _i80.PageRouteInfo<RequestTenderServiceRouteArgs> {
+  RequestTenderServiceRoute({
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
+  }) : super(
+         RequestTenderServiceRoute.name,
+         args: RequestTenderServiceRouteArgs(
+           key: key,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'RequestTenderServiceRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<RequestTenderServiceRouteArgs>();
+      return _i58.RequestTenderServiceScreen(
+        key: args.key,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class RequestTenderServiceRouteArgs {
+  const RequestTenderServiceRouteArgs({
+    this.key,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i81.Key? key;
+
+  final _i83.Service service;
+
+  final _i83.SubService subService;
+
+  @override
+  String toString() {
+    return 'RequestTenderServiceRouteArgs{key: $key, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! RequestTenderServiceRouteArgs) return false;
+    return key == other.key &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+}
+
+/// generated route for
+/// [_i44.RequestToRenewalHousingContractDetailsScreen]
 class RequestToRenewalHousingContractDetailsRoute
     extends
-        _i73.PageRouteInfo<RequestToRenewalHousingContractDetailsRouteArgs> {
+        _i80.PageRouteInfo<RequestToRenewalHousingContractDetailsRouteArgs> {
   RequestToRenewalHousingContractDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestToRenewalHousingContractDetailsRoute.name,
          args: RequestToRenewalHousingContractDetailsRouteArgs(
@@ -6675,12 +8454,12 @@ class RequestToRenewalHousingContractDetailsRoute
 
   static const String name = 'RequestToRenewalHousingContractDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestToRenewalHousingContractDetailsRouteArgs>();
-      return _i42.RequestToRenewalHousingContractDetailsScreen(
+      return _i44.RequestToRenewalHousingContractDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -6704,7 +8483,7 @@ class RequestToRenewalHousingContractDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -6712,9 +8491,9 @@ class RequestToRenewalHousingContractDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -6748,14 +8527,14 @@ class RequestToRenewalHousingContractDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i42.RequestToRenewalHousingContractScreen]
+/// [_i44.RequestToRenewalHousingContractScreen]
 class RequestToRenewalHousingContractRoute
-    extends _i73.PageRouteInfo<RequestToRenewalHousingContractRouteArgs> {
+    extends _i80.PageRouteInfo<RequestToRenewalHousingContractRouteArgs> {
   RequestToRenewalHousingContractRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestToRenewalHousingContractRoute.name,
          args: RequestToRenewalHousingContractRouteArgs(
@@ -6768,11 +8547,11 @@ class RequestToRenewalHousingContractRoute
 
   static const String name = 'RequestToRenewalHousingContractRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestToRenewalHousingContractRouteArgs>();
-      return _i42.RequestToRenewalHousingContractScreen(
+      return _i44.RequestToRenewalHousingContractScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -6788,11 +8567,11 @@ class RequestToRenewalHousingContractRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -6813,18 +8592,18 @@ class RequestToRenewalHousingContractRouteArgs {
 }
 
 /// generated route for
-/// [_i53.RequestTrainingDetailsScreen]
+/// [_i59.RequestTrainingDetailsScreen]
 class RequestTrainingDetailsRoute
-    extends _i73.PageRouteInfo<RequestTrainingDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequestTrainingDetailsRouteArgs> {
   RequestTrainingDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestTrainingDetailsRoute.name,
          args: RequestTrainingDetailsRouteArgs(
@@ -6841,11 +8620,11 @@ class RequestTrainingDetailsRoute
 
   static const String name = 'RequestTrainingDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestTrainingDetailsRouteArgs>();
-      return _i53.RequestTrainingDetailsScreen(
+      return _i59.RequestTrainingDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -6869,7 +8648,7 @@ class RequestTrainingDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -6877,9 +8656,9 @@ class RequestTrainingDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -6913,16 +8692,16 @@ class RequestTrainingDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i53.RequestTrainingNewRequestScreen]
+/// [_i59.RequestTrainingNewRequestScreen]
 class RequestTrainingNewRequestRoute
-    extends _i73.PageRouteInfo<RequestTrainingNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<RequestTrainingNewRequestRouteArgs> {
   RequestTrainingNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestTrainingNewRequestRoute.name,
          args: RequestTrainingNewRequestRouteArgs(
@@ -6937,11 +8716,11 @@ class RequestTrainingNewRequestRoute
 
   static const String name = 'RequestTrainingNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestTrainingNewRequestRouteArgs>();
-      return _i53.RequestTrainingNewRequestScreen(
+      return _i59.RequestTrainingNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -6961,15 +8740,15 @@ class RequestTrainingNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -6997,14 +8776,14 @@ class RequestTrainingNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i53.RequestTrainingScreen]
+/// [_i59.RequestTrainingScreen]
 class RequestTrainingRoute
-    extends _i73.PageRouteInfo<RequestTrainingRouteArgs> {
+    extends _i80.PageRouteInfo<RequestTrainingRouteArgs> {
   RequestTrainingRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestTrainingRoute.name,
          args: RequestTrainingRouteArgs(
@@ -7017,11 +8796,11 @@ class RequestTrainingRoute
 
   static const String name = 'RequestTrainingRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestTrainingRouteArgs>();
-      return _i53.RequestTrainingScreen(
+      return _i59.RequestTrainingScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -7037,11 +8816,11 @@ class RequestTrainingRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -7062,18 +8841,18 @@ class RequestTrainingRouteArgs {
 }
 
 /// generated route for
-/// [_i54.RequestforCoverageDetailsScreen]
+/// [_i60.RequestforCoverageDetailsScreen]
 class RequestforCoverageDetailsRoute
-    extends _i73.PageRouteInfo<RequestforCoverageDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforCoverageDetailsRouteArgs> {
   RequestforCoverageDetailsRoute({
-    _i75.Key? key,
+    _i81.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforCoverageDetailsRoute.name,
          args: RequestforCoverageDetailsRouteArgs(
@@ -7090,11 +8869,11 @@ class RequestforCoverageDetailsRoute
 
   static const String name = 'RequestforCoverageDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforCoverageDetailsRouteArgs>();
-      return _i54.RequestforCoverageDetailsScreen(
+      return _i60.RequestforCoverageDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -7118,7 +8897,7 @@ class RequestforCoverageDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i81.Key? key;
 
   final int id;
 
@@ -7126,9 +8905,9 @@ class RequestforCoverageDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -7162,16 +8941,16 @@ class RequestforCoverageDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i54.RequestforCoverageRequestScreen]
+/// [_i60.RequestforCoverageRequestScreen]
 class RequestforCoverageRequestRoute
-    extends _i73.PageRouteInfo<RequestforCoverageRequestRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforCoverageRequestRouteArgs> {
   RequestforCoverageRequestRoute({
-    _i75.Key? key,
+    _i81.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforCoverageRequestRoute.name,
          args: RequestforCoverageRequestRouteArgs(
@@ -7186,11 +8965,11 @@ class RequestforCoverageRequestRoute
 
   static const String name = 'RequestforCoverageRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforCoverageRequestRouteArgs>();
-      return _i54.RequestforCoverageRequestScreen(
+      return _i60.RequestforCoverageRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -7210,15 +8989,15 @@ class RequestforCoverageRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i81.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -7246,14 +9025,14 @@ class RequestforCoverageRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i54.RequestforCoverageScreen]
+/// [_i60.RequestforCoverageScreen]
 class RequestforCoverageRoute
-    extends _i73.PageRouteInfo<RequestforCoverageRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforCoverageRouteArgs> {
   RequestforCoverageRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforCoverageRoute.name,
          args: RequestforCoverageRouteArgs(
@@ -7266,11 +9045,11 @@ class RequestforCoverageRoute
 
   static const String name = 'RequestforCoverageRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforCoverageRouteArgs>();
-      return _i54.RequestforCoverageScreen(
+      return _i60.RequestforCoverageScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -7286,11 +9065,11 @@ class RequestforCoverageRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -7311,18 +9090,18 @@ class RequestforCoverageRouteArgs {
 }
 
 /// generated route for
-/// [_i55.RequestforDutyMissionDetailsScreen]
+/// [_i61.RequestforDutyMissionDetailsScreen]
 class RequestforDutyMissionDetailsRoute
-    extends _i73.PageRouteInfo<RequestforDutyMissionDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforDutyMissionDetailsRouteArgs> {
   RequestforDutyMissionDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionDetailsRoute.name,
          args: RequestforDutyMissionDetailsRouteArgs(
@@ -7339,11 +9118,11 @@ class RequestforDutyMissionDetailsRoute
 
   static const String name = 'RequestforDutyMissionDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforDutyMissionDetailsRouteArgs>();
-      return _i55.RequestforDutyMissionDetailsScreen(
+      return _i61.RequestforDutyMissionDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -7367,7 +9146,7 @@ class RequestforDutyMissionDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -7375,9 +9154,9 @@ class RequestforDutyMissionDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -7411,18 +9190,18 @@ class RequestforDutyMissionDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i56.RequestforDutyMissionPlannedDetailsScreen]
+/// [_i62.RequestforDutyMissionPlannedDetailsScreen]
 class RequestforDutyMissionPlannedDetailsRoute
-    extends _i73.PageRouteInfo<RequestforDutyMissionPlannedDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforDutyMissionPlannedDetailsRouteArgs> {
   RequestforDutyMissionPlannedDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionPlannedDetailsRoute.name,
          args: RequestforDutyMissionPlannedDetailsRouteArgs(
@@ -7439,11 +9218,11 @@ class RequestforDutyMissionPlannedDetailsRoute
 
   static const String name = 'RequestforDutyMissionPlannedDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforDutyMissionPlannedDetailsRouteArgs>();
-      return _i56.RequestforDutyMissionPlannedDetailsScreen(
+      return _i62.RequestforDutyMissionPlannedDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -7467,7 +9246,7 @@ class RequestforDutyMissionPlannedDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -7475,9 +9254,9 @@ class RequestforDutyMissionPlannedDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -7511,16 +9290,16 @@ class RequestforDutyMissionPlannedDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i56.RequestforDutyMissionPlannedRequestScreen]
+/// [_i62.RequestforDutyMissionPlannedRequestScreen]
 class RequestforDutyMissionPlannedRequestRoute
-    extends _i73.PageRouteInfo<RequestforDutyMissionPlannedRequestRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforDutyMissionPlannedRequestRouteArgs> {
   RequestforDutyMissionPlannedRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionPlannedRequestRoute.name,
          args: RequestforDutyMissionPlannedRequestRouteArgs(
@@ -7535,11 +9314,11 @@ class RequestforDutyMissionPlannedRequestRoute
 
   static const String name = 'RequestforDutyMissionPlannedRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforDutyMissionPlannedRequestRouteArgs>();
-      return _i56.RequestforDutyMissionPlannedRequestScreen(
+      return _i62.RequestforDutyMissionPlannedRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -7559,15 +9338,15 @@ class RequestforDutyMissionPlannedRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -7595,14 +9374,14 @@ class RequestforDutyMissionPlannedRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i56.RequestforDutyMissionPlannedScreen]
+/// [_i62.RequestforDutyMissionPlannedScreen]
 class RequestforDutyMissionPlannedRoute
-    extends _i73.PageRouteInfo<RequestforDutyMissionPlannedRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforDutyMissionPlannedRouteArgs> {
   RequestforDutyMissionPlannedRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionPlannedRoute.name,
          args: RequestforDutyMissionPlannedRouteArgs(
@@ -7615,11 +9394,11 @@ class RequestforDutyMissionPlannedRoute
 
   static const String name = 'RequestforDutyMissionPlannedRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforDutyMissionPlannedRouteArgs>();
-      return _i56.RequestforDutyMissionPlannedScreen(
+      return _i62.RequestforDutyMissionPlannedScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -7635,11 +9414,11 @@ class RequestforDutyMissionPlannedRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -7660,16 +9439,16 @@ class RequestforDutyMissionPlannedRouteArgs {
 }
 
 /// generated route for
-/// [_i55.RequestforDutyMissionRequestScreen]
+/// [_i61.RequestforDutyMissionRequestScreen]
 class RequestforDutyMissionRequestRoute
-    extends _i73.PageRouteInfo<RequestforDutyMissionRequestRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforDutyMissionRequestRouteArgs> {
   RequestforDutyMissionRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionRequestRoute.name,
          args: RequestforDutyMissionRequestRouteArgs(
@@ -7684,11 +9463,11 @@ class RequestforDutyMissionRequestRoute
 
   static const String name = 'RequestforDutyMissionRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforDutyMissionRequestRouteArgs>();
-      return _i55.RequestforDutyMissionRequestScreen(
+      return _i61.RequestforDutyMissionRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -7708,15 +9487,15 @@ class RequestforDutyMissionRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -7744,14 +9523,14 @@ class RequestforDutyMissionRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i55.RequestforDutyMissionScreen]
+/// [_i61.RequestforDutyMissionScreen]
 class RequestforDutyMissionRoute
-    extends _i73.PageRouteInfo<RequestforDutyMissionRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforDutyMissionRouteArgs> {
   RequestforDutyMissionRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionRoute.name,
          args: RequestforDutyMissionRouteArgs(
@@ -7764,11 +9543,11 @@ class RequestforDutyMissionRoute
 
   static const String name = 'RequestforDutyMissionRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforDutyMissionRouteArgs>();
-      return _i55.RequestforDutyMissionScreen(
+      return _i61.RequestforDutyMissionScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -7784,11 +9563,11 @@ class RequestforDutyMissionRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -7809,18 +9588,18 @@ class RequestforDutyMissionRouteArgs {
 }
 
 /// generated route for
-/// [_i57.RequestforDutyMissionUnplannedDetailsScreen]
+/// [_i63.RequestforDutyMissionUnplannedDetailsScreen]
 class RequestforDutyMissionUnplannedDetailsRoute
-    extends _i73.PageRouteInfo<RequestforDutyMissionUnplannedDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforDutyMissionUnplannedDetailsRouteArgs> {
   RequestforDutyMissionUnplannedDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionUnplannedDetailsRoute.name,
          args: RequestforDutyMissionUnplannedDetailsRouteArgs(
@@ -7837,12 +9616,12 @@ class RequestforDutyMissionUnplannedDetailsRoute
 
   static const String name = 'RequestforDutyMissionUnplannedDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestforDutyMissionUnplannedDetailsRouteArgs>();
-      return _i57.RequestforDutyMissionUnplannedDetailsScreen(
+      return _i63.RequestforDutyMissionUnplannedDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -7866,7 +9645,7 @@ class RequestforDutyMissionUnplannedDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -7874,9 +9653,9 @@ class RequestforDutyMissionUnplannedDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -7910,16 +9689,16 @@ class RequestforDutyMissionUnplannedDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i57.RequestforDutyMissionUnplannedRequestScreen]
+/// [_i63.RequestforDutyMissionUnplannedRequestScreen]
 class RequestforDutyMissionUnplannedRequestRoute
-    extends _i73.PageRouteInfo<RequestforDutyMissionUnplannedRequestRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforDutyMissionUnplannedRequestRouteArgs> {
   RequestforDutyMissionUnplannedRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionUnplannedRequestRoute.name,
          args: RequestforDutyMissionUnplannedRequestRouteArgs(
@@ -7934,12 +9713,12 @@ class RequestforDutyMissionUnplannedRequestRoute
 
   static const String name = 'RequestforDutyMissionUnplannedRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<RequestforDutyMissionUnplannedRequestRouteArgs>();
-      return _i57.RequestforDutyMissionUnplannedRequestScreen(
+      return _i63.RequestforDutyMissionUnplannedRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -7959,15 +9738,15 @@ class RequestforDutyMissionUnplannedRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -7995,14 +9774,14 @@ class RequestforDutyMissionUnplannedRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i57.RequestforDutyMissionUnplannedScreen]
+/// [_i63.RequestforDutyMissionUnplannedScreen]
 class RequestforDutyMissionUnplannedRoute
-    extends _i73.PageRouteInfo<RequestforDutyMissionUnplannedRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforDutyMissionUnplannedRouteArgs> {
   RequestforDutyMissionUnplannedRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionUnplannedRoute.name,
          args: RequestforDutyMissionUnplannedRouteArgs(
@@ -8015,11 +9794,11 @@ class RequestforDutyMissionUnplannedRoute
 
   static const String name = 'RequestforDutyMissionUnplannedRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforDutyMissionUnplannedRouteArgs>();
-      return _i57.RequestforDutyMissionUnplannedScreen(
+      return _i63.RequestforDutyMissionUnplannedScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -8035,11 +9814,11 @@ class RequestforDutyMissionUnplannedRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -8060,18 +9839,18 @@ class RequestforDutyMissionUnplannedRouteArgs {
 }
 
 /// generated route for
-/// [_i58.RequestforTrainingRoomBookingDetailsScreen]
+/// [_i64.RequestforTrainingRoomBookingDetailsScreen]
 class RequestforTrainingRoomBookingDetailsRoute
-    extends _i73.PageRouteInfo<RequestforTrainingRoomBookingDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforTrainingRoomBookingDetailsRouteArgs> {
   RequestforTrainingRoomBookingDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforTrainingRoomBookingDetailsRoute.name,
          args: RequestforTrainingRoomBookingDetailsRouteArgs(
@@ -8088,11 +9867,11 @@ class RequestforTrainingRoomBookingDetailsRoute
 
   static const String name = 'RequestforTrainingRoomBookingDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforTrainingRoomBookingDetailsRouteArgs>();
-      return _i58.RequestforTrainingRoomBookingDetailsScreen(
+      return _i64.RequestforTrainingRoomBookingDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -8116,7 +9895,7 @@ class RequestforTrainingRoomBookingDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -8124,9 +9903,9 @@ class RequestforTrainingRoomBookingDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -8160,16 +9939,16 @@ class RequestforTrainingRoomBookingDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i58.RequestforTrainingRoomBookingRequestScreen]
+/// [_i64.RequestforTrainingRoomBookingRequestScreen]
 class RequestforTrainingRoomBookingRequestRoute
-    extends _i73.PageRouteInfo<RequestforTrainingRoomBookingRequestRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforTrainingRoomBookingRequestRouteArgs> {
   RequestforTrainingRoomBookingRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforTrainingRoomBookingRequestRoute.name,
          args: RequestforTrainingRoomBookingRequestRouteArgs(
@@ -8184,11 +9963,11 @@ class RequestforTrainingRoomBookingRequestRoute
 
   static const String name = 'RequestforTrainingRoomBookingRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforTrainingRoomBookingRequestRouteArgs>();
-      return _i58.RequestforTrainingRoomBookingRequestScreen(
+      return _i64.RequestforTrainingRoomBookingRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -8208,15 +9987,15 @@ class RequestforTrainingRoomBookingRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -8244,14 +10023,14 @@ class RequestforTrainingRoomBookingRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i58.RequestforTrainingRoomBookingScreen]
+/// [_i64.RequestforTrainingRoomBookingScreen]
 class RequestforTrainingRoomBookingRoute
-    extends _i73.PageRouteInfo<RequestforTrainingRoomBookingRouteArgs> {
+    extends _i80.PageRouteInfo<RequestforTrainingRoomBookingRouteArgs> {
   RequestforTrainingRoomBookingRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequestforTrainingRoomBookingRoute.name,
          args: RequestforTrainingRoomBookingRouteArgs(
@@ -8264,11 +10043,11 @@ class RequestforTrainingRoomBookingRoute
 
   static const String name = 'RequestforTrainingRoomBookingRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequestforTrainingRoomBookingRouteArgs>();
-      return _i58.RequestforTrainingRoomBookingScreen(
+      return _i64.RequestforTrainingRoomBookingScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -8284,11 +10063,11 @@ class RequestforTrainingRoomBookingRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -8309,18 +10088,18 @@ class RequestforTrainingRoomBookingRouteArgs {
 }
 
 /// generated route for
-/// [_i59.RequiredNewResourceDetailsScreen]
+/// [_i65.RequiredNewResourceDetailsScreen]
 class RequiredNewResourceDetailsRoute
-    extends _i73.PageRouteInfo<RequiredNewResourceDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<RequiredNewResourceDetailsRouteArgs> {
   RequiredNewResourceDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequiredNewResourceDetailsRoute.name,
          args: RequiredNewResourceDetailsRouteArgs(
@@ -8337,11 +10116,11 @@ class RequiredNewResourceDetailsRoute
 
   static const String name = 'RequiredNewResourceDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequiredNewResourceDetailsRouteArgs>();
-      return _i59.RequiredNewResourceDetailsScreen(
+      return _i65.RequiredNewResourceDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -8365,7 +10144,7 @@ class RequiredNewResourceDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -8373,9 +10152,9 @@ class RequiredNewResourceDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -8409,16 +10188,16 @@ class RequiredNewResourceDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i59.RequiredNewResourceNewRequestScreen]
+/// [_i65.RequiredNewResourceNewRequestScreen]
 class RequiredNewResourceNewRequestRoute
-    extends _i73.PageRouteInfo<RequiredNewResourceNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<RequiredNewResourceNewRequestRouteArgs> {
   RequiredNewResourceNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequiredNewResourceNewRequestRoute.name,
          args: RequiredNewResourceNewRequestRouteArgs(
@@ -8433,11 +10212,11 @@ class RequiredNewResourceNewRequestRoute
 
   static const String name = 'RequiredNewResourceNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequiredNewResourceNewRequestRouteArgs>();
-      return _i59.RequiredNewResourceNewRequestScreen(
+      return _i65.RequiredNewResourceNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -8457,15 +10236,15 @@ class RequiredNewResourceNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -8493,14 +10272,14 @@ class RequiredNewResourceNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i59.RequiredNewResourceScreen]
+/// [_i65.RequiredNewResourceScreen]
 class RequiredNewResourceRoute
-    extends _i73.PageRouteInfo<RequiredNewResourceRouteArgs> {
+    extends _i80.PageRouteInfo<RequiredNewResourceRouteArgs> {
   RequiredNewResourceRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          RequiredNewResourceRoute.name,
          args: RequiredNewResourceRouteArgs(
@@ -8513,11 +10292,11 @@ class RequiredNewResourceRoute
 
   static const String name = 'RequiredNewResourceRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<RequiredNewResourceRouteArgs>();
-      return _i59.RequiredNewResourceScreen(
+      return _i65.RequiredNewResourceScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -8533,11 +10312,11 @@ class RequiredNewResourceRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -8558,18 +10337,18 @@ class RequiredNewResourceRouteArgs {
 }
 
 /// generated route for
-/// [_i60.ResidentalUnitRentalDetailsScreen]
+/// [_i66.ResidentalUnitRentalDetailsScreen]
 class ResidentalUnitRentalDetailsRoute
-    extends _i73.PageRouteInfo<ResidentalUnitRentalDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<ResidentalUnitRentalDetailsRouteArgs> {
   ResidentalUnitRentalDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          ResidentalUnitRentalDetailsRoute.name,
          args: ResidentalUnitRentalDetailsRouteArgs(
@@ -8586,11 +10365,11 @@ class ResidentalUnitRentalDetailsRoute
 
   static const String name = 'ResidentalUnitRentalDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<ResidentalUnitRentalDetailsRouteArgs>();
-      return _i60.ResidentalUnitRentalDetailsScreen(
+      return _i66.ResidentalUnitRentalDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -8614,7 +10393,7 @@ class ResidentalUnitRentalDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -8622,9 +10401,9 @@ class ResidentalUnitRentalDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -8658,16 +10437,16 @@ class ResidentalUnitRentalDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i60.ResidentalUnitRentalNewRequestScreen]
+/// [_i66.ResidentalUnitRentalNewRequestScreen]
 class ResidentalUnitRentalNewRequestRoute
-    extends _i73.PageRouteInfo<ResidentalUnitRentalNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<ResidentalUnitRentalNewRequestRouteArgs> {
   ResidentalUnitRentalNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          ResidentalUnitRentalNewRequestRoute.name,
          args: ResidentalUnitRentalNewRequestRouteArgs(
@@ -8682,11 +10461,11 @@ class ResidentalUnitRentalNewRequestRoute
 
   static const String name = 'ResidentalUnitRentalNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<ResidentalUnitRentalNewRequestRouteArgs>();
-      return _i60.ResidentalUnitRentalNewRequestScreen(
+      return _i66.ResidentalUnitRentalNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -8706,15 +10485,15 @@ class ResidentalUnitRentalNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -8742,14 +10521,14 @@ class ResidentalUnitRentalNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i60.ResidentalUnitRentalScreen]
+/// [_i66.ResidentalUnitRentalScreen]
 class ResidentalUnitRentalRoute
-    extends _i73.PageRouteInfo<ResidentalUnitRentalRouteArgs> {
+    extends _i80.PageRouteInfo<ResidentalUnitRentalRouteArgs> {
   ResidentalUnitRentalRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          ResidentalUnitRentalRoute.name,
          args: ResidentalUnitRentalRouteArgs(
@@ -8762,11 +10541,11 @@ class ResidentalUnitRentalRoute
 
   static const String name = 'ResidentalUnitRentalRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<ResidentalUnitRentalRouteArgs>();
-      return _i60.ResidentalUnitRentalScreen(
+      return _i66.ResidentalUnitRentalScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -8782,11 +10561,11 @@ class ResidentalUnitRentalRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -8807,13 +10586,13 @@ class ResidentalUnitRentalRouteArgs {
 }
 
 /// generated route for
-/// [_i61.SalalahDashboard]
-class SalalahDashboard extends _i73.PageRouteInfo<SalalahDashboardArgs> {
+/// [_i67.SalalahDashboard]
+class SalalahDashboard extends _i80.PageRouteInfo<SalalahDashboardArgs> {
   SalalahDashboard({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SalalahDashboard.name,
          args: SalalahDashboardArgs(
@@ -8826,11 +10605,11 @@ class SalalahDashboard extends _i73.PageRouteInfo<SalalahDashboardArgs> {
 
   static const String name = 'SalalahDashboard';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SalalahDashboardArgs>();
-      return _i61.SalalahDashboard(
+      return _i67.SalalahDashboard(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -8846,11 +10625,11 @@ class SalalahDashboardArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -8871,14 +10650,14 @@ class SalalahDashboardArgs {
 }
 
 /// generated route for
-/// [_i61.SalalahHOSNewRequestScreen]
+/// [_i67.SalalahHOSNewRequestScreen]
 class SalalahHOSNewRequestRoute
-    extends _i73.PageRouteInfo<SalalahHOSNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<SalalahHOSNewRequestRouteArgs> {
   SalalahHOSNewRequestRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SalalahHOSNewRequestRoute.name,
          args: SalalahHOSNewRequestRouteArgs(
@@ -8891,11 +10670,11 @@ class SalalahHOSNewRequestRoute
 
   static const String name = 'SalalahHOSNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SalalahHOSNewRequestRouteArgs>();
-      return _i61.SalalahHOSNewRequestScreen(
+      return _i67.SalalahHOSNewRequestScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -8911,11 +10690,11 @@ class SalalahHOSNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -8936,14 +10715,14 @@ class SalalahHOSNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i61.SalalahNewItTechnicianRequestScreen]
+/// [_i67.SalalahNewItTechnicianRequestScreen]
 class SalalahNewItTechnicianRequestRoute
-    extends _i73.PageRouteInfo<SalalahNewItTechnicianRequestRouteArgs> {
+    extends _i80.PageRouteInfo<SalalahNewItTechnicianRequestRouteArgs> {
   SalalahNewItTechnicianRequestRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SalalahNewItTechnicianRequestRoute.name,
          args: SalalahNewItTechnicianRequestRouteArgs(
@@ -8956,11 +10735,11 @@ class SalalahNewItTechnicianRequestRoute
 
   static const String name = 'SalalahNewItTechnicianRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SalalahNewItTechnicianRequestRouteArgs>();
-      return _i61.SalalahNewItTechnicianRequestScreen(
+      return _i67.SalalahNewItTechnicianRequestScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -8976,11 +10755,11 @@ class SalalahNewItTechnicianRequestRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -9001,14 +10780,14 @@ class SalalahNewItTechnicianRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i61.SalalahNewRequestScreen]
+/// [_i67.SalalahNewRequestScreen]
 class SalalahNewRequestRoute
-    extends _i73.PageRouteInfo<SalalahNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<SalalahNewRequestRouteArgs> {
   SalalahNewRequestRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SalalahNewRequestRoute.name,
          args: SalalahNewRequestRouteArgs(
@@ -9021,11 +10800,11 @@ class SalalahNewRequestRoute
 
   static const String name = 'SalalahNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SalalahNewRequestRouteArgs>();
-      return _i61.SalalahNewRequestScreen(
+      return _i67.SalalahNewRequestScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -9041,11 +10820,11 @@ class SalalahNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -9066,15 +10845,15 @@ class SalalahNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i61.SalalahRequestDetailsTabScreen]
+/// [_i67.SalalahRequestDetailsTabScreen]
 class SalalahRequestDetailsTabRoute
-    extends _i73.PageRouteInfo<SalalahRequestDetailsTabRouteArgs> {
+    extends _i80.PageRouteInfo<SalalahRequestDetailsTabRouteArgs> {
   SalalahRequestDetailsTabRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int id,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SalalahRequestDetailsTabRoute.name,
          args: SalalahRequestDetailsTabRouteArgs(
@@ -9088,11 +10867,11 @@ class SalalahRequestDetailsTabRoute
 
   static const String name = 'SalalahRequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SalalahRequestDetailsTabRouteArgs>();
-      return _i61.SalalahRequestDetailsTabScreen(
+      return _i67.SalalahRequestDetailsTabScreen(
         key: args.key,
         id: args.id,
         service: args.service,
@@ -9110,13 +10889,13 @@ class SalalahRequestDetailsTabRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int id;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -9139,18 +10918,18 @@ class SalalahRequestDetailsTabRouteArgs {
 }
 
 /// generated route for
-/// [_i34.SecondmentDecisionDetailsScreen]
+/// [_i35.SecondmentDecisionDetailsScreen]
 class SecondmentDecisionDetailsRoute
-    extends _i73.PageRouteInfo<SecondmentDecisionDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<SecondmentDecisionDetailsRouteArgs> {
   SecondmentDecisionDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SecondmentDecisionDetailsRoute.name,
          args: SecondmentDecisionDetailsRouteArgs(
@@ -9167,11 +10946,11 @@ class SecondmentDecisionDetailsRoute
 
   static const String name = 'SecondmentDecisionDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SecondmentDecisionDetailsRouteArgs>();
-      return _i34.SecondmentDecisionDetailsScreen(
+      return _i35.SecondmentDecisionDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -9195,7 +10974,7 @@ class SecondmentDecisionDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -9203,9 +10982,9 @@ class SecondmentDecisionDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -9239,14 +11018,14 @@ class SecondmentDecisionDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i34.SecondmentDecisionScreen]
+/// [_i35.SecondmentDecisionScreen]
 class SecondmentDecisionRoute
-    extends _i73.PageRouteInfo<SecondmentDecisionRouteArgs> {
+    extends _i80.PageRouteInfo<SecondmentDecisionRouteArgs> {
   SecondmentDecisionRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SecondmentDecisionRoute.name,
          args: SecondmentDecisionRouteArgs(
@@ -9259,11 +11038,11 @@ class SecondmentDecisionRoute
 
   static const String name = 'SecondmentDecisionRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SecondmentDecisionRouteArgs>();
-      return _i34.SecondmentDecisionScreen(
+      return _i35.SecondmentDecisionScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -9279,11 +11058,11 @@ class SecondmentDecisionRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -9304,14 +11083,14 @@ class SecondmentDecisionRouteArgs {
 }
 
 /// generated route for
-/// [_i62.SecuritySelfDashboardScreen]
+/// [_i68.SecuritySelfDashboardScreen]
 class SecuritySelfDashboardRoute
-    extends _i73.PageRouteInfo<SecuritySelfDashboardRouteArgs> {
+    extends _i80.PageRouteInfo<SecuritySelfDashboardRouteArgs> {
   SecuritySelfDashboardRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SecuritySelfDashboardRoute.name,
          args: SecuritySelfDashboardRouteArgs(
@@ -9324,11 +11103,11 @@ class SecuritySelfDashboardRoute
 
   static const String name = 'SecuritySelfDashboardRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SecuritySelfDashboardRouteArgs>();
-      return _i62.SecuritySelfDashboardScreen(
+      return _i68.SecuritySelfDashboardScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -9344,11 +11123,11 @@ class SecuritySelfDashboardRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -9369,30 +11148,30 @@ class SecuritySelfDashboardRouteArgs {
 }
 
 /// generated route for
-/// [_i63.SecuritySelfHomePage]
-class SecuritySelfHomeRoute extends _i73.PageRouteInfo<void> {
-  const SecuritySelfHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i69.SecuritySelfHomePage]
+class SecuritySelfHomeRoute extends _i80.PageRouteInfo<void> {
+  const SecuritySelfHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(SecuritySelfHomeRoute.name, initialChildren: children);
 
   static const String name = 'SecuritySelfHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i63.SecuritySelfHomePage();
+      return const _i69.SecuritySelfHomePage();
     },
   );
 }
 
 /// generated route for
-/// [_i64.SecurityThreatNewRequestScreen]
+/// [_i70.SecurityThreatNewRequestScreen]
 class SecurityThreatNewRequestRoute
-    extends _i73.PageRouteInfo<SecurityThreatNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<SecurityThreatNewRequestRouteArgs> {
   SecurityThreatNewRequestRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SecurityThreatNewRequestRoute.name,
          args: SecurityThreatNewRequestRouteArgs(
@@ -9405,11 +11184,11 @@ class SecurityThreatNewRequestRoute
 
   static const String name = 'SecurityThreatNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SecurityThreatNewRequestRouteArgs>();
-      return _i64.SecurityThreatNewRequestScreen(
+      return _i70.SecurityThreatNewRequestScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -9425,11 +11204,11 @@ class SecurityThreatNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -9450,16 +11229,16 @@ class SecurityThreatNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i64.SecurityThreatRequestDetailsTabScreen]
+/// [_i70.SecurityThreatRequestDetailsTabScreen]
 class SecurityThreatRequestDetailsTabRoute
-    extends _i73.PageRouteInfo<SecurityThreatRequestDetailsTabRouteArgs> {
+    extends _i80.PageRouteInfo<SecurityThreatRequestDetailsTabRouteArgs> {
   SecurityThreatRequestDetailsTabRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     required int id,
     String from = '',
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SecurityThreatRequestDetailsTabRoute.name,
          args: SecurityThreatRequestDetailsTabRouteArgs(
@@ -9474,11 +11253,11 @@ class SecurityThreatRequestDetailsTabRoute
 
   static const String name = 'SecurityThreatRequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SecurityThreatRequestDetailsTabRouteArgs>();
-      return _i64.SecurityThreatRequestDetailsTabScreen(
+      return _i70.SecurityThreatRequestDetailsTabScreen(
         key: args.key,
         id: args.id,
         from: args.from,
@@ -9498,15 +11277,15 @@ class SecurityThreatRequestDetailsTabRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final int id;
 
   final String from;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -9534,13 +11313,13 @@ class SecurityThreatRequestDetailsTabRouteArgs {
 }
 
 /// generated route for
-/// [_i64.SecurityThreatScreen]
-class SecurityThreatRoute extends _i73.PageRouteInfo<SecurityThreatRouteArgs> {
+/// [_i70.SecurityThreatScreen]
+class SecurityThreatRoute extends _i80.PageRouteInfo<SecurityThreatRouteArgs> {
   SecurityThreatRoute({
-    _i74.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i81.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SecurityThreatRoute.name,
          args: SecurityThreatRouteArgs(
@@ -9553,11 +11332,11 @@ class SecurityThreatRoute extends _i73.PageRouteInfo<SecurityThreatRouteArgs> {
 
   static const String name = 'SecurityThreatRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SecurityThreatRouteArgs>();
-      return _i64.SecurityThreatScreen(
+      return _i70.SecurityThreatScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -9573,11 +11352,11 @@ class SecurityThreatRouteArgs {
     required this.subService,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -9598,18 +11377,18 @@ class SecurityThreatRouteArgs {
 }
 
 /// generated route for
-/// [_i35.ServiceTransferDetailsScreen]
+/// [_i36.ServiceTransferDetailsScreen]
 class ServiceTransferDetailsRoute
-    extends _i73.PageRouteInfo<ServiceTransferDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<ServiceTransferDetailsRouteArgs> {
   ServiceTransferDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          ServiceTransferDetailsRoute.name,
          args: ServiceTransferDetailsRouteArgs(
@@ -9626,11 +11405,11 @@ class ServiceTransferDetailsRoute
 
   static const String name = 'ServiceTransferDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<ServiceTransferDetailsRouteArgs>();
-      return _i35.ServiceTransferDetailsScreen(
+      return _i36.ServiceTransferDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -9654,7 +11433,7 @@ class ServiceTransferDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -9662,9 +11441,9 @@ class ServiceTransferDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -9698,14 +11477,14 @@ class ServiceTransferDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i35.ServiceTransferScreen]
+/// [_i36.ServiceTransferScreen]
 class ServiceTransferRoute
-    extends _i73.PageRouteInfo<ServiceTransferRouteArgs> {
+    extends _i80.PageRouteInfo<ServiceTransferRouteArgs> {
   ServiceTransferRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          ServiceTransferRoute.name,
          args: ServiceTransferRouteArgs(
@@ -9718,11 +11497,11 @@ class ServiceTransferRoute
 
   static const String name = 'ServiceTransferRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<ServiceTransferRouteArgs>();
-      return _i35.ServiceTransferScreen(
+      return _i36.ServiceTransferScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -9738,11 +11517,11 @@ class ServiceTransferRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -9763,50 +11542,50 @@ class ServiceTransferRouteArgs {
 }
 
 /// generated route for
-/// [_i65.ServicesScreen]
-class ServicesRoute extends _i73.PageRouteInfo<void> {
-  const ServicesRoute({List<_i73.PageRouteInfo>? children})
+/// [_i71.ServicesScreen]
+class ServicesRoute extends _i80.PageRouteInfo<void> {
+  const ServicesRoute({List<_i80.PageRouteInfo>? children})
     : super(ServicesRoute.name, initialChildren: children);
 
   static const String name = 'ServicesRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i65.ServicesScreen();
+      return const _i71.ServicesScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i66.SettingsScreen]
-class SettingsRoute extends _i73.PageRouteInfo<void> {
-  const SettingsRoute({List<_i73.PageRouteInfo>? children})
+/// [_i72.SettingsScreen]
+class SettingsRoute extends _i80.PageRouteInfo<void> {
+  const SettingsRoute({List<_i80.PageRouteInfo>? children})
     : super(SettingsRoute.name, initialChildren: children);
 
   static const String name = 'SettingsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i66.SettingsScreen();
+      return const _i72.SettingsScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i67.SkillsEnhancementDetailsScreen]
+/// [_i73.SkillsEnhancementDetailsScreen]
 class SkillsEnhancementDetailsRoute
-    extends _i73.PageRouteInfo<SkillsEnhancementDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<SkillsEnhancementDetailsRouteArgs> {
   SkillsEnhancementDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SkillsEnhancementDetailsRoute.name,
          args: SkillsEnhancementDetailsRouteArgs(
@@ -9823,11 +11602,11 @@ class SkillsEnhancementDetailsRoute
 
   static const String name = 'SkillsEnhancementDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SkillsEnhancementDetailsRouteArgs>();
-      return _i67.SkillsEnhancementDetailsScreen(
+      return _i73.SkillsEnhancementDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -9851,7 +11630,7 @@ class SkillsEnhancementDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -9859,9 +11638,9 @@ class SkillsEnhancementDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -9895,16 +11674,16 @@ class SkillsEnhancementDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i67.SkillsEnhancementNewRequestScreen]
+/// [_i73.SkillsEnhancementNewRequestScreen]
 class SkillsEnhancementNewRequestRoute
-    extends _i73.PageRouteInfo<SkillsEnhancementNewRequestRouteArgs> {
+    extends _i80.PageRouteInfo<SkillsEnhancementNewRequestRouteArgs> {
   SkillsEnhancementNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SkillsEnhancementNewRequestRoute.name,
          args: SkillsEnhancementNewRequestRouteArgs(
@@ -9919,11 +11698,11 @@ class SkillsEnhancementNewRequestRoute
 
   static const String name = 'SkillsEnhancementNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SkillsEnhancementNewRequestRouteArgs>();
-      return _i67.SkillsEnhancementNewRequestScreen(
+      return _i73.SkillsEnhancementNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -9943,15 +11722,15 @@ class SkillsEnhancementNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -9979,14 +11758,14 @@ class SkillsEnhancementNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i67.SkillsEnhancementScreen]
+/// [_i73.SkillsEnhancementScreen]
 class SkillsEnhancementRoute
-    extends _i73.PageRouteInfo<SkillsEnhancementRouteArgs> {
+    extends _i80.PageRouteInfo<SkillsEnhancementRouteArgs> {
   SkillsEnhancementRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          SkillsEnhancementRoute.name,
          args: SkillsEnhancementRouteArgs(
@@ -9999,11 +11778,11 @@ class SkillsEnhancementRoute
 
   static const String name = 'SkillsEnhancementRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<SkillsEnhancementRouteArgs>();
-      return _i67.SkillsEnhancementScreen(
+      return _i73.SkillsEnhancementScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -10019,11 +11798,11 @@ class SkillsEnhancementRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -10044,18 +11823,18 @@ class SkillsEnhancementRouteArgs {
 }
 
 /// generated route for
-/// [_i36.TemporaryAssignmentDecisionDetailsScreen]
+/// [_i37.TemporaryAssignmentDecisionDetailsScreen]
 class TemporaryAssignmentDecisionDetailsRoute
-    extends _i73.PageRouteInfo<TemporaryAssignmentDecisionDetailsRouteArgs> {
+    extends _i80.PageRouteInfo<TemporaryAssignmentDecisionDetailsRouteArgs> {
   TemporaryAssignmentDecisionDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          TemporaryAssignmentDecisionDetailsRoute.name,
          args: TemporaryAssignmentDecisionDetailsRouteArgs(
@@ -10072,11 +11851,11 @@ class TemporaryAssignmentDecisionDetailsRoute
 
   static const String name = 'TemporaryAssignmentDecisionDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TemporaryAssignmentDecisionDetailsRouteArgs>();
-      return _i36.TemporaryAssignmentDecisionDetailsScreen(
+      return _i37.TemporaryAssignmentDecisionDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -10100,7 +11879,7 @@ class TemporaryAssignmentDecisionDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -10108,9 +11887,9 @@ class TemporaryAssignmentDecisionDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -10144,14 +11923,14 @@ class TemporaryAssignmentDecisionDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i36.TemporaryAssignmentDecisionScreen]
+/// [_i37.TemporaryAssignmentDecisionScreen]
 class TemporaryAssignmentDecisionRoute
-    extends _i73.PageRouteInfo<TemporaryAssignmentDecisionRouteArgs> {
+    extends _i80.PageRouteInfo<TemporaryAssignmentDecisionRouteArgs> {
   TemporaryAssignmentDecisionRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          TemporaryAssignmentDecisionRoute.name,
          args: TemporaryAssignmentDecisionRouteArgs(
@@ -10164,11 +11943,11 @@ class TemporaryAssignmentDecisionRoute
 
   static const String name = 'TemporaryAssignmentDecisionRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TemporaryAssignmentDecisionRouteArgs>();
-      return _i36.TemporaryAssignmentDecisionScreen(
+      return _i37.TemporaryAssignmentDecisionScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -10184,11 +11963,11 @@ class TemporaryAssignmentDecisionRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -10209,14 +11988,30 @@ class TemporaryAssignmentDecisionRouteArgs {
 }
 
 /// generated route for
-/// [_i68.TrainingandDevelopmentDashboardScreen]
+/// [_i74.TenderServiceHomeScreen]
+class TenderServiceHomeRoute extends _i80.PageRouteInfo<void> {
+  const TenderServiceHomeRoute({List<_i80.PageRouteInfo>? children})
+    : super(TenderServiceHomeRoute.name, initialChildren: children);
+
+  static const String name = 'TenderServiceHomeRoute';
+
+  static _i80.PageInfo page = _i80.PageInfo(
+    name,
+    builder: (data) {
+      return const _i74.TenderServiceHomeScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [_i75.TrainingandDevelopmentDashboardScreen]
 class TrainingandDevelopmentDashboardRoute
-    extends _i73.PageRouteInfo<TrainingandDevelopmentDashboardRouteArgs> {
+    extends _i80.PageRouteInfo<TrainingandDevelopmentDashboardRouteArgs> {
   TrainingandDevelopmentDashboardRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          TrainingandDevelopmentDashboardRoute.name,
          args: TrainingandDevelopmentDashboardRouteArgs(
@@ -10229,11 +12024,11 @@ class TrainingandDevelopmentDashboardRoute
 
   static const String name = 'TrainingandDevelopmentDashboardRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TrainingandDevelopmentDashboardRouteArgs>();
-      return _i68.TrainingandDevelopmentDashboardScreen(
+      return _i75.TrainingandDevelopmentDashboardScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -10249,11 +12044,11 @@ class TrainingandDevelopmentDashboardRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -10274,53 +12069,53 @@ class TrainingandDevelopmentDashboardRouteArgs {
 }
 
 /// generated route for
-/// [_i69.TrainingandDevelopmentHomeScreen]
-class TrainingandDevelopmentHomeRoute extends _i73.PageRouteInfo<void> {
-  const TrainingandDevelopmentHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i76.TrainingandDevelopmentHomeScreen]
+class TrainingandDevelopmentHomeRoute extends _i80.PageRouteInfo<void> {
+  const TrainingandDevelopmentHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(TrainingandDevelopmentHomeRoute.name, initialChildren: children);
 
   static const String name = 'TrainingandDevelopmentHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i69.TrainingandDevelopmentHomeScreen();
+      return const _i76.TrainingandDevelopmentHomeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i70.TrainingsandDevelopmentHomeScreen]
-class TrainingsandDevelopmentHomeRoute extends _i73.PageRouteInfo<void> {
-  const TrainingsandDevelopmentHomeRoute({List<_i73.PageRouteInfo>? children})
+/// [_i77.TrainingsandDevelopmentHomeScreen]
+class TrainingsandDevelopmentHomeRoute extends _i80.PageRouteInfo<void> {
+  const TrainingsandDevelopmentHomeRoute({List<_i80.PageRouteInfo>? children})
     : super(TrainingsandDevelopmentHomeRoute.name, initialChildren: children);
 
   static const String name = 'TrainingsandDevelopmentHomeRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i70.TrainingsandDevelopmentHomeScreen();
+      return const _i77.TrainingsandDevelopmentHomeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i71.TransferFromOneJobtoAnotherJobNatureDetailsScreen]
+/// [_i78.TransferFromOneJobtoAnotherJobNatureDetailsScreen]
 class TransferFromOneJobtoAnotherJobNatureDetailsRoute
     extends
-        _i73.PageRouteInfo<
+        _i80.PageRouteInfo<
           TransferFromOneJobtoAnotherJobNatureDetailsRouteArgs
         > {
   TransferFromOneJobtoAnotherJobNatureDetailsRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
+    required _i83.Service service,
+    required _i83.SubService subService,
     String from = '',
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          TransferFromOneJobtoAnotherJobNatureDetailsRoute.name,
          args: TransferFromOneJobtoAnotherJobNatureDetailsRouteArgs(
@@ -10337,12 +12132,12 @@ class TransferFromOneJobtoAnotherJobNatureDetailsRoute
 
   static const String name = 'TransferFromOneJobtoAnotherJobNatureDetailsRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<TransferFromOneJobtoAnotherJobNatureDetailsRouteArgs>();
-      return _i71.TransferFromOneJobtoAnotherJobNatureDetailsScreen(
+      return _i78.TransferFromOneJobtoAnotherJobNatureDetailsScreen(
         key: args.key,
         id: args.id,
         serviceId: args.serviceId,
@@ -10366,7 +12161,7 @@ class TransferFromOneJobtoAnotherJobNatureDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int id;
 
@@ -10374,9 +12169,9 @@ class TransferFromOneJobtoAnotherJobNatureDetailsRouteArgs {
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   final String from;
 
@@ -10411,19 +12206,19 @@ class TransferFromOneJobtoAnotherJobNatureDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i71.TransferFromOneJobtoAnotherJobNatureNewRequestScreen]
+/// [_i78.TransferFromOneJobtoAnotherJobNatureNewRequestScreen]
 class TransferFromOneJobtoAnotherJobNatureNewRequestRoute
     extends
-        _i73.PageRouteInfo<
+        _i80.PageRouteInfo<
           TransferFromOneJobtoAnotherJobNatureNewRequestRouteArgs
         > {
   TransferFromOneJobtoAnotherJobNatureNewRequestRoute({
-    _i75.Key? key,
+    _i82.Key? key,
     required int serviceId,
     required int subServiceId,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          TransferFromOneJobtoAnotherJobNatureNewRequestRoute.name,
          args: TransferFromOneJobtoAnotherJobNatureNewRequestRouteArgs(
@@ -10439,12 +12234,12 @@ class TransferFromOneJobtoAnotherJobNatureNewRequestRoute
   static const String name =
       'TransferFromOneJobtoAnotherJobNatureNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data
           .argsAs<TransferFromOneJobtoAnotherJobNatureNewRequestRouteArgs>();
-      return _i71.TransferFromOneJobtoAnotherJobNatureNewRequestScreen(
+      return _i78.TransferFromOneJobtoAnotherJobNatureNewRequestScreen(
         key: args.key,
         serviceId: args.serviceId,
         subServiceId: args.subServiceId,
@@ -10464,15 +12259,15 @@ class TransferFromOneJobtoAnotherJobNatureNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
   final int serviceId;
 
   final int subServiceId;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -10501,14 +12296,14 @@ class TransferFromOneJobtoAnotherJobNatureNewRequestRouteArgs {
 }
 
 /// generated route for
-/// [_i71.TransferFromOneJobtoAnotherJobNatureScreen]
+/// [_i78.TransferFromOneJobtoAnotherJobNatureScreen]
 class TransferFromOneJobtoAnotherJobNatureRoute
-    extends _i73.PageRouteInfo<TransferFromOneJobtoAnotherJobNatureRouteArgs> {
+    extends _i80.PageRouteInfo<TransferFromOneJobtoAnotherJobNatureRouteArgs> {
   TransferFromOneJobtoAnotherJobNatureRoute({
-    _i75.Key? key,
-    required _i76.Service service,
-    required _i76.SubService subService,
-    List<_i73.PageRouteInfo>? children,
+    _i82.Key? key,
+    required _i83.Service service,
+    required _i83.SubService subService,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          TransferFromOneJobtoAnotherJobNatureRoute.name,
          args: TransferFromOneJobtoAnotherJobNatureRouteArgs(
@@ -10521,11 +12316,11 @@ class TransferFromOneJobtoAnotherJobNatureRoute
 
   static const String name = 'TransferFromOneJobtoAnotherJobNatureRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TransferFromOneJobtoAnotherJobNatureRouteArgs>();
-      return _i71.TransferFromOneJobtoAnotherJobNatureScreen(
+      return _i78.TransferFromOneJobtoAnotherJobNatureScreen(
         key: args.key,
         service: args.service,
         subService: args.subService,
@@ -10541,11 +12336,11 @@ class TransferFromOneJobtoAnotherJobNatureRouteArgs {
     required this.subService,
   });
 
-  final _i75.Key? key;
+  final _i82.Key? key;
 
-  final _i76.Service service;
+  final _i83.Service service;
 
-  final _i76.SubService subService;
+  final _i83.SubService subService;
 
   @override
   String toString() {
@@ -10566,14 +12361,14 @@ class TransferFromOneJobtoAnotherJobNatureRouteArgs {
 }
 
 /// generated route for
-/// [_i72.VPNRequestDetailsTabScreen]
+/// [_i79.VPNRequestDetailsTabScreen]
 class VPNRequestDetailsTabRoute
-    extends _i73.PageRouteInfo<VPNRequestDetailsTabRouteArgs> {
+    extends _i80.PageRouteInfo<VPNRequestDetailsTabRouteArgs> {
   VPNRequestDetailsTabRoute({
-    _i74.Key? key,
+    _i81.Key? key,
     String from = '',
     required int id,
-    List<_i73.PageRouteInfo>? children,
+    List<_i80.PageRouteInfo>? children,
   }) : super(
          VPNRequestDetailsTabRoute.name,
          args: VPNRequestDetailsTabRouteArgs(key: key, from: from, id: id),
@@ -10582,11 +12377,11 @@ class VPNRequestDetailsTabRoute
 
   static const String name = 'VPNRequestDetailsTabRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<VPNRequestDetailsTabRouteArgs>();
-      return _i72.VPNRequestDetailsTabScreen(
+      return _i79.VPNRequestDetailsTabScreen(
         key: args.key,
         from: args.from,
         id: args.id,
@@ -10602,7 +12397,7 @@ class VPNRequestDetailsTabRouteArgs {
     required this.id,
   });
 
-  final _i74.Key? key;
+  final _i81.Key? key;
 
   final String from;
 
@@ -10625,33 +12420,33 @@ class VPNRequestDetailsTabRouteArgs {
 }
 
 /// generated route for
-/// [_i72.VpnDashboard]
-class VpnDashboard extends _i73.PageRouteInfo<void> {
-  const VpnDashboard({List<_i73.PageRouteInfo>? children})
+/// [_i79.VpnDashboard]
+class VpnDashboard extends _i80.PageRouteInfo<void> {
+  const VpnDashboard({List<_i80.PageRouteInfo>? children})
     : super(VpnDashboard.name, initialChildren: children);
 
   static const String name = 'VpnDashboard';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i72.VpnDashboard();
+      return const _i79.VpnDashboard();
     },
   );
 }
 
 /// generated route for
-/// [_i72.VpnNewRequestScreen]
-class VpnNewRequestRoute extends _i73.PageRouteInfo<void> {
-  const VpnNewRequestRoute({List<_i73.PageRouteInfo>? children})
+/// [_i79.VpnNewRequestScreen]
+class VpnNewRequestRoute extends _i80.PageRouteInfo<void> {
+  const VpnNewRequestRoute({List<_i80.PageRouteInfo>? children})
     : super(VpnNewRequestRoute.name, initialChildren: children);
 
   static const String name = 'VpnNewRequestRoute';
 
-  static _i73.PageInfo page = _i73.PageInfo(
+  static _i80.PageInfo page = _i80.PageInfo(
     name,
     builder: (data) {
-      return const _i72.VpnNewRequestScreen();
+      return const _i79.VpnNewRequestScreen();
     },
   );
 }

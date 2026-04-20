@@ -18,6 +18,43 @@ import 'package:msal_auth/msal_auth.dart';
 part 'controller.dart';
 
 @RoutePage()
+// class MicrosoftLoginPage extends ConsumerWidget {
+//   const MicrosoftLoginPage({Key? key}) : super(key: key);
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final state = ref.watch(loginVsProvider);
+//     final controller = ref.read(loginVsProvider.notifier);
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('Microsoft Login')),
+//       body: Padding(
+//         padding: const EdgeInsets.all(20.0),
+//         child: Center(
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               if (state.isLoading)
+//                 const CircularProgressIndicator()
+//               else ...[
+//                 ElevatedButton(
+//                   onPressed: () async {
+//                     await controller.signIn();
+//                     // ref.read(_vsProvider.notifier).loginWithJwtDirectly();
+//                   },
+//                   child: const Text('Sign in with Microsoft'),
+//                 ),
+//                 const SizedBox(height: 10),
+//                 ElevatedButton(
+//                   onPressed: controller.signOut,
+//                   child: const Text('Sign out'),
+//                 ),
+//               ],
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 class MicrosoftLoginPage extends ConsumerWidget {
   const MicrosoftLoginPage({Key? key}) : super(key: key);
 
@@ -25,6 +62,8 @@ class MicrosoftLoginPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(loginVsProvider);
     final controller = ref.read(loginVsProvider.notifier);
+
+    final TextEditingController jwtController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Microsoft Login')),
@@ -37,17 +76,50 @@ class MicrosoftLoginPage extends ConsumerWidget {
               if (state.isLoading)
                 const CircularProgressIndicator()
               else ...[
+                /// 🔐 Microsoft Login
                 ElevatedButton(
                   onPressed: () async {
                     await controller.signIn();
-                    // ref.read(_vsProvider.notifier).loginWithJwtDirectly();
                   },
                   child: const Text('Sign in with Microsoft'),
                 ),
+
                 const SizedBox(height: 10),
+
                 ElevatedButton(
                   onPressed: controller.signOut,
                   child: const Text('Sign out'),
+                ),
+
+                const SizedBox(height: 30),
+
+                /// ✍️ JWT INPUT FIELD
+                TextField(
+                  controller: jwtController,
+                  decoration: const InputDecoration(
+                    labelText: "Enter JWT Token",
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 3,
+                ),
+
+                const SizedBox(height: 10),
+
+                /// 🚀 LOGIN WITH JWT BUTTON
+                ElevatedButton(
+                  onPressed: () async {
+                    final token = jwtController.text.trim();
+
+                    if (token.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Please enter JWT")),
+                      );
+                      return;
+                    }
+
+                    await controller.loginWithJwt(token);
+                  },
+                  child: const Text('Login with JWT'),
                 ),
               ],
             ],

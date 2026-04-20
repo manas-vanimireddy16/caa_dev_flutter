@@ -620,6 +620,12 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'extension_number',
       label: 'Extension Number',
       type: FieldType.number,
+    ),
+
+    DynamicField(
+      label: 'Phone Number',
+      name: 'phone_number',
+      type: FieldType.number,
       required: true,
     ),
 
@@ -630,62 +636,68 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.date,
       required: true,
     ),
-
-    /// ================= DURATION TYPE =================
     DynamicField(
-      name: 'duration_type',
-      label: 'Duration Type',
-      type: FieldType.select,
+      name: 'end_date',
+      label: 'Preferred End Date',
+      type: FieldType.date,
       required: true,
-      options: const [
-        DropdownOption(value: 'Months', label: 'Months'),
-        DropdownOption(value: 'Years', label: 'Years'),
-      ],
-
-      onChanged: (val, ref) {
-        final notifier = ref.read(dynamicFormProvider.notifier);
-
-        notifier.updateValue('duration_months', null);
-        notifier.updateValue('duration_years', null);
-      },
     ),
+
+    // /// ================= DURATION TYPE =================
+    // DynamicField(
+    //   name: 'duration_type',
+    //   label: 'Duration Type',
+    //   type: FieldType.select,
+    //   required: true,
+    //   options: const [
+    //     DropdownOption(value: 'Months', label: 'Months'),
+    //     DropdownOption(value: 'Years', label: 'Years'),
+    //   ],
+
+    //   onChanged: (val, ref) {
+    //     final notifier = ref.read(dynamicFormProvider.notifier);
+
+    //     notifier.updateValue('duration_months', null);
+    //     notifier.updateValue('duration_years', null);
+    //   },
+    // ),
 
     /// ================= MONTHS FIELD =================
-    DynamicField(
-      name: 'duration_months',
-      label: 'Duration of Months',
-      type: FieldType.select,
-      required: true,
-      visibleWhen: (values) => values['duration_type'] == 'Months',
-      options: List.generate(
-        12,
-        (i) => DropdownOption(
-          value: '${i + 1} ${i == 0 ? 'month' : 'months'}',
-          label: '${i + 1} ${i == 0 ? 'month' : 'months'}',
-        ),
-      ),
-    ),
+    // DynamicField(
+    //   name: 'duration_months',
+    //   label: 'Duration of Months',
+    //   type: FieldType.select,
+    //   required: true,
+    //   visibleWhen: (values) => values['duration_type'] == 'Months',
+    //   options: List.generate(
+    //     12,
+    //     (i) => DropdownOption(
+    //       value: '${i + 1} ${i == 0 ? 'month' : 'months'}',
+    //       label: '${i + 1} ${i == 0 ? 'month' : 'months'}',
+    //     ),
+    //   ),
+    // ),
 
-    /// ================= YEARS FIELD =================
-    DynamicField(
-      name: 'duration_years',
-      label: 'Duration of Years',
-      type: FieldType.select,
-      required: true,
-      visibleWhen: (values) => values['duration_type'] == 'Years',
-      options: List.generate(
-        5,
-        (i) => DropdownOption(
-          value: '${i + 1} ${i == 0 ? 'year' : 'years'}',
-          label: '${i + 1} ${i == 0 ? 'year' : 'years'}',
-        ),
-      ),
-    ),
+    // /// ================= YEARS FIELD =================
+    // DynamicField(
+    //   name: 'duration_years',
+    //   label: 'Duration of Years',
+    //   type: FieldType.select,
+    //   required: true,
+    //   visibleWhen: (values) => values['duration_type'] == 'Years',
+    //   options: List.generate(
+    //     5,
+    //     (i) => DropdownOption(
+    //       value: '${i + 1} ${i == 0 ? 'year' : 'years'}',
+    //       label: '${i + 1} ${i == 0 ? 'year' : 'years'}',
+    //     ),
+    //   ),
+    // ),
 
     /// ================= FAMILY SIZE =================
     DynamicField(
       name: 'family_size',
-      label: 'Family Size',
+      label: 'Family Size / Dependents',
       type: FieldType.number,
       required: true,
     ),
@@ -1724,11 +1736,13 @@ class _VSController extends StateNotifier<_ViewState> {
           : '${values['requested_unit_type']} ${values['villa_types']}',
 
       "request_type": values['requested_unit_type'],
+      "phone_number": values['phone_number'],
 
-      "duration_of_stay": values['duration_type'] == "Years"
-          ? "${values['duration_years']}"
-          : "${values['duration_months']}",
+      // "duration_of_stay": values['duration_type'] == "Years"
+      //     ? "${values['duration_years']}"
+      //     : "${values['duration_months']}",
       "preferred_start_date": values['start_date'],
+      "rental_end_date": values['end_date'],
       "family_size": values['family_size']?.toString() ?? "0",
 
       "extension_number": values['extension_number'],

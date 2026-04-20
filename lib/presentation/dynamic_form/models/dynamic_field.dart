@@ -23,6 +23,7 @@ class DynamicField {
   final int? maxFileSizeInMB; // for file upload field
   final List<String>? allowedExtensions;
   final List<AcknowledgementItem>? acknowledgements;
+  final bool Function(Map<String, dynamic> values)? requiredWhen;
 
   const DynamicField({
     required this.name,
@@ -40,6 +41,7 @@ class DynamicField {
     this.maxFileSizeInMB,
     this.allowedExtensions,
     this.acknowledgements,
+    this.requiredWhen,
   });
 }
 

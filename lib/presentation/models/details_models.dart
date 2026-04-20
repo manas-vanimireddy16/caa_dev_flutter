@@ -379,6 +379,10 @@ class RequestDetailData {
   final String? currentContractEndDate;
   final String? currentContractStartDate;
   final String? currentUnitType;
+  final String? eventTitle;
+  final String? locationOfEvent;
+  final String? typeOfEvent;
+  final int? eventDepartmentId;
   RequestDetailData({
     this.request,
     this.risk,
@@ -644,6 +648,10 @@ class RequestDetailData {
     this.currentContractEndDate,
     this.currentContractStartDate,
     this.currentUnitType,
+    this.eventTitle,
+    this.locationOfEvent,
+    this.typeOfEvent,
+    this.eventDepartmentId,
   });
 
   factory RequestDetailData.fromJson(
@@ -1015,6 +1023,10 @@ class RequestDetailData {
     currentContractEndDate: json['current_contract_end_date'],
     currentContractStartDate: json['current_contract_start_date'],
     currentUnitType: json['current_unit_type'] as String?,
+    eventTitle: json['event_title'],
+    locationOfEvent: json['location_of_event'],
+    typeOfEvent: json['type_of_event'],
+    eventDepartmentId: json['event_department_id'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -1390,6 +1402,23 @@ class RequestModel {
   final bool? acknowledgement;
   final String? hosOrDepartmentName;
   final String? requestTitle;
+  final String? titleOfComplaint;
+  final String? appealAgainstDecision;
+  final String? decisionDate;
+  final String? decisionSubject;
+  final String? grievanceDetails;
+  final String? individualsInvolved;
+  final String? times;
+  final String? dates;
+  final String? requests;
+  final String? events;
+  final String? grievantName;
+  final String? grievantEmployeeNumber;
+  final int? grievantDirectorateId;
+  final int? grievantDepartmentId;
+  final int? grievantSectionId;
+  final String? grievantRelationshipToMatter;
+  final bool? declarationAcknowledged;
 
   // ─────────────────────────────
   // CONSTRUCTOR
@@ -1659,6 +1688,24 @@ class RequestModel {
     this.acknowledgement,
     this.hosOrDepartmentName,
     this.requestTitle,
+    this.titleOfComplaint,
+    this.appealAgainstDecision,
+
+    this.decisionDate,
+    this.decisionSubject,
+    this.grievanceDetails,
+    this.individualsInvolved,
+    this.times,
+    this.dates,
+    this.requests,
+    this.events,
+    this.grievantName,
+    this.grievantEmployeeNumber,
+    this.grievantDirectorateId,
+    this.grievantDepartmentId,
+    this.grievantSectionId,
+    this.grievantRelationshipToMatter,
+    this.declarationAcknowledged,
   });
 
   // ─────────────────────────────
@@ -1997,6 +2044,23 @@ class RequestModel {
       acknowledgement: json['acknowledgement'] as bool?,
       hosOrDepartmentName: json['hos_or_department_name'] as String?,
       requestTitle: json['request_title'] as String?,
+      titleOfComplaint: json['title_of_complaint'],
+      appealAgainstDecision: json['appeal_against_decision'],
+      decisionDate: json['decision_date'],
+      decisionSubject: json['decision_subject'],
+      grievanceDetails: json['grievance_details'],
+      individualsInvolved: json['individuals_involved'],
+      times: json['times'],
+      dates: json['dates'],
+      requests: json['requests'],
+      events: json['events'],
+      grievantName: json['grievant_name'],
+      grievantEmployeeNumber: json['grievant_employee_number'],
+      grievantDirectorateId: json['grievant_directorate_id'],
+      grievantDepartmentId: json['grievant_department_id'],
+      grievantSectionId: json['grievant_section_id'],
+      grievantRelationshipToMatter: json['grievant_relationship_to_matter'],
+      declarationAcknowledged: json['declaration_acknowledged'],
     );
   }
 

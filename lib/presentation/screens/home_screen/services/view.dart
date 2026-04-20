@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
+import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/roles_repo.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
@@ -271,7 +272,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
                           );
                         },
                         onSubServiceTap: (subName) {
-                          final subService = data.subservices?.firstWhere(
+                          final subService = data.subservices?.lastWhere(
                             (s) => s.subServiceName == subName,
                             orElse: () => SubService(),
                           );

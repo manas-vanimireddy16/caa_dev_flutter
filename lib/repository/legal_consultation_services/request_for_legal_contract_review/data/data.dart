@@ -63,7 +63,7 @@ class LegalContractReviewRepositoryImple
     Map<String, dynamic> payload,
   ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.cyberSecurityRiskManagementSendRequest;
+    final String url = ApiEndPoint.legalContractReviewSendRequest;
 
     try {
       if (client == null) {
@@ -188,7 +188,7 @@ class LegalContractReviewRepositoryImple
 
   @override
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId) async {
-    String url = ApiEndPoint.cyberSecurityRiskManagementKpiCards;
+    String url = ApiEndPoint.legalContractReviewKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -224,7 +224,7 @@ class LegalContractReviewRepositoryImple
     required int serviceId,
     required int subServiceId,
   }) async {
-    String url = ApiEndPoint.cyberSecurityRiskManagementApprovalKpiCards;
+    String url = ApiEndPoint.legalContractReviewApprovalKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -271,7 +271,7 @@ class LegalContractReviewRepositoryImple
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.cyberSecurityRiskManagementApprovalStatusBreakdown,
+          ApiEndPoint.legalContractReviewApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -314,7 +314,7 @@ class LegalContractReviewRepositoryImple
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.cyberSecurityRiskManagementApprovalTrendBreakdown,
+          ApiEndPoint.legalContractReviewApprovalTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -354,7 +354,7 @@ class LegalContractReviewRepositoryImple
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.cyberSecurityRiskManagementStatusBreakdown,
+          ApiEndPoint.legalContractReviewStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -397,7 +397,7 @@ class LegalContractReviewRepositoryImple
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.cyberSecurityRiskManagementTrendBreakdown,
+          ApiEndPoint.legalContractReviewTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -450,7 +450,7 @@ class LegalContractReviewRepositoryImple
         if (status.isNotEmpty) {
           queryParams['status'] = status;
         }
-        final url = ApiEndPoint.cyberSecurityRiskManagementGetRequests;
+        final url = ApiEndPoint.legalContractReviewGetRequests;
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
@@ -503,7 +503,7 @@ class LegalContractReviewRepositoryImple
         }
 
         final response = await client.get(
-          ApiEndPoint.cyberSecurityRiskManagementGetActionItems,
+          ApiEndPoint.legalContractReviewGetActionItems,
           queryParameters: queryParams,
         );
 
@@ -542,7 +542,7 @@ class LegalContractReviewRepositoryImple
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.cyberSecurityRiskManagementSendChatById(id);
+    final String url = ApiEndPoint.legalContractReviewSendChatById(id);
 
     try {
       if (client != null) {
@@ -575,8 +575,7 @@ class LegalContractReviewRepositoryImple
   @override
   Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url =
-        ApiEndPoint.cyberSecurityRiskManagementSendAttachmentById(id);
+    final String url = ApiEndPoint.legalContractReviewSendAttachmentById(id);
 
     try {
       if (client != null) {
@@ -609,7 +608,7 @@ class LegalContractReviewRepositoryImple
   @override
   Future<void> onApprove(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.cyberSecurityRiskManagementApprove;
+    final String url = ApiEndPoint.legalContractReviewApprove;
 
     try {
       if (client != null) {
@@ -644,7 +643,7 @@ class LegalContractReviewRepositoryImple
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.cyberSecurityRiskManagementChatsById(id);
+        final url = ApiEndPoint.legalContractReviewChatsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -672,7 +671,7 @@ class LegalContractReviewRepositoryImple
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.cyberSecurityRiskManagementAttachmentsById(id);
+        final url = ApiEndPoint.legalContractReviewAttachmentsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -708,7 +707,7 @@ class LegalContractReviewRepositoryImple
           // 'service_id': serviceId,
           // 'sub_service_id': subServiceId,
         };
-        final url = ApiEndPoint.cyberSecurityRiskManagementRequestById(id);
+        final url = ApiEndPoint.legalContractReviewRequestById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {

@@ -1354,6 +1354,7 @@ class _VSController extends StateNotifier<_ViewState> {
     Map<String, dynamic> values,
   ) {
     final userInfo = KAppX.globalProvider.read(userInfoProvider);
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
 
     final payload = {
       /// ⭐ SERVICE INFO
@@ -1367,11 +1368,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ⭐ USER / DEPARTMENT INFO
       "department_id": userInfo?.data?.department?.id,
-      "hos_or_department_name":
-          userInfo?.data?.department?.departmentName ?? "",
+      "hos_or_department_name": selectedRole?.roleName,
 
       /// ⭐ ACKNOWLEDGEMENT
-      "acknowledgement": values['acknowledgement'] ?? false,
+      "acknowledgement":
+          (values['acknowledgement'] as List?)?.isNotEmpty ?? false,
 
       /// ⭐ DATE
       "submission_date": values['submission_date'],

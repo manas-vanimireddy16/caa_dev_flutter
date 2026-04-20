@@ -60,6 +60,10 @@ class RouteNames {
   static const String salalahNewHOSRequest = '/salalahNewHOSRequest';
   static const String salalahNewItTechnicianRequest =
       '/salalahNewItTechnicianRequest';
+  static const String requestEventSupportNewRequest =
+      '/requestEventSupportNewRequest';
+  static const String requestEventSupportDetails =
+      '/requestEventSupportDetails';
 
   static const String logisticsRequestDetail = '/logisticsRequestDetails';
   static const String logisticsForeignRequestDetail =
@@ -235,6 +239,11 @@ class RouteNames {
       '/requestForStudyLeaveNewRequest';
   static const String requiredNewResourceNewRequest =
       '/requestForTrainingDetailsTabScreen';
+  static const String requestForCancellationNewRequest =
+      '/RequestForCancellationNewRequestScreen';
+  static const String requestForCancellationDetails =
+      '/RequestForCancellationDetailsScreen';
+
   static const String requiredNewResourceDetails =
       '/requestForStudyLeaveDetailsTabScreen';
   static const String promotionsNewRequest = '/promotionsDetailsTabScreen';
@@ -279,4 +288,28 @@ class RouteNames {
       '/legalConsultationServicesNewRequest';
   static const String legalConsultationServicesRequestDetails =
       '/legalConsultationServicesRequestDetails';
+  static const String appealAgainstAdministrativeDecisionsDetails =
+      '/appealAgainstAdministrativeDecisionsDetails';
+  static const String appealAgainstAdministrativeDecisionsNewRequest =
+      '/appealAgainstAdministrativeDecisionsNewRequest';
+  static const String raiseLegalComplaintDetails =
+      '/raiseLegalComplaintDetails';
+  static const String raiseLegalComplaintNewRequest =
+      '/raiseLegalComplaintNewRequest';
+  static const String legalConsultationandReviewofAdministrativeDecisionsRoute =
+      '/legalConsultationandReviewofAdministrativeDecisionsRoute';
+  static const String
+  legalConsultationandReviewofAdministrativeDecisionsDetailsRoute =
+      '/legalConsultationandReviewofAdministrativeDecisionsDetailsRoute';
+
+  /// --- Tender Services ---
+
+  static const String tenderServiceHomeScreen = '/tenderServiceHomeScreen';
+  static const String requestTenderServiceNewRequest =
+      '/requestTenderServiceNewRequest';
+
+  static const String requestTenderServiceDetails =
+      '/requestTenderServiceDetails';
+  static const String respondToEnquiryDetails = '/respondToEnquiryDetails';
+  static const String respondToEnquiryNewRequest = '/respondToEnquiryDetails';
 }

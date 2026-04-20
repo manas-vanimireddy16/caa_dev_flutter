@@ -20,12 +20,6 @@ class AppRouter extends RootStackRouter {
       initial: true,
     ),
 
-    /// --- EVENT SUPPORT ---
-    AutoRoute(
-      page: RequestEventSupportRoute.page,
-      path: RouteNames.requestEventSupport,
-    ),
-
     /// --- HOME WITH BOTTOM TABS ---
     AutoRoute(
       page: HomeRoute.page,
@@ -134,6 +128,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: SalalahDashboard.page, initial: true),
         AutoRoute(page: MuscatDashboard.page),
         AutoRoute(page: VpnDashboard.page),
+        AutoRoute(page: RequestEventSupportRoute.page),
       ],
     ),
 
@@ -174,6 +169,14 @@ class AppRouter extends RootStackRouter {
       page: MuscutHOSNewRequestRoute.page,
       path: RouteNames.muscatHosRequestScreen,
     ),
+    AutoRoute(
+      page: RequestEventSupportDetailsRoute.page,
+      path: RouteNames.requestEventSupportDetails,
+    ),
+    AutoRoute(
+      page: RequestEventSupportNewRequestRoute.page,
+      path: RouteNames.requestEventSupportNewRequest,
+    ),
 
     /// --- LOGISTICS ---
     AutoRoute(
@@ -197,11 +200,6 @@ class AppRouter extends RootStackRouter {
     ),
 
     AutoRoute(
-      page: NewRequestRequestSupportRoute.page,
-      path: RouteNames.newRequest,
-    ),
-
-    AutoRoute(
       page: SalalahNewRequestRoute.page,
       path: RouteNames.salalahNewRequest,
     ),
@@ -222,16 +220,16 @@ class AppRouter extends RootStackRouter {
     ),
 
     /// --- BOTTOM NAVIGATOR ---
-    AutoRoute(
-      page: KBottomNavigatorRoute.page,
-      path: RouteNames.bottomNavigator,
-      children: [
-        AutoRoute(page: SalalahDashboard.page, initial: true),
-        AutoRoute(page: MuscatDashboard.page),
-        AutoRoute(page: RequestPortalRoute.page),
-        AutoRoute(page: RequestEventDashboardRoute.page),
-      ],
-    ),
+    // AutoRoute(
+    //   page: KBottomNavigatorRoute.page,
+    //   path: RouteNames.bottomNavigator,
+    //   children: [
+    //     AutoRoute(page: SalalahDashboard.page, initial: true),
+    //     AutoRoute(page: MuscatDashboard.page),
+    //     AutoRoute(page: RequestPortalRoute.page),
+    //     AutoRoute(page: RequestEventDashboardRoute.page),
+    //   ],
+    // ),
 
     /// --- ACCESS CARD ---
     AutoRoute(
@@ -545,6 +543,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: AnnualTrainingPlanRoute.page),
         AutoRoute(page: RequestTrainingRoute.page),
         AutoRoute(page: RequestForStudyLeaveRoute.page),
+        AutoRoute(page: RequestForCancellationRoute.page),
       ],
     ),
 
@@ -580,6 +579,14 @@ class AppRouter extends RootStackRouter {
       page: RequestForStudyLeaveDetailsRoute.page,
       path: RouteNames.requestForStudyLeaveDetails,
     ),
+    AutoRoute(
+      page: RequestForCancellationNewRequestRoute.page,
+      path: RouteNames.requestForCancellationNewRequest,
+    ),
+    AutoRoute(
+      page: RequestForCancellationDetailsRoute.page,
+      path: RouteNames.requestForCancellationDetails,
+    ),
 
     /// --- Assignment Decision ---
     AutoRoute(
@@ -587,6 +594,11 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.homeRouteLegalConsultationServices,
       children: [
         AutoRoute(page: RequestForLegalContractReviewRoute.page, initial: true),
+        AutoRoute(page: AppealAgainstAdministrativeDecisionsRoute.page),
+        AutoRoute(page: RaiseLegalComplaintRoute.page),
+        AutoRoute(
+          page: LegalConsultationandReviewofAdministrativeDecisionsRoute.page,
+        ),
       ],
     ),
     AutoRoute(
@@ -596,6 +608,59 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: RequestForLegalContractReviewNewRequestRoute.page,
       path: RouteNames.legalConsultationServicesNewRequest,
+    ),
+    AutoRoute(
+      page: AppealAgainstAdministrativeDecisionsDetailsRoute.page,
+      path: RouteNames.appealAgainstAdministrativeDecisionsDetails,
+    ),
+    AutoRoute(
+      page: AppealAgainstAdministrativeDecisionsNewRequestRoute.page,
+      path: RouteNames.appealAgainstAdministrativeDecisionsNewRequest,
+    ),
+    AutoRoute(
+      page: RaiseLegalComplaintDetailsRoute.page,
+      path: RouteNames.raiseLegalComplaintDetails,
+    ),
+    AutoRoute(
+      page: RaiseLegalComplaintNewRequestRoute.page,
+      path: RouteNames.raiseLegalComplaintNewRequest,
+    ),
+    AutoRoute(
+      page:
+          LegalConsultationandReviewofAdministrativeDecisionsDetailsRoute.page,
+      path: RouteNames.legalConsultationServicesRequestDetails,
+    ),
+    AutoRoute(
+      page: LegalConsultationandReviewofAdministrativeDecisionsNewRequestRoute
+          .page,
+      path: RouteNames.legalConsultationServicesNewRequest,
+    ),
+
+    /// --- Tender Services ---
+    AutoRoute(
+      page: TenderServiceHomeRoute.page,
+      path: RouteNames.tenderServiceHomeScreen,
+      children: [
+        AutoRoute(page: RequestTenderServiceRoute.page),
+        AutoRoute(page: RequestAServiceToRespondToEnquiriesRoute.page),
+      ],
+    ),
+
+    AutoRoute(
+      page: RequestTenderServiceDetailsRoute.page,
+      path: RouteNames.requestTenderServiceDetails,
+    ),
+    AutoRoute(
+      page: RequestTenderServiceNewRequestRoute.page,
+      path: RouteNames.requestTenderServiceNewRequest,
+    ),
+    AutoRoute(
+      page: RequestAServiceToRespondToEnquiriesDetailsRoute.page,
+      path: RouteNames.respondToEnquiryDetails,
+    ),
+    AutoRoute(
+      page: RequestAServiceToRespondToEnquiriesNewRequestRoute.page,
+      path: RouteNames.requestToEnquiryNewRequest,
     ),
   ];
 

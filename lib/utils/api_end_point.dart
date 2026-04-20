@@ -2458,4 +2458,468 @@ class ApiEndPoint {
   /// Approval trend breakdown
   static const String legalContractReviewApprovalTrendBreakdown =
       '/v1/asset-affairs-service/legal-consultation-service/legal-contract-review/analytics/approval/trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String appealAgainstAdministrativeDecisionsSendRequest =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/requests';
+
+  /// Get my requests
+  static const String appealAgainstAdministrativeDecisionsGetRequests =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/requests';
+
+  /// Get all requests (no user filter)
+  static const String appealAgainstAdministrativeDecisionsGetAllRequests =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String appealAgainstAdministrativeDecisionsGetActionItems =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/requests/approval';
+
+  /// Get request by ID
+  static String appealAgainstAdministrativeDecisionsRequestById(
+    int requestId,
+  ) =>
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/requests/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// Update request
+  static String appealAgainstAdministrativeDecisionsUpdateRequest(
+    int requestId,
+  ) =>
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String appealAgainstAdministrativeDecisionsApprove =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String appealAgainstAdministrativeDecisionsSendChatById(
+    int requestId,
+  ) =>
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/requests/$requestId/chat';
+
+  static String appealAgainstAdministrativeDecisionsChatsById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/requests/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String appealAgainstAdministrativeDecisionsSendAttachmentById(
+    int requestId,
+  ) =>
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/requests/$requestId/attachment';
+
+  /// Get attachments
+  static String appealAgainstAdministrativeDecisionsAttachmentsById(
+    int requestId,
+  ) =>
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/requests/$requestId/attachments';
+
+  /// Delete attachment
+  static String appealAgainstAdministrativeDecisionsDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String appealAgainstAdministrativeDecisionsKpiCards =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String appealAgainstAdministrativeDecisionsApprovalKpiCards =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/analytics/approval/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String appealAgainstAdministrativeDecisionsStatusBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String
+  appealAgainstAdministrativeDecisionsApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String appealAgainstAdministrativeDecisionsTrendBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String
+  appealAgainstAdministrativeDecisionsApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-service/appeal-against-administrative-decision/analytics/approval/trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String legalComplaintSendRequest =
+      '/v1/asset-affairs-service/legal-complaint-review/request';
+
+  /// Get my requests
+  static const String legalComplaintGetRequests =
+      '/v1/asset-affairs-service/legal-complaint-review/requests';
+
+  /// Get all requests (no user filter)
+  static const String legalComplaintGetAllRequests =
+      '/v1/asset-affairs-service/legal-complaint-review/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String legalComplaintGetActionItems =
+      '/v1/asset-affairs-service/legal-complaint-review/requests/for-approval';
+
+  /// Get request by ID
+  static String legalComplaintRequestById(int requestId) =>
+      '/v1/asset-affairs-service/legal-complaint-review/request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// (⚠️ Not available in Swagger → keep if backend supports)
+  static String legalComplaintUpdateRequest(int requestId) =>
+      '/v1/asset-affairs-service/legal-complaint-review/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String legalComplaintApprove =
+      '/v1/asset-affairs-service/legal-complaint-review/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String legalComplaintSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/legal-complaint-review/request/$requestId/chat';
+
+  static String legalComplaintChatsById(int requestId) =>
+      '/v1/asset-affairs-service/legal-complaint-review/request/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String legalComplaintSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/legal-complaint-review/request/$requestId/attachment';
+
+  /// Get attachments
+  static String legalComplaintAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/legal-complaint-review/request/$requestId/attachments';
+
+  /// Delete attachment
+  static String legalComplaintDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/asset-affairs-service/legal-complaint-review/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String legalComplaintKpiCards =
+      '/v1/asset-affairs-service/legal-complaint-review/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String legalComplaintApprovalKpiCards =
+      '/v1/asset-affairs-service/legal-complaint-review/analytics/approval-kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String legalComplaintStatusBreakdown =
+      '/v1/asset-affairs-service/legal-complaint-review/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String legalComplaintApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/legal-complaint-review/analytics/approval-status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String legalComplaintTrendBreakdown =
+      '/v1/asset-affairs-service/legal-complaint-review/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String legalComplaintApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/legal-complaint-review/analytics/approval-trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String legalConsultationSendRequest =
+      '/v1/asset-affairs-service/legal-consultation-review/request';
+
+  /// Get my requests
+  static const String legalConsultationGetRequests =
+      '/v1/asset-affairs-service/legal-consultation-review/requests';
+
+  /// Get all requests (no user filter)
+  static const String legalConsultationGetAllRequests =
+      '/v1/asset-affairs-service/legal-consultation-review/requests/all';
+
+  /// Get approval list (For approvers)
+  static const String legalConsultationGetActionItems =
+      '/v1/asset-affairs-service/legal-consultation-review/requests/for-approval';
+
+  /// Get request by ID
+  static String legalConsultationRequestById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-review/request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// (⚠️ Not clearly shown in Swagger → optional)
+  static String legalConsultationUpdateRequest(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-review/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String legalConsultationApprove =
+      '/v1/asset-affairs-service/legal-consultation-review/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String legalConsultationSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-review/request/$requestId/chat';
+
+  static String legalConsultationChatsById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-review/request/$requestId/chats';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String legalConsultationSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-review/request/$requestId/attachment';
+
+  /// Get attachments
+  static String legalConsultationAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/legal-consultation-review/request/$requestId/attachments';
+
+  /// Delete attachment
+  static String legalConsultationDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/asset-affairs-service/legal-consultation-review/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String legalConsultationKpiCards =
+      '/v1/asset-affairs-service/legal-consultation-review/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String legalConsultationApprovalKpiCards =
+      '/v1/asset-affairs-service/legal-consultation-review/analytics/approval-kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String legalConsultationStatusBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-review/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String legalConsultationApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-review/analytics/approval-status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String legalConsultationTrendBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-review/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String legalConsultationApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/legal-consultation-review/analytics/approval-trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String eventSupportSendRequest =
+      '/v1/it-service/event-support/requests';
+
+  /// Get my requests
+  static const String eventSupportGetRequests =
+      '/v1/it-service/event-support/requests';
+
+  /// Get approval list (For approvers)
+  static const String eventSupportGetActionItems =
+      '/v1/it-service/event-support/requests/approval';
+
+  /// Get request by ID
+  static String eventSupportRequestById(int requestId) =>
+      '/v1/it-service/event-support/requests/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+  /// (Optional – if backend supports)
+  static String eventSupportUpdateRequest(int requestId) =>
+      '/v1/it-service/event-support/requests/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String eventSupportApprove =
+      '/v1/it-service/event-support/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat
+  static String eventSupportSendChatById(int requestId) =>
+      '/v1/it-service/event-support/requests/$requestId/chat';
+
+  /// Get chats
+  static String eventSupportChatsById(int requestId) =>
+      '/v1/it-service/event-support/requests/$requestId/chats';
+
+  /// Update chat
+  static String eventSupportUpdateChat(int chatId) =>
+      '/v1/it-service/event-support/chats/$chatId';
+
+  /// Delete chat
+  static String eventSupportDeleteChat(int chatId) =>
+      '/v1/it-service/event-support/chats/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String eventSupportSendAttachmentById(int requestId) =>
+      '/v1/it-service/event-support/requests/$requestId/attachment';
+
+  /// Get attachments
+  static String eventSupportAttachmentsById(int requestId) =>
+      '/v1/it-service/event-support/requests/$requestId/attachments';
+
+  /// Update attachment
+  static String eventSupportUpdateAttachment(int attachmentId) =>
+      '/v1/it-service/event-support/attachments/$attachmentId';
+
+  /// Delete attachment
+  static String eventSupportDeleteAttachment(int attachmentId) =>
+      '/v1/it-service/event-support/attachments/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String eventSupportKpiCards =
+      '/v1/it-service/event-support/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String eventSupportApprovalKpiCards =
+      '/v1/it-service/event-support/analytics/approval/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String eventSupportStatusBreakdown =
+      '/v1/it-service/event-support/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String eventSupportApprovalStatusBreakdown =
+      '/v1/it-service/event-support/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String eventSupportTrendBreakdown =
+      '/v1/it-service/event-support/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String eventSupportApprovalTrendBreakdown =
+      '/v1/it-service/event-support/analytics/approval/trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String cancellationSendRequest =
+      '/v1/hr-service/cancellation/cancellation-request';
+
+  /// Get my requests
+  static const String cancellationGetRequests =
+      '/v1/hr-service/cancellation/cancellation-requests';
+
+  /// Get approval list (For approvers)
+  static const String cancellationGetActionItems =
+      '/v1/hr-service/cancellation/cancellation-requests-for-approval';
+
+  /// Get request by ID
+  static String cancellationRequestById(int requestId) =>
+      '/v1/hr-service/cancellation/cancellation-request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+  /// (Optional – if backend supports)
+  static String cancellationUpdateRequest(int requestId) =>
+      '/v1/hr-service/cancellation/cancellation-request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String cancellationApprove =
+      '/v1/hr-service/cancellation/cancellation-request/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat
+  static String cancellationSendChatById(int requestId) =>
+      '/v1/hr-service/cancellation/cancellation-request/$requestId/chat';
+
+  /// Get chats
+  static String cancellationChatsById(int requestId) =>
+      '/v1/hr-service/cancellation/cancellation-request/$requestId/chats';
+
+  /// Update chat
+  static String cancellationUpdateChat(int chatId) =>
+      '/v1/hr-service/cancellation/cancellation-request/chat/$chatId';
+
+  /// Delete chat
+  static String cancellationDeleteChat(int chatId) =>
+      '/v1/hr-service/cancellation/cancellation-request/chat/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String cancellationSendAttachmentById(int requestId) =>
+      '/v1/hr-service/cancellation/cancellation-request/$requestId/attachment';
+
+  /// Get attachments
+  static String cancellationAttachmentsById(int requestId) =>
+      '/v1/hr-service/cancellation/cancellation-request/$requestId/attachments';
+
+  /// Update attachment
+  static String cancellationUpdateAttachment(int attachmentId) =>
+      '/v1/hr-service/cancellation/cancellation-request/attachment/$attachmentId';
+
+  /// Delete attachment
+  static String cancellationDeleteAttachment(int attachmentId) =>
+      '/v1/hr-service/cancellation/cancellation-request/attachment/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String cancellationKpiCards =
+      '/v1/hr-service/cancellation/cancellation-request/analytics/kpi';
+
+  /// Approver KPI cards
+  static const String cancellationApprovalKpiCards =
+      '/v1/hr-service/cancellation/cancellation-request/analytics/approvals/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String cancellationStatusBreakdown =
+      '/v1/hr-service/cancellation/cancellation-request/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String cancellationApprovalStatusBreakdown =
+      '/v1/hr-service/cancellation/cancellation-request/analytics/approvals/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String cancellationTrendBreakdown =
+      '/v1/hr-service/cancellation/cancellation-request/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String cancellationApprovalTrendBreakdown =
+      '/v1/hr-service/cancellation/cancellation-request/analytics/approvals/trend-breakdown';
 }

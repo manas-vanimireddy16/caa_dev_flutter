@@ -30,7 +30,7 @@ import 'package:code_setup/presentation/screens/it_services/vpn/models/vpn_reque
 import 'package:code_setup/presentation/screens/it_services/vpn/models/vpn_request_by_id.dart'
     hide ApprovalDetail;
 import 'package:code_setup/presentation/screens/it_services/vpn/widgets/RadioButton.dart';
-import 'package:code_setup/repository/vpn/domain/domain.dart';
+import 'package:code_setup/repository/it_services/vpn/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:file_picker/file_picker.dart';

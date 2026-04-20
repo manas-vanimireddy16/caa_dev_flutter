@@ -48,7 +48,7 @@ import 'package:code_setup/presentation/screens/it_services/muscat/models/chartD
     hide ChartData;
 import 'package:code_setup/presentation/screens/it_services/muscat/models/kpiCardModel.dart';
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
-import 'package:code_setup/repository/mascat/domain/domain.dart';
+import 'package:code_setup/repository/it_services/mascat/domain/domain.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:file_picker/file_picker.dart';

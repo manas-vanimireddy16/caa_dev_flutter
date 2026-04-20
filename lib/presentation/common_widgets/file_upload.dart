@@ -6,6 +6,14 @@ import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:code_setup/presentation/common_widgets/show_toast.dart';
+import 'package:code_setup/presentation/models/file_upload_model.dart';
+import 'package:code_setup/repository/authentication/domain.dart';
+import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 
 class FileUploadWidget extends StatefulWidget {
   final void Function(FileUploadItem fileDetails)? onUploadSuccess;
@@ -15,12 +23,16 @@ class FileUploadWidget extends StatefulWidget {
   final int maxFileSizeInMB;
   final List<String> allowedExtensions;
 
+  /// ✅ FROM STATE (IMPORTANT)
+  final List<FileUploadItem> existingFiles;
+
   const FileUploadWidget({
     Key? key,
     this.onUploadSuccess,
     this.onDelete,
     this.maxFiles = 5,
     this.maxFileSizeInMB = 10,
+    this.existingFiles = const [],
     this.allowedExtensions = const ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],
   }) : super(key: key);
 
@@ -29,26 +41,19 @@ class FileUploadWidget extends StatefulWidget {
 }
 
 class _FileUploadWidgetState extends State<FileUploadWidget> {
-  final List<File> _selectedFiles = [];
-  final List<String?> _uploadedUrls = [];
-
   String? _errorMessage;
   bool _isUploading = false;
-  int? _uploadingIndex;
+
+  /// ✅ ALWAYS USE STATE FILES
+  List<FileUploadItem> get files => widget.existingFiles;
 
   Future<void> _pickFile() async {
-    setState(() {
-      _errorMessage = null;
-    });
+    setState(() => _errorMessage = null);
 
-    // ✅ Max file count validation
-    if (_selectedFiles.length >= widget.maxFiles) {
+    /// ✅ MAX FILE CHECK
+    if (files.length >= widget.maxFiles) {
       setState(() {
-        if (widget.maxFiles == 1) {
-          _errorMessage = "";
-        } else {
-          _errorMessage = "You can upload maximum ${widget.maxFiles} files";
-        }
+        _errorMessage = "You can upload maximum ${widget.maxFiles} files";
       });
       return;
     }
@@ -68,12 +73,10 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
     final file = File(pickedFile.path!);
     final size = await file.length();
 
-    // ✅ Validate extension manually (extra safety)
+    /// ✅ EXTENSION VALIDATION
     final extension = pickedFile.name.split('.').last.toLowerCase();
 
-    if (!widget.allowedExtensions
-        .map((e) => e.toLowerCase())
-        .contains(extension)) {
+    if (!widget.allowedExtensions.contains(extension)) {
       setState(() {
         _errorMessage =
             "Invalid file type. Allowed: ${widget.allowedExtensions.join(', ')}";
@@ -81,35 +84,26 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
       return;
     }
 
-    // ✅ File size validation
-    final maxFileSizeBytes = widget.maxFileSizeInMB * 1024 * 1024;
+    /// ✅ SIZE VALIDATION
+    final maxBytes = widget.maxFileSizeInMB * 1024 * 1024;
 
-    if (size > maxFileSizeBytes) {
+    if (size > maxBytes) {
       setState(() {
         _errorMessage = "File can't be larger than ${widget.maxFileSizeInMB}MB";
       });
       return;
     }
 
-    setState(() {
-      _selectedFiles.add(file);
-      _uploadedUrls.add(null);
-    });
-
-    await _uploadFile(_selectedFiles.length - 1);
+    await _uploadFile(file);
   }
 
-  Future<void> _uploadFile(int index) async {
-    if (index >= _selectedFiles.length) return;
-
+  Future<void> _uploadFile(File file) async {
     setState(() {
       _isUploading = true;
-      _uploadingIndex = index;
       _errorMessage = null;
     });
 
     try {
-      final file = _selectedFiles[index];
       final fileName = file.path.split('/').last;
 
       FormData formData = FormData.fromMap({
@@ -121,45 +115,32 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
 
       final uploadedFile = response?.data?.files?.first;
 
-      setState(() {
-        _isUploading = false;
-        _uploadingIndex = null;
-        _uploadedUrls[index] = uploadedFile?.downloadUrl ?? '';
-      });
+      final fileItem = FileUploadItem(
+        documentId: uploadedFile?.documentId,
+        filename: uploadedFile?.filename,
+        originalName: uploadedFile?.originalName,
+        size: uploadedFile?.size,
+        downloadUrl: uploadedFile?.downloadUrl,
+      );
 
-      if (widget.onUploadSuccess != null) {
-        widget.onUploadSuccess!(
-          FileUploadItem(
-            documentId: uploadedFile?.documentId,
-            filename: uploadedFile?.filename,
-            originalName: uploadedFile?.originalName,
-            size: uploadedFile?.size,
-            downloadUrl: uploadedFile?.downloadUrl,
-          ),
-        );
-      }
+      /// ✅ SEND TO STATE
+      widget.onUploadSuccess?.call(fileItem);
 
       ShowFlutterToast().showFlutterToastSuccess(
         response?.message ?? "File uploaded successfully!",
       );
     } catch (e) {
       setState(() {
-        _isUploading = false;
-        _uploadingIndex = null;
-        _uploadedUrls[index] = null;
         _errorMessage = "Failed to upload file";
+      });
+    } finally {
+      setState(() {
+        _isUploading = false;
       });
     }
   }
 
   void _deleteFile(int index) {
-    if (index < 0 || index >= _selectedFiles.length) return;
-
-    setState(() {
-      _selectedFiles.removeAt(index);
-      _uploadedUrls.removeAt(index);
-    });
-
     widget.onDelete?.call(index);
   }
 
@@ -172,6 +153,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        /// TITLE
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
@@ -182,6 +164,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
             ),
           ),
         ),
+
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(24),
@@ -191,6 +174,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
           ),
           child: Column(
             children: [
+              /// UPLOAD BUTTON
               InkWell(
                 onTap: _isUploading ? null : _pickFile,
                 child: Container(
@@ -224,10 +208,12 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                         ),
                 ),
               ),
+
               const SizedBox(height: 14),
 
+              /// FILE COUNT
               Text(
-                "${_selectedFiles.length} / ${widget.maxFiles} files uploaded",
+                "${files.length} / ${widget.maxFiles} files uploaded",
                 style: TextStyle(
                   fontSize: currentTheme.fontSizes.s12,
                   color: Colors.black54,
@@ -248,13 +234,15 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
 
               const SizedBox(height: 10),
 
-              if (_selectedFiles.isNotEmpty)
-                ...List.generate(_selectedFiles.length, (index) {
-                  final file = _selectedFiles[index];
+              /// ✅ FILE LIST FROM STATE
+              if (files.isNotEmpty)
+                ...List.generate(files.length, (index) {
+                  final file = files[index];
+
                   return ListTile(
                     dense: true,
                     title: Text(
-                      file.path.split('/').last,
+                      file.originalName ?? 'File ${index + 1}',
                       style: TextStyle(fontSize: currentTheme.fontSizes.s13),
                     ),
                     trailing: IconButton(

@@ -486,20 +486,52 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<String> sendChat(
-    Map<String, dynamic> payload,
-    int id,
-    String type,
-  ) async {
+  Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.securityAccessChatorAttachment(id);
+    final String url = ApiEndPoint.cancelHousingContractSendChatById(id);
 
     try {
       if (client != null) {
         final response = await client.post(url, data: payload);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ Request sent successfully');
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('✅ Message sent successfully');
+
+          return response.data["message"] ?? "Success";
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          return response.data["message"] ?? "Something went wrong";
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+        return "Something went wrong";
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  @override
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.cancelHousingContractSendAttachmentById(id);
+
+    try {
+      if (client != null) {
+        final response = await client.post(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('✅ Message sent successfully');
 
           return response.data["message"] ?? "Success";
         } else {

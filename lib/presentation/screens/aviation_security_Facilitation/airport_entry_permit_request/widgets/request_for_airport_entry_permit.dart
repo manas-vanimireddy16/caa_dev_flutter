@@ -4,10 +4,14 @@ part of '../view.dart';
 class NewRequestForAirportEntryPermitScreen extends ConsumerStatefulWidget {
   final int serviceId;
   final int subServiceId;
+  final Service service;
+  final SubService subService;
   const NewRequestForAirportEntryPermitScreen({
     super.key,
     required this.serviceId,
     required this.subServiceId,
+    required this.service,
+    required this.subService,
   });
 
   @override
@@ -19,17 +23,22 @@ class _NewRequestForAirportEntryPermitScreenState
     extends ConsumerState<NewRequestForAirportEntryPermitScreen> {
   late final MultiSelectController<AreaPermission> areaController;
   List<DropdownItem<AreaPermission>> permissionItems = [];
+  late _VSControllerParams _providerArgs;
 
   @override
   void initState() {
     super.initState();
 
+    _providerArgs = _VSControllerParams(
+      service: widget.service,
+      subService: widget.subService,
+    );
     // Controller must exist BEFORE build
     areaController = MultiSelectController<AreaPermission>();
 
     // Delay items + preselect
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final initial = ref.read(_vsProvider);
+      final initial = ref.read(_vsProvider(_providerArgs));
 
       permissionItems = initial.permissionAreas
           .map((e) => DropdownItem(label: e.name, value: e))
@@ -49,8 +58,8 @@ class _NewRequestForAirportEntryPermitScreenState
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(_vsProvider.select((s) => s));
-    final controller = ref.read(_vsProvider.notifier);
+    final state = ref.watch(_vsProvider(_providerArgs).select((s) => s));
+    final controller = ref.read(_vsProvider(_providerArgs).notifier);
 
     return KScaffold(
       appBar: KAppBar(

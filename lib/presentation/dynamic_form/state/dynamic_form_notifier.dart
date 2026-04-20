@@ -495,12 +495,16 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
       /// -----------------------------
       /// ✅ FILE VALIDATION
       /// -----------------------------
-      if (field.type == FieldType.file && field.required) {
+      if (field.type == FieldType.file) {
         final files = value as List<FileUploadItem>?;
 
-        if (files == null || files.isEmpty) {
+        final isRequired =
+            field.required || (field.requiredWhen?.call(state.values) ?? false);
+
+        if (isRequired && (files == null || files.isEmpty)) {
           errors[field.name] = '${field.label} is required';
         }
+
         continue;
       }
 
@@ -529,7 +533,10 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
       /// -----------------------------
       /// ✅ UNIVERSAL REQUIRED VALIDATION
       /// -----------------------------
-      if (field.required) {
+      final isRequired =
+          field.required || (field.requiredWhen?.call(state.values) ?? false);
+
+      if (isRequired) {
         bool isEmpty = false;
 
         if (value == null) {
@@ -579,6 +586,8 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
         return <AcknowledgementItem>[];
       case FieldType.toggle:
         return false;
+      case FieldType.file:
+        return <FileUploadItem>[];
       default:
         return '';
     }

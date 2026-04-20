@@ -83,7 +83,6 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
     final announcements = await dashboardinstance.getModels();
     final anns = announcements;
-    // print(announcements.length);
 
     state = state.copyWith(isLoading: false, announcements: anns);
   }

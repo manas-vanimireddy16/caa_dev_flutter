@@ -131,7 +131,7 @@ class _RequestforCoverageDetailsScreenState
                 ),
 
                 5.toHorizontalSizedBox,
-                RequestTabs(
+                RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
                   subService: widget.subService,
@@ -142,55 +142,11 @@ class _RequestforCoverageDetailsScreenState
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
                   CommonRequestDetails(
-                    /// ---------------- COVERAGE INFORMATION ----------------
-                    coverageInfo: {
-                      "Scheduled Date": request?.eventDate ?? 'N/A',
-                      "Time": request?.eventTime ?? 'N/A',
+                    statusInfo: controller.buildStatusInformation(),
 
-                      "Contact Number":
-                          request?.createdByUser?.mobile ??
-                          request?.phoneNumber ??
-                          'N/A',
-
-                      "Attendees Count": request?.audience ?? 'N/A',
-
-                      "Requested By":
-                          request?.createdByUser?.employeeName ?? 'N/A',
-
-                      "Department":
-                          request?.createdByUser?.department?.departmentName ??
-                          'N/A',
-
-                      "Section":
-                          request?.createdByUser?.section?.sectionName ?? 'N/A',
-                      'Files': attachments[0].fileName ?? 'N/A',
-                      "Document Type": request?.documentType ?? 'N/A',
-
-                      "Approval Status": request?.status ?? 'N/A',
-                    },
-
-                    requestInfo: {
-                      "Request System": request?.service?.name ?? 'N/A',
-                      "Request Type": request?.audience?.toString() ?? 'N/A',
-                      "Description": request?.eventDetails ?? 'N/A',
-
-                      "Directorate Name": request?.directorateName ?? 'N/A',
-                      "Organizing Entity": request?.organizingEntity ?? 'N/A',
-
-                      "Hosted Person": request?.hostedPerson ?? 'N/A',
-                      "Event Objective": request?.eventObjective ?? 'N/A',
-
-                      "News Size": request?.newsSize ?? 'N/A',
-                      "Audience": request?.audience ?? 'N/A',
-                      "Importance of Publishing":
-                          request?.importanceOfPublishing ?? 'N/A',
-
-                      "Extension Number": request?.extnNum ?? 'N/A',
-                      "Required for President":
-                          request?.requiredForPresident == true
-                          ? "President"
-                          : 'Employee',
-                    },
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
+                    // table: controller.mapAccommodationTableForDetails(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(

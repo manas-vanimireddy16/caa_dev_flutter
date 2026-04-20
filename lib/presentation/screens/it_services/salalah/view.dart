@@ -41,7 +41,7 @@ import 'package:code_setup/presentation/screens/it_services/salalah/models/servi
 import 'package:code_setup/presentation/screens/it_services/salalah/models/status_break_down.dart'
     hide ChartData;
 import 'package:code_setup/presentation/screens/it_services/salalah/widgets/request_details_tab.dart';
-import 'package:code_setup/repository/salalah/domain/dashboard.dart'
+import 'package:code_setup/repository/it_services/salalah/domain/dashboard.dart'
     show DashboardRepository;
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';

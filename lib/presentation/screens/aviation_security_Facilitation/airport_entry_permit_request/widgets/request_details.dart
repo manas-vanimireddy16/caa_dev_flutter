@@ -1,20 +1,3 @@
-// import 'package:auto_route/auto_route.dart';
-// import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-// import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-// import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-// import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-// import 'package:code_setup/presentation/screens/approvals/common_widgets.dart';
-// import 'package:code_setup/presentation/screens/logistics/models/logistics_detail_model.dart';
-// import 'package:code_setup/presentation/screens/logistics/view.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/attachments_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_details_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_history_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_tabs.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/workflow_tab.dart';
-// import 'package:code_setup/utils/app_extensions/app_extension.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 part of '../view.dart';
 
 @RoutePage()
@@ -23,11 +6,15 @@ class AirportEntryRequestDetailsTabScreen extends ConsumerStatefulWidget {
   final int id;
   final int serviceId;
   final int subServiceId;
+  final Service service;
+  final SubService subService;
   const AirportEntryRequestDetailsTabScreen({
     super.key,
     required this.id,
     required this.serviceId,
     required this.subServiceId,
+    required this.service,
+    required this.subService,
     this.from = '',
   });
 
@@ -37,19 +24,28 @@ class AirportEntryRequestDetailsTabScreen extends ConsumerStatefulWidget {
 
 class _AirportEntryRequestDetailsTabScreenState
     extends ConsumerState<AirportEntryRequestDetailsTabScreen> {
+  late _VSControllerParams _providerArgs;
+
   @override
   void initState() {
     super.initState();
 
+    _providerArgs = _VSControllerParams(
+      service: widget.service,
+      subService: widget.subService,
+    );
+
     /// Fetch ONLY once
     Future.microtask(() {
-      ref.read(_vsProvider.notifier).fetchRequestDetailsById(widget.id);
+      ref
+          .read(_vsProvider(_providerArgs).notifier)
+          .fetchRequestDetailsById(widget.id);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = ref.read(_vsProvider.notifier);
+    final controller = ref.read(_vsProvider(_providerArgs).notifier);
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -58,13 +54,14 @@ class _AirportEntryRequestDetailsTabScreenState
       /// IMPORTANT — This fixes your issue.
       body: Consumer(
         builder: (context, ref, _) {
-          final state = ref.watch(_vsProvider);
+          final state = ref.watch(_vsProvider(_providerArgs));
 
           if (state.requestDetails == null || state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
           final userInfo = KAppX.globalProvider.read(rolesProvider);
           final request = state.requestDetails.request;
+
           final requestId = request?.id;
           final List<WorkflowDetailModel> workflows =
               state.requestDetails.workflowDetails ?? [];
@@ -77,7 +74,10 @@ class _AirportEntryRequestDetailsTabScreenState
           final active = controller.getActiveApprovalLevel(
             state.requestDetails.approvalDetails ?? [],
           );
-          final actionType = controller.getActionButtonsType(approvals);
+          final actionType = controller.getActionButtonsType(
+            state.requestDetails,
+            approvals,
+          );
 
           final approverId = active?.id;
           // controller.onSelectedApprovalId(approverRoleId ?? 0);
@@ -107,36 +107,25 @@ class _AirportEntryRequestDetailsTabScreenState
                 ),
 
                 5.toHorizontalSizedBox,
-                RequestTabs(selectedTab: selectedTab),
+                RequestDetailsTabs(
+                  selectedTab: selectedTab,
+                  service: widget.service,
+                  subService: widget.subService,
+                ),
                 5.toHorizontalSizedBox,
                 const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
                   CommonRequestDetails(
-                    statusInfo: {
-                      "Request Date": request?.createdAt.toString() ?? 'N/A',
-                      "Status": request?.status ?? "N/A",
-                      "Approver": active?.approverUser?.email ?? 'N/A',
+                    statusInfo: controller.buildStatusInformation(),
 
-                      "Assigned To": active?.approverRole?.name ?? 'N/A',
-                    },
-                    requestInfo: {
-                      'Request For': request?.description ?? 'N/A',
-
-                      'Service Type': request?.service?.name ?? 'N/A',
-                      'Sub Service Type':
-                          request?.subService?.subServiceName ?? 'N/A',
-                      'Description': request?.description ?? 'N/A',
-                    },
-                    technicalInfo: {
-                      'Extension Number':
-                          request?.createdByUser?.extensionNumber.toString() ??
-                          'N/A',
-                    },
-                    // from: 'salalah',
-                    // data: state.requestDetails,
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
+                    // table: controller.mapAccommodationTableForDetails(),
                   )
+                // from: 'salalah',
+                // data: state.requestDetails,
                 else if (selectedTab == 1)
                   CommentsCard(
                     from: widget.from,

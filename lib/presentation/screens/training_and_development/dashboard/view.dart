@@ -30,7 +30,6 @@ import 'package:code_setup/presentation/screens/hr_service/models/position_model
 import 'package:code_setup/presentation/screens/hr_service/models/request_data_model.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/media_services/models/request_data_model.dart';
-import 'package:code_setup/presentation/screens/media_services/request_for_coverage/widgets/request_card.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
@@ -387,7 +386,7 @@ class _TrainingandDevelopmentDashboardScreenState
                               itemCount: data.length,
                               itemBuilder: (context, index) {
                                 final item = data[index];
-                                return ServiceRequestCard(
+                                return RequestCard(
                                   data: {
                                     'title': item.eventObjective ?? '-',
                                     'status': item.status ?? '-',

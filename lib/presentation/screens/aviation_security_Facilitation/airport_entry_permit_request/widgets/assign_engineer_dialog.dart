@@ -3,6 +3,8 @@ part of '../view.dart';
 class AssignEngineerDialog extends ConsumerStatefulWidget {
   final int requestId;
   final int approverRoleId;
+  final Service service;
+  final SubService subService;
   // final int? departmentId;
   // final int? sectionId;
 
@@ -10,6 +12,8 @@ class AssignEngineerDialog extends ConsumerStatefulWidget {
     super.key,
     required this.requestId,
     required this.approverRoleId,
+    required this.service,
+    required this.subService,
     // required this.departmentId,
     // required this.sectionId,
   });
@@ -20,16 +24,21 @@ class AssignEngineerDialog extends ConsumerStatefulWidget {
 }
 
 class _AssignEngineerDialogState extends ConsumerState<AssignEngineerDialog> {
+  late _VSControllerParams _providerArgs;
   @override
   void initState() {
     super.initState();
+    _providerArgs = _VSControllerParams(
+      service: widget.service,
+      subService: widget.subService,
+    );
     // ref.read(_vsProvider.notifier).fetchEngineersList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = ref.read(_vsProvider.notifier);
-    final state = ref.watch(_vsProvider);
+    final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final state = ref.watch(_vsProvider(_providerArgs));
 
     final engineers = state.engineersList;
 

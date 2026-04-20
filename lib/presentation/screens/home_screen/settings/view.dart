@@ -24,6 +24,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(settingsProvider);
     final controller = ref.read(settingsProvider.notifier);
+    final logoutController = ref.read(loginVsProvider.notifier);
 
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)
@@ -181,6 +182,33 @@ class SettingsScreen extends ConsumerWidget {
                   icon: const Icon(Icons.logout_rounded),
                   label: Text(
                     state.isLoggingOut ? 'Logging out...' : 'Logout',
+                    style: TextStyle(
+                      fontSize: currentTheme.fontSizes.s14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: state.isLoggingOut
+                      ? null
+                      : () => controller.logoutJwt(),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.red.shade500,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.logout_rounded),
+                  label: Text(
+                    state.isLoggingOut ? 'Logging out...' : 'Logout with jwt',
                     style: TextStyle(
                       fontSize: currentTheme.fontSizes.s14,
                       fontWeight: FontWeight.w600,

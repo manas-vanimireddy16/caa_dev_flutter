@@ -15,9 +15,12 @@ class FileFieldWidget extends ConsumerWidget {
     final state = ref.watch(dynamicFormProvider);
     final notifier = ref.read(dynamicFormProvider.notifier);
 
-    final uploadedFiles = List<FileUploadItem>.from(
-      state.values[field.name] ?? [],
-    );
+    // final uploadedFiles = List<FileUploadItem>.from(
+    //   state.values[field.name] ?? [],
+    // );
+    final uploadedFiles = (state.values[field.name] is List<FileUploadItem>)
+        ? List<FileUploadItem>.from(state.values[field.name])
+        : <FileUploadItem>[];
 
     final errorText = state.errors[field.name];
 
@@ -28,7 +31,7 @@ class FileFieldWidget extends ConsumerWidget {
           maxFiles: field.maxFiles ?? 1,
           maxFileSizeInMB: field.maxFileSizeInMB ?? 10,
 
-          // existingFiles: uploadedFiles,
+          existingFiles: uploadedFiles,
           allowedExtensions:
               field.allowedExtensions ??
               ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],

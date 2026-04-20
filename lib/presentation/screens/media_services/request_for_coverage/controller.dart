@@ -60,8 +60,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<MediaRequestModel> requestForCoverageRequestData;
-  final List<MediaRequestModel> requestForCoverageActionItemsData;
+  final List<MediaRequestModel> requestData;
+  final List<MediaRequestModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final List<PendingApprovalUser> engineersList;
@@ -84,6 +84,20 @@ class _ViewState {
   final String selectedRequestType;
   final List<AllowanceEmployee> allowanceEmployees;
   final List<DepartmentModel> departments;
+  final List<String> months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
 
   /// FORM KEY
   final formKey = GlobalKey<FormState>();
@@ -101,8 +115,8 @@ class _ViewState {
     required this.tabIndex,
     required this.approvalStatusBreakdown,
     required this.approvalTrendData,
-    required this.requestForCoverageRequestData,
-    required this.requestForCoverageActionItemsData,
+    required this.requestData,
+    required this.actionItems,
     required this.requestDetails,
     required this.requestDetailTab,
     required this.engineersList,
@@ -138,8 +152,8 @@ class _ViewState {
         tabIndex: 0,
         approvalStatusBreakdown: StatusBreakdownModel(),
         approvalTrendData: TrendBreakdownModel(),
-        requestForCoverageRequestData: [],
-        requestForCoverageActionItemsData: [],
+        requestData: [],
+        actionItems: [],
         requestDetails: RequestDetailData(),
         requestDetailTab: 0,
         engineersList: [],
@@ -178,8 +192,8 @@ class _ViewState {
     StatusBreakdownModel? approvalStatusBreakdown,
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
-    List<MediaRequestModel>? requestForCoverageRequestData,
-    List<MediaRequestModel>? requestForCoverageActionItemsData,
+    List<MediaRequestModel>? requestData,
+    List<MediaRequestModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -222,11 +236,8 @@ class _ViewState {
       approvalStatusBreakdown:
           approvalStatusBreakdown ?? this.approvalStatusBreakdown,
       approvalTrendData: approvalTrendData ?? this.approvalTrendData,
-      requestForCoverageRequestData:
-          requestForCoverageRequestData ?? this.requestForCoverageRequestData,
-      requestForCoverageActionItemsData:
-          requestForCoverageActionItemsData ??
-          this.requestForCoverageActionItemsData,
+      requestData: requestData ?? this.requestData,
+      actionItems: actionItems ?? this.actionItems,
       requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
       engineersList: engineersList ?? this.engineersList,
@@ -337,6 +348,474 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  void onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    final int currentVersion = ++_searchVersion;
+
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
+      if (state.tabIndex == 0) {
+        await fetchRequests(isRefresh: true, searchText: value);
+      } else {
+        await fetchActionItems(isRefresh: true, searchText: value);
+      }
+
+      if (currentVersion != _searchVersion) return; // ignore old response
+    });
+  }
+
+  int get currentYear => DateTime.now().year;
+
+  List<String> get filterLabelList =>
+      List.generate(6, (index) => (currentYear - index).toString());
+  List<StatSummaryData> get requestStatsList =>
+      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+
+  List<StatSummaryData> get approverStatsList =>
+      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+
+  List<StatSummaryData> get currentStats =>
+      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  void onStatusFilterChanged(String? value) {
+    if (state.tabIndex == 0) {
+      fetchStatusBreakdown(value ?? '');
+    } else {
+      fetchApprovalStatusBreakdown(value ?? '');
+    }
+  }
+
+  void onTrendFilterChanged(String? value) {
+    if (value == null) return;
+
+    if (state.tabIndex == 0) {
+      fetchTrendBreakDown(value);
+    } else {
+      fetchApprovalTrendBreakDown(value);
+    }
+  }
+
+  List<int> get trendCounts {
+    final data = state.trendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<int> get approvalTrendCounts {
+    final data = state.approvalTrendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<ChartData> get statusBreakdownList {
+    return state.statusBreakdown.data?.breakdown ?? [];
+  }
+
+  List<ChartData> get approvalStatusBreakdownList {
+    return state.approvalStatusBreakdown.data?.breakdown ?? [];
+  }
+
+  bool canUserActOnLevel({required ApprovalDetailModel approval}) {
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
+    final user = KAppX.globalProvider.read(userInfoProvider);
+
+    final int userId = int.parse(user!.data!.id!);
+
+    debugPrint('---------------- APPROVAL CHECK ----------------');
+    debugPrint('Logged User ID: $userId');
+    debugPrint('Delegate User ID: ${approval.delegateUserId}');
+    debugPrint('Approver User ID: ${approval.approverUserId}');
+    debugPrint('Approver Role ID: ${approval.approverRoleId}');
+    debugPrint('Selected Role ID: ${selectedRole?.roleId}');
+    debugPrint('Approval Department ID: ${approval.departmentId}');
+    debugPrint('User Department ID: ${selectedRole?.departmentId}');
+    debugPrint('Approval Section ID: ${approval.sectionId}');
+    debugPrint('User Section ID: ${selectedRole?.sectionId}');
+    debugPrint('------------------------------------------------');
+
+    /// 1️⃣ Delegate always allowed
+    if (approval.delegateUserId == userId) {
+      debugPrint('✅ Allowed: User is delegate approver');
+      return true;
+    }
+
+    /// 2️⃣ Approver user rule
+    if (approval.approverUserId != null && approval.approverUserId != userId) {
+      debugPrint(
+        '❌ Denied: Approver User ID mismatch (${approval.approverUserId} != $userId)',
+      );
+      return false;
+    }
+
+    /// 3️⃣ Role must match
+    if (approval.approverRoleId != null &&
+        approval.approverRoleId != selectedRole?.roleId) {
+      debugPrint(
+        '❌ Denied: Role mismatch (${approval.approverRoleId} != ${selectedRole?.roleId})',
+      );
+      return false;
+    }
+
+    /// 4️⃣ Department must match
+    if (approval.departmentId != null &&
+        approval.departmentId != selectedRole?.departmentId) {
+      debugPrint(
+        '❌ Denied: Department mismatch (${approval.departmentId} != ${selectedRole?.departmentId})',
+      );
+      return false;
+    }
+
+    /// 5️⃣ Section must match
+    if (approval.sectionId != null &&
+        approval.sectionId != selectedRole?.sectionId) {
+      debugPrint(
+        '❌ Denied: Section mismatch (${approval.sectionId} != ${selectedRole?.sectionId})',
+      );
+      return false;
+    }
+
+    debugPrint('✅ Allowed: User can act on this approval level');
+
+    return true;
+  }
+
+  ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
+    // 1️⃣ Prefer IN PROGRESS approval
+    for (final a in list) {
+      if (a.approvalStatus?.toLowerCase() == 'in progress') {
+        return a;
+      }
+    }
+
+    // 2️⃣ Fallback → highest approved / assigned level
+    return getActiveApprovalLevel(list);
+  }
+
+  ApprovalDetailModel? getActiveApprovalLevel(List<ApprovalDetailModel> list) {
+    ApprovalDetailModel? highestLevelCandidate;
+
+    for (final approval in list) {
+      if (!canUserActOnLevel(approval: approval)) continue;
+
+      final status = approval.approvalStatus?.toLowerCase();
+      final level = approval.level ?? -1;
+
+      // 1️⃣ IN PROGRESS always wins
+      if (status == 'in progress') {
+        return approval;
+      }
+
+      // 2️⃣ ONLY approved / assigned participate in comparison
+      if (status == 'approved' || status == 'assigned') {
+        if (highestLevelCandidate == null ||
+            level > (highestLevelCandidate.level ?? -1)) {
+          highestLevelCandidate = approval;
+        }
+      }
+    }
+
+    return highestLevelCandidate;
+  }
+
+  ActionButtonsType getActionButtonsType(
+    RequestDetailData? request,
+    List<ApprovalDetailModel> approvals,
+  ) {
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
+    final user = KAppX.globalProvider.read(userInfoProvider);
+    print(user?.data?.section?.id);
+
+    if (selectedRole == null) return ActionButtonsType.none;
+
+    final int userId = int.parse(user?.data?.id ?? "0");
+
+    // Get active approval level
+    final level = getActiveApprovalLevel(approvals);
+
+    if (level == null) return ActionButtonsType.none;
+
+    // Check user permission
+    final canAct = canUserActOnLevel(approval: level);
+
+    if (!canAct) return ActionButtonsType.none;
+
+    if (!state.isButtonDisabled && !canUserActOnLevel(approval: level)) {
+      return ActionButtonsType.none;
+    }
+
+    final bool? isManager = level.isManager;
+    final bool? isPresident = level.isPresident;
+    final int approvalLevel = level.level ?? 0;
+    final bool ishasReplace = level.isReplace ?? false;
+
+    if (level != null) {
+      debugPrint('this user can approve and reject');
+      return ActionButtonsType.approveReject;
+    }
+
+    return ActionButtonsType.none;
+  }
+
+  void updateButtonDisabledFromApprovals(List<ApprovalDetailModel> approvals) {
+    final active = getActiveApprovalLevel(approvals);
+
+    // No active approval → disable
+    if (active == null) {
+      state = state.copyWith(isButtonDisabled: true);
+      return;
+    }
+
+    // If active approval is NOT allowed → disable
+    if (active.isAllowed != null && active.isAllowed != true) {
+      state = state.copyWith(isButtonDisabled: true);
+      return;
+    }
+
+    final status = active.approvalStatus?.toLowerCase();
+
+    // ✅ Disable ONLY if ACTIVE is approved or assigned
+    final shouldDisable = status == 'approved' || status == 'assigned';
+
+    state = state.copyWith(isButtonDisabled: shouldDisable);
+  }
+
+  bool _isPendingOrInProgress(String? status) {
+    final s = status?.toLowerCase();
+    return s == 'in progress';
+  }
+
+  bool _isCompleted(String? status) {
+    return status?.toLowerCase() == 'completed' ||
+        status?.toLowerCase() == 'approved';
+  }
+
+  DateTime _parseDate(String? value) {
+    try {
+      return DateTime.parse(value ?? '');
+    } catch (_) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+  }
+
+  Map<String, String> resolveApproverMap(List<ApprovalDetailModel>? approvals) {
+    if (approvals == null || approvals.isEmpty) {
+      return {};
+    }
+
+    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    final pendingList = approvals
+        .where((a) => _isPendingOrInProgress(a.approvalStatus))
+        .toList();
+
+    if (pendingList.isNotEmpty) {
+      pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
+      final next = pendingList.first;
+
+      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
+      if (next.approverRoleId != null) {
+        final name = next.approverUser?.employeeName;
+        final email = next.approverUser?.email;
+        final roleName = next.approverRole?.name;
+
+        if ((name ?? '').isNotEmpty) {
+          return {
+            'name': name!,
+            if ((email ?? '').isNotEmpty) 'email': email!,
+            if ((roleName ?? '').isNotEmpty) 'role': roleName!,
+          };
+        }
+      }
+
+      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
+      final department = next.department?.departmentName;
+      final section = next.section?.sectionName;
+
+      if ((department ?? '').isNotEmpty) {
+        return {
+          'department': department!,
+          if ((section ?? '').isNotEmpty) 'section': section!,
+        };
+      }
+
+      return {};
+    }
+
+    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
+    final completedList = approvals
+        .where((a) => _isCompleted(a.approvalStatus))
+        .toList();
+
+    if (completedList.isEmpty) {
+      return {};
+    }
+
+    completedList.sort((a, b) {
+      final levelCompare = (a.level ?? 0).compareTo(b.level ?? 0);
+      if (levelCompare != 0) return levelCompare;
+      return _parseDate(a.updatedAt).compareTo(_parseDate(b.updatedAt));
+    });
+
+    final last = completedList.last;
+
+    final name =
+        last.approvedByUser?.employeeName ?? last.approverUser?.employeeName;
+
+    final email = last.approverUser?.email;
+
+    if ((name ?? '').isNotEmpty) {
+      return {'name': name!, if ((email ?? '').isNotEmpty) 'email': email!};
+    }
+
+    return {};
+  }
+
+  Map<String, String> buildRequestCardData(MediaRequestModel item) {
+    final approverMap = resolveApproverMap(item.approvalDetails ?? []);
+
+    return {
+      'Request Id': item.id?.toString() ?? '-',
+      'status': item.status ?? '-',
+      'Request By': item.createdByUser?.employeeName ?? '-',
+      // 'Cycle Period': item.cyclePeriod ?? '-',
+      'title': item.eventObjective ?? '-',
+      'coverageType': item.suggestedPhotography ?? '-',
+      'date': item.eventDate ?? '-',
+      'time': item.eventTime ?? '-',
+      'attendees': item.audience ?? '',
+      'requestedBy': item.createdByUser?.employeeName ?? '-',
+      'contact': item.extensionNumber ?? '-',
+      'files': (item.attachments?.isNotEmpty ?? false)
+          ? '${item.attachments!.length} file(s)'
+          : 'N/A',
+      'location': item.eventLocation ?? '-',
+      'postedOn': item.createdAt != null
+          ? item.createdAt!.toIso8601String().split('T').first
+          : '-',
+      'department': item.department?.departmentName ?? '-',
+
+      /// ================= EMPLOYEE INFO =================
+
+      /// 👇 APPROVER (SINGLE LINE)
+      if (approverMap.containsKey('role')) ...{
+        'Approver': approverMap['role'] ?? '-',
+      } else if (approverMap.containsKey('department')) ...{
+        'Approver': _buildDepartmentSection(approverMap),
+      },
+    };
+  }
+
+  Map<String, String> buildRequestInformationData() {
+    final request = state.requestDetails;
+    return {
+      /// ───── RIGHT COLUMN ─────
+      "Service Type": request?.service?.name ?? 'N/A',
+
+      /// ───── LEFT COLUMN ─────
+      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
+
+      "Scheduled Date": request?.eventDate ?? 'N/A',
+      "Time": request?.eventTime ?? 'N/A',
+
+      "Contact Number":
+          request?.createdByUser?.mobile ?? request?.phoneNumber ?? 'N/A',
+
+      "Attendees Count": request?.audience ?? 'N/A',
+
+      "Requested By": request?.createdByUser?.employeeName ?? 'N/A',
+
+      "Department": request?.createdByUser?.department?.departmentName ?? 'N/A',
+
+      "Section": request?.createdByUser?.section?.sectionName ?? 'N/A',
+      "Document Type": request?.documentType ?? 'N/A',
+      // 'Quarter': request?.quarter ?? 'N/A',
+    };
+  }
+
+  Map<String, String> buildStatusInformation() {
+    final request = state.requestDetails;
+    final approvals = state.requestDetails.approvalDetails;
+    final nextApprover = resolveApproverMap(approvals);
+    return {
+      "Approval Status": request?.status ?? 'N/A',
+      "Requested Date": request?.createdAt ?? 'N/A',
+      // "Last Updated":
+      //     request?.updatedAt?.split('T').first ?? 'N/A',
+      if (nextApprover.containsKey('department'))
+        'Department': nextApprover['department']!,
+      if (nextApprover.containsKey('section'))
+        'Section': nextApprover['section']!,
+
+      if (nextApprover.containsKey('name'))
+        'Approver Name': nextApprover['name']!,
+      if (nextApprover.containsKey('email'))
+        'Approver Email': nextApprover['email']!,
+    };
+  }
+
+  Map<String, String> buildTechnicalInformation() {
+    final request = state.requestDetails;
+    return {
+      'Extension Number':
+          request?.createdByUser?.extensionNumber.toString() ?? '0',
+    };
+  }
+
+  String _buildDepartmentSection(Map<String, String> approverMap) {
+    final department = approverMap['department'];
+    final section = approverMap['section'];
+
+    if ((department ?? '').isNotEmpty && (section ?? '').isNotEmpty) {
+      return '$department - $section';
+    }
+
+    return department ?? '-';
+  }
+
+  Future<void> openRequestDetails(
+    int id, {
+    bool fromActionItems = false,
+  }) async {
+    updateRequestTab(0);
+
+    await KAppX.router.push(
+      RequestforCoverageDetailsRoute(
+        id: id,
+        from: fromActionItems ? 'action items' : '',
+        service: service,
+        subService: subService,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      ),
+    );
+
+    await refreshAfterReturn();
+  }
+
+  Future<void> refreshAfterReturn() async {
+    await Future.wait([
+      fetchRequests(),
+      fetchKpi(),
+      fetchStatusBreakdown('weekly'),
+      fetchTrendBreakDown(DateTime.now().year.toString()),
+    ]);
+  }
+
+  void openNewRequestForm() {
+    // fetchbyCycleGoals(cycle: 'Jan-Jun');
+    KAppX.router.push(
+      RequestforCoverageRequestRoute(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+        service: service,
+        subService: subService,
+      ),
+    );
+  }
+
   bool isFormValid() {
     return taskDescriptionController.text.isNotEmpty &&
         civilIdCardNumberController.text.isNotEmpty &&
@@ -372,21 +851,6 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   int _searchVersion = 0;
-
-  void onSearchChanged(String value, int tabIndex) {
-    _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
-
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      final response = tabIndex == 0
-          ? await fetchRequests(searchText: value)
-          : await fetchActionItems(searchText: value);
-
-      if (currentVersion != _searchVersion) return; // ❌ ignore old response
-
-      // update state here
-    });
-  }
 
   void updateFormValidity() {
     final formState = state.formKey.currentState;
@@ -766,7 +1230,7 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       // Clear list only if explicitly refreshing or searching
       if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(requestForCoverageRequestData: []);
+        state = state.copyWith(requestData: []);
       }
 
       final requests = await requestForCoverageInstance.getRequests(
@@ -777,7 +1241,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestForCoverageRequestData: requests);
+      state = state.copyWith(requestData: requests);
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -792,7 +1256,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     try {
       if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(requestForCoverageActionItemsData: []);
+        state = state.copyWith(actionItems: []);
       }
 
       final items = await requestForCoverageInstance.getActionItems(
@@ -803,10 +1267,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(
-        requestForCoverageActionItemsData: items,
-        isLoading: false,
-      );
+      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }
@@ -1051,142 +1512,6 @@ class _VSController extends StateNotifier<_ViewState> {
     } finally {
       state = state.copyWith(isLoading: false);
     }
-  }
-
-  bool canUserActOnLevel({required ApprovalDetailModel approval}) {
-    final selectedRole = KAppX.globalProvider.read(rolesProvider);
-    final user = KAppX.globalProvider.read(userInfoProvider);
-
-    final int userId = int.parse(user!.data!.id!);
-
-    /// 1️⃣ Delegate always allowed
-    if (approval.delegateUserId == userId) return true;
-
-    /// 2️⃣ Approver user rule
-    /// null → open approval
-    /// not null → must match logged-in user
-    if (approval.approverUserId != null && approval.approverUserId != userId) {
-      return false;
-    }
-
-    /// 3️⃣ Role must match (if defined)
-    if (approval.approverRoleId != null &&
-        approval.approverRoleId != selectedRole?.roleId) {
-      return false;
-    }
-
-    /// 4️⃣ Department must match (if defined)
-    if (approval.departmentId != null &&
-        approval.departmentId != selectedRole?.departmentId) {
-      return false;
-    }
-
-    /// 5️⃣ Section must match (if defined)
-    if (approval.sectionId != null &&
-        approval.sectionId != selectedRole?.sectionId) {
-      return false;
-    }
-
-    return true;
-  }
-
-  ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
-    // 1️⃣ Prefer IN PROGRESS approval
-    for (final a in list) {
-      if (a.approvalStatus?.toLowerCase() == 'in progress') {
-        return a;
-      }
-    }
-
-    // 2️⃣ Fallback → highest approved / assigned level
-    return getActiveApprovalLevel(list);
-  }
-
-  ApprovalDetailModel? getActiveApprovalLevel(List<ApprovalDetailModel> list) {
-    ApprovalDetailModel? highestLevelCandidate;
-
-    for (final approval in list) {
-      if (!canUserActOnLevel(approval: approval)) continue;
-
-      final status = approval.approvalStatus?.toLowerCase();
-      final level = approval.level ?? -1;
-
-      // 1️⃣ IN PROGRESS always wins
-      if (status == 'in progress') {
-        return approval;
-      }
-
-      // 2️⃣ ONLY approved / assigned participate in comparison
-      if (status == 'approved' || status == 'assigned') {
-        if (highestLevelCandidate == null ||
-            level > (highestLevelCandidate.level ?? -1)) {
-          highestLevelCandidate = approval;
-        }
-      }
-    }
-
-    return highestLevelCandidate;
-  }
-
-  ActionButtonsType getActionButtonsType(
-    RequestDetailData? request,
-    List<ApprovalDetailModel> approvals,
-  ) {
-    final selectedRole = KAppX.globalProvider.read(rolesProvider);
-    final user = KAppX.globalProvider.read(userInfoProvider);
-    print(user?.data?.section?.id);
-
-    if (selectedRole == null) return ActionButtonsType.none;
-
-    final int userId = int.parse(user?.data?.id ?? "0");
-
-    // Get active approval level
-    final level = getActiveApprovalLevel(approvals);
-
-    if (level == null) return ActionButtonsType.none;
-
-    // Check user permission
-    final canAct = canUserActOnLevel(approval: level);
-
-    if (!canAct) return ActionButtonsType.none;
-
-    if (!state.isButtonDisabled && !canUserActOnLevel(approval: level)) {
-      return ActionButtonsType.none;
-    }
-
-    final bool? isManager = level.isManager;
-    final bool? isPresident = level.isPresident;
-    final int approvalLevel = level.level ?? 0;
-    final bool ishasReplace = level.isReplace ?? false;
-
-    if (level != null) {
-      return ActionButtonsType.approveReject;
-    }
-
-    return ActionButtonsType.none;
-  }
-
-  void updateButtonDisabledFromApprovals(List<ApprovalDetailModel> approvals) {
-    final active = getActiveApprovalLevel(approvals);
-
-    // No active approval → disable
-    if (active == null) {
-      state = state.copyWith(isButtonDisabled: true);
-      return;
-    }
-
-    // If active approval is NOT allowed → disable
-    if (active.isAllowed != true) {
-      state = state.copyWith(isButtonDisabled: true);
-      return;
-    }
-
-    final status = active.approvalStatus?.toLowerCase();
-
-    // ✅ Disable ONLY if ACTIVE is approved
-    final shouldDisable = status == 'approved';
-
-    state = state.copyWith(isButtonDisabled: shouldDisable);
   }
 
   void onPositionChange(String position) =>

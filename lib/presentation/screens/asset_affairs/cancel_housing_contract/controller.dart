@@ -604,12 +604,6 @@ class _VSController extends StateNotifier<_ViewState> {
 
     /// ================= START DATE =================
     DynamicField(
-      name: 'current_contract_start_date',
-      label: 'Current Contract Start Date',
-      type: FieldType.date,
-      required: true,
-    ),
-    DynamicField(
       name: 'current_contract_end_date',
       label: 'Current Contract End Date',
       type: FieldType.date,
@@ -656,6 +650,9 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Attachments (Optional)',
       type: FieldType.file,
       required: false,
+      requiredWhen: (values) =>
+          values['pending_bills_clearance_status'].toString().toLowerCase() ==
+          'yes',
       maxFileSizeInMB: 10,
       allowedExtensions: ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],
     ),

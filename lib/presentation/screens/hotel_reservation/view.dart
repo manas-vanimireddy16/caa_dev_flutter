@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
@@ -20,7 +18,6 @@ import 'package:code_setup/presentation/core_widgets/drawer/drawer.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/core_widgets/list_tile_divider.dart';
 
-import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/models/request_detail.dart'
     hide Service;
 
@@ -30,8 +27,6 @@ import 'package:code_setup/utils/assets/icons.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:google_fonts/google_fonts.dart';
 
 part 'controller.dart';
 

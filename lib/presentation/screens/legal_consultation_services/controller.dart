@@ -64,38 +64,10 @@ class _VSController extends StateNotifier<_ViewState> {
     switch (index) {
       case 0:
         return 'Request For Legal Contract Review';
-      // case 1:
-      //   return 'Assignment Decision';
-      // case 2:
-      //   return 'Secondment Decision';
-      // case 3:
-      //   return 'Temporary Assignment Decision';
-      // case 4:
-      //   return 'Service Transfer';
-      // case 5:
-      //   return 'Duty Mission';
-      // case 6:
-      //   return 'Planned Duty Mission';
-      // case 7:
-      //   return 'Unplanned Duty Mission';
-      // case 8:
-      //   return 'Transfer From One Job to Another Job Nature';
-      // case 9:
-      //   return 'Payment of Shift Allowance';
-      // case 10:
-      //   return 'Payment of Cash Allowance for Leave';
-      // case 11:
-      //   return 'Required New Resource';
-      // case 12:
-      //   return 'Promotions';
-      // case 13:
-      //   return 'Annual Increment';
-      // case 14:
-      //   return 'Skills Enhancement';
-      // case 15:
-      //   return 'Performance Management';
-      // case 16:
-      //   return 'Human Resource Annual Planning';
+      case 1:
+        return 'Appeal Against Administrative Decisions';
+      case 2:
+        return 'Legal Consultation and Review of Administrative Decisions';
 
       default:
         return '  Home';

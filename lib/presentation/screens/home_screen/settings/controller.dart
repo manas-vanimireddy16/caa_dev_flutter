@@ -15,7 +15,7 @@ class SettingsController extends StateNotifier<SettingsState> {
     initializeMsal();
     final user = KAppX.globalProvider.read(userInfoProvider);
     final int id = int.tryParse(user?.data?.id ?? '') ?? 0;
-    fetchUserRoles(1018); // //(1017);(id); //(40);(id); //
+    fetchUserRoles(id); // //(1017);(id); //(40);(id); //
   }
 
   SettingsController(this.ref) : super(SettingsState.initial());
@@ -58,6 +58,7 @@ class SettingsController extends StateNotifier<SettingsState> {
       roleName: role.role?.name ?? '',
       departmentId: role.department?.id ?? 0,
       sectionId: role.section?.id ?? 0,
+      services: role.services ?? [],
     );
 
     await storage.storeSelectedRole(selected);
@@ -77,6 +78,38 @@ class SettingsController extends StateNotifier<SettingsState> {
     await KAuthCred().deleteUserInfoData();
     await KAuthCred().deleteRoleData();
     KAppX.router.replace(MicrosoftLoginRoute());
+  }
+
+  Future<void> logoutJwt() async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      final storage = KAuthCred();
+
+      // 1️⃣ Clear all stored auth data
+      await storage.deleteProfileData();
+      await storage.deleteUserInfoData();
+      // await storage.deleteSelectedRole(); // if exists
+      // await storage.deleteRoleData(); // if you have this
+
+      // 2️⃣ Clear in-memory token
+      // accessToken = '';
+
+      // 3️⃣ Reset state
+      // state = _ViewState.init();
+      // KAuthCred().getProfileData().then((profile) {
+      //   profile?.accessToken = ''; // Should be null or empty
+      // });
+
+      // 4️⃣ Navigate to Login
+      KAppX.router.replace(MicrosoftLoginRoute());
+
+      debugPrint("✅ JWT Logout Successful");
+    } catch (e) {
+      debugPrint("❌ Logout Error: $e");
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   void onSelectRoleById(int roleId) {
@@ -180,6 +213,7 @@ class SettingsController extends StateNotifier<SettingsState> {
       roleName: first.roleName!,
       departmentId: detail.department?.id ?? 0,
       sectionId: detail.section?.id ?? 0,
+      services: detail.services ?? [],
     );
 
     await storage.storeSelectedRole(selected);

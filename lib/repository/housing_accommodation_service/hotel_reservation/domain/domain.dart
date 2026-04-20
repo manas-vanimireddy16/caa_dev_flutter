@@ -39,7 +39,8 @@ abstract class HotelReservationRepoistory {
   Future<TrendBreakdownModel> getApprovalTrendBreakdownData(String period);
 
   Future<void> onClose(Map<String, dynamic> payload);
-  Future<String> sendChat(Map<String, dynamic> payload, int id, String type);
 
+  Future<String> sendChat(Map<String, dynamic> payload, int id);
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id);
   Future<List<DepartmentModel>> getDepartments();
 }

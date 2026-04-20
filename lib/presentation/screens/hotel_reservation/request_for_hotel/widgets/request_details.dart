@@ -93,6 +93,10 @@ class _HotelReservationRequestDetailsTabScreenState
           final active = controller.getActiveApprovalLevel(
             state.requestDetails.approvalDetails ?? [],
           );
+          final actionType = controller.getActionButtonsType(
+            state.requestDetails,
+            approvals,
+          );
 
           final approverId = active?.id;
           // final canApprove = controller.shouldShowApprovalButtons(approvals);
@@ -120,7 +124,7 @@ class _HotelReservationRequestDetailsTabScreenState
                 ),
 
                 5.toHorizontalSizedBox,
-                RequestTabs(
+                RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
                   subService: widget.subService,
@@ -131,41 +135,16 @@ class _HotelReservationRequestDetailsTabScreenState
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
                   CommonRequestDetails(
-                    statusInfo: {
-                      "Request Date": request?.createdAt.toString() ?? 'N/A',
-                      "Status": request?.status ?? "N/A",
-                      "Approver": active?.approvedByUser?.email ?? 'N/A',
+                    statusInfo: controller.buildStatusInformation(),
 
-                      "Assigned To": active?.approverRole?.name ?? 'N/A',
-                    },
-                    requestInfo: {
-                      'Hotel Name': request?.hotelName ?? 'N/A',
-                      'Accommodation Type':
-                          request?.typeOfAccommodation ?? 'N/A',
-                      'Number of Passengers':
-                          request?.numberOfGuests?.toString() ?? 'N/A',
-                      'Check-In Date':
-                          request?.checkInDate?.toString() ?? 'N/A',
-                      'Check-Out Date':
-                          request?.checkOutDate?.toString() ?? 'N/A',
-                      'Meal': (request?.meal?.isNotEmpty ?? false)
-                          ? request?.meal?.join(', ') ?? 'N/A'
-                          : 'N/A',
-                      'Hotel Price': request?.price?.toString() ?? 'N/A',
-                      'Service Type': request?.service?.name ?? 'N/A',
-                    },
-                    technicalInfo: {
-                      'Extension Number': request?.extnNum ?? 'N/A',
-                    },
-                    // from: 'salalah',
-                    // data: state.requestDetails,
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(
                     from: widget.from,
-                    showButtons: controller.shouldShowApprovalButtons(
-                      approvals,
-                    ),
+                    showButtons: actionType != ActionButtonsType.none,
+                    actionType: actionType,
                     entries: chats,
                     controller: controller.chatController,
                     attachments: [],
@@ -182,7 +161,6 @@ class _HotelReservationRequestDetailsTabScreenState
                         "Approved",
                       );
                     },
-                    actionType: ActionButtonsType.none,
                     onReject: () async {
                       controller.onClose(
                         approverId ?? 0,

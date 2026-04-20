@@ -65,45 +65,77 @@ class _VSController extends StateNotifier<_ViewState> {
   void initState() {
     // fromDateController = TextEditingController();
     final userData = KAppX.globalProvider.read(userProvider);
-    fetchUserRoles(1018); //0); //(40);(1017);(userData?.userId ?? 0);
+    fetchUserRoles(
+      userData?.userId ?? 0,
+    ); //0); //(40);(1017);(userData?.userId ?? 0);
     fetchBookmarks();
   }
 
   final dashboardinstance = DashboardRepository();
-
   Future<void> fetchUserRoles(int id) async {
     state = state.copyWith(isLoading: true);
 
     try {
       final repo = RolesRepo();
-      final userRoles = await repo.getUserRoles(id); //(40);
+      final userRoles = await repo.getUserRoles(id);
 
-      // Save full response
+      // 1️⃣ Save full response
       state = state.copyWith(userRoles: userRoles);
 
-      // Load saved role (DO NOT overwrite)
+      // 2️⃣ Handle role selection (store or pick default)
+      await selectOrStoreRole(userRoles);
+
+      // 3️⃣ Get selected role from storage
       final storage = KAuthCred();
       final saved = await storage.getSelectedRole();
 
       List<Service> filteredServices = [];
 
       if (saved != null) {
-        // 1. Find matching RoleDetail whose role.id == saved.roleId
+        // 4️⃣ Find matching role
         final matchedRole = userRoles.data?.roleDetails?.firstWhere(
           (detail) => detail.role?.id == saved.roleId,
           orElse: () => RoleDetail(services: []),
         );
 
-        // 2. Extract services of that role
+        // 5️⃣ Extract services
         filteredServices = matchedRole?.services ?? [];
       }
 
-      // Update state with filtered services only
+      // 6️⃣ Update state
       state = state.copyWith(services: filteredServices, isLoading: false);
     } catch (e) {
       debugPrint("fetchUserRoles error: $e");
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  Future<void> selectOrStoreRole(UserRoleResponse userRoles) async {
+    final storage = KAuthCred();
+    final saved = await storage.getSelectedRole();
+
+    // First role from summary
+    final first = userRoles.data!.rolesSummary!.first;
+
+    // Match it inside role_details
+    final detail = userRoles.data!.roleDetails!.firstWhere(
+      (e) => e.role?.id == first.roleId,
+      orElse: () => userRoles.data!.roleDetails!.first,
+    );
+
+    final selected = SelectedUserRole(
+      roleId: first.roleId!,
+      roleName: first.roleName!,
+      departmentId: detail.department?.id ?? 0,
+      sectionId: detail.section?.id ?? 0,
+      services: detail.services ?? [],
+    );
+
+    await storage.storeSelectedRole(selected);
+
+    // state = state.copyWith(userRoles: _wrapSelectedRole(saved!));
+
+    print("🎯 Selected Role: ${selected.services}");
   }
 
   Future<void> fetchBookmarks() async {
@@ -446,6 +478,38 @@ class _VSController extends StateNotifier<_ViewState> {
       case 'Request for Legal Contract Review':
         KAppX.router.push(
           RequestForLegalContractReviewRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Appeal Against Administrative Decisions':
+        KAppX.router.push(
+          AppealAgainstAdministrativeDecisionsRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Legal Consultation and Review of Administrative Decisions':
+        KAppX.router.push(
+          LegalConsultationandReviewofAdministrativeDecisionsRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Request Event Support':
+        KAppX.router.push(
+          RequestEventSupportRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Request For Cancellation':
+        KAppX.router.push(
+          RequestForCancellationRoute(
             service: service ?? Service(),
             subService: subService ?? SubService(),
           ),

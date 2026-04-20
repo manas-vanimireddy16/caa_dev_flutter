@@ -169,13 +169,14 @@ class _VSController extends StateNotifier<_ViewState> {
       roleName: first.roleName!,
       departmentId: detail.department?.id ?? 0,
       sectionId: detail.section?.id ?? 0,
+      services: detail.services ?? [],
     );
 
     await storage.storeSelectedRole(selected);
 
     // state = state.copyWith(userRoles: _wrapSelectedRole(saved!));
 
-    print("🎯 Selected Role: ${selected.roleName}");
+    print("🎯 Selected Role: ${selected.services}");
   }
 
   Future<void> fetchUserInfo(int id) async {
@@ -219,9 +220,9 @@ class _VSController extends StateNotifier<_ViewState> {
       // Store user profile data
       await kAuthCred.storeProfileData(user);
       if (user.userId != null) {
-        await fetchUserRoles(1018); //(user.userId ?? 0);
+        await fetchUserRoles(user.userId ?? 0); //(user.userId ?? 0);
 
-        await fetchUserInfo(1018); //(
+        await fetchUserInfo(user.userId ?? 0); //(
         //   user.userId ?? 0,
 
         // You can also store the role locally if needed:
@@ -238,6 +239,47 @@ class _VSController extends StateNotifier<_ViewState> {
       log('FormatException while decoding JWT: $e');
     } catch (e) {
       log('Unexpected error decoding JWT: $e');
+    }
+  }
+
+  Future<void> loginWithJwt(String token) async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      decodeJwtPayloadSafe(token);
+    } catch (e) {
+      debugPrint("JWT Login Error: $e");
+    }
+
+    state = state.copyWith(isLoading: false);
+  }
+
+  Future<void> logoutJwt() async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      final storage = KAuthCred();
+
+      // 1️⃣ Clear all stored auth data
+      await storage.deleteProfileData();
+      await storage.deleteUserInfoData();
+      // await storage.deleteSelectedRole(); // if exists
+      // await storage.deleteRoleData(); // if you have this
+
+      // 2️⃣ Clear in-memory token
+      accessToken = '';
+
+      // 3️⃣ Reset state
+      state = _ViewState.init();
+
+      // 4️⃣ Navigate to Login
+      KAppX.router.replace(MicrosoftLoginRoute());
+
+      debugPrint("✅ JWT Logout Successful");
+    } catch (e) {
+      debugPrint("❌ Logout Error: $e");
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 

@@ -41,7 +41,7 @@ class _KBottomNavigatorScreenState
     if (widget.fromPage == 'muscat') {
       routes = const [AnnouncementRoute()];
     } else if (widget.fromPage == 'requesteventsupport') {
-      routes = const [RequestEventDashboardRoute(), RequestPortalRoute()];
+      routes = const [];
     } else if (widget.fromPage == 'logistics') {
       routes = const [
         LogisticsDashboardRoute(),

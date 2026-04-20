@@ -14,6 +14,7 @@ import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.da
 import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';
 import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
+import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
@@ -92,15 +93,24 @@ class _RequestForLegalContractReviewScreenState
   late PageController _pageController;
 
   @override
+  @override
   void initState() {
     super.initState();
 
-    _providerArgs = _VSControllerParams(
-      service: widget.service,
-      subService: widget.subService,
-    );
+    final selected = ref.read(selectedServiceProvider);
 
-    // final state = ref.watch(_vsProvider(_providerArgs));
+    final service = widget.service.id != null
+        ? widget.service
+        : selected.service;
+
+    final subService = widget.subService.id != null
+        ? widget.subService
+        : selected.subService;
+
+    _providerArgs = _VSControllerParams(
+      service: service,
+      subService: subService,
+    );
 
     _focusNode = FocusNode();
     _pageController = PageController();

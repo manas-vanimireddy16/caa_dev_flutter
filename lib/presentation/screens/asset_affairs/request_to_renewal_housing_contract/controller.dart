@@ -574,18 +574,6 @@ class _VSController extends StateNotifier<_ViewState> {
   List<DynamicField> get renewalHousingContractFormFields => [
     /// ================= REQUESTED UNIT TYPE =================
     DynamicField(
-      name: 'requested_unit_type',
-      label: 'Requested Unit Type',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: 'Apartment', label: 'Apartment'),
-        DropdownOption(value: 'Villa', label: 'Villa'),
-      ],
-
-      /// ⭐ reset dependent checkbox fields
-    ),
-    DynamicField(
       name: 'current_unit_type',
       label: 'Current Unit Type',
       type: FieldType.select,
@@ -614,29 +602,16 @@ class _VSController extends StateNotifier<_ViewState> {
 
     /// ================= START DATE =================
     DynamicField(
-      name: 'current_contract_start_date',
-      label: 'Current Contract Start Date',
-      type: FieldType.date,
-      required: true,
-    ),
-    DynamicField(
       name: 'current_contract_end_date',
       label: 'Current Contract End Date',
       type: FieldType.date,
       required: true,
     ),
 
-    DynamicField(
-      name: 'requested_renewal_duration',
-      label: 'Requested Renewal Duration',
-      type: FieldType.text,
-      required: true,
-    ),
-
     /// ================= FAMILY SIZE =================
     DynamicField(
       name: 'family_size',
-      label: 'Family Size',
+      label: 'Family Size / Dependents',
       type: FieldType.number,
       required: true,
     ),
@@ -644,7 +619,6 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'reason_for_renewal',
       label: 'Reason for Renewal',
       type: FieldType.text,
-      required: true,
     ),
 
     /// ================= COMMENTS =================
@@ -1594,12 +1568,12 @@ class _VSController extends StateNotifier<_ViewState> {
       "sub_service_id": subServiceId,
 
       /// ⭐ UNIT TYPES
-      "requested_unit_type": values['requested_unit_type'],
+      "requested_unit_type": "",
       "current_unit_type": values['current_unit_type'],
 
       /// ⭐ CONTRACT DETAILS
       "location_of_unit": values['location_of_unit'],
-      "current_contract_start_date": values['current_contract_start_date'],
+      "current_contract_start_date": formatDateForCreateRequest,
       "current_contract_end_date": values['current_contract_end_date'],
       "requested_renewal_duration": values['requested_renewal_duration']
           ?.toString(),

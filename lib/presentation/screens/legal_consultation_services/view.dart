@@ -1,42 +1,25 @@
-import 'dart:convert';
-
 import 'dart:developer';
-
 import 'package:auto_route/auto_route.dart';
-
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-
 import 'package:code_setup/modules/domain/core/theme/theme.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
-
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/common_widgets/drawer_component.dart';
-
+import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/drawer/drawer.dart';
-
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/core_widgets/list_tile_divider.dart';
-
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/models/request_detail.dart'
     hide Service;
-
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/assets/icons.dart';
-
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:google_fonts/google_fonts.dart';
-
 part 'controller.dart';
-
 part 'widgets/drawer.dart';
-
 // part 'my_profile_page/widget/my_profile_widget.dart';
 
 @RoutePage()
@@ -58,48 +41,14 @@ class LegalConsultationServicesHomeScreen extends ConsumerWidget {
           service: Service(),
           subService: SubService(),
         ),
-        // SecondmentDecisionRoute(service: Service(), subService: SubService()),
-        // TemporaryAssignmentDecisionRoute(
-        //   service: Service(),
-        //   subService: SubService(),
-        // ),
-        // ServiceTransferRoute(service: Service(), subService: SubService()),
-        // RequestforDutyMissionRoute(
-        //   service: Service(),
-        //   subService: SubService(),
-        // ),
-        // RequestforDutyMissionPlannedRoute(
-        //   service: Service(),
-        //   subService: SubService(),
-        // ),
-        // RequestforDutyMissionUnplannedRoute(
-        //   service: Service(),
-        //   subService: SubService(),
-        // ),
-        // TransferFromOneJobtoAnotherJobNatureRoute(
-        //   service: Service(),
-        //   subService: SubService(),
-        // ),
-        // PaymentofShiftAllowanceRoute(
-        //   service: Service(),
-        //   subService: SubService(),
-        // ),
-        // PaymentofCashAllowanceForLeaveRoute(
-        //   service: Service(),
-        //   subService: SubService(),
-        // ),
-        // RequiredNewResourceRoute(service: Service(), subService: SubService()),
-        // PromotionsRoute(service: Service(), subService: SubService()),
-        // AnnualIncrementRoute(service: Service(), subService: SubService()),
-        // SkillsEnhancementRoute(service: Service(), subService: SubService()),
-        // PerformanceManagementRoute(
-        //   service: Service(),
-        //   subService: SubService(),
-        // ),
-        // RequestForHumanResourceAnnualPlanningRoute(
-        //   service: Service(),
-        //   subService: SubService(),
-        // ),
+        AppealAgainstAdministrativeDecisionsRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
+        LegalConsultationandReviewofAdministrativeDecisionsRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

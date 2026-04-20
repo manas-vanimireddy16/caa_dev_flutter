@@ -38,7 +38,6 @@ import 'package:code_setup/presentation/screens/hr_service/models/employee_model
 import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/promotions_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/required_new_resource_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
@@ -46,8 +45,6 @@ import 'package:code_setup/presentation/screens/task_management/models/employee_
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/hr_service/annual_increment/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/assignment_decision/domain/domain.dart';
-import 'package:code_setup/repository/hr_service/promotions/domain/domain.dart';
-import 'package:code_setup/repository/hr_service/required_new_resource/domain/domain.dart';
 import 'package:code_setup/repository/security_access/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';

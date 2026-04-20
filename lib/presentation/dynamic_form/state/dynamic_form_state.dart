@@ -135,7 +135,13 @@ class DynamicForm extends ConsumerWidget {
               onPrevious: notifier.previousStep,
               onNext: () {
                 if (notifier.validateStep(visibleFields)) {
-                  notifier.nextStep();
+                  // 🔥 REMOVE CURRENT FOCUS (KEY FIX)
+                  FocusManager.instance.primaryFocus?.unfocus();
+
+                  // Optional: small delay for smoother UX
+                  Future.microtask(() {
+                    notifier.nextStep();
+                  });
                 }
               },
               onSubmit: () {
