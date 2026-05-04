@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
@@ -12,13 +10,7 @@ import 'package:code_setup/modules/domain/core/theme/theme.dart';
 
 import 'package:code_setup/modules/router/app_router.gr.dart';
 
-import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
-
-import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-import 'package:code_setup/presentation/screens/home_screen/services/view.dart';
-import 'package:code_setup/presentation/screens/home_screen/settings/view.dart';
 
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 

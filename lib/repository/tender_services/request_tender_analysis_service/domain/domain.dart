@@ -2,23 +2,19 @@ import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/request_for_project_approval.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/request_for_vapt_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
-import 'package:code_setup/repository/assests_affair/cancel_housing_contract/data/data.dart';
-import 'package:code_setup/repository/information_security_services/request_for_VAPT_and_infrastructure_review/data/data.dart';
-import 'package:code_setup/repository/information_security_services/request_for_project_approval/data/data.dart';
+import 'package:code_setup/repository/tender_services/request_tender_analysis_service/data/data.dart';
 
-abstract class RequestForVAPTAndInfrastructureReviewRepository {
-  factory RequestForVAPTAndInfrastructureReviewRepository() =>
-      RequestForVAPTAndInfrastructureReviewRepositoryImple();
+abstract class RequestForTenderAnalysisServiceRepository {
+  factory RequestForTenderAnalysisServiceRepository() =>
+      RequestForTenderAnalysisServiceRepositoryImpl();
 
   Future<List<EmployeeList>> getUsers(int departmentId);
 
-  Future<Map<String, dynamic>> sendVAPTNewRequest(Map<String, dynamic> payload);
+  Future<Map<String, dynamic>> requestForTenderAnalysisServiceCreateRequest(
+    Map<String, dynamic> payload,
+  );
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,
   );
@@ -29,7 +25,7 @@ abstract class RequestForVAPTAndInfrastructureReviewRepository {
   });
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId);
 
-  Future<List<RequestForVAPTModel>> getRequests({
+  Future<List<EventSupportModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -40,7 +36,7 @@ abstract class RequestForVAPTAndInfrastructureReviewRepository {
     String searchText = '',
   });
 
-  Future<List<RequestForVAPTModel>> getActionItems({
+  Future<List<EventSupportModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -84,5 +80,4 @@ abstract class RequestForVAPTAndInfrastructureReviewRepository {
   });
   Future<List<DepartmentModel>> getDepartments();
   Future<List<SectionModel>> getSections({required String? userDepartmentId});
-  Future<void> onAssign(Map<String, dynamic> payload);
 }

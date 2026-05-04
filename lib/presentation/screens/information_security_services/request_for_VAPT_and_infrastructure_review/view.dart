@@ -63,11 +63,13 @@ import 'package:code_setup/repository/hr_service/annual_duty_mission/domain/doma
 import 'package:code_setup/repository/hr_service/assignment_decision/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/request_for_human_resource_annual_planning/domain/domain.dart';
 import 'package:code_setup/repository/information_security_services/request_for_VAPT_and_infrastructure_review/domain/domain.dart';
+import 'package:code_setup/repository/information_security_services/request_for_internal_audit/domain/domain.dart';
 import 'package:code_setup/repository/information_security_services/request_for_project_approval/domain/domain.dart';
 import 'package:code_setup/repository/security_access/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:equatable/equatable.dart';
 import 'package:excel/excel.dart' hide Border;
 import 'package:file_picker/file_picker.dart';
@@ -85,6 +87,7 @@ part 'widgets/request_details.dart';
 part 'widgets/request_details_tabs.dart';
 part 'widgets/request_list.dart';
 part 'widgets/request_tab.dart';
+part 'widgets/vapt_assign.dart';
 part 'widgets/ticket_requests_card.dart';
 
 @RoutePage()

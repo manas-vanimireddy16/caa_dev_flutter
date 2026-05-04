@@ -17,6 +17,7 @@ class ApiEndPoint {
 
   static const String sections = '/v1/user-service/master/sections/listing';
 
+  static const String sectionsList = '/v1/user-service/admin/sections/';
   static const String departmentsList =
       '/v1/user-service/master/departments/listing';
 
@@ -2130,6 +2131,9 @@ class ApiEndPoint {
       '/v1/it-service/request-for-vapt/requests/$requestId';
 
   /// ===================== UPDATE REQUEST =====================
+  /// Assign Request
+  static const String requestForVAPTAssign =
+      '/v1/it-service/request-for-vapt/assign';
 
   /// Update request
   static String requestForVAPTUpdateRequest(int requestId) =>
@@ -2922,4 +2926,192 @@ class ApiEndPoint {
   /// Approval trend breakdown
   static const String cancellationApprovalTrendBreakdown =
       '/v1/hr-service/cancellation/cancellation-request/analytics/approvals/trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String respondToEnquiriesSendRequest =
+      '/v1/tender-service/respond-to-enquiries/requests';
+
+  /// Get my requests
+  static const String respondToEnquiriesGetRequests =
+      '/v1/tender-service/respond-to-enquiries/requests';
+
+  /// Get approval list (For approvers)
+  static const String respondToEnquiriesGetActionItems =
+      '/v1/tender-service/respond-to-enquiries/requests/approval';
+
+  /// Get request by ID
+  static String respondToEnquiriesRequestById(int requestId) =>
+      '/v1/tender-service/respond-to-enquiries/requests/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+  /// (Optional – if backend supports)
+  static String respondToEnquiriesUpdateRequest(int requestId) =>
+      '/v1/tender-service/respond-to-enquiries/requests/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String respondToEnquiriesApprove =
+      '/v1/tender-service/respond-to-enquiries/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat
+  static String respondToEnquiriesSendChatById(int requestId) =>
+      '/v1/tender-service/respond-to-enquiries/requests/$requestId/chat';
+
+  /// Get chats
+  static String respondToEnquiriesChatsById(int requestId) =>
+      '/v1/tender-service/respond-to-enquiries/requests/$requestId/chats';
+
+  /// Update chat
+  static String respondToEnquiriesUpdateChat(int chatId) =>
+      '/v1/tender-service/respond-to-enquiries/chats/$chatId';
+
+  /// Delete chat
+  static String respondToEnquiriesDeleteChat(int chatId) =>
+      '/v1/tender-service/respond-to-enquiries/chats/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String respondToEnquiriesSendAttachmentById(int requestId) =>
+      '/v1/tender-service/respond-to-enquiries/requests/$requestId/attachment';
+
+  /// Get attachments
+  static String respondToEnquiriesAttachmentsById(int requestId) =>
+      '/v1/tender-service/respond-to-enquiries/requests/$requestId/attachments';
+
+  /// Update attachment
+  static String respondToEnquiriesUpdateAttachment(int attachmentId) =>
+      '/v1/tender-service/respond-to-enquiries/attachments/$attachmentId';
+
+  /// Delete attachment
+  static String respondToEnquiriesDeleteAttachment(int attachmentId) =>
+      '/v1/tender-service/respond-to-enquiries/attachments/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String respondToEnquiriesKpiCards =
+      '/v1/tender-service/respond-to-enquiries/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String respondToEnquiriesApprovalKpiCards =
+      '/v1/tender-service/respond-to-enquiries/analytics/approval/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String respondToEnquiriesStatusBreakdown =
+      '/v1/tender-service/respond-to-enquiries/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String respondToEnquiriesApprovalStatusBreakdown =
+      '/v1/tender-service/respond-to-enquiries/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String respondToEnquiriesTrendBreakdown =
+      '/v1/tender-service/respond-to-enquiries/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String respondToEnquiriesApprovalTrendBreakdown =
+      '/v1/tender-service/respond-to-enquiries/analytics/approval/trend-breakdown';
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String requestTenderServiceSendRequest =
+      '/v1/tender-service/request-a-tender/requests';
+
+  /// Get my requests
+  static const String requestTenderServiceGetRequests =
+      '/v1/tender-service/request-a-tender/requests';
+
+  /// Get approval list (For approvers)
+  static const String requestTenderServiceGetActionItems =
+      '/v1/tender-service/request-a-tender/requests/approval';
+
+  /// Get request by ID
+  static String requestTenderServiceRequestById(int requestId) =>
+      '/v1/tender-service/request-a-tender/requests/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+  /// (Optional – if backend supports)
+  static String requestTenderServiceUpdateRequest(int requestId) =>
+      '/v1/tender-service/request-a-tender/requests/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String requestTenderServiceApprove =
+      '/v1/tender-service/request-a-tender/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat
+  static String requestTenderServiceSendChatById(int requestId) =>
+      '/v1/tender-service/request-a-tender/requests/$requestId/chat';
+
+  /// Get chats
+  static String requestTenderServiceChatsById(int requestId) =>
+      '/v1/tender-service/request-a-tender/requests/$requestId/chats';
+
+  /// Update chat
+  static String requestTenderServiceUpdateChat(int chatId) =>
+      '/v1/tender-service/request-a-tender/chats/$chatId';
+
+  /// Delete chat
+  static String requestTenderServiceDeleteChat(int chatId) =>
+      '/v1/tender-service/request-a-tender/chats/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String requestTenderServiceSendAttachmentById(int requestId) =>
+      '/v1/tender-service/request-a-tender/requests/$requestId/attachment';
+
+  /// Get attachments
+  static String requestTenderServiceAttachmentsById(int requestId) =>
+      '/v1/tender-service/request-a-tender/requests/$requestId/attachments';
+
+  /// Update attachment
+  static String requestTenderServiceUpdateAttachment(int attachmentId) =>
+      '/v1/tender-service/request-a-tender/attachments/$attachmentId';
+
+  /// Delete attachment
+  static String requestTenderServiceDeleteAttachment(int attachmentId) =>
+      '/v1/tender-service/request-a-tender/attachments/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String requestTenderServiceKpiCards =
+      '/v1/tender-service/request-a-tender/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String requestTenderServiceApprovalKpiCards =
+      '/v1/tender-service/request-a-tender/analytics/approval/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String requestTenderServiceStatusBreakdown =
+      '/v1/tender-service/request-a-tender/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String requestTenderServiceApprovalStatusBreakdown =
+      '/v1/tender-service/request-a-tender/analytics/approval/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String requestTenderServiceTrendBreakdown =
+      '/v1/tender-service/request-a-tender/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String requestTenderServiceApprovalTrendBreakdown =
+      '/v1/tender-service/request-a-tender/analytics/approval/trend-breakdown';
 }

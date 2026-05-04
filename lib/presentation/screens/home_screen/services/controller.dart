@@ -72,42 +72,72 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   final dashboardinstance = DashboardRepository();
+
   Future<void> fetchUserRoles(int id) async {
     state = state.copyWith(isLoading: true);
 
     try {
-      final repo = RolesRepo();
-      final userRoles = await repo.getUserRoles(id);
-
-      // 1️⃣ Save full response
-      state = state.copyWith(userRoles: userRoles);
-
-      // 2️⃣ Handle role selection (store or pick default)
-      await selectOrStoreRole(userRoles);
-
-      // 3️⃣ Get selected role from storage
       final storage = KAuthCred();
       final saved = await storage.getSelectedRole();
+      final roleId = saved?.roleId;
 
-      List<Service> filteredServices = [];
+      UserRoleResponse? roles = state.userRoles;
 
-      if (saved != null) {
-        // 4️⃣ Find matching role
-        final matchedRole = userRoles.data?.roleDetails?.firstWhere(
-          (detail) => detail.role?.id == saved.roleId,
-          orElse: () => RoleDetail(services: []),
-        );
+      // ✅ STEP 1: Decide whether to call API
+      // if (roleId == null || roleId == 0 || roles == null) {
+      roles = await _fetchAndStoreRoles(id);
+      // }
 
-        // 5️⃣ Extract services
-        filteredServices = matchedRole?.services ?? [];
-      }
+      // ✅ STEP 2: Ensure role is selected
+      final effectiveRoleId = await _ensureRoleSelected(roles);
 
-      // 6️⃣ Update state
-      state = state.copyWith(services: filteredServices, isLoading: false);
+      // ✅ STEP 3: Filter services (single reusable method)
+      final services = _filterServicesByRole(roles, effectiveRoleId);
+
+      // ✅ STEP 4: Update state
+      state = state.copyWith(services: services, isLoading: false);
     } catch (e) {
       debugPrint("fetchUserRoles error: $e");
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  List<Service> _filterServicesByRole(UserRoleResponse roles, int roleId) {
+    final matched = state.userRoles.data?.roleDetails?.firstWhere(
+      (d) => d.role?.id == roleId,
+      orElse: () => RoleDetail(services: []),
+    );
+
+    return matched?.services ?? [];
+  }
+
+  Future<int> _ensureRoleSelected(UserRoleResponse roles) async {
+    final storage = KAuthCred();
+    final saved = await storage.getSelectedRole();
+
+    if (saved?.roleId != null && saved!.roleId != 0) {
+      return saved.roleId!;
+    }
+
+    // fallback (should rarely happen)
+    final firstRole = roles.data?.roleDetails?.firstOrNull?.role?.id ?? 0;
+    return firstRole;
+  }
+
+  Future<UserRoleResponse> _fetchAndStoreRoles(int id) async {
+    final repo = RolesRepo();
+    final storage = KAuthCred();
+
+    final saved = await storage.getSelectedRole();
+    final roleId = saved?.roleId;
+    final roles = await repo.getUserRoles(id);
+
+    state = state.copyWith(userRoles: roles);
+
+    if (roleId == null || roleId == 0 || roles == null) {
+      await selectOrStoreRole(roles);
+    }
+    return roles;
   }
 
   Future<void> selectOrStoreRole(UserRoleResponse userRoles) async {
@@ -510,6 +540,22 @@ class _VSController extends StateNotifier<_ViewState> {
       case 'Request For Cancellation':
         KAppX.router.push(
           RequestForCancellationRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Request a Tender Service':
+        KAppX.router.push(
+          RequestTenderServiceRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Request a Service to Respond to Enquiries':
+        KAppX.router.push(
+          RequestAServiceToRespondToEnquiriesRoute(
             service: service ?? Service(),
             subService: subService ?? SubService(),
           ),

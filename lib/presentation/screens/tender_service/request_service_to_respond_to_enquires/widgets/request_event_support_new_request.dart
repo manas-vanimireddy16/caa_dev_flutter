@@ -57,7 +57,7 @@ class _RequestAServiceToRespondToEnquiriesNewRequestScreenState
         child: DynamicForm(
           title: 'Performance Management',
           stepTitles: const [''],
-          steps: [controller.eventSupportFormFields],
+          steps: [controller.requestTenderEnquiriesFields],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

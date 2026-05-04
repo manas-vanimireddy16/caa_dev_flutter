@@ -1,15 +1,14 @@
 part of '../view.dart';
 
 @RoutePage()
-class RequestForVAPTAndInfrastructureReviewDetailsScreen
-    extends ConsumerStatefulWidget {
+class RequestTenderAnalysisServiceDetailsScreen extends ConsumerStatefulWidget {
   final String from;
   final int id;
   final int serviceId;
   final int subServiceId;
   final Service service;
   final SubService subService;
-  const RequestForVAPTAndInfrastructureReviewDetailsScreen({
+  const RequestTenderAnalysisServiceDetailsScreen({
     super.key,
     required this.id,
     required this.serviceId,
@@ -21,11 +20,11 @@ class RequestForVAPTAndInfrastructureReviewDetailsScreen
 
   @override
   ConsumerState createState() =>
-      _RequestForVAPTAndInfrastructureReviewDetailsScreenState();
+      _RequestTenderAnalysisServiceDetailsScreenState();
 }
 
-class _RequestForVAPTAndInfrastructureReviewDetailsScreenState
-    extends ConsumerState<RequestForVAPTAndInfrastructureReviewDetailsScreen> {
+class _RequestTenderAnalysisServiceDetailsScreenState
+    extends ConsumerState<RequestTenderAnalysisServiceDetailsScreen> {
   late _VSControllerParams _providerArgs;
 
   @override
@@ -80,7 +79,6 @@ class _RequestForVAPTAndInfrastructureReviewDetailsScreenState
             state.requestDetails,
             approvals,
           );
-          final nextApprover = controller.resolveApproverMap(approvals);
 
           final approverId = active?.id;
 
@@ -160,9 +158,6 @@ class _RequestForVAPTAndInfrastructureReviewDetailsScreenState
                       //   requestId ?? 0,
                       //   'Approved',
                       // );
-                    },
-                    onAssign: () async {
-                      controller.showAssignDialog(context, approverId ?? 0);
                     },
                     onReject: () async {
                       controller.showApprovalCommentDialog(

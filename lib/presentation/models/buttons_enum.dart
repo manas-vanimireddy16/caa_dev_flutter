@@ -9,6 +9,7 @@ enum ActionButtonsType {
   replace,
   inProgress,
   complete,
+  assignApproveReject,
 }
 
 enum ApprovalDialogType { approve, reject }

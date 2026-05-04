@@ -5,16 +5,12 @@ import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/request_for_project_approval.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/request_for_vapt_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
-import 'package:code_setup/repository/assests_affair/cancel_housing_contract/domain/domain.dart';
-import 'package:code_setup/repository/information_security_services/request_for_VAPT_and_infrastructure_review/domain/domain.dart';
-import 'package:code_setup/repository/information_security_services/request_for_project_approval/domain/domain.dart';
+import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/cancel_request_model.dart';
+import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
 import 'package:code_setup/utils/api_end_point.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
@@ -22,8 +18,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 
-class RequestForVAPTAndInfrastructureReviewRepositoryImple
-    implements RequestForVAPTAndInfrastructureReviewRepository {
+class RespondToEnquiriesRepositoryImpl implements RespondToEnquiriesRepository {
   @override
   Future<List<EmployeeList>> getUsers(int departmentId) async {
     final client = await KAppX.network.secureClient();
@@ -64,11 +59,11 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
   }
 
   @override
-  Future<Map<String, dynamic>> sendVAPTNewRequest(
+  Future<Map<String, dynamic>> respondToEnquiriesCreateRequest(
     Map<String, dynamic> payload,
   ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.requestForVAPTSendRequest;
+    final String url = ApiEndPoint.respondToEnquiriesSendRequest;
 
     try {
       if (client == null) {
@@ -193,7 +188,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
 
   @override
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId) async {
-    String url = ApiEndPoint.requestForVAPTKpiCards;
+    String url = ApiEndPoint.respondToEnquiriesKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -229,7 +224,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
     required int serviceId,
     required int subServiceId,
   }) async {
-    String url = ApiEndPoint.requestForVAPTApprovalKpiCards;
+    String url = ApiEndPoint.respondToEnquiriesApprovalKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -276,7 +271,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.requestForVAPTApprovalStatusBreakdown,
+          ApiEndPoint.respondToEnquiriesApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -319,7 +314,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.requestForVAPTApprovalTrendBreakdown,
+          ApiEndPoint.respondToEnquiriesApprovalTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -359,7 +354,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.requestForVAPTStatusBreakdown,
+          ApiEndPoint.respondToEnquiriesStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -402,7 +397,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.requestForVAPTTrendBreakdown,
+          ApiEndPoint.respondToEnquiriesTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -427,7 +422,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
   }
 
   @override
-  Future<List<RequestForVAPTModel>> getRequests({
+  Future<List<TenderServiceEnquiryModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -455,7 +450,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
         if (status.isNotEmpty) {
           queryParams['status'] = status;
         }
-        final url = ApiEndPoint.requestForVAPTGetRequests;
+        final url = ApiEndPoint.respondToEnquiriesGetRequests;
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
@@ -464,7 +459,9 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
 
           return list
               .map(
-                (e) => RequestForVAPTModel.fromJson(e as Map<String, dynamic>),
+                (e) => TenderServiceEnquiryModel.fromJson(
+                  e as Map<String, dynamic>,
+                ),
               )
               .toList();
         } else {
@@ -481,7 +478,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
   }
 
   @override
-  Future<List<RequestForVAPTModel>> getActionItems({
+  Future<List<TenderServiceEnquiryModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -510,7 +507,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
         }
 
         final response = await client.get(
-          ApiEndPoint.requestForVAPTGetActionItems,
+          ApiEndPoint.respondToEnquiriesGetActionItems,
           queryParameters: queryParams,
         );
 
@@ -522,8 +519,9 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
           /// Parse each Action Item
           final actionItems = list
               .map(
-                (item) =>
-                    RequestForVAPTModel.fromJson(item as Map<String, dynamic>),
+                (item) => TenderServiceEnquiryModel.fromJson(
+                  item as Map<String, dynamic>,
+                ),
               )
               .toList();
 
@@ -549,7 +547,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.requestForVAPTSendChatById(id);
+    final String url = ApiEndPoint.respondToEnquiriesSendChatById(id);
 
     try {
       if (client != null) {
@@ -582,7 +580,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
   @override
   Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.requestForVAPTSendAttachmentById(id);
+    final String url = ApiEndPoint.respondToEnquiriesSendAttachmentById(id);
 
     try {
       if (client != null) {
@@ -615,39 +613,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
   @override
   Future<void> onApprove(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.requestForVAPTApprove;
-
-    try {
-      if (client != null) {
-        final response = await client.put(url, data: payload);
-
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          ShowFlutterToast().showFlutterToastSuccess(
-            '${response.data['message']}',
-          );
-          debugPrint('✅ Request sent successfully');
-        } else {
-          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          ShowFlutterToast().showFlutterToastFailure(
-            '${response.statusMessage}',
-          );
-        }
-      } else {
-        debugPrint('❌ Client is null — cannot send request');
-      }
-    } on DioException catch (e) {
-      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
-      throw e;
-    } catch (e) {
-      debugPrint('❌ Unexpected error: $e');
-      throw e;
-    }
-  }
-
-  @override
-  Future<void> onAssign(Map<String, dynamic> payload) async {
-    final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.requestForVAPTAssign;
+    final String url = ApiEndPoint.respondToEnquiriesApprove;
 
     try {
       if (client != null) {
@@ -682,7 +648,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.requestForVAPTChatsById(id);
+        final url = ApiEndPoint.respondToEnquiriesChatsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -710,7 +676,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.requestForVAPTAttachmentsById(id);
+        final url = ApiEndPoint.respondToEnquiriesAttachmentsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -746,7 +712,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
           // 'service_id': serviceId,
           // 'sub_service_id': subServiceId,
         };
-        final url = ApiEndPoint.requestForVAPTRequestById(id);
+        final url = ApiEndPoint.respondToEnquiriesRequestById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -774,7 +740,7 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.departments;
+        final url = ApiEndPoint.departmentsList;
         final queryParams = {'offset': 1, 'limit': 1000};
         final response = await client.get(url, queryParameters: queryParams);
 
@@ -802,9 +768,14 @@ class RequestForVAPTAndInfrastructureReviewRepositoryImple
 
     try {
       if (client != null) {
-        final url = '${ApiEndPoint.sectionsList}/$userDepartmentId';
+        final queryParams = {
+          'offset': 1,
+          'limit': 1000,
+          'department_id': userDepartmentId,
+        };
+        final url = ApiEndPoint.sections;
 
-        final response = await client.get(url);
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
           final data = response.data as Map<String, dynamic>;

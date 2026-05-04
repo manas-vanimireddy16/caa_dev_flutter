@@ -312,4 +312,8 @@ class RouteNames {
       '/requestTenderServiceDetails';
   static const String respondToEnquiryDetails = '/respondToEnquiryDetails';
   static const String respondToEnquiryNewRequest = '/respondToEnquiryDetails';
+  static const String requestTenderAnalysisDetails =
+      '/requestTenderAnalysisDetails';
+  static const String requestTenderAnalysisNewRequest =
+      '/requestTenderAnalysisNewRequest';
 }

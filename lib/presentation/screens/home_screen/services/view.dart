@@ -227,129 +227,173 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
         body: TabBarView(
           controller: _tabController,
           children: [
-            // 🔹 Tab 1 – All Services
+            // 🔹 TAB 1 – ALL SERVICES
             Builder(
               builder: (context) {
                 final services = state.services ?? [];
 
-                if (state.isLoading && services.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (services.isEmpty) {
-                  return const Center(child: Text('No services available'));
-                }
-
                 return RefreshIndicator(
-                  onRefresh: () async =>
-                      controller.fetchUserRoles(user?.userId ?? 0),
-                  child: ListView.builder(
-                    itemCount: services.length,
-                    itemBuilder: (context, index) {
-                      final data = services[index];
+                  onRefresh: () async {
+                    await controller.fetchUserRoles(user?.userId ?? 0);
+                  },
+                  child: services.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: const [
+                            SizedBox(height: 200),
+                            Center(
+                              child: Text(
+                                'No services available',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: services.length,
+                          itemBuilder: (context, index) {
+                            final data = services[index];
 
-                      return CustomInfoCard(
-                        title: data.name ?? 'No Name',
-                        subtitle: data.description ?? 'No Description',
-                        icon: Icons.miscellaneous_services,
-                        iconColor: Colors.blueAccent,
-                        subServices: data.subservices != null
-                            ? data.subservices!
-                                  .map((s) => s.subServiceName ?? 'Unnamed')
-                                  .toList()
-                            : [],
-                        isBookmarked: false,
-                        onBookmarkToggle: () {
-                          controller.updateBookmark(
-                            userId: user?.userId ?? 0,
-                            serviceId: data.id ?? 0,
-                          );
-                        },
-                        onCardTap: () {
-                          controller.navigateToRoute(
-                            name: data.name ?? '',
-                            service: data,
-                          );
-                        },
-                        onSubServiceTap: (subName) {
-                          final subService = data.subservices?.lastWhere(
-                            (s) => s.subServiceName == subName,
-                            orElse: () => SubService(),
-                          );
+                            return CustomInfoCard(
+                              title: data.name ?? 'No Name',
+                              subtitle: data.description ?? 'No Description',
+                              icon: Icons.miscellaneous_services,
+                              iconColor: Colors.blueAccent,
+                              subServices: data.subservices != null
+                                  ? data.subservices!
+                                        .map(
+                                          (s) => s.subServiceName ?? 'Unnamed',
+                                        )
+                                        .toList()
+                                  : [],
+                              isBookmarked: false,
+                              onBookmarkToggle: () {
+                                controller.updateBookmark(
+                                  userId: user?.userId ?? 0,
+                                  serviceId: data.id ?? 0,
+                                );
+                              },
+                              onCardTap: () {
+                                controller.navigateToRoute(
+                                  name: data.name ?? '',
+                                  service: data,
+                                );
+                              },
+                              onSubServiceTap: (subName) {
+                                final subService = data.subservices?.lastWhere(
+                                  (s) => s.subServiceName == subName,
+                                  orElse: () => SubService(),
+                                );
 
-                          if (subService != null) {
-                            controller.navigateToRoute(
-                              name: subService.subServiceName ?? '',
-                              service: data,
-                              subService: subService,
+                                if (subService != null) {
+                                  controller.navigateToRoute(
+                                    name: subService.subServiceName ?? '',
+                                    service: data,
+                                    subService: subService,
+                                  );
+                                }
+                              },
                             );
-                          }
-                        },
-                      );
-                    },
-                  ),
+                          },
+                        ),
                 );
               },
             ),
 
-            // 🔹 Tab 2 – Bookmarked
+            // 🔹 TAB 2 – BOOKMARKED
             Builder(
               builder: (context) {
                 final bookmarks = state.bookmarks ?? [];
 
-                if (state.isLoading && bookmarks.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (bookmarks.isEmpty) {
-                  return const Center(child: Text('No services available'));
-                }
-
                 return RefreshIndicator(
-                  onRefresh: () async => controller.fetchBookmarks(),
-                  child: ListView.builder(
-                    itemCount: bookmarks.length,
-                    itemBuilder: (context, index) {
-                      final data = bookmarks[index];
-                      final serviceId = int.tryParse(data.serviceId ?? "");
+                  onRefresh: () async {
+                    await controller.fetchBookmarks();
+                  },
+                  child: bookmarks.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: const [
+                            SizedBox(height: 200),
+                            Center(
+                              child: Text(
+                                'No bookmarked services',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                          ],
+                        )
+                      : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: bookmarks.length,
+                          itemBuilder: (context, index) {
+                            final data = bookmarks[index];
+                            final serviceId = int.tryParse(
+                              data.serviceId ?? "",
+                            );
 
-                      return CustomInfoCard(
-                        title: data.serviceName ?? 'No Name',
-                        subtitle: data.serviceDescription ?? 'No Description',
-                        icon: Icons.miscellaneous_services,
-                        iconColor: Colors.blueAccent,
-                        subServices: data.subServices != null
-                            ? data.subServices!
-                                  .map((s) => s.subServiceName ?? 'Unnamed')
-                                  .toList()
-                            : [],
-                        isBookmarked: true,
-                        onBookmarkToggle: () {
-                          controller.updateBookmark(
-                            userId: user?.userId ?? 0,
-                            serviceId: serviceId ?? 0,
-                          );
-                        },
-                      );
-                    },
-                  ),
+                            return CustomInfoCard(
+                              title: data.serviceName ?? 'No Name',
+                              subtitle:
+                                  data.serviceDescription ?? 'No Description',
+                              icon: Icons.miscellaneous_services,
+                              iconColor: Colors.blueAccent,
+                              subServices: data.subServices != null
+                                  ? data.subServices!
+                                        .map(
+                                          (s) => s.subServiceName ?? 'Unnamed',
+                                        )
+                                        .toList()
+                                  : [],
+                              isBookmarked: true,
+                              onBookmarkToggle: () {
+                                controller.updateBookmark(
+                                  userId: user?.userId ?? 0,
+                                  serviceId: serviceId ?? 0,
+                                );
+                              },
+                            );
+                          },
+                        ),
                 );
               },
             ),
 
-            // 🔹 Tab 3
-            const Center(
-              child: Text(
-                'Quick Links',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+            // 🔹 TAB 3 – QUICK LINKS
+            RefreshIndicator(
+              onRefresh: () async {
+                await controller.fetchUserRoles(user?.userId ?? 0);
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(height: 200),
+                  Center(
+                    child: Text(
+                      'Quick Links',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  ),
+                ],
               ),
             ),
 
-            // 🔹 Tab 4
-            const Center(
-              child: Text(
-                'Important Links',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+            // 🔹 TAB 4 – IMPORTANT LINKS
+            RefreshIndicator(
+              onRefresh: () async {
+                await controller.fetchUserRoles(user?.userId ?? 0);
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(height: 200),
+                  Center(
+                    child: Text(
+                      'Important Links',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

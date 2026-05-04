@@ -56,6 +56,7 @@ class _ViewState {
   final bool isButtonDisabled;
   final List<ChatMessageModel> chatById;
   final List<AttachmentModel> attachmentsById;
+  final List<EmployeeList> usersList;
 
   final List<String> months = [
     'January',
@@ -96,6 +97,7 @@ class _ViewState {
     required this.isButtonDisabled,
     required this.chatById,
     required this.attachmentsById,
+    required this.usersList,
   });
 
   _ViewState.init()
@@ -121,6 +123,7 @@ class _ViewState {
         chatById: [],
 
         attachmentsById: [],
+        usersList: [],
       );
 
   _ViewState copyWith({
@@ -209,6 +212,7 @@ class _ViewState {
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
       chatById: chatById ?? this.chatById,
       attachmentsById: attachmentsById ?? this.attachmentsById,
+      usersList: usersList ?? this.usersList,
     );
   }
 }
@@ -395,7 +399,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      RequestEventSupportDetailsRoute(
+      RequestTenderServiceDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -421,7 +425,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
     // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      RequestEventSupportNewRequestRoute(
+      RequestTenderServiceNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -430,52 +434,132 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final cancellationInstance = RequestForCancellationRepository();
+  final cancellationInstance = RequestTenderServiceRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
-  List<DynamicField> get cancellationFormFields => [
-    /// ================= OLD REQUEST NUMBER =================
+  final dutyMissionAnnualInstance = AnnualDutyMissionRepoistry();
+
+  List<DynamicField> get requestTenderFields => [
+    /// ================= TITLE OF PROJECT =================
     DynamicField(
-      name: 'old_request_number',
-      label: 'Old Request Number',
+      name: 'title_of_project',
+      label: 'Title of project',
       type: FieldType.text,
       required: true,
     ),
 
-    /// ================= REASON FOR CANCELLATION =================
+    /// ================= SCOPE OF WORK =================
     DynamicField(
-      name: 'reason_for_cancellation',
-      label: 'Reason For Cancellation',
+      name: 'scope_of_work',
+      label: 'Scope Of Work',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= TYPE OF REQUEST =================
+    DynamicField(
+      name: 'type_of_request',
+      label: 'Type of Request',
       type: FieldType.select,
       required: true,
       options: const [
+        DropdownOption(value: 'variation_order', label: 'Variation Order'),
         DropdownOption(
-          value: 'Change in Organizational Priorities',
-          label: 'Change in Organizational Priorities',
+          value: 'extension_of_project',
+          label: 'Extension of project',
         ),
+        DropdownOption(value: 'new_project', label: 'New Project'),
+        DropdownOption(value: 'cancelled_tender', label: 'Cancelled tender'),
         DropdownOption(
-          value: 'Low Enrolment or Participation',
-          label: 'Low Enrolment or Participation',
+          value: 'refloated_tender',
+          label: 'Refloated tender (Resubmit previous tender request)',
         ),
-        DropdownOption(
-          value: 'Budgetary Constraints',
-          label: 'Budgetary Constraints',
-        ),
-        DropdownOption(value: 'External factors', label: 'External factors'),
       ],
     ),
 
-    /// ================= DESCRIPTION =================
+    /// ================= DATE OF SUBMISSION =================
     DynamicField(
-      name: 'description',
-      label: 'Description',
+      name: 'date_of_submission',
+      label: 'Date of submission',
+      type: FieldType.date,
+      required: true,
+    ),
+
+    /// ================= PHONE NUMBER =================
+    DynamicField(
+      name: 'phone_number',
+      label: 'Phone Number',
+      type: FieldType.number,
+      required: true,
+    ),
+
+    /// ================= BUDGET CODE =================
+    DynamicField(
+      name: 'budget_code',
+      label: 'Budget code',
+      type: FieldType.text,
+      required: false,
+    ),
+
+    /// ================= ESTIMATED COST =================
+    DynamicField(
+      name: 'estimated_cost',
+      label: 'Estimated Cost',
+      type: FieldType.number,
+      required: true,
+    ),
+
+    /// ================= IMPLEMENTATION PERIOD =================
+    DynamicField(
+      name: 'implementation_period',
+      label: 'Implementation period',
+      type: FieldType.text,
+      required: false,
+    ),
+
+    /// ================= REQUESTING ENTITY =================
+    DynamicField(
+      name: 'requesting_entity',
+      label: 'Requesting Entity or Relevant Department',
       type: FieldType.text,
       required: true,
     ),
 
-    /// ================= ATTACHMENTS =================
+    /// ================= REASON FOR PROJECT =================
     DynamicField(
-      name: 'attachments',
-      label: 'Attachments',
+      name: 'reason_for_project',
+      label: 'Reason for Project',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= RECOMMENDATION =================
+    DynamicField(
+      name: 'recommendation',
+      label: 'Recommendations of the Relevant Division Manager',
+      type: FieldType.text,
+      required: false,
+    ),
+
+    /// ================= PROJECT MANAGER =================
+    DynamicField(
+      name: 'assigned_project_manager',
+      label: 'Assigned Project Manager',
+      type: FieldType.select,
+      required: true,
+      options: state.usersList
+          .map(
+            (loc) => DropdownOption(
+              value: loc.employeeId,
+              label: loc.employeeName ?? '',
+            ),
+          )
+          .toList(),
+    ),
+
+    /// ================= ATTACHMENT =================
+    DynamicField(
+      name: 'attachment',
+      label: 'Attachment',
       type: FieldType.file,
       required: false,
     ),
@@ -522,8 +606,8 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       final requests = await cancellationInstance.getchatById(id);
       if (requests != null) {
-        // final chats = requests.reversed.toList();
-        state = state.copyWith(chatById: requests);
+        final chats = requests.reversed.toList();
+        state = state.copyWith(chatById: chats);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
@@ -747,6 +831,21 @@ class _VSController extends StateNotifier<_ViewState> {
     }
 
     return false;
+  }
+
+  Future<void> fetchUsers() async {
+    try {
+      final users = await dutyMissionAnnualInstance.getUsers();
+
+      state = state.copyWith(usersList: users);
+      print('✅ Users fetched: ${users.length}');
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+      print('❌ API ERROR: ${apiError.message}');
+    } catch (e, stack) {
+      print('❌ UNKNOWN ERROR: $e');
+      print(stack);
+    }
   }
 
   void showApprovalCommentDialog({
@@ -1326,18 +1425,40 @@ class _VSController extends StateNotifier<_ViewState> {
     final userInfo = KAppX.globalProvider.read(userInfoProvider);
 
     return {
-      /// ⭐ USER INFO
-      "req_user_department_id": userInfo?.data?.department?.id ?? 0,
-      "req_user_section_id": userInfo?.data?.section?.id ?? 0,
-
       /// ⭐ SERVICE INFO
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      /// ⭐ FORM DATA
-      "old_request_number": values['old_request_number'] ?? "",
-      "reason_for_cancellation": values['reason_for_cancellation'] ?? "",
-      "description": values['description'] ?? "",
+      /// ⭐ PROJECT DETAILS
+      "title_of_project": values['title_of_project'] ?? "",
+      "scope_of_work": values['scope_of_work'] ?? "",
+      "type_of_request": values['type_of_request'] ?? "",
+      "date_of_submission": values['date_of_submission'] ?? "",
+
+      /// ⭐ CONTACT
+      "phone": values['phone_number'] ?? "",
+
+      /// ⭐ FINANCIAL
+      "budget_code": values['budget_code'] ?? "",
+      "estimated_cost": values['estimated_cost'] ?? 0,
+
+      /// ⭐ TIMELINE
+      "implementation_period": values['implementation_period'] ?? "",
+
+      /// ⭐ ORGANIZATION
+      "requesting_entity": values['requesting_entity'] ?? "",
+      "relevant_department_id": userInfo?.data?.department?.id ?? 0,
+      "department_id": userInfo?.data?.department?.id ?? 0,
+
+      /// ⭐ JUSTIFICATION
+      "reason_for_project": values['reason_for_project'] ?? "",
+
+      /// ⭐ MANAGER INPUT
+      "division_manager_recommendations": values['recommendation'] ?? "",
+
+      /// ⭐ ASSIGNED PM
+      "assigned_project_manager_user_id":
+          values['assigned_project_manager'] ?? 0,
 
       /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
@@ -1362,7 +1483,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       final response = await cancellationInstance
-          .requestCancellationCreateRequest(payload);
+          .requestTenderServiceCreateRequest(payload);
 
       if (response['status'] == 'success') {
         _refreshDashboard();

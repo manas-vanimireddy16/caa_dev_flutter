@@ -1,13 +1,14 @@
 part of '../view.dart';
 
 @RoutePage()
-class RequestTenderServiceNewRequestScreen extends ConsumerStatefulWidget {
+class RequestTenderAnalysisServiceNewRequestScreen
+    extends ConsumerStatefulWidget {
   final int serviceId;
   final int subServiceId;
   final Service service;
   final SubService subService;
 
-  const RequestTenderServiceNewRequestScreen({
+  const RequestTenderAnalysisServiceNewRequestScreen({
     super.key,
     required this.serviceId,
     required this.subServiceId,
@@ -16,12 +17,12 @@ class RequestTenderServiceNewRequestScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<RequestTenderServiceNewRequestScreen> createState() =>
-      _RequestTenderServiceNewRequestScreenState();
+  ConsumerState<RequestTenderAnalysisServiceNewRequestScreen> createState() =>
+      _RequestTenderAnalysisServiceNewRequestScreenState();
 }
 
-class _RequestTenderServiceNewRequestScreenState
-    extends ConsumerState<RequestTenderServiceNewRequestScreen> {
+class _RequestTenderAnalysisServiceNewRequestScreenState
+    extends ConsumerState<RequestTenderAnalysisServiceNewRequestScreen> {
   late _VSControllerParams _providerArgs;
 
   @override
@@ -33,9 +34,6 @@ class _RequestTenderServiceNewRequestScreenState
       service: widget.service,
       subService: widget.subService,
     );
-    Future.microtask(() {
-      ref.read(_vsProvider(_providerArgs).notifier).fetchUsers();
-    });
   }
 
   @override
@@ -56,7 +54,7 @@ class _RequestTenderServiceNewRequestScreenState
         child: DynamicForm(
           title: 'Performance Management',
           stepTitles: const [''],
-          steps: [controller.requestTenderFields],
+          steps: [controller.eventSupportFormFields],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

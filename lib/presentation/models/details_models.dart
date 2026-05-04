@@ -1420,6 +1420,15 @@ class RequestModel {
   final String? grievantRelationshipToMatter;
   final bool? declarationAcknowledged;
 
+  // Tender Service
+  final String? titleOfEnquiry;
+  final String? tenderDateOfSubmission;
+  final String? tenderPhone;
+  final String? budgetCode;
+  final String? estimatedCost;
+  final String? implementationPeriod;
+  final String? requestingEntity;
+
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1706,6 +1715,14 @@ class RequestModel {
     this.grievantSectionId,
     this.grievantRelationshipToMatter,
     this.declarationAcknowledged,
+    // Tender Service
+    this.titleOfEnquiry,
+    this.tenderDateOfSubmission,
+    this.tenderPhone,
+    this.budgetCode,
+    this.estimatedCost,
+    this.implementationPeriod,
+    this.requestingEntity,
   });
 
   // ─────────────────────────────
@@ -2061,6 +2078,14 @@ class RequestModel {
       grievantSectionId: json['grievant_section_id'],
       grievantRelationshipToMatter: json['grievant_relationship_to_matter'],
       declarationAcknowledged: json['declaration_acknowledged'],
+      // Tender Service
+      titleOfEnquiry: json['title_of_enquiry'],
+      tenderDateOfSubmission: json['tender_date_of_submission'],
+      tenderPhone: json['tender_phone'],
+      budgetCode: json['budget_code'],
+      estimatedCost: json['estimated_cost'],
+      implementationPeriod: json['implementation_period'],
+      requestingEntity: json['requesting_entity'],
     );
   }
 

@@ -50,6 +50,14 @@ class TenderServiceHomeScreen extends ConsumerWidget {
     return AutoTabsRouter.builder(
       routes: [
         RequestTenderServiceRoute(service: Service(), subService: SubService()),
+        RequestAServiceToRespondToEnquiriesRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
+        RequestTenderAnalysisServiceRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

@@ -47,8 +47,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<EventSupportModel> requestData;
-  final List<EventSupportModel> actionItems;
+  final List<TenderServiceEnquiryModel> requestData;
+  final List<TenderServiceEnquiryModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final int approvalId;
@@ -141,8 +141,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<EventSupportModel>? requestData,
-    List<EventSupportModel>? actionItems,
+    List<TenderServiceEnquiryModel>? requestData,
+    List<TenderServiceEnquiryModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -312,14 +312,17 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(EventSupportModel item) {
+  Map<String, String> buildRequestCardData(TenderServiceEnquiryModel item) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
-      // 'Cycle Period': item.cyclePeriod ?? '-',
+      'Type Of Enquire': item.titleOfEnquiry ?? 'NA',
+      'Phone Number': item.phone ?? 'NA',
+      'Budget Code': item.budgetCode ?? 'NA',
+      'Estimated Cost': item.estimatedCost ?? 'NA',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
 
       /// ================= EMPLOYEE INFO =================
@@ -341,9 +344,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      // 'Request Classification': request?.requestClassification ?? '-',
-      // 'Date of Submission': request?.submissionDate.toString() ?? '-',
-      // 'Request Title': request?.requestTitle ?? '-',
+      'Type Of Enquire': request?.titleOfEnquiry ?? 'NA',
+      'Phone Number': request?.phone ?? 'NA',
+      'Budget Code': request?.budgetCode ?? 'NA',
+      'Estimated Cost': request?.estimatedCost ?? 'NA',
       'Request Type': request?.requestType ?? '-',
     };
   }
@@ -395,7 +399,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      RequestEventSupportDetailsRoute(
+      RequestAServiceToRespondToEnquiriesDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -418,10 +422,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void openNewRequestForm() {
-    // fetchbyCycleGoals(cycle: 'Jan-Jun');
-    // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      RequestEventSupportNewRequestRoute(
+      RequestAServiceToRespondToEnquiriesNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -430,70 +432,91 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final requestEventSupportInstance = RequestEventSupportRepository();
+  final respondToEnquiriesInstance = RespondToEnquiriesRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  List<DynamicField> get eventSupportFormFields => [
-    /// ================= EVENT TITLE =================
+  List<DynamicField> get requestTenderEnquiriesFields => [
+    /// ================= TITLE OF ENQUIRY =================
     DynamicField(
-      name: 'event_title',
-      label: 'Event Title',
+      name: 'title_of_enquiry',
+      label: 'Title of Enquiry',
       type: FieldType.text,
       required: true,
     ),
 
-    /// ================= DATE OF EVENT =================
+    /// ================= TYPE OF REQUEST =================
     DynamicField(
-      name: 'event_date',
-      label: 'Date of Event',
+      name: 'type_of_request',
+      label: 'Type of Request',
+      type: FieldType.select,
+      required: true,
+      options: const [
+        DropdownOption(value: 'cancelled_tender', label: 'Cancelled tender'),
+        DropdownOption(
+          value: 'refloated_tender',
+          label: 'Refloated tender (Resubmit previous tender request)',
+        ),
+      ],
+    ),
+
+    /// ================= DESCRIPTION =================
+    DynamicField(
+      name: 'description',
+      label: 'Description',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= DATE OF SUBMISSION =================
+    DynamicField(
+      name: 'date_of_submission',
+      label: 'Date of submission',
       type: FieldType.date,
       required: true,
     ),
-
-    /// ================= LOCATION =================
     DynamicField(
-      name: 'location',
-      label: 'Location of Event',
+      name: 'phone_number',
+      label: 'Phone Number',
       type: FieldType.text,
       required: true,
     ),
 
-    /// ================= TYPE OF EVENT =================
+    /// ================= BUDGET CODE =================
     DynamicField(
-      name: 'event_type',
-      label: 'Type of Event',
+      name: 'budget_code',
+      label: 'Budget code',
       type: FieldType.text,
       required: false,
     ),
 
-    /// ================= PHONE NUMBER =================
+    /// ================= ESTIMATED COST =================
     DynamicField(
-      name: 'phone_number',
-      label: 'Phone Number',
-      type: FieldType.text, // (or FieldType.phone if you have)
-      required: true,
+      name: 'estimated_cost',
+      label: 'Estimated Cost',
+      type: FieldType.number,
+      required: false,
     ),
 
-    /// ================= REQUEST FOR =================
+    /// ================= IMPLEMENTATION PERIOD =================
     DynamicField(
-      name: 'request_for',
-      label: 'Request For',
+      name: 'implementation_period',
+      label: 'Implementation period',
       type: FieldType.text,
-      required: true,
+      required: false,
     ),
 
-    /// ================= REASON =================
+    /// ================= REQUESTING ENTITY =================
     DynamicField(
-      name: 'reason',
-      label: 'Reason for Request',
+      name: 'requesting_entity',
+      label: 'Requesting Entity or Relevant Department',
       type: FieldType.text,
-      required: true,
+      required: false,
     ),
 
     /// ================= ATTACHMENT =================
     DynamicField(
-      name: 'attachments',
-      label: 'Attach File',
+      name: 'attachment',
+      label: 'Attachment',
       type: FieldType.file,
       required: false,
     ),
@@ -504,7 +527,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await requestEventSupportInstance.getRequestsById(
+      final requests = await respondToEnquiriesInstance.getRequestsById(
         id: id,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -538,10 +561,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await requestEventSupportInstance.getchatById(id);
+      final requests = await respondToEnquiriesInstance.getchatById(id);
       if (requests != null) {
-        // final chats = requests.reversed.toList();
-        state = state.copyWith(chatById: requests);
+        final chats = requests.reversed.toList();
+        state = state.copyWith(chatById: chats);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
@@ -553,7 +576,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await requestEventSupportInstance.getAttachmentsById(
+      final attachments = await respondToEnquiriesInstance.getAttachmentsById(
         id,
       );
       if (attachments != null) {
@@ -570,7 +593,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await requestEventSupportInstance.getKpiData(
+      final kpis = await respondToEnquiriesInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -588,7 +611,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await requestEventSupportInstance
+      final data = await respondToEnquiriesInstance
           .getApprovalTrendBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -608,7 +631,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await requestEventSupportInstance
+      final statusBreakdown = await respondToEnquiriesInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -632,7 +655,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await requestEventSupportInstance
+      final statusBreakdown = await respondToEnquiriesInstance
           .getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -656,7 +679,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await requestEventSupportInstance.getTrendBreakdownData(
+      final data = await respondToEnquiriesInstance.getTrendBreakdownData(
         period: period,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -675,7 +698,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await requestEventSupportInstance.getApprovalKpiData(
+      final kpis = await respondToEnquiriesInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
@@ -702,7 +725,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(requestData: [], isLoading: false);
       }
 
-      final requests = await requestEventSupportInstance.getRequests(
+      final requests = await respondToEnquiriesInstance.getRequests(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -731,7 +754,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await requestEventSupportInstance.getActionItems(
+      final items = await respondToEnquiriesInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -827,7 +850,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await requestEventSupportInstance
+        final uploadedFiles = await respondToEnquiriesInstance
             .uploadAttachments(state.attachments);
 
         if (uploadedFiles.isEmpty) {
@@ -858,7 +881,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await requestEventSupportInstance.sendAttachment(payload, requestId);
+        await respondToEnquiriesInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -879,7 +902,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await requestEventSupportInstance.sendChat(payload, requestId);
+        await respondToEnquiriesInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -911,7 +934,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await requestEventSupportInstance.onApprove(payload);
+      await respondToEnquiriesInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       fetchactionItems();
@@ -956,7 +979,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await requestEventSupportInstance.onApprove(payload);
+      await respondToEnquiriesInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
@@ -983,7 +1006,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await requestEventSupportInstance.onSendInProgress(payload);
+      // await respondToEnquiriesInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1345,38 +1368,38 @@ class _VSController extends StateNotifier<_ViewState> {
     Map<String, dynamic> values,
   ) {
     final userInfo = KAppX.globalProvider.read(userInfoProvider);
-    final roles = KAppX.globalProvider.read(rolesProvider);
 
-    final payload = {
-      /// ⭐ ROLE
-      "role_id": roles?.roleId ?? 0,
-
-      /// ⭐ USER / DEPARTMENT INFO
-      "req_user_department_id": userInfo?.data?.department?.id ?? 0,
-      "req_user_section_id": userInfo?.data?.section?.id ?? 0,
-
+    return {
       /// ⭐ SERVICE INFO
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      /// ================= EVENT SUPPORT FIELDS =================
-      "event_name": values['event_title'] ?? "",
-      "event_title": values['event_title'] ?? "",
+      /// ⭐ ENQUIRY DETAILS
+      "title_of_enquiry": values['title_of_enquiry'] ?? "",
+      "description": values['description'] ?? "",
+      "date_of_submission": values['date_of_submission'] ?? "",
 
-      "request_for": values['request_for'] ?? "",
-      "date_of_event": values['event_date'] ?? "",
+      /// ⭐ CONTACT
+      "phone": values['phone_number'] ?? "",
 
-      "location_of_event": values['location'] ?? "",
-      "type_of_event": values['event_type'] ?? "",
+      /// ⭐ TYPE
+      "enquiry_category": values['type_of_request'] ?? "",
 
-      "phone_number": values['phone_number'] ?? "",
-      "reason_for_request": values['reason'] ?? "",
+      /// ⭐ FINANCIAL
+      "budget_code": values['budget_code'] ?? "",
+      "estimated_cost": values['estimated_cost'],
+
+      /// ⭐ TIMELINE
+      "implementation_period": values['implementation_period'] ?? "",
+
+      /// ⭐ ORGANIZATION
+      "requesting_entity": values['requesting_entity'] ?? "",
+      "relevant_department_id": userInfo?.data?.department?.id ?? 0,
+      "department_id": userInfo?.data?.department?.id ?? 0,
 
       /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
     };
-
-    return payload;
   }
 
   Future<void> submitProjectApprovalRequest(
@@ -1396,8 +1419,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await requestEventSupportInstance
-          .requestEventSupportCreateRequest(payload);
+      final response = await respondToEnquiriesInstance
+          .respondToEnquiriesCreateRequest(payload);
 
       if (response['status'] == 'success') {
         _refreshDashboard();

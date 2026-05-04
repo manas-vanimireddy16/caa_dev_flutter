@@ -47,7 +47,118 @@ final dynamicFormProvider =
       (ref) => DynamicFormNotifier(ref),
     );
 
-class DynamicForm extends ConsumerWidget {
+// class DynamicForm extends ConsumerWidget {
+//   final List<List<DynamicField>> steps;
+//   final List<String> stepTitles;
+//   final void Function(Map<String, dynamic>) onSubmit;
+//   final String title;
+//   final bool Function(Map<String, dynamic> values)? enableSubmitWhen;
+
+//   const DynamicForm({
+//     super.key,
+//     required this.steps,
+//     required this.stepTitles,
+//     required this.onSubmit,
+//     required this.title,
+//     this.enableSubmitWhen,
+//   });
+
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final state = ref.watch(dynamicFormProvider);
+//     final notifier = ref.read(dynamicFormProvider.notifier);
+
+//     final currentStep = state.currentStep;
+//     final currentFields = steps[currentStep];
+//     final isLastStep = currentStep == steps.length - 1;
+//     final visibleFields = currentFields.where((field) {
+//       if (field.visibleWhen == null) return true;
+//       return field.visibleWhen!(state.values);
+//     }).toList();
+
+//     final currentTheme = KAppX.globalProvider
+//         .read(KAppX.theme.current)
+//         .themeBox;
+
+//     return KScaffold(
+//       appBar: KAppBar(
+//         title: Text(
+//           'New Request',
+//           style: TextStyle(
+//             fontSize: currentTheme.fontSizes.s18,
+//             fontWeight: currentTheme.fontWeights.wBold,
+//           ),
+//         ),
+//       ),
+//       resizeToAvoidBottomInset: true,
+//       body: SafeArea(
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             20.toVerticalSizedBox,
+//             Padding(
+//               padding: EdgeInsets.symmetric(horizontal: 16.toAutoScaledWidth),
+//               child: Wrap(
+//                 children: [
+//                   Text(
+//                     'Provide details about your $title',
+//                     style: TextStyle(
+//                       fontSize: currentTheme.fontSizes.s15,
+//                       fontWeight: currentTheme.fontWeights.wRegular,
+//                       color: Color(0XFF818184),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             if (steps.length == 1) 20.toVerticalSizedBox,
+
+//             if (steps.length > 1)
+//               Padding(
+//                 padding: const EdgeInsets.all(16),
+//                 child: StepHeader(currentStep: currentStep, steps: stepTitles),
+//               ),
+
+//             Expanded(
+//               child: ListView.builder(
+//                 padding: const EdgeInsets.symmetric(horizontal: 16),
+//                 itemCount: visibleFields.length,
+//                 itemBuilder: (_, index) {
+//                   return FieldRenderer(field: visibleFields[index]);
+//                 },
+//               ),
+//             ),
+
+//             _BottomActionBar(
+//               showPrevious: currentStep > 0,
+//               isLast: isLastStep,
+//               onPrevious: notifier.previousStep,
+//               onNext: () {
+//                 if (notifier.validateStep(visibleFields)) {
+//                   // 🔥 REMOVE CURRENT FOCUS (KEY FIX)
+//                   FocusManager.instance.primaryFocus?.unfocus();
+
+//                   // Optional: small delay for smoother UX
+//                   Future.microtask(() {
+//                     notifier.nextStep();
+//                   });
+//                 }
+//               },
+//               onSubmit: () {
+//                 if (notifier.validateStep(visibleFields)) {
+//                   onSubmit(state.values);
+//                 }
+//               },
+//               enableSubmitWhen: enableSubmitWhen,
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class DynamicForm extends ConsumerStatefulWidget {
   final List<List<DynamicField>> steps;
   final List<String> stepTitles;
   final void Function(Map<String, dynamic>) onSubmit;
@@ -64,13 +175,54 @@ class DynamicForm extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DynamicForm> createState() => _DynamicFormState();
+}
+
+class _DynamicFormState extends ConsumerState<DynamicForm>
+    with WidgetsBindingObserver {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  /// 🔥 Detect keyboard open
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+
+    if (bottomInset > 0) {
+      // slight delay → wait for keyboard animation
+      Future.delayed(const Duration(milliseconds: 120), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.offset + 120,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(dynamicFormProvider);
     final notifier = ref.read(dynamicFormProvider.notifier);
 
     final currentStep = state.currentStep;
-    final currentFields = steps[currentStep];
-    final isLastStep = currentStep == steps.length - 1;
+    final currentFields = widget.steps[currentStep];
+    final isLastStep = currentStep == widget.steps.length - 1;
+
     final visibleFields = currentFields.where((field) {
       if (field.visibleWhen == null) return true;
       return field.visibleWhen!(state.values);
@@ -96,32 +248,51 @@ class DynamicForm extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             20.toVerticalSizedBox,
+
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.toAutoScaledWidth),
               child: Wrap(
                 children: [
                   Text(
-                    'Provide details about your $title',
+                    'Provide details about your ${widget.title}',
                     style: TextStyle(
                       fontSize: currentTheme.fontSizes.s15,
                       fontWeight: currentTheme.fontWeights.wRegular,
-                      color: Color(0XFF818184),
+                      color: const Color(0XFF818184),
                     ),
                   ),
                 ],
               ),
             ),
-            if (steps.length == 1) 20.toVerticalSizedBox,
 
-            if (steps.length > 1)
+            if (widget.steps.length == 1) 20.toVerticalSizedBox,
+
+            if (widget.steps.length > 1)
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: StepHeader(currentStep: currentStep, steps: stepTitles),
+                child: StepHeader(
+                  currentStep: currentStep,
+                  steps: widget.stepTitles,
+                ),
               ),
 
+            /// 🔥 MAIN SCROLL AREA
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                controller: _scrollController,
+
+                /// 👇 dismiss keyboard on scroll
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+
+                /// 🔥 KEY FIX → dynamic bottom padding
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  0,
+                  16,
+                  MediaQuery.of(context).viewInsets.bottom + 20,
+                ),
+
                 itemCount: visibleFields.length,
                 itemBuilder: (_, index) {
                   return FieldRenderer(field: visibleFields[index]);
@@ -135,10 +306,9 @@ class DynamicForm extends ConsumerWidget {
               onPrevious: notifier.previousStep,
               onNext: () {
                 if (notifier.validateStep(visibleFields)) {
-                  // 🔥 REMOVE CURRENT FOCUS (KEY FIX)
+                  /// 🔥 IMPORTANT (already correct in your code)
                   FocusManager.instance.primaryFocus?.unfocus();
 
-                  // Optional: small delay for smoother UX
                   Future.microtask(() {
                     notifier.nextStep();
                   });
@@ -146,10 +316,10 @@ class DynamicForm extends ConsumerWidget {
               },
               onSubmit: () {
                 if (notifier.validateStep(visibleFields)) {
-                  onSubmit(state.values);
+                  widget.onSubmit(state.values);
                 }
               },
-              enableSubmitWhen: enableSubmitWhen,
+              enableSubmitWhen: widget.enableSubmitWhen,
             ),
           ],
         ),

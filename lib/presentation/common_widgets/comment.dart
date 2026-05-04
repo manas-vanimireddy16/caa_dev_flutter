@@ -347,6 +347,22 @@ class _AddCommentBoxState extends State<AddCommentBox> {
             }),
           ],
         );
+      case ActionButtonsType.assignApproveReject:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            _actionButton("Assign", Colors.blue, () async {
+              await widget.onAssign?.call();
+            }),
+            _actionButton("Approve", Colors.green, () async {
+              await widget.onApprove?.call();
+            }),
+            10.toHorizontalSizedBox,
+            _actionButton("Reject", Colors.red, () async {
+              await widget.onReject?.call();
+            }),
+          ],
+        );
 
       case ActionButtonsType.reassignCloseReject:
         return Row(

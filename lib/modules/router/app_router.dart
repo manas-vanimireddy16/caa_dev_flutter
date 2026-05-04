@@ -643,6 +643,7 @@ class AppRouter extends RootStackRouter {
       children: [
         AutoRoute(page: RequestTenderServiceRoute.page),
         AutoRoute(page: RequestAServiceToRespondToEnquiriesRoute.page),
+        AutoRoute(page: RequestTenderAnalysisServiceRoute.page),
       ],
     ),
 
@@ -660,7 +661,15 @@ class AppRouter extends RootStackRouter {
     ),
     AutoRoute(
       page: RequestAServiceToRespondToEnquiriesNewRequestRoute.page,
-      path: RouteNames.requestToEnquiryNewRequest,
+      path: RouteNames.respondToEnquiryNewRequest,
+    ),
+    AutoRoute(
+      page: RequestTenderAnalysisServiceDetailsRoute.page,
+      path: RouteNames.requestTenderAnalysisDetails,
+    ),
+    AutoRoute(
+      page: RequestTenderAnalysisServiceNewRequestRoute.page,
+      path: RouteNames.requestTenderAnalysisNewRequest,
     ),
   ];
 

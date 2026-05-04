@@ -30,6 +30,16 @@ class _DrawerMenu extends ConsumerWidget {
         icon: KImageProvider(image: KIcons.dashboard),
         label: 'Request a Tender Service',
       ),
+      DrawerItemData(
+        index: 1,
+        icon: KImageProvider(image: KIcons.dashboard),
+        label: 'Request A Service To Respond To Enquiries',
+      ),
+      DrawerItemData(
+        index: 2,
+        icon: KImageProvider(image: KIcons.dashboard),
+        label: 'Request Tender Analysis Service',
+      ),
     ];
 
     return Column(
