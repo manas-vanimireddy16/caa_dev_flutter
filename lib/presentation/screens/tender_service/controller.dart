@@ -68,6 +68,8 @@ class _VSController extends StateNotifier<_ViewState> {
         return 'Request A Service To Respond To Enquiries';
       case 2:
         return 'Request Tender Analysis Service';
+      case 3:
+        return 'Request Contract Service';
 
       default:
         return '  Home';

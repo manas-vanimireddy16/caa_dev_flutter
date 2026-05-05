@@ -1428,6 +1428,8 @@ class RequestModel {
   final String? estimatedCost;
   final String? implementationPeriod;
   final String? requestingEntity;
+  final String? projectCodeBudgetCode;
+  final String? companyName;
 
   // ─────────────────────────────
   // CONSTRUCTOR
@@ -1723,6 +1725,8 @@ class RequestModel {
     this.estimatedCost,
     this.implementationPeriod,
     this.requestingEntity,
+    this.projectCodeBudgetCode,
+    this.companyName,
   });
 
   // ─────────────────────────────
@@ -2086,6 +2090,9 @@ class RequestModel {
       estimatedCost: json['estimated_cost'],
       implementationPeriod: json['implementation_period'],
       requestingEntity: json['requesting_entity'],
+      projectCodeBudgetCode:
+          (json['project_code_budget_code'] ?? json['project_or_budget_code']),
+      companyName: json['company_name'],
     );
   }
 

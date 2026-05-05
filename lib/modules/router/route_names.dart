@@ -243,6 +243,10 @@ class RouteNames {
       '/RequestForCancellationNewRequestScreen';
   static const String requestForCancellationDetails =
       '/RequestForCancellationDetailsScreen';
+  static const String requestToBookCAAHallsDetails =
+      '/requestToBookCAAHallsDetails';
+  static const String requestToBookCAAHallsNewRequest =
+      '/requestToBookCAAHallsNewRequest';
 
   static const String requiredNewResourceDetails =
       '/requestForStudyLeaveDetailsTabScreen';
@@ -316,4 +320,8 @@ class RouteNames {
       '/requestTenderAnalysisDetails';
   static const String requestTenderAnalysisNewRequest =
       '/requestTenderAnalysisNewRequest';
+  static const String contractServiceRequestDetails =
+      '/contractServiceRequestDetails';
+  static const String contractServiceRequestNewRequest =
+      '/contractServiceRequestNewRequest';
 }

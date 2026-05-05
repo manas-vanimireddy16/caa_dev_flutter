@@ -8,7 +8,7 @@ class RequestDetailImple implements RequestDetailRepository {
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.postChats(id);
+    final String url = ApiEndPoint.salalahApprovalKpiCard;
 
     try {
       if (client != null) {

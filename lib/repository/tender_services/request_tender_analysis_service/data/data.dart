@@ -8,6 +8,7 @@ import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/tender_service/models/tender_analysis.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/cancel_request_model.dart';
 import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
 import 'package:code_setup/repository/tender_services/request_tender_analysis_service/domain/domain.dart';
@@ -64,7 +65,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
     Map<String, dynamic> payload,
   ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.respondToEnquiriesSendRequest;
+    final String url = ApiEndPoint.requestTenderAnalysisSendRequest;
 
     try {
       if (client == null) {
@@ -189,7 +190,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
 
   @override
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId) async {
-    String url = ApiEndPoint.respondToEnquiriesKpiCards;
+    String url = ApiEndPoint.requestTenderAnalysisKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -225,7 +226,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
     required int serviceId,
     required int subServiceId,
   }) async {
-    String url = ApiEndPoint.respondToEnquiriesApprovalKpiCards;
+    String url = ApiEndPoint.requestTenderAnalysisApprovalKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -272,7 +273,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.respondToEnquiriesApprovalStatusBreakdown,
+          ApiEndPoint.requestTenderAnalysisApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -315,7 +316,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.respondToEnquiriesApprovalTrendBreakdown,
+          ApiEndPoint.requestTenderAnalysisApprovalTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -355,7 +356,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.respondToEnquiriesStatusBreakdown,
+          ApiEndPoint.requestTenderAnalysisStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -398,7 +399,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.respondToEnquiriesTrendBreakdown,
+          ApiEndPoint.requestTenderAnalysisTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -423,7 +424,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
   }
 
   @override
-  Future<List<EventSupportModel>> getRequests({
+  Future<List<TenderAnalysisModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -451,7 +452,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
         if (status.isNotEmpty) {
           queryParams['status'] = status;
         }
-        final url = ApiEndPoint.respondToEnquiriesGetRequests;
+        final url = ApiEndPoint.requestTenderAnalysisGetRequests;
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
@@ -459,7 +460,9 @@ class RequestForTenderAnalysisServiceRepositoryImpl
           final List<dynamic> list = data['data'];
 
           return list
-              .map((e) => EventSupportModel.fromJson(e as Map<String, dynamic>))
+              .map(
+                (e) => TenderAnalysisModel.fromJson(e as Map<String, dynamic>),
+              )
               .toList();
         } else {
           throw Exception(
@@ -475,7 +478,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
   }
 
   @override
-  Future<List<EventSupportModel>> getActionItems({
+  Future<List<TenderAnalysisModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -504,7 +507,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
         }
 
         final response = await client.get(
-          ApiEndPoint.respondToEnquiriesGetActionItems,
+          ApiEndPoint.requestTenderAnalysisGetActionItems,
           queryParameters: queryParams,
         );
 
@@ -517,7 +520,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
           final actionItems = list
               .map(
                 (item) =>
-                    EventSupportModel.fromJson(item as Map<String, dynamic>),
+                    TenderAnalysisModel.fromJson(item as Map<String, dynamic>),
               )
               .toList();
 
@@ -543,7 +546,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.respondToEnquiriesSendChatById(id);
+    final String url = ApiEndPoint.requestTenderAnalysisSendChatById(id);
 
     try {
       if (client != null) {
@@ -576,7 +579,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
   @override
   Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.respondToEnquiriesSendAttachmentById(id);
+    final String url = ApiEndPoint.requestTenderAnalysisSendAttachmentById(id);
 
     try {
       if (client != null) {
@@ -609,7 +612,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
   @override
   Future<void> onApprove(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.respondToEnquiriesApprove;
+    final String url = ApiEndPoint.requestTenderAnalysisApprove;
 
     try {
       if (client != null) {
@@ -644,7 +647,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.respondToEnquiriesChatsById(id);
+        final url = ApiEndPoint.requestTenderAnalysisChatsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -672,7 +675,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.respondToEnquiriesAttachmentsById(id);
+        final url = ApiEndPoint.requestTenderAnalysisAttachmentsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -708,7 +711,7 @@ class RequestForTenderAnalysisServiceRepositoryImpl
           // 'service_id': serviceId,
           // 'sub_service_id': subServiceId,
         };
-        final url = ApiEndPoint.respondToEnquiriesRequestById(id);
+        final url = ApiEndPoint.requestTenderAnalysisRequestById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {

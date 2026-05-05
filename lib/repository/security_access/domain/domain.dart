@@ -8,37 +8,67 @@ import 'package:code_setup/repository/security_access/data/data.dart';
 abstract class SecurityAccessRepoistory {
   factory SecurityAccessRepoistory() => SecurityAccessImple();
 
-  Future<void> sendAccessCardRequest(Map<String, dynamic> payload);
+  Future<Map<String, dynamic>> securityAccessCardCreateRequest(
+    Map<String, dynamic> payload,
+  );
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,
   );
-  Future<RequestDetailData?> getRequestsById(int id);
-  Future<KPIResponse?> getKpiData();
-  Future<StatusBreakdownModel?> getStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period);
+  Future<RequestDetailData?> getRequestsById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<KPIResponse?> getKpiData(int serviceId, int subServiceId);
+
   Future<List<AccessCardRequest>> getRequests({
     required int offset,
     required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
+    required int serviceId,
+    required int subServiceId,
+    String status = '',
     String searchText = '',
   });
+
   Future<List<AccessCardRequest>> getActionItems({
     required int offset,
     required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
+    required int serviceId,
+    required int subServiceId,
+    String status = '',
     String searchText = '',
   });
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<void> onApprove(Map<String, dynamic> payload);
 
-  Future<KPIResponse?> getApprovalKpiData();
-  Future<StatusBreakdownModel?> getApprovalStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(String period);
+  Future<String> sendChat(Map<String, dynamic> payload, int id);
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id);
+  Future<List<ChatMessageModel>> getchatById(int id);
+  Future<List<AttachmentModel>> getAttachmentsById(int id);
 
-  Future<void> onClose(Map<String, dynamic> payload);
-  Future<String> sendChat(Map<String, dynamic> payload, int id, String type);
+  Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<TrendBreakdownModel> getApprovalTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
 
+  Future<StatusBreakdownModel?> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
   Future<List<DepartmentModel>> getDepartments();
 }

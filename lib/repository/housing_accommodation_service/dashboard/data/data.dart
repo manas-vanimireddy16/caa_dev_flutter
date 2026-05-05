@@ -292,7 +292,7 @@ class HotelReservationDashboardRepoistoryImple
     String type,
   ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.securityAccessChatorAttachment(id);
+    final String url = ApiEndPoint.salalahChatsById(id);
 
     try {
       if (client != null) {

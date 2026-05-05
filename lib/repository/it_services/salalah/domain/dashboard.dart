@@ -9,6 +9,7 @@ import 'package:code_setup/presentation/screens/it_services/salalah/models/it_te
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestData.dart'
     hide Department;
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart';
+import 'package:code_setup/presentation/screens/it_services/salalah/models/salalah_data_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/service_dropdown_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/status_break_down.dart';
 import 'package:code_setup/repository/it_services/salalah/data/dashboardImplementation.dart';
@@ -16,7 +17,7 @@ import 'package:code_setup/repository/it_services/salalah/data/dashboardImplemen
 abstract class DashboardRepository {
   factory DashboardRepository() => DashboardRepositoryImpl();
 
-  Future<void> sendRequest(Map<String, dynamic> payload);
+  Future<Map<String, dynamic>> sendRequest(Map<String, dynamic> payload);
   Future<void> selfAssign(Map<String, dynamic> payload);
   Future<void> onClose(Map<String, dynamic> payload);
   Future<List<Map<String, dynamic>>> uploadAttachments(
@@ -24,28 +25,52 @@ abstract class DashboardRepository {
   );
   Future<List<ServiceData>> getServices();
   Future<List<DepartmentModel>> getDepartments();
-  Future<List<RequestsData>> getRequests({
+  Future<List<SalalahRequestModel>> getRequests({
     required int offset,
     required int limit,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
     String searchText = '',
+
+    required int serviceId,
+    required int subServiceId,
   });
-  Future<List<SalalahActionItem>> getActionItems({
+  Future<List<SalalahRequestModel>> getActionItems({
     required int offset,
     required int limit,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
     String searchText = '',
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<String> sendChat(Map<String, dynamic> payload, int id);
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id);
+  Future<List<ChatMessageModel>> getchatById(int id);
+  Future<List<AttachmentModel>> getAttachmentsById(int id);
+
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
   });
   Future<RequestDetailData?> getRequestsById(int id);
-  Future<KPIResponse?> getKpiData();
-  Future<StatusBreakdownModel?> getStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period);
+  Future<KPIResponse?> getKpiData({
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<StatusBreakdownModel?> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
   Future<ITTechnicianListModel> getItTechnicianDetails();
-  Future<List<RequestMessageData>> getChats();
   Future<List<SectionModel>> getSections(int id);
   Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
     required String period,

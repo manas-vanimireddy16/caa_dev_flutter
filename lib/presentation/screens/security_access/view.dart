@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
@@ -9,26 +7,31 @@ import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 
 import 'package:code_setup/modules/domain/core/theme/theme.dart';
+import 'package:code_setup/modules/domain/models/roles_model.dart';
 
 import 'package:code_setup/modules/router/app_router.gr.dart';
+import 'package:code_setup/presentation/common_widgets/drawer_component.dart';
+import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
+import 'package:code_setup/presentation/core_widgets/drawer/drawer.dart';
 
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
+import 'package:code_setup/presentation/core_widgets/list_tile_divider.dart';
 
-import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-import 'package:code_setup/presentation/models/request_detail.dart';
+import 'package:code_setup/presentation/models/request_detail.dart'
+    hide Service;
 
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/assets/icons.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:google_fonts/google_fonts.dart';
-
 part 'controller.dart';
 
+part 'widgets/drawer.dart';
 
 // part 'my_profile_page/widget/my_profile_widget.dart';
 
@@ -42,252 +45,61 @@ class RequestForAccessHomePage extends ConsumerWidget {
         .read(KAppX.theme.current)
         .themeBox;
 
-    final params = BottomNavigatorVSControllerParams(context: context);
+    final stateController = ref.read(bottomNavigatorVsProvider.notifier);
 
-    final state = ref.read(bottomNavigatorVsProvider(params));
+    return AutoTabsRouter.builder(
+      routes: [
+        AccessCardDashboardRoute(),
+        AccessCardRequestRoute(service: Service(), subService: SubService()),
+      ],
+      // 👇 CORRECT builder signature for AutoTabsRouter.builder
+      builder: (tabsContext, children, tabsRouter) {
+        final activeIndex = tabsRouter.activeIndex;
 
-    final stateController = ref.read(
-      bottomNavigatorVsProvider(params).notifier,
-    );
-
-    final index = ref.watch(homeNavBarProvider);
-
-    final indexChange = ref.read(homeNavBarProvider.notifier);
-
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-    return SafeArea(
-      top: false,
-
-      child: AutoTabsScaffold(
-        scaffoldKey: _scaffoldKey,
-
-        routes: [AccessCardDashboardRoute(), AccessCardRequestRoute()],
-
-        // builder: (context, child) {
-
-        //   return child;
-
-        // },
-        bottomNavigationBuilder: (_, tabsRouter) {
-          // if (tabsRouter.activeIndex == 3 || tabsRouter.activeIndex == 2) {
-
-          //   return const SizedBox.shrink();
-
-          // }
-
-          return Container(
-            height: 71,
-
-            decoration: BoxDecoration(
-              color: currentTheme.colors.onPrimary,
-
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16.toAutoScaledWidth),
-
-                topRight: Radius.circular(16.toAutoScaledWidth),
+        return Scaffold(
+          backgroundColor: currentTheme.colors.background,
+          appBar: KAppBar(
+            leading: Builder(
+              builder: (ctx) => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
               ),
-
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 4,
-
-                  spreadRadius: 0,
-
-                  color: currentTheme.colors.secondary.shade60,
-                ),
-              ],
             ),
 
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-              children: [
-                _buildNavItem(
-                  icon: Icons.home,
-
-                  label: 'Home',
-
-                  isActive: tabsRouter.activeIndex == 0,
-
-                  onTap: () {
-                    tabsRouter.setActiveIndex(0);
-
-                    stateController.onTabChanged(0);
-                  },
-
-                  currentTheme: currentTheme,
-                ),
-
-                _buildNavItem(
-                  icon: Icons.design_services,
-
-                  label: 'Services',
-
-                  isActive: tabsRouter.activeIndex == 1,
-
-                  onTap: () {
-                    tabsRouter.setActiveIndex(1);
-
-                    stateController.onTabChanged(1);
-                  },
-
-                  currentTheme: currentTheme,
-                ),
-              ],
+            title: Text(
+              stateController.titleForIndex(activeIndex),
+              style: TextStyle(
+                fontSize: currentTheme.fontSizes.s16,
+                fontWeight: currentTheme.fontWeights.wBold,
+              ),
             ),
-          );
-        },
-      ),
+          ),
+          drawer: KDrawer(
+            child: _DrawerMenu(
+              currentTheme: currentTheme,
+              activeIndex: activeIndex,
+              onItemTap: (index) {
+                if (index == activeIndex) {
+                  KAppX.router.pop(); // just close drawer
+                  return;
+                }
+
+                tabsRouter.setActiveIndex(index);
+                stateController.onTabChanged(index);
+                KAppX.router.pop(); // close drawer after nav
+              },
+            ),
+          ),
+          // Nice, smooth transition between tabs
+          body: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: KeyedSubtree(
+              key: ValueKey(activeIndex),
+              child: children[activeIndex],
+            ),
+          ),
+        );
+      },
     );
   }
-}
-
-Widget _buildNavItem({
-  required IconData icon,
-
-  required String label,
-
-  required bool isActive,
-
-  required VoidCallback onTap,
-
-  required KThemeBox currentTheme,
-}) {
-  return GestureDetector(
-    onTap: onTap,
-
-    child: Container(
-      clipBehavior: Clip.antiAlias,
-
-      width: 76.toAutoScaledWidth,
-
-      padding: EdgeInsets.symmetric(vertical: 4.toAutoScaledHeight),
-
-      decoration: BoxDecoration(
-        color: isActive ? const Color(0xFFF2EBE6) : null,
-
-        borderRadius: BorderRadius.circular(16.toAutoScaledWidth),
-      ),
-
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-
-        mainAxisAlignment: MainAxisAlignment.center,
-
-        children: [
-          // KImageProvider(
-
-          //   icon: icon,
-
-          //   tintColor: currentTheme.colors.primary,
-
-          //   width: 24.toAutoScaledWidth,
-
-          //   height: 24.toAutoScaledHeight,
-
-          // ),
-          Icon(icon, color: currentTheme.colors.primary, size: 24),
-
-          const SizedBox(height: 4),
-
-          Text(
-            label,
-
-            style: TextStyle(
-              fontSize: currentTheme.fontSizes.s10,
-
-              fontWeight: currentTheme.fontWeights.wRegular,
-
-              height: 15.7.toAutoScaledFont / currentTheme.fontSizes.s10,
-
-              letterSpacing: 0.5,
-
-              color: currentTheme.colors.primary,
-
-              fontFamily: GoogleFonts.mitr().fontFamily,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-Widget _buildNavigatorIcon(
-  String asset,
-
-  bool isActive,
-
-  KThemeBox currentTheme,
-
-  String iconName, {
-
-  Color? color,
-}) {
-  return Container(
-    width: 76.toAutoScaledWidth,
-
-    height: 50.toAutoScaledHeight,
-
-    padding: EdgeInsets.only(
-      top: 4.toAutoScaledHeight,
-
-      bottom: 4.toAutoScaledHeight,
-    ),
-
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(16.toAutoScaledWidth),
-
-      color: isActive ? Color(0XFFF2EBE6) : null,
-    ),
-
-    child: Center(
-      child: Column(
-        children: [
-          KImageProvider(
-            image: asset,
-
-            tintColor: color,
-
-            width: 24.toAutoScaledWidth,
-
-            height: 24.toAutoScaledHeight,
-          ),
-
-          Text(
-            iconName,
-
-            style: TextStyle(
-              fontSize: currentTheme.fontSizes.s10,
-
-              fontWeight: currentTheme.fontWeights.wRegular,
-
-              height: 15.7.toAutoScaledFont / currentTheme.fontSizes.s10,
-
-              letterSpacing: 0.5,
-
-              fontFamily: GoogleFonts.mitr().fontFamily,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-TextStyle _buildLabelTextStyle() {
-  final currentTheme = KAppX.globalProvider.read(KAppX.theme.current);
-
-  return TextStyle(
-    fontSize: currentTheme.themeBox.fontSizes.s10,
-
-    fontWeight: currentTheme.themeBox.fontWeights.wRegular,
-
-    height: 15.7.toAutoScaledFont / currentTheme.themeBox.fontSizes.s10,
-
-    letterSpacing: 0.5,
-
-    fontFamily: GoogleFonts.mitr().fontFamily,
-  );
 }

@@ -539,6 +539,13 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: false,
     ),
+    DynamicField(
+      name: 'recommendation1',
+      label: 'Recommendations of the Relevant Division Manager1',
+      type: FieldType.text,
+      required: false,
+      initialValue: 'ijijij',
+    ),
 
     /// ================= PROJECT MANAGER =================
     DynamicField(

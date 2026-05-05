@@ -3,13 +3,20 @@ part of '../view.dart';
 @RoutePage()
 class SalalahRequestDetailsTabScreen extends ConsumerStatefulWidget {
   final int id;
+  final String from;
   final Service service;
   final SubService subService;
+
+  final int serviceId;
+  final int subServiceId;
   const SalalahRequestDetailsTabScreen({
     super.key,
     required this.id,
+    this.from = '',
     required this.service,
     required this.subService,
+    required this.serviceId,
+    required this.subServiceId,
   });
 
   @override
@@ -22,12 +29,14 @@ class _SalalahRequestDetailsTabScreenState
   @override
   void initState() {
     super.initState();
+
+    /// ✅ Create proper provider params object
     _providerArgs = _VSControllerParams(
       service: widget.service,
       subService: widget.subService,
     );
 
-    /// Fetch ONLY once
+    /// ✅ Fetch ONLY once (after init)
     Future.microtask(() {
       ref
           .read(_vsProvider(_providerArgs).notifier)
@@ -52,13 +61,29 @@ class _SalalahRequestDetailsTabScreenState
             return const Center(child: CircularProgressIndicator());
           }
 
-          final request = state.requestDetails?.request;
+          // final request = state.requestDetails.request == null
+          //     ? null
+          //     : state.requestDetails;
+          final request = state.requestDetails.request;
           final requestId = request?.id;
-          final workflows = state.requestDetails?.workflowDetails ?? [];
-          final attachments = state.requestDetails?.attachments ?? [];
-          final chats = state.requestDetails?.chatMessages ?? [];
+          final List<AttachmentModel> attachments = state.attachmentsById;
+          final chats = state.chatById;
+          final List<ApprovalDetailModel> approvals =
+              state.requestDetails.approvalDetails ?? [];
           final selectedTab = state.requestDetailTab;
-          final approverId = state?.requestDetails?.approvalDetails?[0].id;
+          final active = controller.getActiveApprovalLevel(
+            state.requestDetails.approvalDetails ?? [],
+          );
+          final actionType = controller.getActionButtonsType(
+            state.requestDetails,
+            approvals,
+          );
+          final nextApprover = controller.resolveApproverMap(approvals);
+
+          final approverId = active?.id;
+
+          // controller.onSelectedApprovalId(approverRoleId ?? 0);
+          // final canApprove = controller.shouldShowApprovalButtons(approvals);
 
           return SingleChildScrollView(
             child: Column(
@@ -78,12 +103,12 @@ class _SalalahRequestDetailsTabScreenState
                     "Department": request?.createdByUser?.category ?? 'N/A',
                     "Email": request?.createdByUser?.email ?? 'N/A',
                     "Phone": request?.createdByUser?.mobile ?? 'N/A',
-                    "Request Type": request?.requestFor ?? 'N/A',
+                    // "Request Type": request?.requestFor ?? 'N/A',
                   },
                 ),
 
                 5.toHorizontalSizedBox,
-                RequestTabs(
+                RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
                   subService: widget.subService,
@@ -93,9 +118,12 @@ class _SalalahRequestDetailsTabScreenState
 
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
-                  SalalahRequestDetailScreen(
-                    // from: 'salalah',
-                    data: state.requestDetails,
+                  CommonRequestDetails(
+                    statusInfo: controller.buildStatusInformation(),
+
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
+                    // table: controller.mapAccommodationTableForDetails(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(
@@ -122,7 +150,9 @@ class _SalalahRequestDetailsTabScreenState
                 else if (selectedTab == 2)
                   CommonAttachmentsTabContent(attachments: attachments)
                 else if (selectedTab == 3)
-                  RequestWorkflowTimeline(details: state.requestDetails),
+                  ITServicesRequestWorkflowTimeline(
+                    details: state.requestDetails,
+                  ),
               ],
             ),
           );

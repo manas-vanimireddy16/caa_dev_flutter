@@ -7,12 +7,14 @@ import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/action_item_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/chat.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/it_technician.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestData.dart'
     hide Department;
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart';
+import 'package:code_setup/presentation/screens/it_services/salalah/models/salalah_data_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/service_dropdown_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/status_break_down.dart';
 import 'package:code_setup/repository/it_services/salalah/domain/dashboard.dart';
@@ -57,7 +59,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
   /// Sends payload including uploaded attachments
   @override
-  Future<void> sendRequest(Map<String, dynamic> payload) async {
+  Future<Map<String, dynamic>> sendRequest(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
     final String url = ApiEndPoint.sendSalalahRequest;
 
@@ -70,14 +72,17 @@ class DashboardRepositoryImpl implements DashboardRepository {
             '${response.data['message']}',
           );
           debugPrint('✅ Request sent successfully');
+          return response.data as Map<String, dynamic>;
         } else {
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
           ShowFlutterToast().showFlutterToastFailure(
             '${response.statusMessage}',
           );
+          return response.data as Map<String, dynamic>;
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
+        return {'status': 'failure', 'message': 'No network client available'};
       }
     } on DioException catch (e) {
       debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
@@ -153,12 +158,22 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period) async {
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
+        final queryParams = {
+          "year": period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
         final response = await client.get(
-          ApiEndPoint.salalahTrendBreakdown(period),
+          ApiEndPoint.salalahTrendBreakdown,
+          queryParameters: queryParams,
         );
         if (response.statusCode == 200 && response.data != null) {
           final data = Map<String, dynamic>.from(response.data);
@@ -308,57 +323,40 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<List<RequestMessageData>> getChats() async {
-    String url = ApiEndPoint.getChats;
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final response = await client.get(url);
-
-        if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          final responseData = RequestMessageResponse.fromJson(data);
-          return responseData.data ?? [];
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      return [];
-    } on DioException catch (error) {
-      log('caught dio error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching KPI data $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<List<RequestsData>> getRequests({
+  Future<List<SalalahRequestModel>> getRequests({
     required int offset,
     required int limit,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
     String searchText = '',
+
+    required int serviceId,
+    required int subServiceId,
   }) async {
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
+        final queryParams = {
+          // 'offset': offset.toString(),
+          // 'limit': limit.toString(),
+          // 'order_by': 'created_at',
+          // 'sort_order': 'DESC',
+          'service_id': serviceId.toString(),
+          'sub_service_id': subServiceId.toString(),
+        };
         final url = ApiEndPoint.salalahRequests;
-        final response = await client.get(url);
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
           final data = response.data as Map<String, dynamic>;
           final List<dynamic> list = data['data'];
 
           return list
-              .map((e) => RequestsData.fromJson(e as Map<String, dynamic>))
+              .map(
+                (e) => SalalahRequestModel.fromJson(e as Map<String, dynamic>),
+              )
               .toList();
         } else {
           throw Exception('Failed to fetch services: ${response.statusCode}');
@@ -372,11 +370,13 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<List<SalalahActionItem>> getActionItems({
+  Future<List<SalalahRequestModel>> getActionItems({
     required int offset,
     required int limit,
     String status = '',
     String searchText = '',
+    required int serviceId,
+    required int subServiceId,
   }) async {
     try {
       final client = await KAppX.network.secureClient();
@@ -386,6 +386,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
           'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
+          'service_id': serviceId.toString(),
+          'sub_service_id': subServiceId.toString(),
         };
 
         if (status.isNotEmpty) {
@@ -410,7 +412,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
           final actionItems = list
               .map(
                 (item) =>
-                    SalalahActionItem.fromJson(item as Map<String, dynamic>),
+                    SalalahRequestModel.fromJson(item as Map<String, dynamic>),
               )
               .toList();
 
@@ -428,6 +430,42 @@ class DashboardRepositoryImpl implements DashboardRepository {
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    const String url = ApiEndPoint.salalahApprovalKpiCard;
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return KPIResponse.fromJson(data);
+        } else {
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
+        }
+      }
+      return null;
+    } on DioException catch (error) {
+      log('caught dio error');
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      log('error fetching KPI data $e');
       throw ApiException(e.toString());
     }
   }
@@ -461,13 +499,20 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<KPIResponse?> getKpiData() async {
+  Future<KPIResponse?> getKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     String url = ApiEndPoint.salalahKpiCard;
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
-        final response = await client.get(url);
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
           final data = response.data as Map<String, dynamic>;
@@ -490,12 +535,23 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<StatusBreakdownModel> getStatusBreakdownData(String period) async {
+  Future<StatusBreakdownModel> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
+        final queryParams = {
+          'timePeriod': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
           ApiEndPoint.salalahStatusBreakdown(period),
+          queryParameters: queryParams,
         );
         if (response.statusCode == 200 && response.data != null) {
           final data = Map<String, dynamic>.from(response.data);
@@ -527,13 +583,13 @@ class DashboardRepositoryImpl implements DashboardRepository {
       final client = await KAppX.network.secureClient();
       if (client != null) {
         final queryParams = {
-          'time_period': period,
+          'timePeriod': period,
           'service_id': serviceId,
           'sub_service_id': subServiceId,
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.promotionApprovalStatusBreakdown,
+          ApiEndPoint.salalahApprovalStatusBreakdown(period),
           queryParameters: queryParams,
         );
 
@@ -576,7 +632,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.promotionApprovalTrendBreakdown,
+          ApiEndPoint.salalahApprovalTrendBreakdown(period),
           queryParameters: queryParams,
         );
 
@@ -597,6 +653,120 @@ class DashboardRepositoryImpl implements DashboardRepository {
     } catch (e) {
       log('error fetching trend breakdown $e');
       throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<String> sendChat(Map<String, dynamic> payload, int id) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.salalahSendChatById(id);
+
+    try {
+      if (client != null) {
+        final response = await client.post(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('Message sent successfully');
+
+          return response.data["message"] ?? "Success";
+        } else {
+          debugPrint('Failed to send request: ${response.statusCode}');
+          return response.data["message"] ?? "Something went wrong";
+        }
+      } else {
+        debugPrint('Client is null - cannot send request');
+        return "Something went wrong";
+      }
+    } on DioException catch (e) {
+      debugPrint('Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  @override
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.salalahSendAttachmentById(id);
+
+    try {
+      if (client != null) {
+        final response = await client.post(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('Message sent successfully');
+
+          return response.data["message"] ?? "Success";
+        } else {
+          debugPrint('Failed to send request: ${response.statusCode}');
+          return response.data["message"] ?? "Something went wrong";
+        }
+      } else {
+        debugPrint('Client is null - cannot send request');
+        return "Something went wrong";
+      }
+    } on DioException catch (e) {
+      debugPrint('Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  @override
+  Future<List<ChatMessageModel>> getchatById(int id) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.salalahChatsById(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+          final result = ChatByIdResponseModel.fromJson(json);
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching chatById details: $e");
+    }
+  }
+
+  @override
+  Future<List<AttachmentModel>> getAttachmentsById(int id) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.salalahAttachmentsById(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+          final result = AttachmentByIdResponseModel.fromJson(json);
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching attachmentById details: $e");
     }
   }
 }

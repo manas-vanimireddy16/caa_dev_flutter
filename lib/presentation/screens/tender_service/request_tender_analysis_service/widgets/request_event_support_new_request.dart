@@ -54,7 +54,7 @@ class _RequestTenderAnalysisServiceNewRequestScreenState
         child: DynamicForm(
           title: 'Performance Management',
           stepTitles: const [''],
-          steps: [controller.eventSupportFormFields],
+          steps: [controller.tenderAnalysisFields],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

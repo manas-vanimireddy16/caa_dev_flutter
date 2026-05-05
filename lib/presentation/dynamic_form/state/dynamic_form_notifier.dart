@@ -297,6 +297,38 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
   /// ------------------------------------------------
   /// ✅ INITIALIZE FORM
   /// ------------------------------------------------
+  // void initialize(
+  //   List<List<DynamicField>> steps, {
+  //   Map<String, dynamic>? apiValues,
+  // }) {
+  //   final allFields = steps.expand((e) => e);
+  //   final initialValues = <String, dynamic>{};
+
+  //   // for (final field in allFields) {
+  //   //   /// ⭐ VERY IMPORTANT
+  //   //   _fieldsMap[field.name] = field;
+
+  //   //   initialValues[field.name] =
+  //   //       apiValues?[field.name] ?? field.initialValue ?? _defaultValue(field);
+  //   // }
+  //   for (final field in allFields) {
+  //     _fieldsMap[field.name] = field;
+
+  //     /// 🔥 ADD THIS BLOCK
+  //     if (field.type == FieldType.acknowledgement) {
+  //       initialValues[field.name] =
+  //           apiValues?[field.name] ?? field.acknowledgements ?? [];
+  //       continue;
+  //     }
+
+  //     /// existing logic
+  //     initialValues[field.name] =
+  //         apiValues?[field.name] ?? field.initialValue ?? _defaultValue(field);
+  //   }
+
+  //   state = state.copyWith(values: initialValues);
+  // }
+
   void initialize(
     List<List<DynamicField>> steps, {
     Map<String, dynamic>? apiValues,
@@ -304,28 +336,42 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
     final allFields = steps.expand((e) => e);
     final initialValues = <String, dynamic>{};
 
-    // for (final field in allFields) {
-    //   /// ⭐ VERY IMPORTANT
-    //   _fieldsMap[field.name] = field;
-
-    //   initialValues[field.name] =
-    //       apiValues?[field.name] ?? field.initialValue ?? _defaultValue(field);
-    // }
     for (final field in allFields) {
+      /// ✅ Store field reference (needed for onChanged, etc.)
       _fieldsMap[field.name] = field;
 
-      /// 🔥 ADD THIS BLOCK
+      dynamic value;
+
+      /// -----------------------------
+      /// ✅ ACKNOWLEDGEMENT FIELD
+      /// -----------------------------
       if (field.type == FieldType.acknowledgement) {
-        initialValues[field.name] =
-            apiValues?[field.name] ?? field.acknowledgements ?? [];
-        continue;
+        value =
+            apiValues?[field.name] ??
+            field.acknowledgements ??
+            <AcknowledgementItem>[];
+      }
+      /// -----------------------------
+      /// ✅ NORMAL FIELDS
+      /// -----------------------------
+      else {
+        value =
+            apiValues?[field.name] ??
+            field.initialValue ??
+            _defaultValue(field);
       }
 
-      /// existing logic
-      initialValues[field.name] =
-          apiValues?[field.name] ?? field.initialValue ?? _defaultValue(field);
+      /// -----------------------------
+      /// ✅ EXTRA SAFETY (avoid null issues)
+      /// -----------------------------
+      if (value == null) {
+        value = _defaultValue(field);
+      }
+
+      initialValues[field.name] = value;
     }
 
+    /// ✅ SET STATE ONCE
     state = state.copyWith(values: initialValues);
   }
 
@@ -491,6 +537,10 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
 
     for (final field in fields) {
       final value = state.values[field.name];
+      final isDisabled =
+          field.disabled || (field.disabledWhen?.call(state.values) ?? false);
+
+      if (isDisabled) continue; // 🔥 ADD THIS
 
       /// -----------------------------
       /// ✅ FILE VALIDATION

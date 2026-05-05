@@ -47,8 +47,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<EventSupportModel> requestData;
-  final List<EventSupportModel> actionItems;
+  final List<TenderAnalysisModel> requestData;
+  final List<TenderAnalysisModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final int approvalId;
@@ -141,8 +141,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<EventSupportModel>? requestData,
-    List<EventSupportModel>? actionItems,
+    List<TenderAnalysisModel>? requestData,
+    List<TenderAnalysisModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -312,17 +312,16 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(EventSupportModel item) {
+  Map<String, String> buildRequestCardData(TenderAnalysisModel item) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
-      // 'Cycle Period': item.cyclePeriod ?? '-',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
-
-      /// ================= EMPLOYEE INFO =================
+      'Type of Project': item.titleOfProject ?? 'NA',
+      'Project Code/Budget Code': item.projectCodeBudgetCode ?? 'NA',
 
       /// 👇 APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
@@ -341,9 +340,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      // 'Request Classification': request?.requestClassification ?? '-',
-      // 'Date of Submission': request?.submissionDate.toString() ?? '-',
-      // 'Request Title': request?.requestTitle ?? '-',
+      'Request Submission Date': request?.createdAt.toString() ?? '-',
+      'Type of Project': request?.titleOfProject ?? 'NA',
+      'Project Code/Budget Code': request?.projectCodeBudgetCode ?? 'NA',
+      'Description': request?.description ?? 'NA',
       'Request Type': request?.requestType ?? '-',
     };
   }
@@ -395,7 +395,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      RequestEventSupportDetailsRoute(
+      RequestTenderAnalysisServiceDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -421,7 +421,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
     // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      RequestEventSupportNewRequestRoute(
+      RequestTenderAnalysisServiceNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -434,69 +434,53 @@ class _VSController extends StateNotifier<_ViewState> {
       RequestForTenderAnalysisServiceRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  List<DynamicField> get eventSupportFormFields => [
-    /// ================= EVENT TITLE =================
+  List<DynamicField> get tenderAnalysisFields => [
+    /// ================= TITLE OF PROJECT =================
     DynamicField(
-      name: 'event_title',
-      label: 'Event Title',
+      name: 'title_of_project',
+      label: 'Title of project',
       type: FieldType.text,
       required: true,
     ),
 
-    /// ================= DATE OF EVENT =================
+    /// ================= PROJECT CODE =================
     DynamicField(
-      name: 'event_date',
-      label: 'Date of Event',
+      name: 'project_code_budget_code',
+      label: 'Project code/budget code',
+      type: FieldType.text,
+      required: true,
+    ),
+
+    /// ================= DESCRIPTION =================
+    DynamicField(
+      name: 'description',
+      label: 'Description',
+      type: FieldType.textarea, // 🔥 use textarea for UI match
+      required: true,
+    ),
+
+    /// ================= DATE =================
+    DynamicField(
+      name: 'date_of_submission',
+      label: 'Date of submission',
       type: FieldType.date,
       required: true,
     ),
 
-    /// ================= LOCATION =================
+    /// ================= PHONE =================
     DynamicField(
-      name: 'location',
-      label: 'Location of Event',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= TYPE OF EVENT =================
-    DynamicField(
-      name: 'event_type',
-      label: 'Type of Event',
-      type: FieldType.text,
-      required: false,
-    ),
-
-    /// ================= PHONE NUMBER =================
-    DynamicField(
-      name: 'phone_number',
+      name: 'phone',
       label: 'Phone Number',
-      type: FieldType.text, // (or FieldType.phone if you have)
-      required: true,
-    ),
-
-    /// ================= REQUEST FOR =================
-    DynamicField(
-      name: 'request_for',
-      label: 'Request For',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= REASON =================
-    DynamicField(
-      name: 'reason',
-      label: 'Reason for Request',
-      type: FieldType.text,
+      type: FieldType.number,
       required: true,
     ),
 
     /// ================= ATTACHMENT =================
     DynamicField(
       name: 'attachments',
-      label: 'Attach File',
+      label: 'Attachment',
       type: FieldType.file,
-      required: false,
+      required: true,
     ),
   ];
 
@@ -543,8 +527,8 @@ class _VSController extends StateNotifier<_ViewState> {
       final requests = await requestForTenderAnalysisServiceInstance
           .getchatById(id);
       if (requests != null) {
-        // final chats = requests.reversed.toList();
-        state = state.copyWith(chatById: requests);
+        final chats = requests.reversed.toList();
+        state = state.copyWith(chatById: chats);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
@@ -1356,39 +1340,23 @@ class _VSController extends StateNotifier<_ViewState> {
     int subServiceId,
     Map<String, dynamic> values,
   ) {
-    final userInfo = KAppX.globalProvider.read(userInfoProvider);
-    final roles = KAppX.globalProvider.read(rolesProvider);
-
-    final payload = {
-      /// ⭐ ROLE
-      "role_id": roles?.roleId ?? 0,
-
-      /// ⭐ USER / DEPARTMENT INFO
-      "req_user_department_id": userInfo?.data?.department?.id ?? 0,
-      "req_user_section_id": userInfo?.data?.section?.id ?? 0,
-
-      /// ⭐ SERVICE INFO
+    return {
+      /// ⭐ SERVICE
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      /// ================= EVENT SUPPORT FIELDS =================
-      "event_name": values['event_title'] ?? "",
-      "event_title": values['event_title'] ?? "",
+      /// ⭐ PROJECT
+      "title_of_project": values['title_of_project'] ?? "",
+      "description": values['description'] ?? "",
+      "project_code_budget_code": values['project_code_budget_code'] ?? "",
 
-      "request_for": values['request_for'] ?? "",
-      "date_of_event": values['event_date'] ?? "",
-
-      "location_of_event": values['location'] ?? "",
-      "type_of_event": values['event_type'] ?? "",
-
-      "phone_number": values['phone_number'] ?? "",
-      "reason_for_request": values['reason'] ?? "",
+      /// ⭐ DATE + CONTACT
+      "date_of_submission": values['date_of_submission'] ?? "",
+      "phone": values['phone'] ?? "",
 
       /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
     };
-
-    return payload;
   }
 
   Future<void> submitProjectApprovalRequest(

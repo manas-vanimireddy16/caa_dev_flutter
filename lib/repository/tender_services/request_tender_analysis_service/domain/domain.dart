@@ -4,6 +4,7 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/tender_service/models/tender_analysis.dart';
 import 'package:code_setup/repository/tender_services/request_tender_analysis_service/data/data.dart';
 
 abstract class RequestForTenderAnalysisServiceRepository {
@@ -25,7 +26,7 @@ abstract class RequestForTenderAnalysisServiceRepository {
   });
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId);
 
-  Future<List<EventSupportModel>> getRequests({
+  Future<List<TenderAnalysisModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -36,7 +37,7 @@ abstract class RequestForTenderAnalysisServiceRepository {
     String searchText = '',
   });
 
-  Future<List<EventSupportModel>> getActionItems({
+  Future<List<TenderAnalysisModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,

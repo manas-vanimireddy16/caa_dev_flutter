@@ -43,6 +43,7 @@ import 'package:code_setup/presentation/screens/it_services/models/event_support
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/tender_service/models/tender_analysis.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
 import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';

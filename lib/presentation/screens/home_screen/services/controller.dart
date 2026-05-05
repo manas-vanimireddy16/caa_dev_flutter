@@ -231,7 +231,12 @@ class _VSController extends StateNotifier<_ViewState> {
         KAppX.router.push(LogisticsRequestPortalRoute());
         break;
       case 'Request for Access Card':
-        KAppX.router.push(AccessCardRequestRoute());
+        KAppX.router.push(
+          AccessCardRequestRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
         break;
       case 'Request for Hotel Reservation':
         KAppX.router.push(
@@ -556,6 +561,30 @@ class _VSController extends StateNotifier<_ViewState> {
       case 'Request a Service to Respond to Enquiries':
         KAppX.router.push(
           RequestAServiceToRespondToEnquiriesRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Request Tender Ananlysis Service':
+        KAppX.router.push(
+          RequestTenderAnalysisServiceRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Contract Service Request':
+        KAppX.router.push(
+          ContractServiceRequestRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'Request to Book CAA Halls':
+        KAppX.router.push(
+          RequestToBookCAAHallsRoute(
             service: service ?? Service(),
             subService: subService ?? SubService(),
           ),

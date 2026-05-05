@@ -24,6 +24,8 @@ class DynamicField {
   final List<String>? allowedExtensions;
   final List<AcknowledgementItem>? acknowledgements;
   final bool Function(Map<String, dynamic> values)? requiredWhen;
+  final bool Function(Map<String, dynamic> values)? disabledWhen;
+  final List<String>? disabledOptions;
 
   const DynamicField({
     required this.name,
@@ -42,6 +44,8 @@ class DynamicField {
     this.allowedExtensions,
     this.acknowledgements,
     this.requiredWhen,
+    this.disabledWhen,
+    this.disabledOptions,
   });
 }
 

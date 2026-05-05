@@ -119,7 +119,6 @@ import '../../models/dynamic_field.dart';
 //     );
 //   }
 // }
-
 class RadioFieldWidget extends ConsumerWidget {
   final DynamicField field;
 
@@ -130,33 +129,65 @@ class RadioFieldWidget extends ConsumerWidget {
     final state = ref.watch(dynamicFormProvider);
     final notifier = ref.read(dynamicFormProvider.notifier);
 
-    /// ⭐ SAFE VALUE
-    final selectedValue = state.values[field.name] is String
-        ? state.values[field.name] as String?
-        : null;
+    final disabledOptions = field.disabledOptions ?? [];
+    final values = state.values;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        KRadioGroup<String>(
-          errorText: state.errors[field.name],
-          title: field.label,
-          isRequired: field.required,
-          options: field.options!
-              .map(
-                (opt) =>
-                    KRadioOption<String>(value: opt, label: opt.toString()),
-              )
-              .toList(),
-          selectedValue: selectedValue,
-          onChanged: field.disabled
-              ? (val) {}
-              : (dynamic val) {
-                  notifier.updateValue(field.name, val);
-                  field.onChanged?.call(val, ref);
-                },
+    final isDisabled =
+        field.disabled || (field.disabledWhen?.call(values) ?? false);
+
+    final stateValue = values[field.name];
+
+    final effectiveValue = stateValue != null
+        ? stateValue.toString()
+        : field.initialValue?.toString();
+
+    /// 🔥 Sync initial value once
+    if (stateValue == null && field.initialValue != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notifier.updateValue(field.name, field.initialValue);
+      });
+    }
+
+    return IgnorePointer(
+      ignoring: isDisabled,
+      child: Opacity(
+        opacity: isDisabled ? 0.6 : 1,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            KRadioGroup<String>(
+              errorText: state.errors[field.name],
+              title: field.label,
+              isRequired: field.required,
+
+              options: field.options!
+                  .map(
+                    (opt) => KRadioOption<String>(
+                      value: opt.toString(),
+                      label: opt.toString(),
+                      isDisabled: disabledOptions.contains(
+                        opt.toString(),
+                      ), // ✅ KEY
+                    ),
+                  )
+                  .toList(),
+
+              selectedValue: effectiveValue,
+
+              onChanged: (val) {
+                if (isDisabled) return;
+
+                /// 🚫 prevent selecting disabled option
+                if (disabledOptions.contains(val)) return;
+
+                notifier.updateValue(field.name, val);
+
+                field.onChanged?.call(val, ref);
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

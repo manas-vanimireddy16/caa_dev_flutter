@@ -544,6 +544,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: RequestTrainingRoute.page),
         AutoRoute(page: RequestForStudyLeaveRoute.page),
         AutoRoute(page: RequestForCancellationRoute.page),
+        AutoRoute(page: RequestToBookCAAHallsRoute.page),
       ],
     ),
 
@@ -586,6 +587,15 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: RequestForCancellationDetailsRoute.page,
       path: RouteNames.requestForCancellationDetails,
+    ),
+
+    AutoRoute(
+      page: RequestToBookCAAHallsDetailsRoute.page,
+      path: RouteNames.requestToBookCAAHallsDetails,
+    ),
+    AutoRoute(
+      page: RequestToBookCAAHallsNewRequestRoute.page,
+      path: RouteNames.requestToBookCAAHallsNewRequest,
     ),
 
     /// --- Assignment Decision ---
@@ -644,6 +654,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: RequestTenderServiceRoute.page),
         AutoRoute(page: RequestAServiceToRespondToEnquiriesRoute.page),
         AutoRoute(page: RequestTenderAnalysisServiceRoute.page),
+        AutoRoute(page: ContractServiceRequestRoute.page),
       ],
     ),
 
@@ -670,6 +681,15 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: RequestTenderAnalysisServiceNewRequestRoute.page,
       path: RouteNames.requestTenderAnalysisNewRequest,
+    ),
+
+    AutoRoute(
+      page: ContractServiceRequestDetailsRoute.page,
+      path: RouteNames.contractServiceRequestDetails,
+    ),
+    AutoRoute(
+      page: ContractServiceRequestNewRequestRoute.page,
+      path: RouteNames.contractServiceRequestNewRequest,
     ),
   ];
 
