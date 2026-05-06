@@ -587,7 +587,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      CyberSecurityRiskManagementDetailsRoute(
+      AssignaTasktoEmployeeDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -613,7 +613,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
     // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      CyberSecurityRiskManagementNewRequestRoute(
+      AssignaTasktoEmployeeDetailsRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,

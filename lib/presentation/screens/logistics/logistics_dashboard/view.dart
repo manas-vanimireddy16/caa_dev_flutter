@@ -5,9 +5,6 @@ import 'package:code_setup/presentation/bottomNavigation/index.dart';
 import 'package:code_setup/presentation/common_widgets/requestCard.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-import 'package:code_setup/presentation/screens/home_screen/approvals/widgets/buildChangewidget.dart';
-import 'package:code_setup/presentation/screens/logistics/logistics_employee/widgets/multi_select.dart';
-import 'package:code_setup/presentation/screens/logistics/logistics_employee/widgets/request_history_tab.dart';
 import 'package:code_setup/presentation/screens/logistics/models/all_request_dashboard.dart'
     hide ChatMessage;
 import 'package:code_setup/presentation/screens/logistics/widgets/activityFeed.dart';
@@ -162,7 +159,7 @@ class _LogisticsDashboardScreenState
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          NewRequestPopup.show(context);
+                          // NewRequestPopup.show(context);
                         },
                         child: const Text('New Request'),
                       ),
@@ -209,26 +206,26 @@ class _LogisticsDashboardScreenState
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        width: 200,
-                        child: MultiSelectDropdown(
-                          items: const [
-                            'All Status',
-                            'Approved',
-                            'Pending',
-                            'Rejected',
-                          ],
-                          onSelectionChanged: (selectedValues) {
-                            controller.fetchAllMyRequests(
-                              isRefresh: true,
-                              status: selectedValues.isEmpty
-                                  ? ''
-                                  : selectedValues.join(','),
-                              // searchText: controller.searchController.text,
-                            );
-                          },
-                        ),
-                      ),
+                      // SizedBox(
+                      //   width: 200,
+                      //   child: MultiSelectDropdown(
+                      //     items: const [
+                      //       'All Status',
+                      //       'Approved',
+                      //       'Pending',
+                      //       'Rejected',
+                      //     ],
+                      //     onSelectionChanged: (selectedValues) {
+                      //       controller.fetchAllMyRequests(
+                      //         isRefresh: true,
+                      //         status: selectedValues.isEmpty
+                      //             ? ''
+                      //             : selectedValues.join(','),
+                      //         // searchText: controller.searchController.text,
+                      //       );
+                      //     },
+                      //   ),
+                      // ),
                     ],
                   ),
 
@@ -284,12 +281,12 @@ class _LogisticsDashboardScreenState
 
                                     if (item.category == 'Emergency' ||
                                         item.category == 'Daily') {
-                                      KAppX.router.push(
-                                        LogisticsRequestDetailsTabRoute(
-                                          from: 'employee',
-                                          id: item.id ?? 0,
-                                        ),
-                                      );
+                                      // KAppX.router.push(
+                                      // LogisticsRequestDetailsTabRoute(
+                                      //   from: 'employee',
+                                      //   id: item.id ?? 0,
+                                      // ),
+                                      // );
                                     } else {
                                       KAppX.router.push(
                                         LogisticsForeignRequestDetailsTabRoute(

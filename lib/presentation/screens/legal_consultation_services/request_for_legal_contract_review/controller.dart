@@ -320,7 +320,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       // 'Cycle Period': item.cyclePeriod ?? '-',
-      'Request Submission Date': item.base?.createdAt.toString() ?? '-',
+      'Date': formatDate(item.base?.createdAt.toString() ?? ''),
       'Request Title': item.requestTitle ?? '-',
       'Request Type': item.requestType ?? '-',
 
@@ -345,7 +345,9 @@ class _VSController extends StateNotifier<_ViewState> {
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
       'Request Classification': request?.requestClassification ?? '-',
-      'Date of Submission': request?.submissionDate.toString() ?? '-',
+      'Date of Submission': formatDate(
+        request?.submissionDate.toString() ?? '',
+      ),
       'Request Title': request?.requestTitle ?? '-',
       'Request Type': request?.requestType ?? '-',
     };

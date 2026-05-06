@@ -484,6 +484,41 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
         values['risk_value'] = '0';
       }
     }
+
+    /// -----------------------------
+    /// STAY DURATION AUTO CALC
+    /// -----------------------------
+    if (key == 'start_date_of_stay' || key == 'end_date_of_stay') {
+      DateTime? start;
+      DateTime? end;
+
+      final rawStart = values['start_date_of_stay'];
+      final rawEnd = values['end_date_of_stay'];
+
+      if (rawStart is DateTime) {
+        start = rawStart;
+      } else if (rawStart is String) {
+        start = DateTime.tryParse(rawStart);
+      }
+
+      if (rawEnd is DateTime) {
+        end = rawEnd;
+      } else if (rawEnd is String) {
+        end = DateTime.tryParse(rawEnd);
+      }
+
+      if (start != null && end != null) {
+        final diff = end.difference(start).inDays;
+
+        if (diff >= 0) {
+          values['duration_of_stay'] = (diff + 1).toString();
+        } else {
+          values['duration_of_stay'] = '';
+        }
+      } else {
+        values['duration_of_stay'] = '';
+      }
+    }
   }
 
   /// ------------------------------------------------

@@ -1,14 +1,15 @@
 part of '../view.dart';
 
 @RoutePage()
-class LogisticsRequestDetailsTabScreen extends ConsumerStatefulWidget {
+class RequestForVehicleMaintenanceDetailsTabScreen
+    extends ConsumerStatefulWidget {
   final String from;
   final int id;
   final int serviceId;
   final int subServiceId;
   final Service service;
   final SubService subService;
-  const LogisticsRequestDetailsTabScreen({
+  const RequestForVehicleMaintenanceDetailsTabScreen({
     super.key,
     required this.id,
     required this.serviceId,
@@ -19,11 +20,12 @@ class LogisticsRequestDetailsTabScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState createState() => _LogisticsRequestDetailsTabScreenState();
+  ConsumerState createState() =>
+      _RequestForVehicleMaintenanceDetailsTabScreenState();
 }
 
-class _LogisticsRequestDetailsTabScreenState
-    extends ConsumerState<LogisticsRequestDetailsTabScreen> {
+class _RequestForVehicleMaintenanceDetailsTabScreenState
+    extends ConsumerState<RequestForVehicleMaintenanceDetailsTabScreen> {
   late _VSControllerParams _providerArgs;
 
   @override

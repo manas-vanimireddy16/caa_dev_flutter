@@ -451,7 +451,9 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
-      // 'Cycle Period': item.cyclePeriod ?? '-',
+      'Official Purpose of Travel': item.officialPurposeOfTravel ?? '-',
+      'No. of Employees Travelling': item.familySize?.toString() ?? '-',
+      'Duration of Stay': item.durationOfDays?.toString() ?? '-',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
       // 'Extension Number': item.extensionNumber ?? '-',
       // 'Tasks Related to Projects': item.tasks?.first.toString() ?? '-',
@@ -646,7 +648,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Accommodation Type',
       type: FieldType.radio,
       required: true,
-      options: ['Apartment', 'Villa', 'Shared Unit'],
+      options: ['Studio', '1 Room', '2 Rooms', '3 Rooms'],
     ),
 
     DynamicField(
@@ -686,11 +688,17 @@ class _VSController extends StateNotifier<_ViewState> {
 
     DynamicField(
       name: 'time_of_arrival',
-      label: 'Time of Arrival',
+      label: 'Arrival Time',
       type: FieldType.time,
       required: true,
     ),
 
+    DynamicField(
+      name: 'time_of_departure',
+      label: 'Departure Time',
+      type: FieldType.time,
+      required: true,
+    ),
     DynamicField(
       name: 'travelling_from_region',
       label: 'Traveling from which region',
@@ -704,20 +712,7 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.textarea,
       required: false,
     ),
-
-    /// -------- ATTACHMENTS --------
-    DynamicField(
-      name: 'attachments',
-      label: 'Attachments (Optional)',
-      type: FieldType.file,
-      required: false,
-      maxFileSizeInMB: 10,
-      allowedExtensions: ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],
-    ),
   ];
-
-  /// ========================= HELPERS =========================
-  ///
 
   RequestForAccommodationInMuscatGovernorateTable mapAccommodationTable() {
     final tasks = state.selectedUsersList ?? [];
@@ -1174,7 +1169,7 @@ class _VSController extends StateNotifier<_ViewState> {
     required int subServiceId,
   }) async {
     try {
-      final requestId = state.requestDetails.request?.id;
+      final requestId = state.requestDetails.id;
       if (requestId == null) {
         throw Exception("Request ID missing");
       }
@@ -1730,6 +1725,8 @@ class _VSController extends StateNotifier<_ViewState> {
           values['other_purpose_specification'] ?? "",
       "accommodation_type_requested": values['accommodation_type'],
       "start_date_of_stay": values['start_date_of_stay'],
+      "departure_time": values['time_of_departure'],
+      "end_date_of_stay": values['end_date_of_stay'],
       "duration_of_days": values['duration_of_stay'],
       "travel_from": values['travel_details_from'],
       "travel_to": values['travel_details_to'],

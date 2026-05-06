@@ -236,6 +236,8 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
   final userInfo = KAppX.globalProvider.read(userInfoProvider);
+  final roleId = KAppX.globalProvider.read(rolesProvider)?.roleId;
+
   void initState() {
     chatController = TextEditingController();
     titleController = TextEditingController();
@@ -321,23 +323,25 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildRequestCardData(AccessCardRequest item) {
-    // final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
-
     return {
-      // 'Request Id': item.base?.id?.toString() ?? '-',
-      // 'status': item.base?.status ?? '-',
-      // 'Request By': item.base?.createdByUser?.employeeName ?? '-',
-      // // 'Cycle Period': item.cyclePeriod ?? '-',
-      // 'Request Submission Date': item.base?.createdAt.toString() ?? '-',
+      'Request Id': item.id.toString(),
 
-      /// ================= EMPLOYEE INFO =================
+      /// 👤 USER NAME
+      'User Name': item.name ?? '-',
 
-      /// 👇 APPROVER (SINGLE LINE)
-      // if (approverMap.containsKey('role')) ...{
-      //   'Approver': approverMap['role'] ?? '-',
-      // } else if (approverMap.containsKey('department')) ...{
-      //   'Approver': _buildDepartmentSection(approverMap),
-      // },
+      /// 📅 DATE
+      'Date': item.requestDate.toString(),
+
+      /// 👨‍💼 APPROVER (fallback if not available)
+
+      /// ⏳ STATUS
+      'status': item.status ?? '-',
+
+      /// 📄 REQUEST TYPE
+      'Request Type': item.requestType ?? '-',
+
+      /// 🙋 REQUEST FOR
+      'Request For': item.requestFor ?? '-',
     };
   }
 
@@ -349,9 +353,12 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      // 'Request Classification': request?.requestClassification ?? '-',
-      // 'Date of Submission': request?.submissionDate.toString() ?? '-',
-      // 'Request Title': request?.requestTitle ?? '-',
+
+      /// 📄 REQUEST TYPE
+      'Request Type': request?.requestType ?? '-',
+
+      /// 🙋 REQUEST FOR
+      'Request For': request?.requestFor ?? '-',
       'Request Type': request?.requestType ?? '-',
     };
   }
@@ -448,9 +455,11 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'request_for',
       label: 'Request For',
       type: FieldType.radio,
-      required: true,
       initialValue: 'Self',
       options: ['Self', 'On Behalf'],
+
+      /// 🔥 Disable "On Behalf" when roleId == 2
+      disabledOptions: roleId == 2 ? ['On Behalf'] : [],
 
       onChanged: (value, ref) {
         final notifier = ref.read(dynamicFormProvider.notifier);

@@ -1,65 +1,90 @@
+import 'dart:async';
 import 'package:auto_route/auto_route.dart';
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import 'package:code_setup/modules/router/app_router.gr.dart';
-import 'package:code_setup/presentation/bottomNavigation/index.dart';
-import 'package:code_setup/presentation/common_widgets/requestCard.dart';
-import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
-import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-import 'package:code_setup/presentation/screens/logistics/logistics_employee/widgets/multi_select.dart';
-import 'package:code_setup/presentation/screens/logistics/logistics_employee/widgets/request_history_tab.dart';
-import 'package:code_setup/presentation/screens/logistics/logistics_employee/widgets/workProgess.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/activityFeed.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/kpicard.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/popup.dart';
-import 'package:code_setup/utils/app_extensions/app_extension.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:io';
-
-import 'package:auto_route/auto_route.dart';
-import 'package:code_setup/modules/router/app_router.gr.dart';
-
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-import 'package:code_setup/presentation/models/kpi.dart';
-import 'package:code_setup/presentation/common_widgets/RadioButton.dart';
+import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+import 'package:code_setup/modules/domain/models/roles_model.dart';
+import 'package:code_setup/modules/router/app_router.gr.dart';
+import 'package:code_setup/presentation/common_widgets/approval_comment_dialog.dart';
+import 'package:code_setup/presentation/common_widgets/chat.dart';
+import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
+import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
+import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
+import 'package:code_setup/presentation/common_widgets/requestCard.dart';
 import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.dart';
 import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';
+import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
+import 'package:code_setup/presentation/common_widgets/tab_item.dart';
+import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
+import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
+import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
+import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
+import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
+import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_notifier.dart';
+import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
+import 'package:code_setup/presentation/models/activity_feed_model.dart';
+import 'package:code_setup/presentation/models/allowance_employee.dart';
+import 'package:code_setup/presentation/models/buttons_enum.dart';
+import 'package:code_setup/presentation/models/details_models.dart';
+import 'package:code_setup/presentation/models/file_upload_model.dart';
+import 'package:code_setup/presentation/models/kpi_model.dart';
+import 'package:code_setup/presentation/models/master_roles.dart';
+import 'package:code_setup/presentation/models/selection_dialog_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/logistics/models/dashBoardRequest.dart'
-    hide ChatMessage;
-import 'package:code_setup/presentation/screens/logistics/models/kpi.dart';
-import 'package:code_setup/presentation/screens/logistics/models/logistics_detail_model.dart';
-import 'package:code_setup/presentation/screens/logistics/models/logistics_trend_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/logistics/models/passengerModel.dart';
-import 'package:code_setup/presentation/screens/logistics/models/passengeruiModel.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/attachments_tab.dart';
+import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
+import 'package:code_setup/presentation/screens/asset_affairs/models/unit_locations_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_list.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/hr_task.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/request_details_tab.dart';
-import 'package:code_setup/presentation/screens/request_details/models/attachmentModel.dart';
-import 'package:code_setup/presentation/screens/request_details/models/commentItem.dart';
-import 'package:code_setup/presentation/screens/request_details/models/taskModel.dart';
-import 'package:code_setup/presentation/screens/logistics/models/activityField.dart';
-import 'package:code_setup/repository/logistics/domain/logistics_dashboard.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
+import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
+import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
+import 'package:code_setup/repository/it_services/request_event_support/domain/domain.dart';
+import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
+import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/utils/helper/helper.dart';
+import 'package:code_setup/utils/helper/stat_summary_helper.dart';
+import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
+import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
+// import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+// import 'package:flutter/rendering.dart' hide Border;
+// import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:code_setup/presentation/screens/home_screen/approvals/widgets/buildChangewidget.dart';
+
+part 'widgets/request_vehicle_new_request.dart';
 part 'controller.dart';
-part 'widgets/remarksSend.dart';
 part 'widgets/request_details.dart';
-part 'widgets/request_tabs.dart';
-part 'widgets/workflow_tab.dart';
-part 'widgets/newRequestVehicle.dart';
-// import 'package:auto_route/auto_route.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
+part 'widgets/request_details_tabs.dart';
+part 'widgets/request_list.dart';
+part 'widgets/request_tab.dart';
+part 'widgets/ticket_requests_card.dart';
+part 'widgets/approve_form.dart';
+part 'widgets/allocate_vehicle.dart';
 
 @RoutePage()
 class LogisticsRequestPortalScreen extends ConsumerStatefulWidget {
-  const LogisticsRequestPortalScreen({super.key});
+  final Service service;
+  final SubService subService;
+
+  const LogisticsRequestPortalScreen({
+    super.key,
+    required this.service,
+    required this.subService,
+  });
 
   @override
   ConsumerState<LogisticsRequestPortalScreen> createState() =>
@@ -67,279 +92,84 @@ class LogisticsRequestPortalScreen extends ConsumerStatefulWidget {
 }
 
 class _LogisticsRequestPortalScreenState
-    extends ConsumerState<LogisticsRequestPortalScreen>
-    with SingleTickerProviderStateMixin {
-  late TextEditingController searchController;
+    extends ConsumerState<LogisticsRequestPortalScreen> {
   late FocusNode _focusNode;
-  late TabController _tabController;
+  late _VSControllerParams _providerArgs;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    searchController = TextEditingController(
-      text: ref.read(searchQueryProvider),
+
+    final selected = ref.read(selectedServiceProvider);
+
+    final service = widget.service.id != null
+        ? widget.service
+        : selected.service;
+
+    final subService = widget.subService.id != null
+        ? widget.subService
+        : selected.subService;
+
+    _providerArgs = _VSControllerParams(
+      service: service,
+      subService: subService,
     );
+
     _focusNode = FocusNode();
-
-    searchController.addListener(() {
-      setState(() {}); // rebuild suffixIcon
-    });
-
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        ref.read(selectedrequesteventTabProvider.notifier).state =
-            _tabController.index;
-      }
-    });
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
-    searchController.dispose();
     _focusNode.dispose();
-    _tabController.dispose();
     super.dispose();
+    _pageController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentYear = DateTime.now().year;
-    final filterLabelList = List.generate(
-      6,
-      (index) => (currentYear - index).toString(),
-    );
-
-    final selectedTab = ref.watch(selectedrequesteventTabProvider);
-    final data = ref.watch(filteredDataProvider);
-    final state = ref.watch(_vsLEProvider);
-    final controller = ref.read(_vsLEProvider.notifier);
-
-    // Keep TabController in sync with provider
-    if (_tabController.index != selectedTab) {
-      _tabController.index = selectedTab;
-    }
+    final state = ref.watch(_vsProvider(_providerArgs));
+    final controller = ref.read(_vsProvider(_providerArgs).notifier);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: const Text('Logitics')),
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
-          // KPI Cards
-          StatSummaryRow(data: state.kpiDataEmployee.data),
-          16.toHorizontalSizedBox,
+          /// KPI
+          StatSummaryRow(stats: controller.currentStats),
+          20.toHorizontalSizedBox,
 
+          /// Status Breakdown
           RequestStatusBreakdownCard(
-            data: state.statusBreakdown.data?.breakdown ?? [],
-            breakdown: state.statusBreakdown.data,
+            data: state.tabIndex == 0
+                ? controller.statusBreakdownList
+                : controller.approvalStatusBreakdownList,
             title: "Requests Status Breakdown",
-            //  filterLabel: "Monthly",
-            onChanged: (value) {
-              // send the text to your controller’s search function
-              controller.fetchStatusBreakDown(value ?? '');
-            },
+            onChanged: controller.onStatusFilterChanged,
+            breakdown: state.statusBreakdown.data,
           ),
-          16.toHorizontalSizedBox,
 
-          // Trend breakdown
           RequestTrendBreakdownCard(
-            monthlyData:
-                state.trendData.data?.trendData
-                    ?.map((e) => e.count ?? 0)
-                    .toList() ??
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            monthLabels: monthLabels,
+            monthlyData: state.tabIndex == 0
+                ? controller.trendCounts
+                : controller.approvalTrendCounts,
+            monthLabels: state.months,
             metric: "Total Tickets",
-            // selectedYear: '2025',
+            selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
-            // onYearTap: () => debugPrint("Year dropdown tapped"),
-            onChanged: (value) {
-              if (value != null) {
-                controller.fetchTrendBreakDown(value);
-              }
-            },
-            filterLabelList: filterLabelList,
+            filterLabelList: controller.filterLabelList,
+            onChanged: controller.onTrendFilterChanged,
           ),
+
           16.toHorizontalSizedBox,
 
-          // Ticket Requests Section
-          Card(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Ticket Requests",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          ref.invalidate(_vsLEProvider);
-                          KAppX.router.push(LogisticsVehicleRequestRoute());
-                        },
-                        child: const Text('New Request'),
-                      ),
-                    ],
-                  ),
-                  12.toHorizontalSizedBox,
-
-                  // Search box
-                  KTextField(
-                    focusNode: _focusNode,
-                    hintText: "Search by ID or Name",
-                    controller: controller.searchController,
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (value) {
-                      // When the user presses 'Search' on the keyboard
-
-                      controller.fetchAllMyRequests(
-                        isRefresh: true, // reset pagination
-                        searchText: value, // send search text to API
-                      );
-                    },
-                    onChanged: (value) {
-                      // Optional: to clear results when input becomes empty
-                      if (value.isNotEmpty) {
-                        controller.fetchAllMyRequests(
-                          isRefresh: true,
-                          searchText: controller.searchController.text,
-                        );
-                      }
-                    },
-                  ),
-                  12.toVerticalSizedBox,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 200,
-                        child: MultiSelectDropdown(
-                          items: const [
-                            'All Status',
-                            'Approved',
-                            'Pending',
-                            'Rejected',
-                          ],
-                          onSelectionChanged: (selectedValues) {
-                            controller.fetchAllMyRequests(
-                              isRefresh: true,
-                              status: selectedValues.isEmpty
-                                  ? ''
-                                  : selectedValues.join(','),
-                              searchText: controller.searchController.text,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  12.toHorizontalSizedBox,
-
-                  // Tabs below the search bar
-                  TabBar(
-                    controller: _tabController,
-                    indicatorColor: Colors.blue,
-                    labelColor: Colors.blue,
-                    unselectedLabelColor: Colors.grey,
-                    tabs: const [
-                      Tab(text: "My Requests"),
-                      Tab(text: "Action Items"),
-                    ],
-                  ),
-
-                  // Tab content
-                  SizedBox(
-                    height: 400, // adjust height as needed
-                    child: TabBarView(
-                      controller: _tabController,
-                      // physics:   const NeverScrollableScrollPhysics(), // ❌ disables swipe
-                      children: [
-                        // Tab 0
-                        Consumer(
-                          builder: (context, ref, _) {
-                            final data = state.dashboardMyRequests;
-                            return ListView.builder(
-                              itemCount: data.length,
-                              itemBuilder: (context, index) {
-                                final item = data[index];
-                                return RequestCard(
-                                  from: 'logistics',
-                                  data: {
-                                    'id': item.id,
-                                    'status': item.status,
-                                    'Service Type':
-                                        item.subService?.description ?? 'NA',
-                                    'Purpose of Travel':
-                                        item.purposeOfTravel ?? '',
-                                    'Date': item.createdByUser?.createdAt,
-                                    'Approver':
-                                        item
-                                            .approvalDetails?[0]
-                                            .approverRole
-                                            ?.name ??
-                                        '',
-                                  },
-                                  onTap: () async {
-                                    // await controller.fetchRequestsById(
-                                    //   item.id ?? 0,
-                                    // );
-                                    // final details =
-                                    //     controller.state.requestDataById;
-                                    KAppX.router.push(
-                                      LogisticsRequestDetailsTabRoute(
-                                        from: 'employee',
-                                        id: item.id ?? 0,
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        // Tab 1
-                        Consumer(
-                          builder: (context, ref, _) {
-                            // final data = ref.watch(filteredDataProvider);
-                            return ListView.builder(
-                              itemCount: data.length,
-                              itemBuilder: (context, index) {
-                                final item = data[index];
-                                return RequestCard(
-                                  data: item,
-                                  onTap: () {
-                                    // KAppX.router.push(
-                                    //   ReuseRequestDetailsTabRoute(
-                                    //     taskData: tasksData1,
-                                    //     comments: comments1,
-                                    //     attachments: attachments1,
-                                    //   ),
-                                    // );
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          /// MAIN CARD
+          TicketRequestsCard(
+            providerArgs: _providerArgs,
+            focusNode: _focusNode,
+            pageController: _pageController,
           ),
         ],
       ),

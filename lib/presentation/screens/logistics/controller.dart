@@ -1,23 +1,19 @@
 part of 'view.dart';
 
-class BottomNavigatorVSControllerParams extends Equatable {
-  final BuildContext context;
-  BottomNavigatorVSControllerParams({required this.context});
+// class BottomNavigatorVSControllerParams extends Equatable {
+//   final BuildContext context;
+//   BottomNavigatorVSControllerParams({required this.context});
 
-  @override
-  List<Object> get props => [];
-}
-
-class Equatable {}
+//   @override
+//   List<Object> get props => [];
+// }
 
 final bottomNavigatorVsProvider =
-    StateNotifierProvider.family<
-      _VSController,
-      _ViewState,
-      BottomNavigatorVSControllerParams
-    >((ref, params) {
-      final stateController = _VSController(params);
-      stateController.initState();
+    StateNotifierProvider<_VSController, _ViewState>((ref) {
+      final stateController = _VSController();
+
+      // stateController.initState();
+
       return stateController;
     });
 
@@ -34,8 +30,7 @@ class _ViewState {
 }
 
 class _VSController extends StateNotifier<_ViewState> {
-  final BottomNavigatorVSControllerParams params;
-  _VSController(this.params) : super(_ViewState.init());
+  _VSController() : super(_ViewState.init());
 
   void initState() {
     printUserData();
@@ -62,6 +57,22 @@ class _VSController extends StateNotifier<_ViewState> {
     if (index == 2) {
       // final profileStateController = KAppX.globalProvider.read(patientProfileVSProvider.notifier);
       // profileStateController.initState();
+    }
+  }
+
+  String titleForIndex(int index) {
+    switch (index) {
+      case 0:
+        return 'Dashboard';
+      case 1:
+        return 'Request a Vehicle: Daily/Emergency';
+      case 2:
+        return 'Request Tender Analysis Service';
+      case 3:
+        return 'Request Contract Service';
+
+      default:
+        return '  Home';
     }
   }
 }

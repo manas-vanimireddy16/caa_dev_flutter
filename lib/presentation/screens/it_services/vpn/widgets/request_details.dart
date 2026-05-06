@@ -175,13 +175,13 @@ class VPNRequestDetailsTabScreen extends ConsumerWidget {
                       from: 'employee',
                       request: result,
                     )
-                  else if (selectedTab == 1)
-                    RequestHistoryTabContent<VpnRequestByIdData>(
-                      from: from,
-                      id: id,
-                      comments: chats ?? [],
-                      approvals: approvals ?? [],
-                    )
+                  // else if (selectedTab == 1)
+                  // RequestHistoryTabContent<VpnRequestByIdData>(
+                  //   from: from,
+                  //   id: id,
+                  //   comments: chats ?? [],
+                  //   approvals: approvals ?? [],
+                  // )
                   else if (selectedTab == 2)
                     AttachmentsTabContent<VPNAttachment>(
                       attachments: attachments ?? [],

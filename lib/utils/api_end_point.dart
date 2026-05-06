@@ -172,7 +172,7 @@ class ApiEndPoint {
   static const String securityAccessKpi =
       '/v1/user-service/access-card/kpi-cards';
   static const String securityAccessApprovalKpi =
-      'v1/user-service/access-card/analytics/approvals/kpi-cards';
+      '/v1/user-service/access-card/analytics/approvals/kpi-cards';
   static const String securityAccessTrendBreakDown =
       '/v1/user-service/access-card/trend-breakdown';
   static const String securityAccessApprovalTrendBreakDown =
@@ -1765,7 +1765,7 @@ class ApiEndPoint {
 
   /// Approval KPI cards
   static const String accommodationinMuscatGovernorateApprovalKpiCards =
-      '/v1/asset-affairs-service/accommodation-request/analytics/analytics/approval-kpi-cards';
+      '/v1/asset-affairs-service/accommodation-request/analytics/approval-kpi-cards';
 
   /// ===================== STATUS BREAKDOWN =====================
 
@@ -1774,7 +1774,7 @@ class ApiEndPoint {
 
   /// Approval Status breakdown
   static const String accommodationinMuscatGovernorateApprovalStatusBreakdown =
-      '/v1/asset-affairs-service/accommodation-request/analytics/approval/status-breakdown';
+      '/v1/asset-affairs-service/accommodation-request/analytics/approval-status-breakdown';
 
   /// ===================== TREND BREAKDOWN =====================
 
@@ -3351,4 +3351,103 @@ class ApiEndPoint {
   /// Approval trend breakdown
   static const String contractServiceApprovalTrendBreakdown =
       '/v1/tender-service/contract-service-request/analytics/approval/trend-breakdown';
+
+  /// Logistics APIs
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String logisticsRequestVehicleSendRequest =
+      '/v1/it-service/logistics/vehicle-request';
+
+  /// Get my requests
+  static const String logisticsRequestVehicleGetRequests =
+      '/v1/it-service/logistics/requests';
+
+  /// Get approval list (For approvers)
+  static const String logisticsRequestVehicleGetActionItems =
+      '/v1/it-service/logistics/requests/for-approval';
+
+  /// Get request by ID
+  static String logisticsRequestVehicleRequestById(int requestId) =>
+      '/v1/it-service/logistics/request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+  /// (Optional – if backend supports)
+
+  static String logisticsRequestVehicleUpdateRequest(int requestId) =>
+      '/v1/it-service/logistics/vehicle-request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String logisticsRequestVehicleApprove =
+      '/v1/it-service/logistics/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat
+  static String logisticsRequestVehicleSendChatById(int requestId) =>
+      '/v1/it-service/logistics/request/$requestId/chat';
+
+  /// Get chats
+  static String logisticsRequestVehicleChatsById(int requestId) =>
+      '/v1/it-service/logistics/request/$requestId/chats';
+
+  /// Update chat
+  static String logisticsRequestVehicleUpdateChat(int chatId) =>
+      '/v1/it-service/logistics/chats/$chatId';
+
+  /// Delete chat
+  static String logisticsRequestVehicleDeleteChat(int chatId) =>
+      '/v1/it-service/logistics/chats/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String logisticsRequestVehicleSendAttachmentById(int requestId) =>
+      '/v1/it-service/logistics/request/$requestId/attachment';
+
+  /// Get attachments
+  static String logisticsRequestVehicleAttachmentsById(int requestId) =>
+      '/v1/it-service/logistics/request/$requestId/attachments';
+
+  /// Update attachment
+  static String logisticsRequestVehicleUpdateAttachment(int attachmentId) =>
+      '/v1/it-service/logistics/attachments/$attachmentId';
+
+  /// Delete attachment
+  static String logisticsRequestVehicleDeleteAttachment(int attachmentId) =>
+      '/v1/it-service/logistics/attachments/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String logisticsRequestVehicleKpiCards =
+      '/v1/it-service/logistics/analytics/logistics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String logisticsRequestVehicleApprovalKpiCards =
+      '/v1/it-service/logistics/analytics/logistics-approvals/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String logisticsRequestVehicleStatusBreakdown =
+      '/v1/it-service/logistics/analytics/logistics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String logisticsRequestVehicleApprovalStatusBreakdown =
+      '/v1/it-service/logistics/analytics/logistics-approvals/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String logisticsRequestVehicleTrendBreakdown =
+      '/v1/it-service/logistics/analytics/logistics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String logisticsRequestVehicleApprovalTrendBreakdown =
+      '/v1/it-service/logistics/analytics/logistics-approvals/trend-breakdown';
+
+  static String vehicleAllocate(int requestId) =>
+      '/v1/it-service/logistics/vehicle-request/$requestId/details';
 }

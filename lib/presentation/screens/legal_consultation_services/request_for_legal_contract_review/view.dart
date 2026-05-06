@@ -50,6 +50,7 @@ import 'package:code_setup/repository/assests_affair/residental_unit_rental/doma
 import 'package:code_setup/repository/information_security_services/cyber_security_risk_management/domain/domain.dart';
 import 'package:code_setup/repository/legal_consultation_services/request_for_legal_contract_review/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';

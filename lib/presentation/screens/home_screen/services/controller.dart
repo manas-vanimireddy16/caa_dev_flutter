@@ -228,7 +228,12 @@ class _VSController extends StateNotifier<_ViewState> {
         KAppX.router.push(LogisticsForeignersRequestPortalRoute());
         break;
       case 'Request a Vehicle: Daily/Emergency':
-        KAppX.router.push(LogisticsRequestPortalRoute());
+        KAppX.router.push(
+          LogisticsRequestPortalRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
         break;
       case 'Request for Access Card':
         KAppX.router.push(
@@ -455,7 +460,7 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      case 'Request for Accommodation in Muscat Governorate':
+      case 'Request for Hospitality Use in Muscat':
         KAppX.router.push(
           RequestForAccommodationInMuscatGovernorateRoute(
             service: service ?? Service(),

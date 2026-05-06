@@ -1010,7 +1010,7 @@ class RequestDetailData {
         )
         .toList(),
     unitType: json['requested_unit_type'] as String?,
-    locationOfStay: json['location_of_stay'] as String?,
+    locationOfStay: json['location_of_unit'] as String?,
     familySize: json['family_size'] as int?,
     durationOfStay: json['duration_of_stay'] as String?,
     reasonForRenewal: json['reason_for_renewal'] as String?,
@@ -1097,6 +1097,15 @@ class RequestModel {
   final String? timeOfTravel;
   final int? expDurationOfUseHrs;
   final int? expDurationOfUseDays;
+  final String? vehicleNumber;
+  final String? fuelCard;
+  final String? expectedVehicleReturnTime;
+  final String? expectedReturnDate;
+  final String? actualVehicleReturnTime;
+  final String? actualReturnDate;
+  final String? vehicleCondition;
+  final String? reason;
+  final String? driverName;
 
   // ─────────────────────────────
   // ACCOMMODATION FIELDS
@@ -1291,7 +1300,6 @@ class RequestModel {
   final int? noOfParticipants;
   final String? courseCost;
   final String? totalCost;
-  final String? reason;
   final String? location;
   final List<dynamic>? employeeList;
   final String? proposedImplementationDate;
@@ -1408,7 +1416,7 @@ class RequestModel {
   final String? decisionSubject;
   final String? grievanceDetails;
   final String? individualsInvolved;
-  final String? times;
+  final List<String>? times;
   final String? dates;
   final String? requests;
   final String? events;
@@ -1474,6 +1482,14 @@ class RequestModel {
     this.timeOfTravel,
     this.expDurationOfUseHrs,
     this.expDurationOfUseDays,
+    this.vehicleNumber,
+    this.fuelCard,
+    this.expectedVehicleReturnTime,
+    this.expectedReturnDate,
+    this.actualVehicleReturnTime,
+    this.actualReturnDate,
+    this.vehicleCondition,
+    this.driverName,
 
     this.hotelName,
     this.typeOfAccommodation,
@@ -1971,6 +1987,14 @@ class RequestModel {
       instituteName: json['institute_name'],
       courseStartDate: json['course_start_date'],
       courseEndDate: json['course_end_date'],
+      vehicleNumber: json['vehicle_number'],
+      fuelCard: json['fuel_card'],
+      expectedVehicleReturnTime: json['expected_vehicle_return_time'],
+      expectedReturnDate: json['expected_return_date'],
+      actualVehicleReturnTime: json['actual_vehicle_return_time'],
+      actualReturnDate: json['actual_return_date'],
+      vehicleCondition: json['vehicle_condition'],
+      driverName: json['driver_name'],
 
       positionToBeTransferred: json['position_to_be_transferred'],
       effectiveFromDate: json['effective_from_date'],
@@ -2071,7 +2095,7 @@ class RequestModel {
       decisionSubject: json['decision_subject'],
       grievanceDetails: json['grievance_details'],
       individualsInvolved: json['individuals_involved'],
-      times: json['times'],
+      times: json['times'] != null ? List<String>.from(json['times']) : [],
       dates: json['dates'],
       requests: json['requests'],
       events: json['events'],

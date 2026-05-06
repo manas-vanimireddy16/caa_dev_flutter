@@ -447,8 +447,8 @@ class _VSController extends StateNotifier<_ViewState> {
     return {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
-      'Request By': item.base?.createdByUser?.employeeName ?? '-',
-      // 'Cycle Period': item.cyclePeriod ?? '-',
+      'Employee Name': item.base?.createdByUser?.employeeName ?? '-',
+      'Date': item.base?.createdAt.toString() ?? '-',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
       'Unit Type': item.unitType ?? '-',
       'Family Size': item.familySize?.toString() ?? '-',
@@ -478,10 +478,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
       'Extension Number':
           request?.createdByUser?.extensionNumber.toString() ?? '0',
-      'Request Submission Date': request?.createdAt.toString() ?? '-',
+      'Request Submission Date': formatDate(
+        request?.createdAt.toString() ?? '',
+      ),
       'Unit Type': request.unitType ?? '-',
       'Family Size': request?.familySize?.toString() ?? '-',
-      'Duration of Stay': request?.durationOfStay ?? '-',
       'Location of Unit': request.locationOfStay ?? '-',
       // 'Quarter': request?.quarter ?? 'N/A',
     };
@@ -493,7 +494,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final nextApprover = resolveApproverMap(approvals);
     return {
       "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt.toString() ?? ''),
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))

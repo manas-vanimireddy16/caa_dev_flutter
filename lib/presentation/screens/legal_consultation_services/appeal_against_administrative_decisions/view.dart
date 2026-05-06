@@ -51,6 +51,7 @@ import 'package:code_setup/repository/hr_service/annual_duty_mission/domain/doma
 import 'package:code_setup/repository/legal_consultation_services/appeal_against_administrative_decisions/domain/domain.dart';
 import 'package:code_setup/repository/legal_consultation_services/raise_a_legal_complaint/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';

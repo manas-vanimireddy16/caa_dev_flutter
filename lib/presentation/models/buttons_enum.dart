@@ -10,6 +10,7 @@ enum ActionButtonsType {
   inProgress,
   complete,
   assignApproveReject,
+  approveRejectAllocateVehicle,
 }
 
 enum ApprovalDialogType { approve, reject }

@@ -198,6 +198,15 @@ class AppRouter extends RootStackRouter {
       page: LogisticsForeignRequestDetailsTabRoute.page,
       path: RouteNames.logisticsForeignRequestDetail,
     ),
+    AutoRoute(
+      page: RequestForVehicleMaintenanceDetailsTabRoute.page,
+      path: RouteNames.logisticsVehicleMaintenanceRequestDetail,
+    ),
+
+    AutoRoute(
+      page: RequestForVehicleMaintenanceNewRequestRoute.page,
+      path: RouteNames.logisticsVehicleMaintenanceNewRequest,
+    ),
 
     AutoRoute(
       page: SalalahNewRequestRoute.page,
@@ -211,6 +220,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: LogisticsRequestPortalRoute.page),
         AutoRoute(page: LogisticsDashboardRoute.page),
         AutoRoute(page: LogisticsForeignersRequestPortalRoute.page),
+        AutoRoute(page: RequestForVehicleMaintenanceRoute.page),
       ],
     ),
 

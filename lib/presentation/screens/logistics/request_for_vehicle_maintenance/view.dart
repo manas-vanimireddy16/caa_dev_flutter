@@ -40,6 +40,7 @@ import 'package:code_setup/presentation/screens/hr_service/models/grade_list_mod
 import 'package:code_setup/presentation/screens/hr_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
@@ -47,6 +48,7 @@ import 'package:code_setup/presentation/screens/tender_service/models/respond_to
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
 import 'package:code_setup/repository/it_services/request_event_support/domain/domain.dart';
+import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
 import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
@@ -61,33 +63,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
-part 'widgets/request_event_support_new_request.dart';
+part 'widgets/request_vehicle_new_request.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
 part 'widgets/request_details_tabs.dart';
 part 'widgets/request_list.dart';
 part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
+part 'widgets/approve_form.dart';
+part 'widgets/allocate_vehicle.dart';
 
 @RoutePage()
-class RequestAServiceToRespondToEnquiriesScreen extends ConsumerStatefulWidget {
+class RequestForVehicleMaintenanceScreen extends ConsumerStatefulWidget {
   final Service service;
   final SubService subService;
 
-  const RequestAServiceToRespondToEnquiriesScreen({
+  const RequestForVehicleMaintenanceScreen({
     super.key,
     required this.service,
     required this.subService,
   });
 
   @override
-  ConsumerState<RequestAServiceToRespondToEnquiriesScreen> createState() =>
-      _RequestAServiceToRespondToEnquiriesScreenState();
+  ConsumerState<RequestForVehicleMaintenanceScreen> createState() =>
+      _RequestForVehicleMaintenanceScreenState();
 }
 
-class _RequestAServiceToRespondToEnquiriesScreenState
-    extends ConsumerState<RequestAServiceToRespondToEnquiriesScreen> {
+class _RequestForVehicleMaintenanceScreenState
+    extends ConsumerState<RequestForVehicleMaintenanceScreen> {
   late FocusNode _focusNode;
   late _VSControllerParams _providerArgs;
   late PageController _pageController;

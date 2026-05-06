@@ -347,6 +347,26 @@ class _AddCommentBoxState extends State<AddCommentBox> {
             }),
           ],
         );
+      case ActionButtonsType.approveRejectAllocateVehicle:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            _actionButton("Approve", Colors.green, () async {
+              await widget.onApprove?.call();
+            }),
+            10.toHorizontalSizedBox,
+            _actionButton("Reject", Colors.red, () async {
+              await widget.onReject?.call();
+            }),
+            _actionButton(
+              "Allocate Vehicle",
+              const Color.fromARGB(189, 2, 116, 209),
+              () async {
+                await widget.onAssign?.call();
+              },
+            ),
+          ],
+        );
       case ActionButtonsType.assignApproveReject:
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,

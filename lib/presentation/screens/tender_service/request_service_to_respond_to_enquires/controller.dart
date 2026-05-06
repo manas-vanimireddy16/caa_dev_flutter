@@ -319,11 +319,11 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
-      'Type Of Enquire': item.titleOfEnquiry ?? 'NA',
-      'Phone Number': item.phone ?? 'NA',
-      'Budget Code': item.budgetCode ?? 'NA',
-      'Estimated Cost': item.estimatedCost ?? 'NA',
-      'Request Submission Date': item.base?.createdAt.toString() ?? '-',
+      'Type Of Enquire': item.titleOfEnquiry ?? 'N/A',
+      'Phone Number': item.phone ?? 'N/A',
+      'Budget Code': item.budgetCode ?? 'N/A',
+      'Estimated Cost': item.estimatedCost ?? 'N/A',
+      'Date': formatDate(item.base?.createdAt.toString() ?? ''),
 
       /// ================= EMPLOYEE INFO =================
 
@@ -344,11 +344,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      'Type Of Enquire': request?.titleOfEnquiry ?? 'NA',
-      'Phone Number': request?.phone ?? 'NA',
-      'Budget Code': request?.budgetCode ?? 'NA',
-      'Estimated Cost': request?.estimatedCost ?? 'NA',
-      'Request Type': request?.requestType ?? '-',
+      'Type Of Enquire': request?.titleOfEnquiry ?? 'N/A',
+      'Phone Number': request?.phone ?? 'N/A',
+      'Budget Code': request?.budgetCode ?? 'N/A',
+      'Estimated Cost': request?.estimatedCost ?? 'N/A',
+      'Request Type': request?.requestType ?? 'N/A',
     };
   }
 
@@ -358,7 +358,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final nextApprover = resolveApproverMap(approvals);
     return {
       "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt ?? 'N/A'),
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))

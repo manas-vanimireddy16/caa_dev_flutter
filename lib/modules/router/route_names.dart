@@ -70,6 +70,10 @@ class RouteNames {
       '/logisticsForeignRequestDetails';
   static const String logisticsDashboardRequestDetail =
       '/logisticsDashboardRequestDetail';
+  static const String logisticsVehicleMaintenanceRequestDetail =
+      '/logisticsVehicleMaintenanceRequestDetail';
+  static const String logisticsVehicleMaintenanceNewRequest =
+      '/logisticsVehicleMaintenanceNewRequest';
 
   // ───────────────────────────────
   // ACCESS CARD

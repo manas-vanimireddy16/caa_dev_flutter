@@ -325,7 +325,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       // 'Cycle Period': item.cyclePeriod ?? '-',
-      'Request Submission Date': item.base?.createdAt.toString() ?? '-',
+      'Date': formatDate(item.base?.createdAt.toString() ?? ''),
       'Appeal Against Decision': item.appealAgainstDecision ?? '-',
       'Title of the Complaint': item.titleOfComplaint ?? '-',
 
@@ -342,7 +342,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails.request;
-    final risk = state.requestDetails.risk;
+    // final risk = state.requestDetails.risk;
     return {
       /// ───── RIGHT COLUMN ─────
       "Service Type": request?.service?.name ?? 'N/A',
@@ -350,7 +350,9 @@ class _VSController extends StateNotifier<_ViewState> {
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
       'Request Classification': request?.requestClassification ?? '-',
-      'Date of Submission': request?.submissionDate.toString() ?? '-',
+      'Date of Submission': formatDate(
+        request?.submissionDate.toString() ?? '',
+      ),
       'Title of the Complaint': request?.titleOfComplaint ?? '-',
       'Appeal Against Decision': request?.appealAgainstDecision ?? '-',
       'Description': request?.description ?? '-',
@@ -359,7 +361,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Decision Subject': request?.decisionSubject ?? '-',
       'Grievance Details': request?.grievanceDetails ?? '-',
       'Individuals Involved': request?.individualsInvolved ?? '-',
-      'Times': request?.times ?? '-',
+      // 'Times': request?.times ?? '-',
       'Dates': request?.dates ?? '-',
       'Location': request?.location ?? '-',
 
@@ -376,7 +378,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final nextApprover = resolveApproverMap(approvals);
     return {
       "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt ?? 'N/A'),
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))
@@ -497,6 +499,7 @@ class _VSController extends StateNotifier<_ViewState> {
       required: false,
     ),
   ];
+
   List<DynamicField> get appealStepTwoFields => [
     /// DECISION NUMBER
     DynamicField(
