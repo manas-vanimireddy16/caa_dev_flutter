@@ -20,6 +20,7 @@ class ApiEndPoint {
   static const String sectionsList = '/v1/user-service/admin/sections/';
   static const String departmentsList =
       '/v1/user-service/master/departments/listing';
+  static const String countryList = '/v1/user-service/country-master/list';
 
   ///Salalah
   static const String sendSalalahRequest =
@@ -209,23 +210,102 @@ class ApiEndPoint {
   static String securityAccessChatsById(int id) =>
       '/v1/user-service/access-card/request/$id/chats';
 
-  /// Hotel Reservation
-  static const String sendHotelReservationRequest =
+  // ===================== HOTEL RESERVATION APIs =====================
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String hotelReservationSendRequest =
       '/v1/it-service/hotelreservation/reservation';
-  static const String hotelReservationKpiCard =
+
+  /// Get my requests
+  static const String hotelReservationGetRequests =
+      '/v1/it-service/hotelreservation/reservations';
+
+  /// Get approval list (For approvers)
+  static const String hotelReservationGetActionItems =
+      '/v1/it-service/hotelreservation/reservations/for-approval';
+
+  /// Get request by ID
+  static String hotelReservationRequestById(int requestId) =>
+      '/v1/it-service/hotelreservation/reservation/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// (Optional – if backend supports)
+  static String hotelReservationUpdateRequest(int requestId) =>
+      '/v1/it-service/hotelreservation/reservation/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String hotelReservationApprove =
+      '/v1/it-service/hotelreservation/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat
+  static String hotelReservationSendChatById(int requestId) =>
+      '/v1/it-service/hotelreservation/reservation/$requestId/chat';
+
+  /// Get chats
+  static String hotelReservationChatsById(int requestId) =>
+      '/v1/it-service/hotelreservation/reservation/$requestId/chats';
+
+  /// Update chat
+  static String hotelReservationUpdateChat(int chatId) =>
+      '/v1/it-service/hotelreservation/chats/$chatId';
+
+  /// Delete chat
+  static String hotelReservationDeleteChat(int chatId) =>
+      '/v1/it-service/hotelreservation/chats/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String hotelReservationSendAttachmentById(int requestId) =>
+      '/v1/it-service/hotelreservation/reservation/$requestId/attachment';
+
+  /// Get attachments
+  static String hotelReservationAttachmentsById(int requestId) =>
+      '/v1/it-service/hotelreservation/reservation/$requestId/attachments';
+
+  /// Update attachment
+  static String hotelReservationUpdateAttachment(int attachmentId) =>
+      '/v1/it-service/hotelreservation/attachments/$attachmentId';
+
+  /// Delete attachment
+  static String hotelReservationDeleteAttachment(int attachmentId) =>
+      '/v1/it-service/hotelreservation/attachments/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String hotelReservationKpiCards =
       '/v1/it-service/hotelreservation/analytics/kpi-cards';
-  static String hotelReservationStatusBreakdown =
+
+  /// Approver KPI cards
+  static const String hotelReservationApprovalKpiCards =
+      '/v1/it-service/hotelreservation/analytics/hotel-approvals/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String hotelReservationStatusBreakdown =
       '/v1/it-service/hotelreservation/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String hotelReservationApprovalStatusBreakdown =
+      '/v1/it-service/hotelreservation/analytics/hotel-approvals/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
   static const String hotelReservationTrendBreakdown =
       '/v1/it-service/hotelreservation/analytics/trend-breakdown';
-  static const String hotelReservationRequests =
-      '/v1/it-service/hotelreservation/reservations';
-  static const String hotelReservationActionItems =
-      '/v1/it-service/hotelreservation/requests/for-approval';
-  static String hotelReservationRequestById(int id) =>
-      '/v1/it-service/hotelreservation/reservation/$id';
-  static String hotelReservationApprovalActionItems =
-      '/v1/it-service/hotelreservation/reservations/for-approval';
+
+  /// Approval trend breakdown
+  static const String hotelReservationApprovalTrendBreakdown =
+      '/v1/it-service/hotelreservation/analytics/hotel-approvals/trend-breakdown';
 
   /// Security self - Report Security Threat
   static const String reportSecurityThreatPostRequest =
@@ -902,6 +982,9 @@ class ApiEndPoint {
   static const String trainingRequestGetRequests =
       '/v1/hr-service/training/training-requests';
 
+  static const String trainingRequestParticipants =
+      '/v1/hr-service/annual-training-plan/annual-training-plan-requests/approved/participants';
+
   /// Get approval list (For approvers)
   static const String trainingRequestGetActionItems =
       '/v1/hr-service/training/training-request/approvals';
@@ -1204,15 +1287,15 @@ class ApiEndPoint {
       '/v1/hr-service/cash-allowance-leave/analytics/approvals/kpi';
 
   static const String paymentofCashAllowanceForLeaveKpiCards =
-      '/v1/hr-service/cash-allowance-leave/analytics/requests/kpi';
+      '/v1/hr-service/cash-allowance-leave/analytics/my-requests/kpi';
 
   /// Status breakdown
   static const String paymentofCashAllowanceForLeaveStatusBreakdown =
-      '/v1/hr-service/cash-allowance-leave/analytics/requests/status-breakdown';
+      '/v1/hr-service/cash-allowance-leave/analytics/my-requests/status-breakdown';
 
   /// Trend breakdown
   static const String paymentofCashAllowanceForLeaveTrendBreakdown =
-      '/v1/hr-service/cash-allowance-leave/analytics/requests/trend-breakdown';
+      '/v1/hr-service/cash-allowance-leave/analytics/my-requests/trend-breakdown';
 
   static const String paymentofCashAllowanceForLeaveApprovalTrendBreakdown =
       '/v1/hr-service/cash-allowance-leave/analytics/approvals/trend-breakdown';
@@ -3450,4 +3533,100 @@ class ApiEndPoint {
 
   static String vehicleAllocate(int requestId) =>
       '/v1/it-service/logistics/vehicle-request/$requestId/details';
+
+  /// Vehicle Maintenance APIs
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String vehicleMaintenanceSendRequest =
+      '/v1/it-service/logistics/vehicle-maintenance/request';
+
+  /// Get my requests
+  static const String vehicleMaintenanceGetRequests =
+      '/v1/it-service/logistics/vehicle-maintenance/requests';
+
+  /// Get approval list (For approvers)
+  static const String vehicleMaintenanceGetActionItems =
+      '/v1/it-service/logistics/vehicle-maintenance/requests/for-approval';
+
+  /// Get request by ID
+  static String vehicleMaintenanceRequestById(int requestId) =>
+      '/v1/it-service/logistics/vehicle-maintenance/request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+  /// (Optional – if backend supports)
+
+  static String vehicleMaintenanceUpdateRequest(int requestId) =>
+      '/v1/it-service/logistics/vehicle-maintenance/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String vehicleMaintenanceApprove =
+      '/v1/it-service/logistics/vehicle-maintenance/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat
+  static String vehicleMaintenanceSendChatById(int requestId) =>
+      '/v1/it-service/logistics/vehicle-maintenance/request/$requestId/chat';
+
+  /// Get chats
+  static String vehicleMaintenanceChatsById(int requestId) =>
+      '/v1/it-service/logistics/vehicle-maintenance/request/$requestId/chats';
+
+  /// Update chat
+  static String vehicleMaintenanceUpdateChat(int chatId) =>
+      '/v1/it-service/logistics/vehicle-maintenance/chats/$chatId';
+
+  /// Delete chat
+  static String vehicleMaintenanceDeleteChat(int chatId) =>
+      '/v1/it-service/logistics/vehicle-maintenance/chats/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String vehicleMaintenanceSendAttachmentById(int requestId) =>
+      '/v1/it-service/logistics/vehicle-maintenance/request/$requestId/attachment';
+
+  /// Get attachments
+  static String vehicleMaintenanceAttachmentsById(int requestId) =>
+      '/v1/it-service/logistics/vehicle-maintenance/request/$requestId/attachments';
+
+  /// Update attachment
+  static String vehicleMaintenanceUpdateAttachment(int attachmentId) =>
+      '/v1/it-service/logistics/vehicle-maintenance/attachments/$attachmentId';
+
+  /// Delete attachment
+  static String vehicleMaintenanceDeleteAttachment(int attachmentId) =>
+      '/v1/it-service/logistics/vehicle-maintenance/attachments/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String vehicleMaintenanceKpiCards =
+      '/v1/it-service/logistics/analytics/vehicle-maintenance/kpi-cards';
+
+  /// Approver KPI cards
+  static const String vehicleMaintenanceApprovalKpiCards =
+      '/v1/it-service/logistics/analytics/vehicle-maintenance-approvals/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String vehicleMaintenanceStatusBreakdown =
+      '/v1/it-service/logistics/analytics/vehicle-maintenance/status-breakdown';
+
+  /// Approval status breakdown
+  static const String vehicleMaintenanceApprovalStatusBreakdown =
+      '/v1/it-service/logistics/analytics/vehicle-maintenance-approvals/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String vehicleMaintenanceTrendBreakdown =
+      '/v1/it-service/logistics/analytics/vehicle-maintenance/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String vehicleMaintenanceApprovalTrendBreakdown =
+      '/v1/it-service/logistics/analytics/vehicle-maintenance-approvals/trend-breakdown';
 }

@@ -1,27 +1,7 @@
 part of 'view.dart';
 
-final selectedrequesteventTabProvider = StateProvider<int>((ref) => 0);
-
 // Stores search text
-final searchQueryProvider = StateProvider<String>((ref) => "");
 
-final requestDeatilsTabSelectedProvider = StateProvider.autoDispose<int>(
-  (ref) => 0,
-);
-
-// final _vsProvider = StateNotifierProvider.autoDispose
-//     .family<
-//       _VSController,
-//       _ViewState,
-//       ({Service service, SubService subService})
-//     >((ref, params) {
-//       final controller = _VSController(
-//         service: params.service,
-//         subService: params.subService,
-//       );
-//       controller.initState();
-//       return controller;
-//     });
 class _VSControllerParams extends Equatable {
   final Service service;
   final SubService subService;
@@ -44,7 +24,6 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
-  final String selectedPriority;
 
   final List<FileUploadItem> selectedFileUrl;
   final List<Map<String, dynamic>> attachments;
@@ -57,36 +36,21 @@ class _ViewState {
   final RequestDetailModel requestDataById;
 
   final int tabIndex;
+  final int selectedTab;
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<TrainingandDevelopmentRequestModel>
-  requestForTrainingRoomBookingRequestData;
-  final List<TrainingandDevelopmentRequestModel>
-  requestForTrainingRoomBookingActionItemsData;
+  final List<RequestStudyLeaveModel> requestData;
+  final List<RequestStudyLeaveModel> actionItems;
   final RequestDetailData requestDetails;
+  final List<CountryModel> countryList;
   final int requestDetailTab;
-  final List<PendingApprovalUser> engineersList;
   final int approvalId;
 
-  final bool isFormValid;
   final bool isButtonDisabled;
   final List<ChatMessageModel> chatById;
   final List<AttachmentModel> attachmentsById;
-  final List<Position> positionsList;
-  final List<EmployeeList> usersList;
-  final String selectedPositionName;
-  final EmployeeList? selectedUser;
-  final String selectedUserName;
-  final String selectedSalaryDetails;
 
-  final int? selectedUserId;
-  final List<EmployeeSummary> employeeList;
-  final bool isStartDateSelected;
-
-  final String selectedRequestType;
-  final List<AllowanceEmployee> allowanceEmployees;
-  final List<DepartmentModel> departments;
   final List<String> months = [
     'January',
     'February',
@@ -102,14 +66,11 @@ class _ViewState {
     'December',
   ];
 
-  final List<LocationModel> locations;
-
   /// FORM KEY
   final formKey = GlobalKey<FormState>();
 
   _ViewState({
     required this.isLoading,
-    required this.selectedPriority,
     required this.selectedFileUrl,
     required this.attachments,
     required this.kpiData,
@@ -118,37 +79,23 @@ class _ViewState {
     required this.trendData,
     required this.requestDataById,
     required this.tabIndex,
+    required this.selectedTab,
     required this.approvalStatusBreakdown,
     required this.approvalTrendData,
-    required this.requestForTrainingRoomBookingRequestData,
-    required this.requestForTrainingRoomBookingActionItemsData,
+    required this.requestData,
+    required this.actionItems,
     required this.requestDetails,
     required this.requestDetailTab,
-    required this.engineersList,
     required this.approvalId,
-    required this.isFormValid,
     required this.isButtonDisabled,
     required this.chatById,
-    required this.positionsList,
-    required this.selectedPositionName,
-    this.selectedUserId,
-    required this.usersList,
-    required this.selectedUserName,
-    this.selectedUser,
-    required this.employeeList,
-    required this.isStartDateSelected,
-    required this.selectedSalaryDetails,
-    required this.selectedRequestType,
-    required this.allowanceEmployees,
-    required this.departments,
-    required this.locations,
     required this.attachmentsById,
+    required this.countryList,
   });
 
   _ViewState.init()
     : this(
         isLoading: false,
-        selectedPriority: '',
         selectedFileUrl: [],
         attachments: [],
         kpiData: KPIResponse(),
@@ -157,31 +104,19 @@ class _ViewState {
         trendData: TrendBreakdownModel(),
         requestDataById: RequestDetailModel(),
         tabIndex: 0,
+        selectedTab: 0,
         approvalStatusBreakdown: StatusBreakdownModel(),
         approvalTrendData: TrendBreakdownModel(),
-        requestForTrainingRoomBookingRequestData: [],
-        requestForTrainingRoomBookingActionItemsData: [],
+        requestData: [],
+        actionItems: [],
         requestDetails: RequestDetailData(),
         requestDetailTab: 0,
-        engineersList: [],
         approvalId: 0,
-        isFormValid: false,
         isButtonDisabled: false,
         chatById: [],
-        positionsList: [],
-        selectedPositionName: '',
-        selectedUserId: null,
-        usersList: [],
-        selectedUserName: '',
-        selectedUser: null,
-        employeeList: [],
-        isStartDateSelected: false,
-        selectedSalaryDetails: '',
-        selectedRequestType: '',
-        allowanceEmployees: [],
-        departments: [],
-        locations: [],
+
         attachmentsById: [],
+        countryList: [],
       );
 
   _ViewState copyWith({
@@ -201,10 +136,9 @@ class _ViewState {
     StatusBreakdownModel? approvalStatusBreakdown,
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
-    List<TrainingandDevelopmentRequestModel>?
-    requestForTrainingRoomBookingRequestData,
-    List<TrainingandDevelopmentRequestModel>?
-    requestForTrainingRoomBookingActionItemsData,
+    int? selectedTab,
+    List<RequestStudyLeaveModel>? requestData,
+    List<RequestStudyLeaveModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -234,10 +168,24 @@ class _ViewState {
     List<DepartmentModel>? departments,
     List<LocationModel>? locations,
     List<AttachmentModel>? attachmentsById,
+    List<MasterRolesModel>? rolesList,
+    List<SelectionDialogItem>? selectionItems,
+    List<Grade>? gradeList,
+    List<GoalModel>? byCycleGoalsData,
+    List<GoalListModel>? goalWeightList,
+    List<HrTask>? hrTasks,
+    String? hrTaskInput,
+    String? hrResponsibilityInput,
+    String? hrFrequencyInput,
+    String? hrDurationInput,
+    ValueGetter<int?>? hrEditingIndex,
+    List<EmployeeList>? selectedUsersList,
+    List<ResidentalUnitRentalLocationModel>? unitLocations,
+    List<SectionModel>? sections,
+    List<CountryModel>? countryList,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
-      selectedPriority: selectedPriority ?? this.selectedPriority,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
@@ -246,37 +194,19 @@ class _ViewState {
       trendData: trendData ?? this.trendData,
       requestDataById: requestDataById ?? this.requestDataById,
       tabIndex: tabIndex ?? this.tabIndex,
+      selectedTab: selectedTab ?? this.selectedTab,
       approvalStatusBreakdown:
           approvalStatusBreakdown ?? this.approvalStatusBreakdown,
       approvalTrendData: approvalTrendData ?? this.approvalTrendData,
-      requestForTrainingRoomBookingRequestData:
-          requestForTrainingRoomBookingRequestData ??
-          this.requestForTrainingRoomBookingRequestData,
-      requestForTrainingRoomBookingActionItemsData:
-          requestForTrainingRoomBookingActionItemsData ??
-          this.requestForTrainingRoomBookingActionItemsData,
+      requestData: requestData ?? this.requestData,
+      actionItems: actionItems ?? this.actionItems,
       requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
-      engineersList: engineersList ?? this.engineersList,
       approvalId: approvalId ?? this.approvalId,
-      isFormValid: isFormValid ?? this.isFormValid,
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
       chatById: chatById ?? this.chatById,
-      positionsList: positionsList ?? this.positionsList,
-      selectedPositionName: selectedPositionName ?? this.selectedPositionName,
-      selectedUserId: selectedUserId ?? this.selectedUserId,
-      usersList: usersList ?? this.usersList,
-      selectedUserName: selectedUserName ?? this.selectedUserName,
-      selectedUser: selectedUser ?? this.selectedUser,
-      employeeList: employeeList ?? this.employeeList,
-      isStartDateSelected: isStartDateSelected ?? this.isStartDateSelected,
-      selectedSalaryDetails:
-          selectedSalaryDetails ?? this.selectedSalaryDetails,
-      selectedRequestType: selectedRequestType ?? this.selectedRequestType,
-      allowanceEmployees: allowanceEmployees ?? this.allowanceEmployees,
-      departments: departments ?? this.departments,
-      locations: locations ?? this.locations,
       attachmentsById: attachmentsById ?? this.attachmentsById,
+      countryList: countryList ?? this.countryList,
     );
   }
 }
@@ -284,9 +214,12 @@ class _ViewState {
 class _VSController extends StateNotifier<_ViewState> {
   final Service service;
   final SubService subService;
-
+  late final _VSControllerParams params;
   _VSController({required this.service, required this.subService})
-    : super(_ViewState.init());
+    : super(_ViewState.init()) {
+    params = _VSControllerParams(service: service, subService: subService);
+  }
+
   Timer? _searchDebounce;
 
   late TextEditingController chatController;
@@ -297,17 +230,11 @@ class _VSController extends StateNotifier<_ViewState> {
     chatController = TextEditingController();
     titleController = TextEditingController();
     searchController = TextEditingController();
-    // fetchDepartmentName();
     fetchKpi();
-    fetchApprovalKpi();
-    fetchLocations();
     fetchRequests();
-    fetchActionItems();
     fetchStatusBreakdown('monthly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
-    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-    // fetchDepartments();
+    // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
   int _searchVersion = 0;
@@ -327,18 +254,76 @@ class _VSController extends StateNotifier<_ViewState> {
     });
   }
 
-  Map<String, String> buildRequestCardData(
-    TrainingandDevelopmentRequestModel item,
-  ) {
-    final approverMap = resolveApproverMap(item.approvalDetails);
+  int get currentYear => DateTime.now().year;
+
+  List<String> get filterLabelList =>
+      List.generate(6, (index) => (currentYear - index).toString());
+  List<StatSummaryData> get requestStatsList =>
+      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+
+  List<StatSummaryData> get approverStatsList =>
+      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+
+  List<StatSummaryData> get currentStats =>
+      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  void onStatusFilterChanged(String? value) {
+    if (state.tabIndex == 0) {
+      fetchStatusBreakdown(value ?? '');
+    } else {
+      fetchApprovalStatusBreakdown(value ?? '');
+    }
+  }
+
+  void onTrendFilterChanged(String? value) {
+    if (value == null) return;
+
+    if (state.tabIndex == 0) {
+      fetchTrendBreakDown(value);
+    } else {
+      fetchApprovalTrendBreakDown(value);
+    }
+  }
+
+  List<int> get trendCounts {
+    final data = state.trendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<int> get approvalTrendCounts {
+    final data = state.approvalTrendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<ChartData> get statusBreakdownList {
+    return state.statusBreakdown.data?.breakdown ?? [];
+  }
+
+  List<ChartData> get approvalStatusBreakdownList {
+    return state.approvalStatusBreakdown.data?.breakdown ?? [];
+  }
+
+  Map<String, String> buildRequestCardData(RequestStudyLeaveModel item) {
+    final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
-      'Request Id': item.id?.toString() ?? '-',
-      'status': item.status ?? '-',
-      'Request By': item.createdByUser?.employeeName ?? '-',
-      'Institute Name': item.instituteName ?? '-',
+      'Request Id': item.base?.id?.toString() ?? '-',
+      'status': item.base?.status ?? '-',
+      'Request By': item.base?.createdByUser?.employeeName ?? '-',
+
+      'Date': formatDate(item.base?.createdAt.toString() ?? ''),
+      "Request Type": item.base?.subService?.subServiceName ?? '-',
       'Name of Course': item.courseName ?? '-',
       'Location': item.location ?? '-',
+
+      /// ================= EMPLOYEE INFO =================
 
       /// 👇 APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
@@ -346,6 +331,57 @@ class _VSController extends StateNotifier<_ViewState> {
       } else if (approverMap.containsKey('department')) ...{
         'Approver': _buildDepartmentSection(approverMap),
       },
+    };
+  }
+
+  Map<String, String> buildRequestInformationData() {
+    final request = state.requestDetails.request;
+    return {
+      /// ───── RIGHT COLUMN ─────
+      "Service Type": request?.service?.name ?? 'N/A',
+
+      /// ───── LEFT COLUMN ─────
+      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
+      'Qualification Required': request?.qualificationRequired ?? 'N/A',
+      'Name of Course': request?.courseName ?? 'N/A',
+      'Location': request?.location ?? 'N/A',
+      'Have you ever received a study leave from the Authority?':
+          request?.haveYouEverReceivedAuthority == true ? 'Yes' : 'No',
+      'has this application already been submitted in the Ministry of Education system?':
+          request?.alreadySubmittedInMinistryOfEducationSystem == true
+          ? 'Yes'
+          : 'No',
+      'Description': request?.description ?? 'N/A',
+      'Scholarship': request?.scholarship ?? 'N/A',
+    };
+  }
+
+  Map<String, String> buildStatusInformation() {
+    final request = state.requestDetails.request;
+    final approvals = state.requestDetails.approvalDetails;
+    final nextApprover = resolveApproverMap(approvals);
+    return {
+      "Approval Status": request?.status ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt ?? 'N/A'),
+      // "Last Updated":
+      //     request?.updatedAt?.split('T').first ?? 'N/A',
+      if (nextApprover.containsKey('department'))
+        'Department': nextApprover['department']!,
+      if (nextApprover.containsKey('section'))
+        'Section': nextApprover['section']!,
+
+      if (nextApprover.containsKey('name'))
+        'Approver Name': nextApprover['name']!,
+      if (nextApprover.containsKey('email'))
+        'Approver Email': nextApprover['email']!,
+    };
+  }
+
+  Map<String, String> buildTechnicalInformation() {
+    final request = state.requestDetails.request;
+    return {
+      'Extension Number':
+          request?.createdByUser?.extensionNumber.toString() ?? '0',
     };
   }
 
@@ -360,8 +396,13 @@ class _VSController extends StateNotifier<_ViewState> {
     return department ?? '-';
   }
 
-  void openRequestDetails(int id, {bool fromActionItems = false}) {
-    KAppX.router.push(
+  Future<void> openRequestDetails(
+    int id, {
+    bool fromActionItems = false,
+  }) async {
+    updateRequestTab(0);
+
+    await KAppX.router.push(
       RequestForStudyLeaveDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
@@ -371,9 +412,21 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceId: subService.id ?? 0,
       ),
     );
+
+    await refreshAfterReturn();
+  }
+
+  Future<void> refreshAfterReturn() async {
+    await Future.wait([
+      fetchRequests(),
+      fetchKpi(),
+      fetchStatusBreakdown('weekly'),
+      fetchTrendBreakDown(DateTime.now().year.toString()),
+    ]);
   }
 
   void openNewRequestForm() {
+    fetchCountryList();
     KAppX.router.push(
       RequestForStudyLeaveNewRequestRoute(
         serviceId: service.id ?? 0,
@@ -384,115 +437,183 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final requestForStudyLeaveInstance = RequestForStudyLeaveRepository();
-  final securityAccessInstance = SecurityAccessRepoistory();
-  List<DynamicField> get studyLeaveForm => [
-    /// -------- NAME OF COURSE --------
+  final studyLeaveInstance = RequestForStudyLeaveRepository();
+  final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
+  List<DynamicField> get requestStudyLeaveFields => [
+    /// ================= QUALIFICATION REQUIRED =================
     DynamicField(
-      name: 'courseName',
-      label: 'Name of course',
-      type: FieldType.text,
+      name: 'qualification_required',
+      label: 'Qualification Required',
+      type: FieldType.select,
       required: true,
-      placeholder: 'Enter name of course',
+      placeholder: 'Select Qualification Required',
+
+      options: const [
+        DropdownOption(value: 'PhD', label: 'PhD'),
+        DropdownOption(value: 'Masters', label: 'Master’s'),
+        DropdownOption(value: 'Bachelors', label: 'Bachelor’s'),
+        DropdownOption(value: 'Diploma', label: 'Diploma'),
+      ],
     ),
 
-    /// -------- INSTITUTE NAME --------
+    /// ================= INSTITUTE NAME =================
     DynamicField(
-      name: 'instituteName',
+      name: 'institute_name',
       label: 'Institute name',
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter institute name',
+      placeholder: 'Enter Institute Name',
     ),
 
-    /// -------- LOCATION --------
+    /// ================= SCHOLARSHIP =================
+    DynamicField(
+      name: 'scholarship',
+      label: 'Scholarship',
+      type: FieldType.text,
+      required: true,
+      placeholder: 'Enter Scholarship',
+    ),
+
+    /// ================= LOCATION =================
     DynamicField(
       name: 'location',
       label: 'Location',
       type: FieldType.select,
       required: true,
       placeholder: 'Select Location',
-      options: state.locations
+
+      options: const [
+        DropdownOption(value: 'Inside Oman', label: 'Inside Oman'),
+        DropdownOption(value: 'Outside Oman', label: 'Outside Oman'),
+      ],
+    ),
+    DynamicField(
+      name: 'area',
+      label: 'Area Name',
+      type: FieldType.text,
+
+      required: true,
+      placeholder: 'Enter Area Name',
+      visibleWhen: (values) => values['location'] == 'Inside Oman',
+    ),
+    DynamicField(
+      name: 'country_name',
+      label: 'Country Name',
+      type: FieldType.select,
+
+      required: true,
+      placeholder: 'Select Country Name',
+      visibleWhen: (values) => values['location'] == 'Outside Oman',
+      options: state.countryList
           .map(
-            (e) => DropdownOption(value: e.id.toString(), label: e.name ?? ''),
+            (country) => DropdownOption(
+              value: country.countryName ?? '',
+              label: country.countryName ?? '',
+            ),
           )
           .toList(),
     ),
 
-    /// -------- COURSE START DATE --------
+    /// ================= START DATE =================
     DynamicField(
-      name: 'courseStartDate',
-      label: 'Duration of Course Start Date',
+      name: 'duration_of_scholarship_start_date',
+      label: 'Duration of Scholarship Start Date',
       type: FieldType.date,
       required: true,
-      placeholder: 'MM/DD/YYYY',
     ),
 
-    /// -------- COURSE END DATE --------
+    /// ================= END DATE =================
     DynamicField(
-      name: 'courseEndDate',
-      label: 'Duration of Course End Date',
+      name: 'duration_of_scholarship_end_date',
+      label: 'Duration of Scholarship End Date',
       type: FieldType.date,
       required: true,
-      placeholder: 'MM/DD/YYYY',
     ),
 
-    /// -------- DESCRIPTION --------
+    /// ================= RECEIVED STUDY LEAVE =================
+    DynamicField(
+      name: 'received_study_leave',
+      label: 'Have you ever received a study leave from the Authority?',
+      type: FieldType.radio,
+      required: true,
+      options: const ['Yes', 'No'],
+    ),
+
+    /// ================= MINISTRY SUBMISSION =================
+    DynamicField(
+      name: 'submitted_to_ministry',
+      label: 'Has this application already been submitted in the Ministry?',
+      type: FieldType.radio,
+      required: true,
+      options: const ['Yes', 'No'],
+    ),
+
+    /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
       label: 'Description',
       type: FieldType.textarea,
       required: true,
-      placeholder: 'Enter description',
+      placeholder: 'Enter Description',
     ),
 
-    /// -------- ATTACHMENTS --------
+    /// ================= ATTACHMENTS =================
     DynamicField(
       name: 'attachments',
       label: 'Attachments',
       type: FieldType.file,
-      required: false,
+      required: true,
+
+      maxFiles: 5,
+      maxFileSizeInMB: 10,
+
+      allowedExtensions: const ['doc', 'docx', 'pdf', 'jpg', 'jpeg', 'png'],
     ),
   ];
 
+  /// ========================= API CALLS =========================
+
   Future<void> fetchRequestDetailsById(int id) async {
+    state = state.copyWith(isLoading: true);
     try {
-      final requests = await requestForStudyLeaveInstance.getRequestsById(
+      final requests = await studyLeaveInstance.getRequestsById(
         id: id,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
+
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests);
+        state = state.copyWith(requestDetails: requests, isLoading: false);
+        // fetchAssignEmployeesList();
+
         fetchChatById(id);
         fetchAttachmentsById(id);
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
+
+        /// ✅ CHECK ACTION TYPE HERE
+        final actionType = getActionButtonsType(
+          requests,
+          requests.approvalDetails ?? [],
+        );
+        if (actionType == ActionButtonsType.assignReject) {
+          // fetchAssignEmployeesList();
+          debugPrint('this user can only approve');
+        }
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      // optionally handle other errors
+      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
   }
 
-  Future<void> fetchDepartments() async {
-    try {
-      final departments = await securityAccessInstance.getDepartments();
-
-      if (departments != null) {
-        state = state.copyWith(departments: departments);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await requestForStudyLeaveInstance.getchatById(id);
+      final requests = await studyLeaveInstance.getchatById(id);
       if (requests != null) {
-        state = state.copyWith(chatById: requests);
+        final chats = requests.reversed.toList();
+        state = state.copyWith(chatById: chats);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
@@ -504,9 +625,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await requestForStudyLeaveInstance.getAttachmentsById(
-        id,
-      );
+      final attachments = await studyLeaveInstance.getAttachmentsById(id);
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
       }
@@ -518,117 +637,141 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchLocations() async {
-    try {
-      final locations = await requestForStudyLeaveInstance.getLocations();
-
-      if (locations != null) {
-        state = state.copyWith(locations: locations.data);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
   Future<void> fetchKpi() async {
+    state = state.copyWith(isLoading: true);
     try {
-      final kpis = await requestForStudyLeaveInstance.getKpiData(
+      final kpis = await studyLeaveInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
 
       if (kpis != null) {
-        state = state.copyWith(kpiData: kpis);
+        state = state.copyWith(kpiData: kpis, isLoading: false);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   Future<void> fetchApprovalTrendBreakDown(String period) async {
+    state = state.copyWith(isLoading: true);
     try {
-      final data = await requestForStudyLeaveInstance
-          .getApprovalTrendBreakdownData(
-            period: period,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
-
-      if (data != null) {
-        state = state.copyWith(approvalTrendData: data);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchApprovalStatusBreakdown(String period) async {
-    try {
-      final statusBreakdown = await requestForStudyLeaveInstance
-          .getApprovalStatusBreakdownData(
-            period: period,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
-      if (statusBreakdown != null) {
-        state = state.copyWith(approvalStatusBreakdown: statusBreakdown);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {
-      // optionally handle other errors
-      debugPrint(e.toString());
-    }
-  }
-
-  Future<void> fetchStatusBreakdown(String period) async {
-    try {
-      final statusBreakdown = await requestForStudyLeaveInstance
-          .getStatusBreakdownData(
-            period: period,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
-      if (statusBreakdown != null) {
-        state = state.copyWith(statusBreakdown: statusBreakdown);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {
-      // optionally handle other errors
-      debugPrint(e.toString());
-    }
-  }
-
-  Future<void> fetchTrendBreakDown(String period) async {
-    try {
-      final data = await requestForStudyLeaveInstance.getTrendBreakdownData(
+      final data = await studyLeaveInstance.getApprovalTrendBreakdownData(
         period: period,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
 
       if (data != null) {
-        state = state.copyWith(trendData: data);
+        state = state.copyWith(approvalTrendData: data, isLoading: false);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchApprovalStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final statusBreakdown = await studyLeaveInstance
+          .getApprovalStatusBreakdownData(
+            period: period,
+            serviceId: service.id ?? 0,
+            subServiceId: subService.id ?? 0,
+          );
+      if (statusBreakdown != null) {
+        state = state.copyWith(
+          approvalStatusBreakdown: statusBreakdown,
+          isLoading: false,
+        );
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      // optionally handle other errors
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final statusBreakdown = await studyLeaveInstance.getStatusBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+      if (statusBreakdown != null) {
+        state = state.copyWith(
+          statusBreakdown: statusBreakdown,
+          isLoading: false,
+        );
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      // optionally handle other errors
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchTrendBreakDown(String period) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final data = await studyLeaveInstance.getTrendBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (data != null) {
+        state = state.copyWith(trendData: data, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   Future<void> fetchApprovalKpi() async {
+    state = state.copyWith(isLoading: true);
     try {
-      final kpis = await requestForStudyLeaveInstance.getApprovalKpiData(
+      final kpis = await studyLeaveInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
 
       if (kpis != null) {
-        state = state.copyWith(approvalKpiData: kpis);
+        state = state.copyWith(approvalKpiData: kpis, isLoading: false);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchCountryList() async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final countryList = await studyLeaveInstance.getCountryList();
+
+      /// ⭐ CREATE MAP
+
+      state = state.copyWith(countryList: countryList, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+
+      Fluttertoast.showToast(msg: e.toString());
+    }
   }
 
   Future<void> fetchRequests({
@@ -636,14 +779,15 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
+    state = state.copyWith(isLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(requestForTrainingRoomBookingRequestData: []);
+      if (isRefresh || status.isNotEmpty) {
+        state = state.copyWith(requestData: [], isLoading: false);
       }
 
-      final requests = await requestForStudyLeaveInstance.getRequests(
-        offset: 0,
+      final requests = await studyLeaveInstance.getRequests(
+        offset: 1,
         limit: 8,
         searchText: searchText,
         status: status,
@@ -652,10 +796,9 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(
-        requestForTrainingRoomBookingRequestData: requests,
-      );
+      state = state.copyWith(requestData: requests);
     } catch (e) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -668,14 +811,12 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(
-          requestForTrainingRoomBookingActionItemsData: [],
-        );
+      if (isRefresh || status.isNotEmpty) {
+        state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await requestForStudyLeaveInstance.getActionItems(
-        offset: 0,
+      final items = await studyLeaveInstance.getActionItems(
+        offset: 1,
         limit: 8,
         searchText: searchText,
         status: status,
@@ -685,13 +826,33 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(
-        requestForTrainingRoomBookingActionItemsData: items,
-        isLoading: false,
-      );
+      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  bool lastApprover(List<ApprovalDetailModel> approvals) {
+    if (approvals.isEmpty) return false;
+
+    if (approvals.any(
+      (status) =>
+          status.approvalStatus?.toLowerCase() == 'pending' ||
+          status.approvalStatus?.toLowerCase() == 'rejected',
+    )) {
+      return false;
+    }
+
+    if (approvals
+            .where(
+              (status) => status.approvalStatus?.toLowerCase() == 'in progress',
+            )
+            .length ==
+        1) {
+      return true;
+    }
+
+    return false;
   }
 
   void showApprovalCommentDialog({
@@ -699,9 +860,13 @@ class _VSController extends StateNotifier<_ViewState> {
     required int approverId,
     required int requestId,
   }) {
+    // final showDecionNumber = lastApprover(
+    //   state.requestDetails.approvalDetails ?? [],
+    // );
     KAppX.extendedRouter.dialog.showKDialog(
       builder: (_) => ApprovalCommentDialog(
         type: type,
+        // showDecisionNumber: showDecionNumber,
         onSubmit: (comment, decisionNo) async {
           final status = type == ApprovalDialogType.approve
               ? ApprovalStatus.approved
@@ -711,7 +876,8 @@ class _VSController extends StateNotifier<_ViewState> {
             approverId,
             requestId,
             comment.trim(), // always safe
-            status.apiValue, // ✅ backend-safe string
+            status.apiValue,
+            decisionNo, // ✅ backend-safe string
           );
         },
       ),
@@ -745,8 +911,9 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await requestForStudyLeaveInstance
-            .uploadAttachments(state.attachments);
+        final uploadedFiles = await studyLeaveInstance.uploadAttachments(
+          state.attachments,
+        );
 
         if (uploadedFiles.isEmpty) {
           throw Exception("File upload failed");
@@ -776,7 +943,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await requestForStudyLeaveInstance.sendAttachment(payload, requestId);
+        await studyLeaveInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -797,7 +964,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await requestForStudyLeaveInstance.sendChat(payload, requestId);
+        await studyLeaveInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -829,7 +996,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await requestForStudyLeaveInstance.onApprove(payload);
+      await studyLeaveInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       fetchActionItems();
@@ -853,6 +1020,7 @@ class _VSController extends StateNotifier<_ViewState> {
     int requestId,
     String comment,
     String status,
+    String? decisionNo,
   ) async {
     try {
       state = state.copyWith(isLoading: true);
@@ -866,14 +1034,19 @@ class _VSController extends StateNotifier<_ViewState> {
         "comment": comment,
         "approval_id": approverId,
       };
+      if (decisionNo != null) {
+        payload['decision_number'] = decisionNo;
+      }
 
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await requestForStudyLeaveInstance.onApprove(payload);
+      await studyLeaveInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
+      // if (decisionNo != null) {
       KAppX.router.pop();
+      // }
       await fetchActionItems();
       await fetchRequests();
     } catch (e) {
@@ -895,7 +1068,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await requestForStudyLeaveInstance.onSendInProgress(payload);
+      // await studyLeaveInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchActionItems();
@@ -913,33 +1086,60 @@ class _VSController extends StateNotifier<_ViewState> {
 
     final int userId = int.parse(user!.data!.id!);
 
+    debugPrint('---------------- APPROVAL CHECK ----------------');
+    debugPrint('Logged User ID: $userId');
+    debugPrint('Delegate User ID: ${approval.delegateUserId}');
+    debugPrint('Approver User ID: ${approval.approverUserId}');
+    debugPrint('Approver Role ID: ${approval.approverRoleId}');
+    debugPrint('Selected Role ID: ${selectedRole?.roleId}');
+    debugPrint('Approval Department ID: ${approval.departmentId}');
+    debugPrint('User Department ID: ${selectedRole?.departmentId}');
+    debugPrint('Approval Section ID: ${approval.sectionId}');
+    debugPrint('User Section ID: ${selectedRole?.sectionId}');
+    debugPrint('------------------------------------------------');
+
     /// 1️⃣ Delegate always allowed
-    if (approval.delegateUserId == userId) return true;
+    if (approval.delegateUserId == userId) {
+      debugPrint('✅ Allowed: User is delegate approver');
+      return true;
+    }
 
     /// 2️⃣ Approver user rule
-    /// null → open approval
-    /// not null → must match logged-in user
     if (approval.approverUserId != null && approval.approverUserId != userId) {
+      debugPrint(
+        '❌ Denied: Approver User ID mismatch (${approval.approverUserId} != $userId)',
+      );
       return false;
     }
 
-    /// 3️⃣ Role must match (if defined)
+    /// 3️⃣ Role must match
     if (approval.approverRoleId != null &&
         approval.approverRoleId != selectedRole?.roleId) {
+      debugPrint(
+        '❌ Denied: Role mismatch (${approval.approverRoleId} != ${selectedRole?.roleId})',
+      );
       return false;
     }
 
-    /// 4️⃣ Department must match (if defined)
+    /// 4️⃣ Department must match
     if (approval.departmentId != null &&
         approval.departmentId != selectedRole?.departmentId) {
+      debugPrint(
+        '❌ Denied: Department mismatch (${approval.departmentId} != ${selectedRole?.departmentId})',
+      );
       return false;
     }
 
-    /// 5️⃣ Section must match (if defined)
+    /// 5️⃣ Section must match
     if (approval.sectionId != null &&
         approval.sectionId != selectedRole?.sectionId) {
+      debugPrint(
+        '❌ Denied: Section mismatch (${approval.sectionId} != ${selectedRole?.sectionId})',
+      );
       return false;
     }
+
+    debugPrint('✅ Allowed: User can act on this approval level');
 
     return true;
   }
@@ -1013,7 +1213,11 @@ class _VSController extends StateNotifier<_ViewState> {
     final int approvalLevel = level.level ?? 0;
     final bool ishasReplace = level.isReplace ?? false;
 
-    if (level != null) {
+    if (isManager == true) {
+      debugPrint('this user can only approve');
+      return ActionButtonsType.assignReject;
+    } else if (level != null) {
+      debugPrint('this user can approve and reject');
       return ActionButtonsType.approveReject;
     }
 
@@ -1030,15 +1234,15 @@ class _VSController extends StateNotifier<_ViewState> {
     }
 
     // If active approval is NOT allowed → disable
-    if (active.isAllowed != true) {
+    if (active.isAllowed != null && active.isAllowed != true) {
       state = state.copyWith(isButtonDisabled: true);
       return;
     }
 
     final status = active.approvalStatus?.toLowerCase();
 
-    // ✅ Disable ONLY if ACTIVE is approved
-    final shouldDisable = status == 'approved';
+    // ✅ Disable ONLY if ACTIVE is approved or assigned
+    final shouldDisable = status == 'approved' || status == 'assigned';
 
     state = state.copyWith(isButtonDisabled: shouldDisable);
   }
@@ -1148,6 +1352,19 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void updateTabIndex(int index) {
     state = state.copyWith(tabIndex: index);
+    if (index == 0) {
+      fetchRequests();
+      fetchKpi();
+      fetchStatusBreakdown('weekly');
+      fetchTrendBreakDown(DateTime.now().year.toString());
+      searchController.text = '';
+    } else {
+      fetchActionItems();
+      fetchApprovalKpi();
+      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+      searchController.text = '';
+    }
   }
 
   void onRemoveFile(int index) {
@@ -1158,7 +1375,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void refreshUI() {
     // triggers rebuild in UI
-    state = state.copyWith();
+    state = state.copyWith(isLoading: false);
   }
 
   Future<void> pickFile() async {
@@ -1203,6 +1420,70 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(attachments: updated);
   }
 
+  List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {
+    return (values['attachments'] as List<FileUploadItem>? ?? [])
+        .map((file) => file.toJson())
+        .toList();
+  }
+
+  Map<String, dynamic> _buildPayload(
+    int serviceId,
+    int subServiceId,
+    Map<String, dynamic> values,
+  ) {
+    final userInfo = KAppX.globalProvider.read(userInfoProvider);
+
+    return {
+      /// ⭐ USER INFO
+      "req_user_department_id": userInfo?.data?.department?.id,
+
+      "req_user_section_id": userInfo?.data?.section?.id,
+
+      "req_user_position_id": userInfo?.data?.position?.id,
+
+      /// ⭐ SERVICE INFO
+      "service_id": serviceId,
+      "sub_service_id": subServiceId,
+
+      /// ⭐ STUDY LEAVE INFO
+      "scholarship": values['scholarship'] ?? "",
+
+      "course_name": values['qualification_required'] ?? "",
+
+      "qualification_required": values['qualification_required'] ?? "",
+
+      "institute_name": values['institute_name'] ?? "",
+
+      /// ⭐ DURATION
+      "duration_of_course": values['duration_of_course'] ?? "",
+
+      "course_start_date": values['duration_of_scholarship_start_date'],
+
+      "course_end_date": values['duration_of_scholarship_end_date'],
+
+      /// ⭐ LOCATION
+      "location": values['location'] ?? "",
+
+      /// ⭐ BOOLEAN VALUES
+      "have_you_ever_received_authority":
+          values['received_study_leave'] == 'Yes',
+
+      "already_submitted_in_ministry_of_education_system":
+          values['submitted_to_ministry'] == 'Yes',
+
+      /// ⭐ AREA / COUNTRY
+      "area_name": values['area_name'] ?? "",
+
+      "country_name": values['country_name'] ?? "",
+
+      /// ⭐ DESCRIPTION
+      "description": values['description'] ?? "",
+
+      /// ⭐ ATTACHMENTS
+      "attachments": _buildAttachments(values),
+    };
+  }
+
   Future<void> submitStudyLeaveRequest(
     int serviceId,
     int subServiceId,
@@ -1211,67 +1492,37 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      final userData = KAppX.globalProvider.read(rolesProvider);
-      final userInfo = KAppX.globalProvider.read(userInfoProvider);
+      final payload = _buildPayload(
+        serviceId,
+        subServiceId,
+        values,
+        // state.hrTasks,
+      );
 
-      // Build attachments list
-      final List<Map<String, dynamic>> attachments =
-          (values['attachments'] as List<FileUploadItem>? ?? [])
-              .map((file) => file.toJson())
-              .toList();
-      debugPrint("✅ Attachments: $attachments");
-
-      /// -------- FINAL PAYLOAD (TRAINING REQUEST) --------
-      final payload = {
-        // ================= USER / REQUEST INFO =================
-        "req_user_department_id": userData?.departmentId ?? 0,
-        "req_user_section_id": userData?.sectionId ?? 0,
-        "req_user_position_id": userInfo?.data?.position?.id ?? 0,
-
-        // ================= SERVICE INFO =================
-        "service_id": serviceId,
-        "sub_service_id": subServiceId,
-
-        // ================= STUDY LEAVE DETAILS =================
-        "course_name": values['courseName'],
-        "institute_name": values['instituteName'],
-
-        // You must calculate this from dates
-        "duration_of_course":
-            "${values['courseStartDate']} to ${values['courseEndDate']}",
-
-        "course_start_date": values['courseStartDate'], // yyyy-MM-dd
-        "course_end_date": values['courseEndDate'], // yyyy-MM-dd
-
-        "location": values['location'],
-        "description": values['description'],
-
-        // ================= ATTACHMENTS =================
-        "attachments": attachments,
-      };
       debugPrint("✅ Final Payload: $payload");
 
-      // API CALL
-      final response = await requestForStudyLeaveInstance
-          .sendRequestForStudyLeave(payload);
+      final response = await studyLeaveInstance
+          .requestForStudyLeaveCreateRequest(payload);
 
-      // KAppX.router.pop();
       if (response['status'] == 'success') {
-        fetchKpi();
-        fetchStatusBreakdown('monthly');
-        fetchTrendBreakDown(DateTime.now().year.toString());
-        fetchApprovalStatusBreakdown('monthly');
-        fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-        fetchApprovalKpi();
-        fetchRequests();
-        fetchActionItems();
+        _refreshDashboard();
       }
-      // Refresh dashboards
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  void _refreshDashboard() {
+    fetchKpi();
+    fetchStatusBreakdown('monthly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalKpi();
+    fetchRequests();
+    fetchActionItems();
   }
 
   @override

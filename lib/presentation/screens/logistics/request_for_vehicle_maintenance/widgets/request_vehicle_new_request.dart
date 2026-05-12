@@ -57,7 +57,7 @@ class _RequestForVehicleMaintenanceNewRequestScreenState
         child: DynamicForm(
           title: 'Performance Management',
           stepTitles: const [''],
-          steps: [controller.logisticsVehicleRequestFields],
+          steps: [controller.vehicleMaintenanceFields],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

@@ -317,7 +317,7 @@ class _RequestforTrainingRoomBookingScreenState
 
                                     onTap: () async {
                                       controller.openRequestDetails(
-                                        item.id ?? 0,
+                                        item.base?.id ?? 0,
                                       );
                                     },
                                   );
@@ -357,7 +357,7 @@ class _RequestforTrainingRoomBookingScreenState
 
                                     onTap: () async {
                                       controller.openRequestDetails(
-                                        item.id ?? 0,
+                                        item.base?.id ?? 0,
                                         fromActionItems: true,
                                       );
                                     },

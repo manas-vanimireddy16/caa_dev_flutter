@@ -1439,6 +1439,23 @@ class RequestModel {
   final String? projectCodeBudgetCode;
   final String? companyName;
 
+  // vehicle Maintenance
+  final String? typeOfMaintenanceRequired;
+  final String? issueDescription;
+  final String? preferredMaintenanceDate;
+  final String? requestSubmissionDate;
+
+  //  Request for Study Leave
+  final bool? alreadySubmittedInMinistryOfEducationSystem;
+
+  final String? areaName;
+  final String? countryName;
+
+  final String? qualificationRequired;
+
+  final bool? haveYouEverReceivedAuthority;
+  final String? scholarship;
+
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1743,6 +1760,18 @@ class RequestModel {
     this.requestingEntity,
     this.projectCodeBudgetCode,
     this.companyName,
+    // Vehicle Maintenance
+    this.typeOfMaintenanceRequired,
+    this.issueDescription,
+    this.preferredMaintenanceDate,
+    this.requestSubmissionDate,
+    // Request for Study Leave
+    this.alreadySubmittedInMinistryOfEducationSystem,
+    this.areaName,
+    this.countryName,
+    this.qualificationRequired,
+    this.haveYouEverReceivedAuthority,
+    this.scholarship,
   });
 
   // ─────────────────────────────
@@ -2117,6 +2146,22 @@ class RequestModel {
       projectCodeBudgetCode:
           (json['project_code_budget_code'] ?? json['project_or_budget_code']),
       companyName: json['company_name'],
+      // Vehicle Maintenance
+      typeOfMaintenanceRequired: json['type_of_maintenance_required'],
+
+      issueDescription: json['issue_description'],
+
+      preferredMaintenanceDate: json['preferred_maintenance_date'],
+
+      requestSubmissionDate: json['request_submission_date'],
+      // Request for Study Leave
+      alreadySubmittedInMinistryOfEducationSystem:
+          json['already_submitted_in_ministry_of_education_system'],
+      areaName: json['area_name'],
+      countryName: json['country_name'],
+      qualificationRequired: json['qualification_required'],
+      haveYouEverReceivedAuthority: json['have_you_ever_received_authority'],
+      scholarship: json['scholarship'],
     );
   }
 
@@ -3545,9 +3590,9 @@ class ChatMessageModel {
   final UserModel? user;
 
   // ✅ added relational models
-  final RequestModel? request;
-  final ServiceModel? service;
-  final SubServiceModel? subService;
+  // final RequestModel? request;
+  // final ServiceModel? service;
+  // final SubServiceModel? subService;
   final RoleModel? role;
 
   ChatMessageModel({
@@ -3567,9 +3612,9 @@ class ChatMessageModel {
     this.updatedBy,
     this.updatedAt,
     this.user,
-    this.request,
-    this.service,
-    this.subService,
+    // this.request,
+    // this.service,
+    // this.subService,
     this.role,
   });
 
@@ -3593,15 +3638,15 @@ class ChatMessageModel {
       user: json['user'] is Map ? UserModel.fromJson(json['user']) : null,
 
       // ✅ added parsing
-      request: json['request'] != null
-          ? RequestModel.fromJson(json['request'])
-          : null,
-      service: json['service'] != null
-          ? ServiceModel.fromJson(json['service'])
-          : null,
-      subService: json['sub_service'] != null
-          ? SubServiceModel.fromJson(json['sub_service'])
-          : null,
+      // request: json['request'] != null
+      //     ? RequestModel.fromJson(json['request'])
+      //     : null,
+      // service: json['service'] != null
+      //     ? ServiceModel.fromJson(json['service'])
+      //     : null,
+      // subService: json['sub_service'] != null
+      //     ? SubServiceModel.fromJson(json['sub_service'])
+      //     : null,
       role: json['role'] != null ? RoleModel.fromJson(json['role']) : null,
     );
   }
@@ -3623,9 +3668,9 @@ class ChatMessageModel {
     'updated_by': updatedBy,
     'updated_at': updatedAt,
     'user': user?.toJson(),
-    'request': request?.toJson(),
-    'service': service?.toJson(),
-    'sub_service': subService?.toJson(),
+    // 'request': request?.toJson(),
+    // 'service': service?.toJson(),
+    // 'sub_service': subService?.toJson(),
     'role': role?.toJson(),
   };
 }

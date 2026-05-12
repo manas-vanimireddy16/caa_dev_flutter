@@ -215,18 +215,18 @@ class _VSController extends StateNotifier<_ViewState> {
   }) {
     switch (name.trim()) {
       // 🔹 Main Services
-      case 'IT Services':
-        KAppX.router.push(ITServicesHomeRoute());
-        break;
-      case 'Logistics Services':
-        KAppX.router.push(LogisticsHomeRoute());
-        break;
-      case 'Security and Access':
-        KAppX.router.push(RequestForAccessHomeRoute());
-        break;
-      case 'Request Transportation for Foreign Employee':
-        KAppX.router.push(LogisticsForeignersRequestPortalRoute());
-        break;
+      // case 'IT Services':
+      //   KAppX.router.push(ITServicesHomeRoute());
+      //   break;
+      // case 'Logistics Services':
+      //   KAppX.router.push(LogisticsHomeRoute());
+      //   break;
+      // case 'Security and Access':
+      //   KAppX.router.push(RequestForAccessHomeRoute());
+      //   break;
+      // case 'Request Transportation for Foreign Employee':
+      //   KAppX.router.push(LogisticsForeignersRequestPortalRoute());
+      //   break;
       case 'Request a Vehicle: Daily/Emergency':
         KAppX.router.push(
           LogisticsRequestPortalRoute(
@@ -235,14 +235,22 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      case 'Request for Access Card':
+      case 'Request for Vehicle Maintenance':
         KAppX.router.push(
-          AccessCardRequestRoute(
+          RequestForVehicleMaintenanceRoute(
             service: service ?? Service(),
             subService: subService ?? SubService(),
           ),
         );
         break;
+      // case 'Request for Access Card':
+      //   KAppX.router.push(
+      //     AccessCardRequestRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
       case 'Request for Hotel Reservation':
         KAppX.router.push(
           HotelReservationRoute(
@@ -251,110 +259,110 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      case 'Report Security Threat':
-        KAppX.router.push(
-          SecurityThreatRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
+      // case 'Report Security Threat':
+      //   KAppX.router.push(
+      //     SecurityThreatRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
 
-      case 'Request to Organize Security Awareness':
-        KAppX.router.push(
-          OrganizeSecurityAwarenessRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request for Project Approval':
-        KAppX.router.push(
-          RequestForProjectApprovalRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Airport Entry Permit Request':
-        KAppX.router.push(
-          AirportEntryPermitRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Assignment Decision':
-        KAppX.router.push(
-          AssignmentDecisionRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Secondment Decision':
-        KAppX.router.push(
-          SecondmentDecisionRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Temporary Decision':
-        KAppX.router.push(
-          TemporaryAssignmentDecisionRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-      case 'Service Transfer Decision':
-        KAppX.router.push(
-          ServiceTransferRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Assign a task':
-        KAppX.router.push(
-          AssignaTasktoEmployeeRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Duty Mission':
-        KAppX.router.push(
-          RequestforDutyMissionPlannedRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request For Coverage':
-        KAppX.router.push(
-          RequestforCoverageRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Training Room Booking':
-        KAppX.router.push(
-          RequestforTrainingRoomBookingRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Annual Training Plan':
-        KAppX.router.push(
-          AnnualTrainingPlanRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
+      // case 'Request to Organize Security Awareness':
+      //   KAppX.router.push(
+      //     OrganizeSecurityAwarenessRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request for Project Approval':
+      //   KAppX.router.push(
+      //     RequestForProjectApprovalRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Airport Entry Permit Request':
+      //   KAppX.router.push(
+      //     AirportEntryPermitRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Assignment Decision':
+      //   KAppX.router.push(
+      //     AssignmentDecisionRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Secondment Decision':
+      //   KAppX.router.push(
+      //     SecondmentDecisionRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Temporary Decision':
+      //   KAppX.router.push(
+      //     TemporaryAssignmentDecisionRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      // case 'Service Transfer Decision':
+      //   KAppX.router.push(
+      //     ServiceTransferRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Assign a task':
+      //   KAppX.router.push(
+      //     AssignaTasktoEmployeeRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Duty Mission':
+      //   KAppX.router.push(
+      //     RequestforDutyMissionPlannedRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request For Coverage':
+      //   KAppX.router.push(
+      //     RequestforCoverageRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Training Room Booking':
+      //   KAppX.router.push(
+      //     RequestforTrainingRoomBookingRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Annual Training Plan':
+      //   KAppX.router.push(
+      //     AnnualTrainingPlanRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
       case 'Request Training':
         KAppX.router.push(
           RequestTrainingRoute(
@@ -363,7 +371,7 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      case 'Request Study Leave':
+      case 'Request For Study Leave':
         KAppX.router.push(
           RequestForStudyLeaveRoute(
             service: service ?? Service(),
@@ -371,230 +379,230 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      case 'Transfer from One Job to Another Job Nature':
-        KAppX.router.push(
-          TransferFromOneJobtoAnotherJobNatureRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Payment of Shift Allowance':
-        KAppX.router.push(
-          PaymentofShiftAllowanceRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Payment of Cash Allowance for Leave':
-        KAppX.router.push(
-          PaymentofCashAllowanceForLeaveRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Required New Resource':
-        KAppX.router.push(
-          RequiredNewResourceRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Promotions':
-        KAppX.router.push(
-          PromotionsRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
+      // case 'Transfer from One Job to Another Job Nature':
+      //   KAppX.router.push(
+      //     TransferFromOneJobtoAnotherJobNatureRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Payment of Shift Allowance':
+      //   KAppX.router.push(
+      //     PaymentofShiftAllowanceRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Payment of Cash Allowance for Leave':
+      //   KAppX.router.push(
+      //     PaymentofCashAllowanceForLeaveRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Required New Resource':
+      //   KAppX.router.push(
+      //     RequiredNewResourceRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Promotions':
+      //   KAppX.router.push(
+      //     PromotionsRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
 
-        break;
-      case 'Annual Increment':
-        KAppX.router.push(
-          AnnualIncrementRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Skill Enhancement':
-        KAppX.router.push(
-          SkillsEnhancementRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Performance Management':
-        KAppX.router.push(
-          PerformanceManagementRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Human Resource Annual Planning':
-        KAppX.router.push(
-          RequestForHumanResourceAnnualPlanningRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Help Desk Muscat':
-        KAppX.router.push(
-          MuscatDashboard(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Help Desk Salalah':
-        KAppX.router.push(
-          SalalahDashboard(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request for Hospitality Use in Muscat':
-        KAppX.router.push(
-          RequestForAccommodationInMuscatGovernorateRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Residential Unit Rental':
-        KAppX.router.push(
-          ResidentalUnitRentalRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request to Renew a Housing Contract':
-        KAppX.router.push(
-          RequestToRenewalHousingContractRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Cancel a Housing Contract':
-        KAppX.router.push(
-          CancelHousingContractRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request for VAPT and Infrastructure Review':
-        KAppX.router.push(
-          RequestForVAPTAndInfrastructureReviewRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-      case 'Request for Internal Audit (Cyber Security Audit)':
-        KAppX.router.push(
-          RequestForInternalAuditRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Cyber Security Risk Management':
-        KAppX.router.push(
-          CyberSecurityRiskManagementRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request for Legal Contract Review':
-        KAppX.router.push(
-          RequestForLegalContractReviewRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Appeal Against Administrative Decisions':
-        KAppX.router.push(
-          AppealAgainstAdministrativeDecisionsRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Legal Consultation and Review of Administrative Decisions':
-        KAppX.router.push(
-          LegalConsultationandReviewofAdministrativeDecisionsRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request Event Support':
-        KAppX.router.push(
-          RequestEventSupportRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request For Cancellation':
-        KAppX.router.push(
-          RequestForCancellationRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request a Tender Service':
-        KAppX.router.push(
-          RequestTenderServiceRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request a Service to Respond to Enquiries':
-        KAppX.router.push(
-          RequestAServiceToRespondToEnquiriesRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request Tender Ananlysis Service':
-        KAppX.router.push(
-          RequestTenderAnalysisServiceRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Contract Service Request':
-        KAppX.router.push(
-          ContractServiceRequestRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'Request to Book CAA Halls':
-        KAppX.router.push(
-          RequestToBookCAAHallsRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
+      //   break;
+      // case 'Annual Increment':
+      //   KAppX.router.push(
+      //     AnnualIncrementRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Skill Enhancement':
+      //   KAppX.router.push(
+      //     SkillsEnhancementRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Performance Management':
+      //   KAppX.router.push(
+      //     PerformanceManagementRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Human Resource Annual Planning':
+      //   KAppX.router.push(
+      //     RequestForHumanResourceAnnualPlanningRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Help Desk Muscat':
+      //   KAppX.router.push(
+      //     MuscatDashboard(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Salalah':
+      //   KAppX.router.push(
+      //     SalalahDashboard(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request for Hospitality Use in Muscat':
+      //   KAppX.router.push(
+      //     RequestForAccommodationInMuscatGovernorateRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Residential Unit Rental':
+      //   KAppX.router.push(
+      //     ResidentalUnitRentalRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request to Renew a Housing Contract':
+      //   KAppX.router.push(
+      //     RequestToRenewalHousingContractRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Cancel a Housing Contract':
+      //   KAppX.router.push(
+      //     CancelHousingContractRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request for VAPT and Infrastructure Review':
+      //   KAppX.router.push(
+      //     RequestForVAPTAndInfrastructureReviewRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      // case 'Request for Internal Audit (Cyber Security Audit)':
+      //   KAppX.router.push(
+      //     RequestForInternalAuditRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Cyber Security Risk Management':
+      //   KAppX.router.push(
+      //     CyberSecurityRiskManagementRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request for Legal Contract Review':
+      //   KAppX.router.push(
+      //     RequestForLegalContractReviewRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Appeal Against Administrative Decisions':
+      //   KAppX.router.push(
+      //     AppealAgainstAdministrativeDecisionsRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Legal Consultation and Review of Administrative Decisions':
+      //   KAppX.router.push(
+      //     LegalConsultationandReviewofAdministrativeDecisionsRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request Event Support':
+      //   KAppX.router.push(
+      //     RequestEventSupportRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request For Cancellation':
+      //   KAppX.router.push(
+      //     RequestForCancellationRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request a Tender Service':
+      //   KAppX.router.push(
+      //     RequestTenderServiceRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request a Service to Respond to Enquiries':
+      //   KAppX.router.push(
+      //     RequestAServiceToRespondToEnquiriesRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request Tender Ananlysis Service':
+      //   KAppX.router.push(
+      //     RequestTenderAnalysisServiceRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Contract Service Request':
+      //   KAppX.router.push(
+      //     ContractServiceRequestRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'Request to Book CAA Halls':
+      //   KAppX.router.push(
+      //     RequestToBookCAAHallsRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
       // case 'Services':
       //   KAppX.router.push(const Services());
       //   break;

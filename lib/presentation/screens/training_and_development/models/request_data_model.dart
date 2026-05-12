@@ -1,46 +1,13 @@
-import 'package:code_setup/presentation/models/details_models.dart';
-
-/// ─────────────────────────────
-/// RESPONSE MODEL
-/// ─────────────────────────────
-class TrainingandDevelopmentResponse {
-  final String? status;
-  final List<TrainingandDevelopmentRequestModel> data;
-  final int? totalCount;
-
-  const TrainingandDevelopmentResponse({
-    this.status,
-    required this.data,
-    this.totalCount,
-  });
-
-  factory TrainingandDevelopmentResponse.fromJson(Map<String, dynamic> json) {
-    return TrainingandDevelopmentResponse(
-      status: json['status'],
-      totalCount: json['total_count'],
-      data: (json['data'] as List? ?? [])
-          .map(
-            (e) => TrainingandDevelopmentRequestModel.fromJson(
-              e as Map<String, dynamic>,
-            ),
-          )
-          .toList(),
-    );
-  }
-}
+import 'package:code_setup/presentation/models/base_request_model.dart';
 
 class TrainingandDevelopmentRequestModel {
-  /// ─────────────────────────────
-  /// BASIC INFO
-  /// ─────────────────────────────
+  final BaseRequestModel? base;
+
   final int? id;
   final bool? isDeleted;
   final int? userId;
   final String? status;
 
-  /// ─────────────────────────────
-  /// TRAINING ROOM FIELDS
-  /// ─────────────────────────────
   final String? purposeOfTraining;
   final String? dateOfEvent;
   final String? startTime;
@@ -50,48 +17,24 @@ class TrainingandDevelopmentRequestModel {
   final bool? networkSupportRequired;
   final bool? mealsRequired;
 
-  /// ─────────────────────────────
-  /// SERVICE INFO
-  /// ─────────────────────────────
   final int? serviceId;
   final int? subServiceId;
 
-  /// ─────────────────────────────
-  /// REQUEST USER INFO
-  /// ─────────────────────────────
   final int? reqUserDepartmentId;
   final int? reqUserSectionId;
-  final int? reqUserPositionId;
+  final dynamic reqUserPositionId;
 
-  /// ─────────────────────────────
-  /// WORKFLOW / ASSIGNMENT
-  /// ─────────────────────────────
   final String? remarks;
   final int? reviewerUserId;
   final int? assignedToUserId;
   final String? assignedAt;
   final String? workflowExecutionId;
 
-  /// ─────────────────────────────
-  /// AUDIT
-  /// ─────────────────────────────
   final int? createdBy;
   final int? updatedBy;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  /// ─────────────────────────────
-  /// NESTED OBJECTS
-  /// ─────────────────────────────
-  final UserModel? createdByUser;
-  final DepartmentModel? reqDepartment;
-  final SectionModel? reqSection;
-  final ServiceModel? service;
-  final SubServiceModel? subService;
-
-  /// ─────────────────────────────
-  /// TRAINING DETAILS (MISSING FIELDS ADDED)
-  /// ─────────────────────────────
   final String? courseName;
   final int? noOfParticipants;
   final String? courseCost;
@@ -101,19 +44,9 @@ class TrainingandDevelopmentRequestModel {
   final String? reason;
   final String? location;
   final String? proposedImplementationDate;
-  final List<dynamic>? employeeList;
 
-  /// ─────────────────────────────
-  /// COMMUNICATION & WORKFLOW
-  /// ─────────────────────────────
-  final List<ChatMessageModel>? chatMessages;
-  final List<AttachmentModel>? attachments;
-  final List<WorkflowDetailModel>? workflowLogs;
-  final List<ApprovalDetailModel>? approvalDetails;
+  // final List<dynamic>? employeeList;
 
-  /// ─────────────────────────────
-  /// TRAINING REQUEST (CAA015) FIELDS
-  /// ─────────────────────────────
   final String? typeOfTraining;
   final String? typeOfCategory;
   final String? startDate;
@@ -124,7 +57,11 @@ class TrainingandDevelopmentRequestModel {
   final String? durationOfCourse;
   final String? instituteName;
 
+  final int? courseId;
+  final String? nameOfAttendeesSelection;
+
   const TrainingandDevelopmentRequestModel({
+    this.base,
     this.id,
     this.isDeleted,
     this.userId,
@@ -151,15 +88,6 @@ class TrainingandDevelopmentRequestModel {
     this.updatedBy,
     this.createdAt,
     this.updatedAt,
-    this.createdByUser,
-    this.reqDepartment,
-    this.reqSection,
-    this.service,
-    this.subService,
-    this.chatMessages,
-    this.attachments,
-    this.workflowLogs,
-    this.approvalDetails,
     this.courseName,
     this.noOfParticipants,
     this.courseCost,
@@ -169,7 +97,7 @@ class TrainingandDevelopmentRequestModel {
     this.reason,
     this.location,
     this.proposedImplementationDate,
-    this.employeeList,
+    // this.employeeList,
     this.typeOfTraining,
     this.typeOfCategory,
     this.startDate,
@@ -178,14 +106,22 @@ class TrainingandDevelopmentRequestModel {
     this.mediaCoverageRequired,
     this.durationOfCourse,
     this.instituteName,
+    this.courseId,
+    this.nameOfAttendeesSelection,
   });
 
   factory TrainingandDevelopmentRequestModel.fromJson(
     Map<String, dynamic>? json,
   ) {
-    if (json == null) return const TrainingandDevelopmentRequestModel();
+    if (json == null) {
+      return const TrainingandDevelopmentRequestModel();
+    }
 
     return TrainingandDevelopmentRequestModel(
+      base: json['base'] != null
+          ? BaseRequestModel.fromJson(json['base'])
+          : null,
+
       id: json['id'],
       isDeleted: json['is_deleted'],
       userId: json['user_id'],
@@ -215,48 +151,15 @@ class TrainingandDevelopmentRequestModel {
 
       createdBy: json['created_by'],
       updatedBy: json['updated_by'],
+
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'])
           : null,
+
       updatedAt: json['updated_at'] != null
           ? DateTime.tryParse(json['updated_at'])
           : null,
 
-      createdByUser: json['created_by_user'] != null
-          ? UserModel.fromJson(json['created_by_user'])
-          : null,
-
-      reqDepartment: json['req_department'] != null
-          ? DepartmentModel.fromJson(json['req_department'])
-          : null,
-
-      reqSection: json['req_section'] != null
-          ? SectionModel.fromJson(json['req_section'])
-          : null,
-
-      service: json['service'] != null
-          ? ServiceModel.fromJson(json['service'])
-          : null,
-
-      subService: json['sub_service'] != null
-          ? SubServiceModel.fromJson(json['sub_service'])
-          : null,
-
-      chatMessages: (json['chat_messages'] as List?)
-          ?.map((e) => ChatMessageModel.fromJson(e))
-          .toList(),
-
-      attachments: (json['attachments'] as List?)
-          ?.map((e) => AttachmentModel.fromJson(e))
-          .toList(),
-
-      workflowLogs: (json['workflow_logs'] as List?)
-          ?.map((e) => WorkflowDetailModel.fromJson(e))
-          .toList(),
-
-      approvalDetails: (json['approval_details'] as List?)
-          ?.map((e) => ApprovalDetailModel.fromJson(e))
-          .toList(),
       courseName: json['course_name'],
       noOfParticipants: json['no_of_participants'],
       courseCost: json['course_cost'],
@@ -265,16 +168,89 @@ class TrainingandDevelopmentRequestModel {
       place: json['place'],
       reason: json['reason'],
       location: json['location'],
-      employeeList: json['employee_list'],
+      // employeeList: json['employee_list'],
       proposedImplementationDate: json['proposed_implementation_date'],
+
       typeOfTraining: json['type_of_training'],
       typeOfCategory: json['type_of_category'],
       startDate: json['start_date'],
       endDate: json['end_date'],
       noOfAttendees: json['no_of_attendees'],
       mediaCoverageRequired: json['media_coverage_required'],
+
       durationOfCourse: json['duration_of_course'],
       instituteName: json['institute_name'],
+
+      courseId: json['course_id'],
+
+      nameOfAttendeesSelection: json['name_of_attendees_selection'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      // "base": base?.toJson(),
+      "id": id,
+      "is_deleted": isDeleted,
+      "user_id": userId,
+      "status": status,
+
+      "purpose_of_training": purposeOfTraining,
+      "date_of_event": dateOfEvent,
+      "start_time": startTime,
+      "end_time": endTime,
+      "room_type": roomType,
+      "number_of_attendees": numberOfAttendees,
+      "network_support_required": networkSupportRequired,
+      "meals_required": mealsRequired,
+
+      "service_id": serviceId,
+      "sub_service_id": subServiceId,
+
+      "req_user_department_id": reqUserDepartmentId,
+
+      "req_user_section_id": reqUserSectionId,
+
+      "req_user_position_id": reqUserPositionId,
+
+      "remarks": remarks,
+      "reviewer_user_id": reviewerUserId,
+      "assigned_to_user_id": assignedToUserId,
+      "assigned_at": assignedAt,
+      "workflow_execution_id": workflowExecutionId,
+
+      "created_by": createdBy,
+      "updated_by": updatedBy,
+      "created_at": createdAt?.toIso8601String(),
+      "updated_at": updatedAt?.toIso8601String(),
+
+      "course_name": courseName,
+      "no_of_participants": noOfParticipants,
+      "course_cost": courseCost,
+      "total_cost": totalCost,
+      "description": description,
+      "place": place,
+      "reason": reason,
+      "location": location,
+
+      // "employee_list": employeeList,
+      "proposed_implementation_date": proposedImplementationDate,
+
+      "type_of_training": typeOfTraining,
+      "type_of_category": typeOfCategory,
+      "start_date": startDate,
+      "end_date": endDate,
+      "no_of_attendees": noOfAttendees,
+
+      "media_coverage_required": mediaCoverageRequired,
+
+      "duration_of_course": durationOfCourse,
+
+      "institute_name": instituteName,
+
+      "course_id": courseId,
+
+      "name_of_attendees_selection": nameOfAttendeesSelection,
+    };
   }
 }

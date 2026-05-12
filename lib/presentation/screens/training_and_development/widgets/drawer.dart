@@ -115,27 +115,27 @@ class _DrawerMenu extends ConsumerWidget {
 
     /// ✅ DRAWER ITEMS
     final items = [
-      DrawerItemData(
-        index: 0,
-        icon: KImageProvider(image: KIcons.dashboard),
-        label: 'Dashboard',
-      ),
-      DrawerItemData(
-        index: 1,
-        icon: KImageProvider(
-          image: KIcons.playlistAddCheck,
-          tintColor: Colors.black,
-        ),
-        label: 'Request for Training Room Booking',
-      ),
-      DrawerItemData(
-        index: 2,
-        icon: KImageProvider(
-          image: KIcons.playlistAddCheck,
-          tintColor: Colors.black,
-        ),
-        label: 'Annual Training Plan',
-      ),
+      // DrawerItemData(
+      //   index: 0,
+      //   icon: KImageProvider(image: KIcons.dashboard),
+      //   label: 'Dashboard',
+      // ),
+      // DrawerItemData(
+      //   index: 1,
+      //   icon: KImageProvider(
+      //     image: KIcons.playlistAddCheck,
+      //     tintColor: Colors.black,
+      //   ),
+      //   label: 'Request for Training Room Booking',
+      // ),
+      // DrawerItemData(
+      //   index: 2,
+      //   icon: KImageProvider(
+      //     image: KIcons.playlistAddCheck,
+      //     tintColor: Colors.black,
+      //   ),
+      //   label: 'Annual Training Plan',
+      // ),
       DrawerItemData(
         index: 3,
         icon: KImageProvider(

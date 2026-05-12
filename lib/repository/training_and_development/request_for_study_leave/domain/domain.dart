@@ -3,9 +3,13 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/country_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/courses_participents_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/request_training_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/study_leave_model.dart';
 import 'package:code_setup/repository/training_and_development/request_for_study_leave/data/data.dart';
+import 'package:code_setup/repository/training_and_development/request_training/data/data.dart';
 
 abstract class RequestForStudyLeaveRepository {
   factory RequestForStudyLeaveRepository() =>
@@ -13,7 +17,7 @@ abstract class RequestForStudyLeaveRepository {
 
   Future<List<EmployeeList>> getUsers(int departmentId);
 
-  Future<Map<String, dynamic>> sendRequestForStudyLeave(
+  Future<Map<String, dynamic>> requestForStudyLeaveCreateRequest(
     Map<String, dynamic> payload,
   );
   Future<List<Map<String, dynamic>>> uploadAttachments(
@@ -25,9 +29,7 @@ abstract class RequestForStudyLeaveRepository {
     required int subServiceId,
   });
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId);
-  Future<LocationListResponseModel>? getLocations();
-
-  Future<List<TrainingandDevelopmentRequestModel>> getRequests({
+  Future<List<RequestStudyLeaveModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -37,8 +39,9 @@ abstract class RequestForStudyLeaveRepository {
     String status = '', // 👈 changed to List
     String searchText = '',
   });
+  Future<List<CountryModel>> getCountryList();
 
-  Future<List<TrainingandDevelopmentRequestModel>> getActionItems({
+  Future<List<RequestStudyLeaveModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -57,8 +60,6 @@ abstract class RequestForStudyLeaveRepository {
   Future<String> sendChat(Map<String, dynamic> payload, int id);
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
   Future<List<ChatMessageModel>> getchatById(int id);
-  Future<List<AttachmentModel>> getAttachmentsById(int id);
-
   Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
     required String period,
     required int serviceId,
@@ -80,4 +81,5 @@ abstract class RequestForStudyLeaveRepository {
     required int serviceId,
     required int subServiceId,
   });
+  Future<List<AttachmentModel>> getAttachmentsById(int id);
 }

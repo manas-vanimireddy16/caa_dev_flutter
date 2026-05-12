@@ -56,6 +56,9 @@ class TicketRequestsCard extends ConsumerWidget {
               selectedIndex: state.tabIndex,
               onTabChanged: (index) {
                 controller.updateTabIndex(index);
+                focusNode.unfocus();
+                controller.searchController.clear();
+                controller.onSearchChanged("");
 
                 pageController.animateToPage(
                   index,
@@ -73,6 +76,9 @@ class TicketRequestsCard extends ConsumerWidget {
               child: PageView(
                 controller: pageController,
                 onPageChanged: (index) {
+                  focusNode.unfocus();
+                  controller.searchController.clear();
+                  controller.onSearchChanged("");
                   controller.updateTabIndex(index);
                 },
                 children: [

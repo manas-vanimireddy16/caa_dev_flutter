@@ -1,10 +1,12 @@
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
+import 'package:code_setup/presentation/models/master_roles.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/payment_of_cash_allowance_for_leave_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/payment_of_shift_allowance_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/hr_service/payment_of_cash_allowance_for_leave/data/data.dart';
@@ -13,9 +15,7 @@ abstract class PaymentofCashAllowanceForLeaveRepository {
   factory PaymentofCashAllowanceForLeaveRepository() =>
       PaymentofCashAllowanceForLeaveRepositoryImple();
 
-  Future<List<EmployeeList>> getUsers(int departmentId);
-
-  Future<Map<String, dynamic>> sendPaymentofCashAllowanceForLeaveRequest(
+  Future<Map<String, dynamic>> paymentofCashAllowanceForLeaveCreateRequest(
     Map<String, dynamic> payload,
   );
   Future<List<Map<String, dynamic>>> uploadAttachments(
@@ -88,4 +88,6 @@ abstract class PaymentofCashAllowanceForLeaveRepository {
     required int sectionId,
     required String roleId,
   });
+  Future<List<MasterRolesModel>> getRolesList();
+  Future<List<Employee>> getUsers();
 }

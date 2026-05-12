@@ -8,7 +8,9 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/courses_participents_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/request_training_model.dart';
 import 'package:code_setup/repository/training_and_development/request_training/domain/domain.dart';
 import 'package:code_setup/utils/api_end_point.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
@@ -58,7 +60,9 @@ class RequestTrainingRepositoryImple implements RequestTrainingRepository {
   }
 
   @override
-  Future<void> sendRequestTrainingRequest(Map<String, dynamic> payload) async {
+  Future<Map<String, dynamic>> requestTrainingCreateRequest(
+    Map<String, dynamic> payload,
+  ) async {
     final client = await KAppX.network.secureClient();
     final String url = ApiEndPoint.requestTrainingSendRequest;
     try {
@@ -70,6 +74,7 @@ class RequestTrainingRepositoryImple implements RequestTrainingRepository {
           ShowFlutterToast().showFlutterToastSuccess(
             response.data['message'] ?? 'Request sent successfully',
           );
+          return response.data as Map<String, dynamic>;
         } else {
           ShowFlutterToast().showFlutterToastFailure(
             response.data['message'] ??
@@ -78,9 +83,14 @@ class RequestTrainingRepositoryImple implements RequestTrainingRepository {
           debugPrint(
             '⚠️ Failed to send SecurityAwareness request: ${response.statusCode}',
           );
+          return response.data as Map<String, dynamic>;
         }
       } else {
         debugPrint('❌ Client is null — cannot send SecurityAwareness request');
+        return {
+          'status': 'error',
+          'message': 'Client not initialized. Please try again later.',
+        };
       }
     } on DioException catch (e) {
       log('caught error');
@@ -185,6 +195,34 @@ class RequestTrainingRepositoryImple implements RequestTrainingRepository {
     }
 
     return uploadedResults;
+  }
+
+  @override
+  Future<List<AttachmentModel>> getAttachmentsById(int id) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.trainingRequestAttachmentsById(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = AttachmentByIdResponseModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching attachmentById details: $e");
+    }
   }
 
   @override
@@ -419,7 +457,38 @@ class RequestTrainingRepositoryImple implements RequestTrainingRepository {
   }
 
   @override
-  Future<List<TrainingandDevelopmentRequestModel>> getRequests({
+  Future<List<CourseName>> getCourseandParticipants() async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.trainingRequestParticipants;
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          final List<dynamic> list = data['data'];
+
+          return list
+              .map((e) => CourseName.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception(
+            'Failed to fetch request for training room booking request: ${response.statusCode}',
+          );
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception(
+        "Error fetching request for training room booking request: $e",
+      );
+    }
+  }
+
+  @override
+  Future<List<RequestTrainingModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -456,9 +525,7 @@ class RequestTrainingRepositoryImple implements RequestTrainingRepository {
 
           return list
               .map(
-                (e) => TrainingandDevelopmentRequestModel.fromJson(
-                  e as Map<String, dynamic>,
-                ),
+                (e) => RequestTrainingModel.fromJson(e as Map<String, dynamic>),
               )
               .toList();
         } else {
@@ -477,7 +544,7 @@ class RequestTrainingRepositoryImple implements RequestTrainingRepository {
   }
 
   @override
-  Future<List<TrainingandDevelopmentRequestModel>> getActionItems({
+  Future<List<RequestTrainingModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -518,9 +585,8 @@ class RequestTrainingRepositoryImple implements RequestTrainingRepository {
           /// Parse each Action Item
           final actionItems = list
               .map(
-                (item) => TrainingandDevelopmentRequestModel.fromJson(
-                  item as Map<String, dynamic>,
-                ),
+                (item) =>
+                    RequestTrainingModel.fromJson(item as Map<String, dynamic>),
               )
               .toList();
 

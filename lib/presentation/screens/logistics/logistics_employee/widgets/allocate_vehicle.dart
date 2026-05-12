@@ -44,8 +44,6 @@ class _AllocateVehicleDialogWidgetState
   String? selectedVehicleNumber;
   String? fuelCard;
 
-  final List<String> vehicleNumbers = ['1./88', '10./88', '108/88', '109/88'];
-
   Future<void> pickDate() async {
     final pickedDate = await showDatePicker(
       context: context,
@@ -116,6 +114,11 @@ class _AllocateVehicleDialogWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(_vsProvider(_providerArgs));
+
+    List<String> vehicleNumbers = state.vehicle
+        .map((e) => e['vehicleNumber'] ?? '')
+        .toList();
     return Form(
       key: _formKey,
       child: SingleChildScrollView(

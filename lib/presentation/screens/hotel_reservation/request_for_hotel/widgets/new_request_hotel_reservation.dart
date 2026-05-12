@@ -49,7 +49,7 @@ class _HotelReservationNewRequestScreenState
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: 'Mission Transfer Request',
+          title: 'New Request',
           stepTitles: const [''],
           steps: [controller.hotelReservationFields],
 

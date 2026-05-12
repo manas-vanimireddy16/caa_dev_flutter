@@ -47,8 +47,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<LogisticsVehicleRequestModel> requestData;
-  final List<LogisticsVehicleRequestModel> actionItems;
+  final List<VehicleMaintenanceRequestModel> requestData;
+  final List<VehicleMaintenanceRequestModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final int approvalId;
@@ -70,6 +70,387 @@ class _ViewState {
     'October',
     'November',
     'December',
+  ];
+
+  final List<Map<String, dynamic>> vehicles = [
+    {
+      "chassisNumber": "MHFKU8FS8R0198168",
+      "engineNumber": "1GRH393291",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "43/88",
+      "no": 1,
+    },
+    {
+      "chassisNumber": "MHFKU8FSXR0197944",
+      "engineNumber": "1GRH394412",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "47/88",
+      "no": 2,
+    },
+    {
+      "chassisNumber": "MHFKU8FS4R0198183",
+      "engineNumber": "1GRH393738",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "42/88",
+      "no": 3,
+    },
+    {
+      "chassisNumber": "MHFKU8FS1R0197895",
+      "engineNumber": "1GRH3932364",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "45/88",
+      "no": 4,
+    },
+    {
+      "chassisNumber": "MHFKU8FS8R0197893",
+      "engineNumber": "1GRH392372",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "46/88",
+      "no": 5,
+    },
+    {
+      "chassisNumber": "MHFKU8FS3R0198191",
+      "engineNumber": "1GRH393620",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "48/88",
+      "no": 6,
+    },
+    {
+      "chassisNumber": "MHFKU8FS2R0197906",
+      "engineNumber": "1GRH394369",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "37/88",
+      "no": 7,
+    },
+    {
+      "chassisNumber": "MHFKU8FS7R0197920",
+      "engineNumber": "1GRH393135",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "36/88",
+      "no": 8,
+    },
+    {
+      "chassisNumber": "MHFKU8FS3R0198224",
+      "engineNumber": "1GRH393976",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "44/88",
+      "no": 9,
+    },
+    {
+      "chassisNumber": "MHFKU8FS7R0198226",
+      "engineNumber": "1GRH393932",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "49/88",
+      "no": 10,
+    },
+    {
+      "chassisNumber": "JTNB19HK8R3246981",
+      "engineNumber": "A250D74665",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "98/88",
+      "no": 11,
+    },
+    {
+      "chassisNumber": "JTNB19HK2R3249147",
+      "engineNumber": "A250D80919",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "59/88",
+      "no": 12,
+    },
+    {
+      "chassisNumber": "JTNB19HK7R3247409",
+      "engineNumber": "A250D76198",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "57/88",
+      "no": 13,
+    },
+    {
+      "chassisNumber": "JTNB19HK7R3248771",
+      "engineNumber": "A250D79786",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "56/88",
+      "no": 14,
+    },
+    {
+      "chassisNumber": "JTNB19HK2R3248273",
+      "engineNumber": "A250D78346",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "54/88",
+      "no": 15,
+    },
+    {
+      "chassisNumber": "JTNB19HK4R3245794",
+      "engineNumber": "A250D71332",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "24/88",
+      "no": 16,
+    },
+    {
+      "chassisNumber": "JTNB19HK1R3245610",
+      "engineNumber": "A250D70920",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "97/88",
+      "no": 17,
+    },
+    {
+      "chassisNumber": "JTNB19HKxR3245394",
+      "engineNumber": "A250D70280",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "96/88",
+      "no": 18,
+    },
+    {
+      "chassisNumber": "JTNB19HK0R3244965",
+      "engineNumber": "A250D69119",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "76/88",
+      "no": 19,
+    },
+    {
+      "chassisNumber": "JTNB19HK1R3248796",
+      "engineNumber": "A250D79746",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "58/88",
+      "no": 20,
+    },
+    {
+      "chassisNumber": "JTNB19HK1R3245560",
+      "engineNumber": "A250D70818",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "95/88",
+      "no": 21,
+    },
+    {
+      "chassisNumber": "JTNB19HK0R3246909",
+      "engineNumber": "A250D74461",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "79/88",
+      "no": 22,
+    },
+    {
+      "chassisNumber": "JTEBU9FJ0PK239298",
+      "engineNumber": "1GRC726969",
+      "color": "Pearl White",
+      "model": "2023",
+      "vehicleType": "Toyota Prado 4x4",
+      "vehicleNumber": "55/88",
+      "no": 23,
+    },
+    {
+      "chassisNumber": "JTEBU9FJ8PK247214",
+      "engineNumber": "1GRC792827",
+      "color": "Pearl White",
+      "model": "2023",
+      "vehicleType": "Toyota Prado 4x4",
+      "vehicleNumber": "4./88",
+      "no": 24,
+    },
+    {
+      "chassisNumber": "JTEBU9FJ6PK246675",
+      "engineNumber": "1GRC788110",
+      "color": "Pearl White",
+      "model": "2023",
+      "vehicleType": "Toyota Prado 4x4",
+      "vehicleNumber": "5./88",
+      "no": 25,
+    },
+    {
+      "chassisNumber": "JTEJU9FJ3B5013808",
+      "engineNumber": "A237596",
+      "color": "White",
+      "model": "2011",
+      "vehicleType": "Toyota Prado 4x4",
+      "vehicleNumber": "8./88",
+      "no": 26,
+    },
+    {
+      "chassisNumber": "JTEJU9FJ8B5016574",
+      "engineNumber": "A272362",
+      "color": "White",
+      "model": "2011",
+      "vehicleType": "Toyota Prado 4x4",
+      "vehicleNumber": "9./88",
+      "no": 27,
+    },
+    {
+      "chassisNumber": "5N1AN0N69CN801970",
+      "engineNumber": "930446A",
+      "color": "Silver",
+      "model": "2011",
+      "vehicleType": "Nissan Pathfinder 4x4",
+      "vehicleNumber": "23/88",
+      "no": 28,
+    },
+    {
+      "chassisNumber": "5N1AR1N80BC600156",
+      "engineNumber": "904776A",
+      "color": "Silver",
+      "model": "2011",
+      "vehicleType": "Nissan Pathfinder 4x4",
+      "vehicleNumber": "21/88",
+      "no": 29,
+    },
+    {
+      "chassisNumber": "5N1AN0N69CN801970",
+      "engineNumber": "174185B",
+      "color": "White",
+      "model": "2012",
+      "vehicleType": "Nissan X-Terra 4x4",
+      "vehicleNumber": "10./88",
+      "no": 30,
+    },
+    {
+      "chassisNumber": "JMYLYV97WDJ703723",
+      "engineNumber": "6G758E9XS3556",
+      "color": "White",
+      "model": "2013",
+      "vehicleType": "Toyota Pajero 4x4",
+      "vehicleNumber": "6./88",
+      "no": 31,
+    },
+    {
+      "chassisNumber": "1GKS27KD6PR329789",
+      "engineNumber": "L84APR329789",
+      "color": "Brown",
+      "model": "2023",
+      "vehicleType": "GMC Yukon 4x4",
+      "vehicleNumber": "111/88",
+      "no": 32,
+    },
+    {
+      "chassisNumber": "MR0DX9CD0R2649011",
+      "engineNumber": "2TRB145770",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Hilux Pickup",
+      "vehicleNumber": "108/88",
+      "no": 33,
+    },
+    {
+      "chassisNumber": "MR0DX9CD3R2649021",
+      "engineNumber": "2TRB146621",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Hilux Pickup",
+      "vehicleNumber": "109/88",
+      "no": 34,
+    },
+    {
+      "chassisNumber": "MR0EW12G8D3020457",
+      "engineNumber": "7433363",
+      "color": "White",
+      "model": "2013",
+      "vehicleType": "Toyota Hilux Pickup",
+      "vehicleNumber": "26/88",
+      "no": 35,
+    },
+    {
+      "chassisNumber": "MNTDD22S9C6003117",
+      "engineNumber": "917712Z",
+      "color": "White",
+      "model": "2012",
+      "vehicleType": "Nissan Pickup",
+      "vehicleNumber": "18/88",
+      "no": 36,
+    },
+    {
+      "chassisNumber": "MMBJNKA50BD023348",
+      "engineNumber": "4G64UCAJ3745",
+      "color": "White",
+      "model": "2011",
+      "vehicleType": "Mitsubishi Pickup",
+      "vehicleNumber": "30/88",
+      "no": 37,
+    },
+    {
+      "chassisNumber": "JL6BCE6J9DK008760",
+      "engineNumber": "6D16A23924",
+      "color": "White",
+      "model": "2009",
+      "vehicleType": "Mitsubishi Truck with Crane",
+      "vehicleNumber": "40/88",
+      "no": 38,
+    },
+    {
+      "chassisNumber": "4P3SRDJ1ABE802237",
+      "engineNumber": "4G69PD4331",
+      "color": "White",
+      "model": "2011",
+      "vehicleType": "Mitsubishi Galant Sedan",
+      "vehicleNumber": "29/88",
+      "no": 39,
+    },
+    {
+      "chassisNumber": "JL6BCE6J9DK008760",
+      "engineNumber": "4D34N38913",
+      "color": "White",
+      "model": "2013",
+      "vehicleType": "Mitsubishi Truck with Crane",
+      "vehicleNumber": "27/88",
+      "no": 40,
+    },
+    {
+      "chassisNumber": "JTMHU09J0B5051720",
+      "engineNumber": "A318476",
+      "color": "White",
+      "model": "2011",
+      "vehicleType": "Toyota Land Cruiser 4x4",
+      "vehicleNumber": "1./88",
+      "no": 41,
+    },
+    {
+      "chassisNumber": "JN8AY25Y0C9027176",
+      "engineNumber": "038827A",
+      "color": "Green",
+      "model": "2012",
+      "vehicleType": "Nissan Patrol 4x4",
+      "vehicleNumber": "2./88",
+      "no": 42,
+    },
   ];
 
   /// FORM KEY
@@ -141,8 +522,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<LogisticsVehicleRequestModel>? requestData,
-    List<LogisticsVehicleRequestModel>? actionItems,
+    List<VehicleMaintenanceRequestModel>? requestData,
+    List<VehicleMaintenanceRequestModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -312,16 +693,20 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(LogisticsVehicleRequestModel item) {
+  Map<String, String> buildRequestCardData(
+    VehicleMaintenanceRequestModel item,
+  ) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
-      'Request Name': item.title ?? 'N/A',
-      'Category': item.category ?? 'N/A',
-      'Date': formatDate(item.base?.createdAt.toString() ?? ''),
+      'Vehicle Number': item.vehicleNumber ?? 'N/A',
+      'Maintenance Type': item.typeOfMaintenanceRequired ?? 'N/A',
+      'Preferred Maintenance Date': formatDate(
+        item.preferredMaintenanceDate ?? 'N/A',
+      ),
 
       /// ================= EMPLOYEE INFO =================
 
@@ -338,24 +723,16 @@ class _VSController extends StateNotifier<_ViewState> {
     final request = state.requestDetails.request;
     return {
       /// ───── RIGHT COLUMN ─────
-      "Request For": request?.requestFor ?? 'N/A',
-
       "Service Type": request?.service?.name ?? 'N/A',
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      "Purpose of Travel": request?.purposeOfTravel ?? 'N/A',
-      "Travel Date": formatDate(request?.dateOfTravel ?? 'N/A'),
-      "Travel Time": formatTime(request?.timeOfTravel ?? 'N/A'),
-      "Location": request?.vehicleRequiredLocation ?? 'N/A',
-      // "Driver Name": request?.driverName ?? 'N/A',
-      // "Vehicle Number": request?.vehicleNumber ?? 'N/A',
-      "Description": request?.description ?? 'N/A',
-      // 'Type Of Enquire': request?.titleOfEnquiry ?? 'N/A',
-      // 'Phone Number': request?.phone ?? 'N/A',
-      // 'Budget Code': request?.budgetCode ?? 'N/A',
-      // 'Estimated Cost': request?.estimatedCost ?? 'N/A',
-      // 'Request Type': request?.requestType ?? 'N/A',
+      'Vehicle Number': request?.vehicleNumber ?? 'N/A',
+      'Maintenance Type': request?.typeOfMaintenanceRequired ?? 'N/A',
+      'Preferred Maintenance Date': formatDate(
+        request?.preferredMaintenanceDate ?? 'N/A',
+      ),
+      'Issue Description': request?.issueDescription ?? 'N/A',
     };
   }
 
@@ -406,7 +783,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      LogisticsRequestDetailsTabRoute(
+      RequestForVehicleMaintenanceDetailsTabRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -430,7 +807,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void openNewRequestForm() {
     KAppX.router.push(
-      LogisticsVehicleRequestRoute(
+      RequestForVehicleMaintenanceNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -439,131 +816,85 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final logisticsRequestVehicleInstanceInstance = RequestAVehicleRepository();
+  final vehicleMaintenanceInstance = VehicleMaintenanceRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
-  List<DynamicField> get logisticsVehicleRequestFields => [
-    /// ================= REQUEST TYPE =================
+  List<DynamicField> get vehicleMaintenanceFields => [
+    /// VEHICLE NUMBER
     DynamicField(
-      name: 'request_type',
-      label: 'Request Type',
+      name: 'vehicle_number',
+      label: 'Vehicle Number / ID',
+      type: FieldType.select,
+      required: true,
+      placeholder: 'Select Vehicle',
+      options: state.vehicles.map((vehicle) {
+        return DropdownOption(
+          value: vehicle['vehicleNumber'].toString(),
+          label: vehicle['vehicleNumber'].toString(),
+        );
+      }).toList(),
+    ),
+    // DropdownOption(
+    //   value: '43/88',
+    //   label: '43/88 - Toyota Fortuner 4x4 (2024)',
+    // ),
+    // DropdownOption(
+    //   value: '47/88',
+    //   label: '47/88 - Toyota Fortuner 4x4 (2024)',
+    // ),
+    // DropdownOption(
+    //   value: '42/88',
+    //   label: '42/88 - Toyota Fortuner 4x4 (2024)',
+    // ),
+    // DropdownOption(
+    //   value: '45/88',
+    //   label: '45/88 - Toyota Fortuner 4x4 (2024)',
+    // ),
+    //   ],
+    // ),
+
+    /// TYPE OF MAINTENANCE
+    DynamicField(
+      name: 'maintenance_type',
+      label: 'Type of Maintenance Required',
       type: FieldType.radio,
       required: true,
-      initialValue: 'Daily',
-      options: ['Daily', 'Emergency'],
+      options: ['Preventive', 'Corrective', 'Emergency'],
     ),
 
-    /// ================= VEHICLE REQUIRED FOR =================
+    /// PREFERRED MAINTENANCE DATE
     DynamicField(
-      name: 'vehicle_required_for',
-      label: 'Vehicle Required For',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: 'Conferences', label: 'Conferences'),
-        DropdownOption(
-          value: 'Celebrations and Official Meetings',
-          label: 'Celebrations and Official Meetings',
-        ),
-        DropdownOption(value: 'others', label: 'Others'),
-      ],
-    ),
-
-    /// ================= VEHICLE REQUIRED LOCATION =================
-    DynamicField(
-      name: 'vehicle_required_location',
-      label: 'Vehicle Required Location',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: 'Inside Muscat', label: 'Inside Muscat'),
-        DropdownOption(value: 'Outside Muscat', label: 'Outside Muscat'),
-      ],
-    ),
-
-    /// ================= REQUEST TITLE =================
-    DynamicField(
-      name: 'request_title',
-      label: 'Request Title',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter request title (min 5, max 250 characters)',
-    ),
-
-    /// ================= TYPE OF REQUEST =================
-    DynamicField(
-      name: 'type_of_request',
-      label: 'Type of Request',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: 'new_request', label: 'New Request'),
-        DropdownOption(
-          value: 'Extension of Previous Request',
-          label: 'Extension of Previous Request',
-        ),
-      ],
-    ),
-
-    /// ================= PURPOSE OF TRAVEL =================
-    DynamicField(
-      name: 'purpose_of_travel',
-      label: 'Purpose of Travel',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: 'Site Visit', label: 'Site Visit'),
-        DropdownOption(value: 'Airport Duty', label: 'Airport Duty'),
-        DropdownOption(value: 'Official Meeting', label: 'Official Meeting'),
-        DropdownOption(value: 'Other', label: 'Other'),
-      ],
-    ),
-
-    /// ================= TYPE OF VEHICLE REQUIRED =================
-    DynamicField(
-      name: 'type_of_vehicle_required',
-      label: 'Type of Vehicle Required',
-      type: FieldType.select,
-      required: true,
-      options: const [
-        DropdownOption(value: 'Light vehicle', label: 'Light Vehicle'),
-        DropdownOption(value: 'Heavy vehicle', label: 'Heavy Vehicle'),
-      ],
-    ),
-
-    /// ================= TRAVEL DATE =================
-    DynamicField(
-      name: 'travel_date',
-      label: 'Travel Date',
+      name: 'preferred_maintenance_date',
+      label: 'Preferred Maintenance Date',
       type: FieldType.date,
       required: true,
     ),
 
-    /// ================= TRAVEL TIME =================
+    /// REQUEST SUBMISSION DATE
     DynamicField(
-      name: 'travel_time',
-      label: 'Travel Time',
-      type: FieldType.time,
+      name: 'request_submission_date',
+      label: 'Request Submission Date',
+      initialValue: DateTime.now().toString().split(' ').first,
+      type: FieldType.date,
       required: true,
+      disabled: true,
     ),
 
-    /// ================= DESCRIPTION =================
+    /// ISSUE DESCRIPTION
     DynamicField(
-      name: 'description',
-      label: 'Description',
+      name: 'issue_description',
+      label: 'Issue Description',
       type: FieldType.text,
-      required: false,
-      // hintText: 'Write Here...',
+      required: true,
+      placeholder: 'Write Here... (min 10 characters, max 255 characters)',
     ),
 
-    /// ================= ATTACHMENT =================
+    /// ATTACH FILE
     DynamicField(
-      name: 'attachment',
+      name: 'attachments',
       label: 'Attach File',
       type: FieldType.file,
       required: false,
     ),
-
-    /// ================= REQUEST FOR =================
   ];
 
   /// ========================= API CALLS =========================
@@ -571,12 +902,11 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await logisticsRequestVehicleInstanceInstance
-          .getRequestsById(
-            id: id,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final requests = await vehicleMaintenanceInstance.getRequestsById(
+        id: id,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       if (requests != null) {
         state = state.copyWith(requestDetails: requests, isLoading: false);
@@ -606,12 +936,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await logisticsRequestVehicleInstanceInstance
-          .getchatById(
-            id: id,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final requests = await vehicleMaintenanceInstance.getchatById(
+        id: id,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
       if (requests != null) {
         final chats = requests.reversed.toList();
         state = state.copyWith(chatById: chats);
@@ -626,12 +955,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await logisticsRequestVehicleInstanceInstance
-          .getAttachmentsById(
-            id: id,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final attachments = await vehicleMaintenanceInstance.getAttachmentsById(
+        id: id,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
       }
@@ -646,7 +974,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await logisticsRequestVehicleInstanceInstance.getKpiData(
+      final kpis = await vehicleMaintenanceInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -664,7 +992,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await logisticsRequestVehicleInstanceInstance
+      final data = await vehicleMaintenanceInstance
           .getApprovalTrendBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -684,7 +1012,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await logisticsRequestVehicleInstanceInstance
+      final statusBreakdown = await vehicleMaintenanceInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -708,7 +1036,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await logisticsRequestVehicleInstanceInstance
+      final statusBreakdown = await vehicleMaintenanceInstance
           .getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -732,12 +1060,11 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await logisticsRequestVehicleInstanceInstance
-          .getTrendBreakdownData(
-            period: period,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final data = await vehicleMaintenanceInstance.getTrendBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       if (data != null) {
         state = state.copyWith(trendData: data, isLoading: false);
@@ -752,11 +1079,10 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await logisticsRequestVehicleInstanceInstance
-          .getApprovalKpiData(
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final kpis = await vehicleMaintenanceInstance.getApprovalKpiData(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       if (kpis != null) {
         state = state.copyWith(approvalKpiData: kpis, isLoading: false);
@@ -780,15 +1106,14 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(requestData: [], isLoading: false);
       }
 
-      final requests = await logisticsRequestVehicleInstanceInstance
-          .getRequests(
-            offset: 1,
-            limit: 8,
-            searchText: searchText,
-            status: status,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final requests = await vehicleMaintenanceInstance.getRequests(
+        offset: 1,
+        limit: 8,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       // No merging needed
       state = state.copyWith(requestData: requests);
@@ -810,16 +1135,15 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await logisticsRequestVehicleInstanceInstance
-          .getActionItems(
-            offset: 1,
-            limit: 8,
-            searchText: searchText,
-            status: status,
+      final items = await vehicleMaintenanceInstance.getActionItems(
+        offset: 1,
+        limit: 8,
+        searchText: searchText,
+        status: status,
 
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       // No merging needed
       state = state.copyWith(actionItems: items, isLoading: false);
@@ -868,7 +1192,7 @@ class _VSController extends StateNotifier<_ViewState> {
               ? ApprovalStatus.approved
               : ApprovalStatus.rejected;
 
-          await onReject(
+          await onApproveReject(
             approverId,
             requestId,
             comment.trim(), // always safe
@@ -907,7 +1231,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await logisticsRequestVehicleInstanceInstance
+        final uploadedFiles = await vehicleMaintenanceInstance
             .uploadAttachments(state.attachments);
 
         if (uploadedFiles.isEmpty) {
@@ -938,10 +1262,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await logisticsRequestVehicleInstanceInstance.sendAttachment(
-          payload,
-          requestId,
-        );
+        await vehicleMaintenanceInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -962,10 +1283,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await logisticsRequestVehicleInstanceInstance.sendChat(
-          payload,
-          requestId,
-        );
+        await vehicleMaintenanceInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -997,7 +1315,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await logisticsRequestVehicleInstanceInstance.onApprove(payload);
+      await vehicleMaintenanceInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       fetchactionItems();
@@ -1016,33 +1334,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return;
   }
 
-  Future<void> onApprove(Map<String, dynamic> payload) async {
-    try {
-      state = state.copyWith(isLoading: true);
-
-      // 1️⃣ Upload files
-
-      // 2️⃣ Build payload
-
-      debugPrint("✅ Final Payload: $payload");
-
-      // 3️⃣ Send request
-      await logisticsRequestVehicleInstanceInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
-      KAppX.router.pop();
-      // if (decisionNo != null) {
-      KAppX.router.pop();
-      // }
-      await fetchactionItems();
-      await fetchRequests();
-    } catch (e) {
-      debugPrint('❌ Error submitting request: $e');
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
-  }
-
-  Future<void> onReject(
+  Future<void> onApproveReject(
     int approverId,
     int requestId,
     String comment,
@@ -1068,7 +1360,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await logisticsRequestVehicleInstanceInstance.onApprove(payload);
+      await vehicleMaintenanceInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
@@ -1094,7 +1386,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await logisticsRequestVehicleInstanceInstance.onAllocateVehicle(
+      await vehicleMaintenanceInstance.onAllocateVehicle(
         payload,
         state.requestDetails.request?.id ?? 0,
       );
@@ -1111,158 +1403,6 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  void showApproveForm(BuildContext context, int approverId) {
-    KAppX.extendedRouter.dialog.showKDialog(
-      barrierDismissible: false,
-      builder: (_) {
-        return Dialog(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 24,
-          ),
-          child: Container(
-            width: 650,
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.85,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                /// HEADER
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
-                  child: Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          'Approve Vehicle Request',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-
-                      InkWell(
-                        borderRadius: BorderRadius.circular(30),
-                        onTap: () => KAppX.router.pop(),
-                        child: const Padding(
-                          padding: EdgeInsets.all(6),
-                          child: Icon(Icons.close),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const Divider(height: 1),
-
-                /// BODY
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: 24,
-                      right: 24,
-                      top: 20,
-                      bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-                    ),
-                    child: ApproveRequestDialogWidget(
-                      service: service,
-                      subService: subService,
-                      onSuccess: () {},
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void showVehicleAllocateForm(BuildContext context, int approverId) {
-    KAppX.extendedRouter.dialog.showKDialog(
-      barrierDismissible: false,
-      builder: (_) {
-        return Dialog(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 24,
-          ),
-          child: Container(
-            width: 650,
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.85,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                /// HEADER
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
-                  child: Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          'Allocate Vehicle',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-
-                      InkWell(
-                        borderRadius: BorderRadius.circular(30),
-                        onTap: () => KAppX.router.pop(),
-                        child: const Padding(
-                          padding: EdgeInsets.all(6),
-                          child: Icon(Icons.close),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const Divider(height: 1),
-
-                /// BODY
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: 24,
-                      right: 24,
-                      top: 20,
-                      bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-                    ),
-                    child: AllocateVehicleDialogWidget(
-                      service: service,
-                      subService: subService,
-                      onSuccess: () {},
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Future<void> onSendInProgress(int approverId, int requestId) async {
     try {
       state = state.copyWith(isLoading: true);
@@ -1275,7 +1415,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await logisticsRequestVehicleInstanceInstance.onSendInProgress(payload);
+      // await vehicleMaintenanceInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1425,7 +1565,7 @@ class _VSController extends StateNotifier<_ViewState> {
       return ActionButtonsType.assignReject;
     } else if (level != null) {
       debugPrint('this user can approve and reject');
-      return ActionButtonsType.approveRejectAllocateVehicle;
+      return ActionButtonsType.approveReject;
     }
 
     return ActionButtonsType.none;
@@ -1646,30 +1786,19 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ⭐ SERVICE INFO
       "service_id": serviceId,
+
       "sub_service_id": subServiceId,
 
-      /// ⭐ REQUEST DETAILS
-      "category": values['request_type'] ?? "",
+      /// ⭐ VEHICLE MAINTENANCE DETAILS
+      "vehicle_number": values['vehicle_number'] ?? "",
 
-      "vehicle_required_for": values['vehicle_required_for'] ?? "",
+      "type_of_maintenance_required": values['maintenance_type'] ?? "",
 
-      "other_vehicle_required_for": values['other_vehicle_required_for'] ?? "",
+      "preferred_maintenance_date": values['preferred_maintenance_date'] ?? "",
 
-      "vehicle_required_location": values['vehicle_required_location'] ?? "",
+      "request_submission_date": values['request_submission_date'] ?? "",
 
-      "title": values['request_title'] ?? "",
-
-      "purpose_of_travel": values['purpose_of_travel'] ?? "",
-
-      "type_of_vehicle_required": values['type_of_vehicle_required'] ?? "",
-
-      "date_of_travel": values['travel_date'] ?? "",
-
-      "time_of_travel": values['travel_time'] ?? "",
-
-      "type_of_request": values['type_of_request'] ?? "",
-
-      "description": values['description'] ?? "",
+      "issue_description": values['issue_description'] ?? "",
 
       /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
@@ -1693,8 +1822,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await logisticsRequestVehicleInstanceInstance
-          .logisticsRequestVehicleCreateRequest(payload);
+      final response = await vehicleMaintenanceInstance
+          .vehicleMaintenanceCreateRequest(payload);
 
       if (response['status'] == 'success') {
         _refreshDashboard();

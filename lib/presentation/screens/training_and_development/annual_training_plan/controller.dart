@@ -319,7 +319,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, String> buildRequestCardData(
     TrainingandDevelopmentRequestModel item,
   ) {
-    final approverMap = resolveApproverMap(item.approvalDetails);
+    final approverMap = resolveApproverMap(item.base?.approvalDetails);
 
     return {
       'Request Id': item.id?.toString() ?? '-',

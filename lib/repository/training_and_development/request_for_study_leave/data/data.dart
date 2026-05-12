@@ -8,9 +8,13 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/country_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/courses_participents_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/request_training_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/study_leave_model.dart';
 import 'package:code_setup/repository/training_and_development/request_for_study_leave/domain/domain.dart';
+import 'package:code_setup/repository/training_and_development/request_training/domain/domain.dart';
 import 'package:code_setup/utils/api_end_point.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
@@ -60,34 +64,43 @@ class RequestForStudyLeaveRepositoryImple
   }
 
   @override
-  Future<Map<String, dynamic>> sendRequestForStudyLeave(
+  Future<Map<String, dynamic>> requestForStudyLeaveCreateRequest(
     Map<String, dynamic> payload,
   ) async {
     final client = await KAppX.network.secureClient();
     final String url = ApiEndPoint.studyLeaveSendRequest;
-
     try {
-      if (client == null) {
-        throw ApiException('Client is null — cannot send Study Leave request');
-      }
+      if (client != null) {
+        final response = await client.post(url, data: payload);
 
-      final response = await client.post(url, data: payload);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        ShowFlutterToast().showFlutterToastSuccess(
-          response.data['message'] ?? 'Request sent successfully',
-        );
-        return response.data as Map<String, dynamic>; // ✅ RETURN HERE
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          debugPrint('✅ New Study Leave request sent successfully');
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          return response.data as Map<String, dynamic>;
+        } else {
+          ShowFlutterToast().showFlutterToastFailure(
+            response.data['message'] ?? 'Failed to send Study Leave request',
+          );
+          debugPrint(
+            '⚠️ Failed to send Study Leave request: ${response.statusCode}',
+          );
+          return response.data as Map<String, dynamic>;
+        }
       } else {
-        ShowFlutterToast().showFlutterToastFailure(
-          response.data['message'] ?? 'Failed to send request',
-        );
-        return response.data as Map<String, dynamic>; // ✅ RETURN HERE
+        debugPrint('❌ Client is null — cannot send Study Leave request');
+        return {
+          'status': 'error',
+          'message': 'Client not initialized. Please try again later.',
+        };
       }
     } on DioException catch (e) {
+      log('caught error');
       final message = e.response?.data['message'] ?? e.message;
       throw ApiException(message);
     } catch (e) {
+      log('error SecurityAwareness request $e');
       throw ApiException(e.toString());
     }
   }
@@ -188,30 +201,30 @@ class RequestForStudyLeaveRepositoryImple
   }
 
   @override
-  Future<LocationListResponseModel> getLocations() async {
-    final String url = ApiEndPoint.studyLeaveLocations;
+  Future<List<AttachmentModel>> getAttachmentsById(int id) async {
     final client = await KAppX.network.secureClient();
 
-    if (client == null) {
-      throw ApiException("Unable to create secure client");
-    }
-
     try {
-      final response = await client.get(url);
+      if (client != null) {
+        final url = ApiEndPoint.studyLeaveAttachmentsById(id);
+        final response = await client.get(url);
 
-      if (response.statusCode == 200) {
-        final data = response.data as Map<String, dynamic>;
-        return LocationListResponseModel.fromJson(data);
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = AttachmentByIdResponseModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
       } else {
-        final errorMessage =
-            response.data?['message'] ?? 'Unexpected error occurred';
-        throw ApiException(errorMessage);
+        return [];
       }
-    } on DioException catch (error) {
-      final message = error.response?.data?['message'] ?? error.message;
-      throw ApiException(message);
     } catch (e) {
-      throw ApiException(e.toString());
+      throw Exception("Error fetching attachmentById details: $e");
     }
   }
 
@@ -333,7 +346,11 @@ class RequestForStudyLeaveRepositoryImple
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {"year": period};
+        final queryParams = {
+          "year": period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
 
         /// Remove null values
         queryParams.removeWhere((key, value) => value == null);
@@ -447,7 +464,36 @@ class RequestForStudyLeaveRepositoryImple
   }
 
   @override
-  Future<List<TrainingandDevelopmentRequestModel>> getRequests({
+  Future<List<CountryModel>> getCountryList() async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.countryList;
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          final List<dynamic> list = data['data'];
+
+          return list
+              .map((e) => CountryModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception(
+            'Failed to fetch country list: ${response.statusCode}',
+          );
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching country list: $e");
+    }
+  }
+
+  @override
+  Future<List<RequestStudyLeaveModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -484,9 +530,8 @@ class RequestForStudyLeaveRepositoryImple
 
           return list
               .map(
-                (e) => TrainingandDevelopmentRequestModel.fromJson(
-                  e as Map<String, dynamic>,
-                ),
+                (e) =>
+                    RequestStudyLeaveModel.fromJson(e as Map<String, dynamic>),
               )
               .toList();
         } else {
@@ -505,7 +550,7 @@ class RequestForStudyLeaveRepositoryImple
   }
 
   @override
-  Future<List<TrainingandDevelopmentRequestModel>> getActionItems({
+  Future<List<RequestStudyLeaveModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -546,7 +591,7 @@ class RequestForStudyLeaveRepositoryImple
           /// Parse each Action Item
           final actionItems = list
               .map(
-                (item) => TrainingandDevelopmentRequestModel.fromJson(
+                (item) => RequestStudyLeaveModel.fromJson(
                   item as Map<String, dynamic>,
                 ),
               )
@@ -693,34 +738,6 @@ class RequestForStudyLeaveRepositoryImple
       }
     } catch (e) {
       throw Exception("Error fetching chatById details: $e");
-    }
-  }
-
-  @override
-  Future<List<AttachmentModel>> getAttachmentsById(int id) async {
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final url = ApiEndPoint.studyLeaveAttachmentsById(id);
-        final response = await client.get(url);
-
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> json = response.data;
-
-          /// Convert JSON → Model
-          final result = AttachmentByIdResponseModel.fromJson(json);
-
-          /// Return only `data` (so UI can access sub-objects)
-          return result.data;
-        } else {
-          throw Exception('Failed: ${response.statusCode}');
-        }
-      } else {
-        return [];
-      }
-    } catch (e) {
-      throw Exception("Error fetching attachmentById details: $e");
     }
   }
 

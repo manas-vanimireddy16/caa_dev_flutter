@@ -54,6 +54,10 @@ class LogisticsHomePage extends ConsumerWidget {
           service: Service(),
           subService: SubService(),
         ),
+        RequestForVehicleMaintenanceRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
         LogisticsForeignersRequestPortalRoute(),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder

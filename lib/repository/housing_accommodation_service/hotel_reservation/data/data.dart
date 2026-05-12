@@ -6,6 +6,7 @@ import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/hotel_reservation/models/request_data.dart';
 import 'package:code_setup/presentation/screens/security_access/models/request_model.dart';
 import 'package:code_setup/repository/housing_accommodation_service/hotel_reservation/domain/domain.dart';
@@ -18,37 +19,34 @@ import 'package:http_parser/http_parser.dart';
 
 class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   @override
-  Future<void> sendHotelReservationRequest(Map<String, dynamic> payload) async {
+  Future<Map<String, dynamic>> hotelReservationCreateRequest(
+    Map<String, dynamic> payload,
+  ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.sendHotelReservationRequest;
-    try {
-      if (client != null) {
-        final response = await client.post(url, data: payload);
+    final String url = ApiEndPoint.hotelReservationSendRequest;
 
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ New Hotel Reservation successfully');
-          ShowFlutterToast().showFlutterToastSuccess(
-            response.data['message'] ?? 'Request sent successfully',
-          );
-        } else {
-          ShowFlutterToast().showFlutterToastFailure(
-            response.data['message'] ??
-                'Failed to send Hotel Reservation request',
-          );
-          debugPrint(
-            '⚠️ Failed to send Hotel Reservation request: ${response.statusCode}',
-          );
-        }
+    try {
+      if (client == null) {
+        throw ApiException('Client is null — cannot send Study Leave request');
+      }
+
+      final response = await client.post(url, data: payload);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ShowFlutterToast().showFlutterToastSuccess(
+          response.data['message'] ?? 'Request sent successfully',
+        );
+        return response.data as Map<String, dynamic>; // ✅ RETURN HERE
       } else {
-        debugPrint('❌ Client is null — cannot send Hotel Reservation request');
+        ShowFlutterToast().showFlutterToastFailure(
+          response.data['message'] ?? 'Failed to send request',
+        );
+        return response.data as Map<String, dynamic>; // ✅ RETURN HERE
       }
     } on DioException catch (e) {
-      log('caught error');
       final message = e.response?.data['message'] ?? e.message;
       throw ApiException(message);
-      throw e;
     } catch (e) {
-      log('error Hotel Reservation Request $e');
       throw ApiException(e.toString());
     }
   }
@@ -123,11 +121,11 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
             final fileData = files.first;
 
             // ✅ Extract clean document ID (no /download/)
-            final documentId = fileData['documentId'];
+            // final documentId = fileData['documentId'];
 
             uploadedResults.add({
               'file_name': fileData['originalName'] ?? fileName,
-              'file_url': documentId, // only documentId
+              'file_url': fileData['downloadUrl'],
               'file_type': extension,
               'file_size': fileData['size'] ?? fileSize,
             });
@@ -149,13 +147,17 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<KPIResponse?> getKpiData() async {
-    String url = ApiEndPoint.hotelReservationKpiCard;
+  Future<KPIResponse?> getKpiData(int serviceId, int subServiceId) async {
+    String url = ApiEndPoint.hotelReservationKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
-        final response = await client.get(url);
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
           final data = response.data as Map<String, dynamic>;
@@ -178,11 +180,138 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<StatusBreakdownModel> getStatusBreakdownData(String period) async {
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    String url = ApiEndPoint.hotelReservationApprovalKpiCards;
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return KPIResponse.fromJson(data);
+        } else {
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
+        }
+      }
+      return null;
+    } on DioException catch (error) {
+      log('caught dio error');
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      log('error fetching KPI data $e');
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<StatusBreakdownModel> getApprovalStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {'time_period': period};
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        queryParams.removeWhere((key, value) => value == null);
+        final response = await client.get(
+          ApiEndPoint.hotelReservationApprovalStatusBreakdown,
+          queryParameters: queryParams,
+        );
+
+        if (response.statusCode == 200 && response.data != null) {
+          final data = Map<String, dynamic>.from(response.data);
+          return StatusBreakdownModel.fromJson(data);
+        } else {
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
+        }
+      }
+      throw ApiException('Client is null');
+    } on DioException catch (error) {
+      log('caught error');
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      log('error fetching status breakdown $e');
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<TrendBreakdownModel> getApprovalTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    try {
+      final client = await KAppX.network.secureClient();
+      if (client != null) {
+        final queryParams = {
+          "year": period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+
+        /// Remove null values
+        queryParams.removeWhere((key, value) => value == null);
+
+        final response = await client.get(
+          ApiEndPoint.hotelReservationApprovalTrendBreakdown,
+          queryParameters: queryParams,
+        );
+
+        if (response.statusCode == 200 && response.data != null) {
+          final data = Map<String, dynamic>.from(response.data);
+          return TrendBreakdownModel.fromJson(data);
+        } else {
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
+        }
+      }
+      throw ApiException('Client is null');
+    } on DioException catch (error) {
+      log('caught error');
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      log('error fetching trend breakdown $e');
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<StatusBreakdownModel> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    try {
+      final client = await KAppX.network.secureClient();
+      if (client != null) {
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
           ApiEndPoint.hotelReservationStatusBreakdown,
@@ -210,11 +339,19 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period) async {
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {"year": period};
+        final queryParams = {
+          "year": period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
 
         /// Remove null values
         queryParams.removeWhere((key, value) => value == null);
@@ -245,111 +382,13 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<KPIResponse?> getApprovalKpiData() async {
-    String url = ApiEndPoint.securityAccessKpi;
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final response = await client.get(url);
-
-        if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          return KPIResponse.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      return null;
-    } on DioException catch (error) {
-      log('caught dio error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching KPI data $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<StatusBreakdownModel> getApprovalStatusBreakdownData(
-    String period,
-  ) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {'time_period': period};
-        queryParams.removeWhere((key, value) => value == null);
-        final response = await client.get(
-          ApiEndPoint.securityAccessStatusBreakDown,
-          queryParameters: queryParams,
-        );
-
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-          return StatusBreakdownModel.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      throw ApiException('Client is null');
-    } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching status breakdown $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(
-    String period,
-  ) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {"year": period};
-
-        /// Remove null values
-        queryParams.removeWhere((key, value) => value == null);
-
-        final response = await client.get(
-          ApiEndPoint.securityAccessTrendBreakDown,
-          queryParameters: queryParams,
-        );
-
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-          return TrendBreakdownModel.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      throw ApiException('Client is null');
-    } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching trend breakdown $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
   Future<List<HotelReservationRequestModel>> getRequests({
     required int offset,
     required int limit,
-    String sortBy = 'created_at',
-    String sortOrder = 'DESC',
+    required int serviceId,
+    required int subServiceId,
+    // String sortBy = 'created_at',
+    // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
     String searchText = '',
   }) async {
@@ -357,21 +396,22 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
 
     try {
       if (client != null) {
-        final queryParams = {
-          'offset': offset.toString(),
-          'limit': '20',
-          'sort_by': sortBy,
-          'sort_order': sortOrder,
+        final Map<String, dynamic> queryParams = {
+          'offset': offset,
+          'limit': limit,
+          // 'service_id': serviceId,
+          // 'sub_service_id': subServiceId,
         };
-        if (status.isNotEmpty) {
-          queryParams['status'] = status;
-        }
 
         if (searchText.isNotEmpty) {
           queryParams['search_text'] = searchText;
         }
-        final url = ApiEndPoint.hotelReservationRequests;
-        final response = await client.get(url);
+
+        if (status.isNotEmpty) {
+          queryParams['status'] = status;
+        }
+        final url = ApiEndPoint.hotelReservationGetRequests;
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
           final data = response.data as Map<String, dynamic>;
@@ -385,13 +425,15 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
               )
               .toList();
         } else {
-          throw Exception('Failed to fetch services: ${response.statusCode}');
+          throw Exception(
+            'Failed to fetch Accommodation Muscat request: ${response.statusCode}',
+          );
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching services: $e");
+      throw Exception("Error fetching Accommodation Muscat request: $e");
     }
   }
 
@@ -399,6 +441,8 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   Future<List<HotelReservationRequestModel>> getActionItems({
     required int offset,
     required int limit,
+    required int serviceId,
+    required int subServiceId,
     String status = '',
     String searchText = '',
   }) async {
@@ -410,6 +454,8 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
 
         if (status.isNotEmpty) {
@@ -421,7 +467,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
         }
 
         final response = await client.get(
-          ApiEndPoint.hotelReservationApprovalActionItems,
+          ApiEndPoint.hotelReservationGetActionItems,
           queryParameters: queryParams,
         );
 
@@ -450,45 +496,18 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
       /// If client is null
       return [];
     } on DioException catch (error) {
-      final message = error.response?.data['message'] ?? error.message;
+      final message =
+          '${error.response?.data['message']} Accommodation Muscat request';
       throw ApiException(message);
     } catch (e) {
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<RequestDetailData?> getRequestsById(int id) async {
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final url = '${ApiEndPoint.hotelReservationRequestById(id)}';
-        final response = await client.get(url);
-
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> json = response.data;
-
-          /// Convert JSON → Model
-          final result = RequestDetailModel.fromJson(json);
-
-          /// Return only `data` (so UI can access sub-objects)
-          return result.data;
-        } else {
-          throw Exception('Failed: ${response.statusCode}');
-        }
-      } else {
-        return null;
-      }
-    } catch (e) {
-      throw Exception("Error fetching request details: $e");
+      throw ApiException('${e.toString()} Accommodation Muscat request');
     }
   }
 
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.cancelHousingContractSendChatById(id);
+    final String url = ApiEndPoint.hotelReservationSendChatById(id);
 
     try {
       if (client != null) {
@@ -521,7 +540,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   @override
   Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.cancelHousingContractSendAttachmentById(id);
+    final String url = ApiEndPoint.hotelReservationSendAttachmentById(id);
 
     try {
       if (client != null) {
@@ -552,9 +571,9 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<void> onClose(Map<String, dynamic> payload) async {
+  Future<void> onApprove(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.securityAccessApproval;
+    final String url = ApiEndPoint.hotelReservationApprove;
 
     try {
       if (client != null) {
@@ -584,27 +603,94 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<List<DepartmentModel>> getDepartments() async {
+  Future<List<ChatMessageModel>> getchatById(int id) async {
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.departments;
+        final url = ApiEndPoint.hotelReservationChatsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          return (data['data'] as List)
-              .map((e) => DepartmentModel.fromJson(e as Map<String, dynamic>))
-              .toList();
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = ChatByIdResponseModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
         } else {
-          throw Exception('Failed with status code: ${response.statusCode}');
+          throw Exception('Failed: ${response.statusCode}');
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception('Error in getActionItems: $e');
+      throw Exception("Error fetching chatById details: $e");
+    }
+  }
+
+  @override
+  Future<List<AttachmentModel>> getAttachmentsById(int id) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.hotelReservationAttachmentsById(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = AttachmentByIdResponseModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching attachmentById details: $e");
+    }
+  }
+
+  @override
+  Future<RequestDetailData?> getRequestsById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          // 'service_id': serviceId,
+          // 'sub_service_id': subServiceId,
+        };
+        final url = ApiEndPoint.hotelReservationRequestById(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = RequestDetailModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception("Error fetching request details: $e");
     }
   }
 }

@@ -21,7 +21,7 @@ class HotelReservationDashboardRepoistoryImple
     implements HotelReservationDashboardRepoistory {
   @override
   Future<KPIResponse?> getKpiData() async {
-    String url = ApiEndPoint.hotelReservationKpiCard;
+    String url = ApiEndPoint.hotelReservationApprovalKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -170,7 +170,7 @@ class HotelReservationDashboardRepoistoryImple
         if (searchText.isNotEmpty) {
           queryParams['search_text'] = searchText;
         }
-        final url = ApiEndPoint.hotelReservationRequests;
+        final url = ApiEndPoint.hotelReservationGetRequests;
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -221,7 +221,7 @@ class HotelReservationDashboardRepoistoryImple
         }
 
         final response = await client.get(
-          ApiEndPoint.hotelReservationApprovalActionItems,
+          ApiEndPoint.hotelReservationGetActionItems,
           queryParameters: queryParams,
         );
 

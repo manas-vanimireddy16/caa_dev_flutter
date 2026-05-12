@@ -16,9 +16,7 @@ import 'package:code_setup/presentation/screens/information_security_services/mo
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart'
     hide ChatMessageModel;
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
-import 'package:code_setup/repository/aviation_security_facilitation/airport_entry/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/assignment_decision/domain/domain.dart';
-import 'package:code_setup/repository/information_security_services/request_to_organize_security_awareness/domain/domain.dart';
 import 'package:code_setup/utils/api_end_point.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';

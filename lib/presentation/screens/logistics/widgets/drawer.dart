@@ -25,11 +25,11 @@ class _DrawerMenu extends ConsumerWidget {
 
     /// ✅ DRAWER ITEMS
     final items = [
-      DrawerItemData(
-        index: 0,
-        icon: KImageProvider(image: KIcons.dashboard),
-        label: 'Dashboard',
-      ),
+      // DrawerItemData(
+      //   index: 0,
+      //   icon: KImageProvider(image: KIcons.dashboard),
+      //   label: 'Dashboard',
+      // ),
       DrawerItemData(
         index: 1,
         icon: KImageProvider(image: KIcons.dashboard),
@@ -38,13 +38,18 @@ class _DrawerMenu extends ConsumerWidget {
       DrawerItemData(
         index: 2,
         icon: KImageProvider(image: KIcons.dashboard),
-        label: 'Request Tender Analysis Service',
+        label: 'Request for Vehicle Maintenance',
       ),
-      DrawerItemData(
-        index: 3,
-        icon: KImageProvider(image: KIcons.dashboard),
-        label: 'Request Contract Service',
-      ),
+      // DrawerItemData(
+      //   index: 3,
+      //   icon: KImageProvider(image: KIcons.dashboard),
+      //   label: 'Request Contract Service',
+      // ),
+      // DrawerItemData(
+      //   index: 4,
+      //   icon: KImageProvider(image: KIcons.dashboard),
+      //   label: 'Request for Vehicle Maintenance',
+      // ),
     ];
 
     return Column(

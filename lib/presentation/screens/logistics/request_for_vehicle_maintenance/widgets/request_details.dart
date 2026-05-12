@@ -147,20 +147,13 @@ class _RequestForVehicleMaintenanceDetailsTabScreenState
                         subServiceId: widget.subServiceId,
                       );
                     },
-                    onAssign: () async {
-                      controller.showVehicleAllocateForm(
-                        context,
-                        approverId ?? 0,
-                      );
-                    },
 
                     onApprove: () async {
-                      controller.showApproveForm(context, approverId ?? 0);
-                      // controller.onApprove(
-                      //   approverId ?? 0,
-                      //   requestId ?? 0,
-                      //   'Approved',
-                      // );
+                      controller.showApprovalCommentDialog(
+                        type: ApprovalDialogType.approve,
+                        approverId: approverId ?? 0,
+                        requestId: requestId ?? 0,
+                      );
                     },
                     onReject: () async {
                       controller.showApprovalCommentDialog(

@@ -519,6 +519,10 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
         values['duration_of_stay'] = '';
       }
     }
+    if (key == 'attendees') {
+      final attendees = values['attendees'];
+      values['number_of_attendees'] = attendees.length.toString();
+    }
   }
 
   /// ------------------------------------------------

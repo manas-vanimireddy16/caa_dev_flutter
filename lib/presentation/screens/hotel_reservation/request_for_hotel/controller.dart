@@ -59,9 +59,22 @@ class _ViewState {
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final bool isButtonDisabled;
+
+  final List<ChatMessageModel> chatById;
+  final List<AttachmentModel> attachmentsById;
   final List<String> months = const [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
 
   /// FORM KEY
@@ -90,6 +103,8 @@ class _ViewState {
     required this.requestDetails,
     required this.requestDetailTab,
     required this.isButtonDisabled,
+    required this.chatById,
+    required this.attachmentsById,
   });
 
   _ViewState.init()
@@ -116,6 +131,8 @@ class _ViewState {
         requestDetails: RequestDetailData(),
         requestDetailTab: 0,
         isButtonDisabled: false,
+        chatById: [],
+        attachmentsById: [],
       );
 
   _ViewState copyWith({
@@ -141,6 +158,8 @@ class _ViewState {
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     bool? isButtonDisabled,
+    List<ChatMessageModel>? chatById,
+    List<AttachmentModel>? attachmentsById,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -166,6 +185,8 @@ class _ViewState {
       requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
+      chatById: chatById ?? this.chatById,
+      attachmentsById: attachmentsById ?? this.attachmentsById,
     );
   }
 }
@@ -173,45 +194,27 @@ class _ViewState {
 class _VSController extends StateNotifier<_ViewState> {
   final Service service;
   final SubService subService;
+  late final _VSControllerParams params;
   _VSController({required this.service, required this.subService})
-    : super(_ViewState.init());
+    : super(_ViewState.init()) {
+    params = _VSControllerParams(service: service, subService: subService);
+  }
 
-  late TextEditingController hotelNameController;
-  late TextEditingController hotelPriceController;
-  late TextEditingController noOfGuestsController;
-  late TextEditingController checkInController;
-  late TextEditingController checkOutController;
-  late TextEditingController checkInTimeController;
-  late TextEditingController checkOutTimeController;
-  late TextEditingController descriptionController;
-  late TextEditingController chatController;
-  late TextEditingController searchController;
-  
   Timer? _searchDebounce;
+
+  late TextEditingController chatController;
+  late TextEditingController titleController;
+  late TextEditingController searchController;
+
   void initState() {
-    hotelNameController = TextEditingController();
-    hotelPriceController = TextEditingController();
-    noOfGuestsController = TextEditingController();
-    checkInController = TextEditingController();
-    checkOutController = TextEditingController();
-    descriptionController = TextEditingController();
-    checkInTimeController = TextEditingController();
-    checkOutTimeController = TextEditingController();
     chatController = TextEditingController();
+    titleController = TextEditingController();
     searchController = TextEditingController();
     fetchKpi();
-    fetchStatusBreakdown('monthly');
-    fetchTrendBreakDown('2025');
-    fetchApprovalStatusBreakdown('monthly');
-    fetchApprovalTrendBreakDown('2025');
-    fetchApprovalKpi();
     fetchRequests();
-    fetchActionItems();
-    // fetchActivityFeed();
-    // fetchDashboardMyRequests();
-    // fetchAllMyRequests();
-    // fetchStatusBreakDown('weekly');
-    // fetchTrendBreakDown('2025');
+    fetchStatusBreakdown('monthly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+    // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
   int _searchVersion = 0;
@@ -287,119 +290,6 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  void updateButtonDisabledFromApprovals(List<ApprovalDetailModel> approvals) {
-    final active = getActiveApprovalLevel(approvals);
-
-    // No active approval → disable
-    if (active == null) {
-      state = state.copyWith(isButtonDisabled: true);
-      return;
-    }
-
-    // If active approval is NOT allowed → disable
-    if (active.isAllowed != null && active.isAllowed != true) {
-      state = state.copyWith(isButtonDisabled: true);
-      return;
-    }
-
-    final status = active.approvalStatus?.toLowerCase();
-
-    // ✅ Disable ONLY if ACTIVE is approved or assigned
-    final shouldDisable = status == 'approved' || status == 'assigned';
-
-    state = state.copyWith(isButtonDisabled: shouldDisable);
-  }
-
-  bool _isPendingOrInProgress(String? status) {
-    final s = status?.toLowerCase();
-    return s == 'in progress';
-  }
-
-  bool _isCompleted(String? status) {
-    return status?.toLowerCase() == 'completed' ||
-        status?.toLowerCase() == 'approved';
-  }
-
-  DateTime _parseDate(String? value) {
-    try {
-      return DateTime.parse(value ?? '');
-    } catch (_) {
-      return DateTime.fromMillisecondsSinceEpoch(0);
-    }
-  }
-
-  Map<String, String> resolveApproverMap(List<ApprovalDetailModel>? approvals) {
-    if (approvals == null || approvals.isEmpty) {
-      return {};
-    }
-
-    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
-    final pendingList = approvals
-        .where((a) => _isPendingOrInProgress(a.approvalStatus))
-        .toList();
-
-    if (pendingList.isNotEmpty) {
-      pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
-      final next = pendingList.first;
-
-      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
-      if (next.approverRoleId != null) {
-        final name = next.approverUser?.employeeName;
-        final email = next.approverUser?.email;
-        final roleName = next.approverRole?.name;
-
-        if ((name ?? '').isNotEmpty) {
-          return {
-            'name': name!,
-            if ((email ?? '').isNotEmpty) 'email': email!,
-            if ((roleName ?? '').isNotEmpty) 'role': roleName!,
-          };
-        }
-      }
-
-      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
-      final department = next.department?.departmentName;
-      final section = next.section?.sectionName;
-
-      if ((department ?? '').isNotEmpty) {
-        return {
-          'department': department!,
-          if ((section ?? '').isNotEmpty) 'section': section!,
-        };
-      }
-
-      return {};
-    }
-
-    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
-    final completedList = approvals
-        .where((a) => _isCompleted(a.approvalStatus))
-        .toList();
-
-    if (completedList.isEmpty) {
-      return {};
-    }
-
-    completedList.sort((a, b) {
-      final levelCompare = (a.level ?? 0).compareTo(b.level ?? 0);
-      if (levelCompare != 0) return levelCompare;
-      return _parseDate(a.updatedAt).compareTo(_parseDate(b.updatedAt));
-    });
-
-    final last = completedList.last;
-
-    final name =
-        last.approvedByUser?.employeeName ?? last.approverUser?.employeeName;
-
-    final email = last.approverUser?.email;
-
-    if ((name ?? '').isNotEmpty) {
-      return {'name': name!, if ((email ?? '').isNotEmpty) 'email': email!};
-    }
-
-    return {};
-  }
-
   Map<String, String> buildRequestCardData(HotelReservationRequestModel item) {
     final approverMap = resolveApproverMap(item.approvalDetails ?? []);
 
@@ -425,7 +315,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildRequestInformationData() {
-    final request = state.requestDetails;
+    final request = state.requestDetails.request;
     return {
       /// ───── RIGHT COLUMN ─────
       "Service Type": request?.service?.name ?? 'N/A',
@@ -448,12 +338,12 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildStatusInformation() {
-    final request = state.requestDetails;
+    final request = state.requestDetails.request;
     final approvals = state.requestDetails.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
     return {
       "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt ?? 'N/A'),
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))
@@ -469,7 +359,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildTechnicalInformation() {
-    final request = state.requestDetails;
+    final request = state.requestDetails.request;
     return {
       'Extension Number':
           request?.createdByUser?.extensionNumber.toString() ?? '0',
@@ -517,10 +407,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void openNewRequestForm() {
-    // fetchbyCycleGoals(cycle: 'Jan-Jun');
     KAppX.router.push(
-      HotelReservationNewRequestRoute
-      (
+      HotelReservationNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -531,38 +419,34 @@ class _VSController extends StateNotifier<_ViewState> {
 
   final hotelReservationinstance = HotelReservationRepoistory();
   List<DynamicField> get hotelReservationFields => [
-    /// -------- ACCOMMODATION TYPE --------
+    /// ================= ACCOMMODATION TYPE =================
     DynamicField(
       name: 'accommodationType',
       label: 'Accommodation Type',
-      type: FieldType.select,
+      type: FieldType.text,
       required: true,
-      options: [
-        DropdownOption(value: 'Single Room', label: 'Single Room'),
-        DropdownOption(value: 'Double Room', label: 'Double Room'),
-        DropdownOption(value: 'Suite', label: 'Suite'),
-      ],
+      placeholder: 'Enter',
     ),
 
-    /// -------- HOTEL NAME --------
+    /// ================= HOTEL NAME =================
     DynamicField(
       name: 'hotelName',
       label: 'Hotel Name',
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter Hotel Name',
+      placeholder: 'Enter Hotel Name (3-100 characters)',
     ),
 
-    /// -------- HOTEL PRICE --------
+    /// ================= HOTEL PRICE =================
     DynamicField(
       name: 'hotelPrice',
       label: 'Hotel Price',
       type: FieldType.number,
       required: true,
-      placeholder: 'Enter Hotel Price',
+      placeholder: 'Enter price (e.g., 100)',
     ),
 
-    /// -------- MEALS --------
+    /// ================= MEALS =================
     DynamicField(
       name: 'meals',
       label: 'Meals',
@@ -571,79 +455,220 @@ class _VSController extends StateNotifier<_ViewState> {
       options: ['Breakfast', 'Lunch', 'Dinner'],
     ),
 
-    /// -------- SERVICES --------
+    /// ================= SERVICES =================
     DynamicField(
       name: 'services',
       label: 'Services',
       type: FieldType.checkbox,
       required: false,
-      options: ['Laundry', 'Telephone service'],
+      options: ['Laundry', 'Telephone Service'],
     ),
 
-    /// -------- NO OF GUESTS --------
+    /// ================= MEETING ROOM =================
     DynamicField(
-      name: 'noOfGuests',
-      label: 'No of Guests',
+      name: 'needMeetingRoom',
+      label: 'Need Meeting Room',
+      type: FieldType.radio,
+      required: true,
+      options: ['Yes', 'No'],
+    ),
+
+    /// ================= REQUEST DATE =================
+    DynamicField(
+      name: 'requestDate',
+      label: 'Date',
+      type: FieldType.date,
+      required: true,
+      initialValue: formatFormDate(DateTime.now().toString()),
+      disabled: true,
+    ),
+
+    /// ================= NUMBER OF GUESTS =================
+    DynamicField(
+      name: 'numberOfGuests',
+      label: 'Number of Guests',
       type: FieldType.number,
       required: true,
-      placeholder: 'Enter number of guests',
+      placeholder: 'Enter number of guests (1-100)',
     ),
 
-    /// -------- CHECK-IN DATE --------
+    /// ================= CHECK-IN DATE =================
     DynamicField(
       name: 'checkInDate',
-      label: 'Check In Date',
+      label: 'Check-In Date',
       type: FieldType.date,
       required: true,
+      placeholder: 'Select',
     ),
 
-    /// -------- CHECK-IN TIME --------
+    /// ================= CHECK-IN TIME =================
     DynamicField(
       name: 'checkInTime',
-      label: 'Check In Time',
+      label: 'Check-In Time',
       type: FieldType.time,
       required: true,
+      placeholder: 'Select',
     ),
 
-    /// -------- CHECK-OUT DATE --------
+    /// ================= CHECK-OUT DATE =================
     DynamicField(
       name: 'checkOutDate',
-      label: 'Check Out Date',
+      label: 'Check-Out Date',
       type: FieldType.date,
       required: true,
+      placeholder: 'Select',
     ),
 
-    /// -------- CHECK-OUT TIME --------
+    /// ================= CHECK-OUT TIME =================
     DynamicField(
       name: 'checkOutTime',
-      label: 'Check Out Time',
+      label: 'Check-Out Time',
       type: FieldType.time,
       required: true,
+      placeholder: 'Select',
     ),
 
-    /// -------- DESCRIPTION --------
+    /// ================= PURPOSE OF VISIT =================
+    DynamicField(
+      name: 'purposeOfVisit',
+      label: 'Purpose of Visit',
+      type: FieldType.text,
+      required: true,
+      placeholder:
+          'Enter purpose of visit (letters only, minimum 5 characters)',
+    ),
+
+    /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
-      label: 'Description',
-      type: FieldType.textarea,
-      required: true,
-      placeholder: 'Enter description',
+      label: 'Description / Additional Notes',
+      type: FieldType.text,
+      required: false,
+      placeholder: 'Write Here...',
     ),
 
-    /// -------- ATTACHMENT --------
+    /// ================= FILE ATTACHMENT =================
     DynamicField(
-      name: 'attachment',
-      label: 'Attach File (Optional)',
+      name: 'passportVisaAttachment',
+      label: 'Attach Passport & Visa Photo',
       type: FieldType.file,
-      required: false,
+      required: true,
+      allowedExtensions: ['doc', 'docx', 'pdf', 'png', 'jpg', 'jpeg'],
+      maxFileSizeInMB: 10,
+    ),
+
+    /// ================= DECLARATION =================
+    DynamicField(
+      name: 'acknowledgement',
+      label: 'Declaration',
+      type: FieldType.acknowledgement,
+      required: true,
+      acknowledgements: [
+        AcknowledgementItem(
+          id: 'privacy_policy',
+          text: 'I have read and accepted the Security & Privacy Policy',
+          hasAction: true,
+          onTap: (context) async {
+            return await KAppX.extendedRouter.dialog.showKDialog<bool>(
+              context: context,
+              builder: (_) => const CommonPolicyDialog(
+                title: 'Security Policies',
+                content: '''
+
+
+Your Privacy Policy
+(Last Update: 26 March 2024)
+
+CAA's Security & Privacy policy addresses CAA's practices related to information collection & usage of your personal information.
+
+Information Collection & Usage
+
+Personal information is not collected unless specified or provided by the user. The IP address, from which you access the Internet, the date and time of your access to our website, and the pages you visited (recorded by the text and graphics files that compose the page) are automatically collected.
+
+This information is used for statistical and monitoring purposes, and to identify website performance.
+
+Third-party consultants are used for statistical analysis, and only aggregated, non-personal information is collected, which does not identify individuals.
+
+Collected information is kept confidential, except when legally required or to protect CAA's rights/properties.
+
+Security of Transactions
+
+CAA has implemented generally accepted standards of technology and operational security.
+
+The site has security measures, including encryption, to protect sensitive information and meet legal requirements.
+
+Links to third-party websites
+
+CAA's website may link to other sites but is not responsible for their content accuracy or information collection mechanisms.
+
+Users are advised to read the Security & Privacy Policy of any third-party site accessed through CAA's website.
+
+Security & Privacy Policy Changes
+
+CAA reserves the right to change the policy at any time, with amended versions always published on CAA's website.
+
+Privacy intrusion
+
+If you suspect privacy compromise:
+
+• Close all tabs and windows you are browsing CAA's website with.
+
+• Inform us through email:
+info@caa.gov.om
+            ''',
+                acceptText: 'Accept',
+                cancelText: 'Close',
+              ),
+            );
+          },
+        ),
+      ],
     ),
   ];
 
+  /// ========================= API CALLS =========================
+
   Future<void> fetchRequestDetailsById(int id) async {
+    state = state.copyWith(isLoading: true);
     try {
-      final requests = await hotelReservationinstance.getRequestsById(id);
+      final requests = await hotelReservationinstance.getRequestsById(
+        id: id,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests);
+        state = state.copyWith(requestDetails: requests, isLoading: false);
+        // fetchAssignEmployeesList();
+
+        fetchChatById(id);
+        fetchAttachmentsById(id);
+        updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
+
+        /// ✅ CHECK ACTION TYPE HERE
+        final actionType = getActionButtonsType(
+          requests,
+          requests.approvalDetails ?? [],
+        );
+        if (actionType == ActionButtonsType.assignReject) {
+          // fetchAssignEmployeesList();
+          debugPrint('this user can only approve');
+        }
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchChatById(int id) async {
+    try {
+      final requests = await hotelReservationinstance.getchatById(id);
+      if (requests != null) {
+        final chats = requests.reversed.toList();
+        state = state.copyWith(chatById: chats);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
@@ -653,92 +678,140 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  // Future<void> getRoleDetails() async {
-  //   final storage = KAuthCred();
-  //   final saved = await storage.getSelectedRole();
-  //   if (saved != null) {
-  //     state = state.copyWith(currentRoleName: saved.roleName);
-  //   }
-  // }
-
-  Future<void> fetchKpi() async {
+  Future<void> fetchAttachmentsById(int id) async {
     try {
-      final kpis = await hotelReservationinstance.getKpiData();
-
-      if (kpis != null) {
-        state = state.copyWith(kpiData: kpis);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchStatusBreakdown(String period) async {
-    try {
-      final statusBreakdown = await hotelReservationinstance
-          .getStatusBreakdownData(period);
-      if (statusBreakdown != null) {
-        state = state.copyWith(statusBreakdown: statusBreakdown);
+      final attachments = await hotelReservationinstance.getAttachmentsById(id);
+      if (attachments != null) {
+        state = state.copyWith(attachmentsById: attachments);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       // optionally handle other errors
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchKpi() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final kpis = await hotelReservationinstance.getKpiData(
+        service.id ?? 0,
+        subService.id ?? 0,
+      );
+
+      if (kpis != null) {
+        state = state.copyWith(kpiData: kpis, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchApprovalTrendBreakDown(String period) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final data = await hotelReservationinstance.getApprovalTrendBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (data != null) {
+        state = state.copyWith(approvalTrendData: data, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchApprovalStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final statusBreakdown = await hotelReservationinstance
+          .getApprovalStatusBreakdownData(
+            period: period,
+            serviceId: service.id ?? 0,
+            subServiceId: subService.id ?? 0,
+          );
+      if (statusBreakdown != null) {
+        state = state.copyWith(
+          approvalStatusBreakdown: statusBreakdown,
+          isLoading: false,
+        );
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      // optionally handle other errors
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final statusBreakdown = await hotelReservationinstance
+          .getStatusBreakdownData(
+            period: period,
+            serviceId: service.id ?? 0,
+            subServiceId: subService.id ?? 0,
+          );
+      if (statusBreakdown != null) {
+        state = state.copyWith(
+          statusBreakdown: statusBreakdown,
+          isLoading: false,
+        );
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      // optionally handle other errors
+      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
   }
 
   Future<void> fetchTrendBreakDown(String period) async {
+    state = state.copyWith(isLoading: true);
     try {
-      final data = await hotelReservationinstance.getTrendBreakdownData(period);
+      final data = await hotelReservationinstance.getTrendBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       if (data != null) {
-        state = state.copyWith(trendData: data);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchApprovalKpi() async {
-    try {
-      final kpis = await hotelReservationinstance.getApprovalKpiData();
-
-      if (kpis != null) {
-        state = state.copyWith(approvalKpiData: kpis);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchApprovalStatusBreakdown(String period) async {
-    try {
-      final statusBreakdown = await hotelReservationinstance
-          .getApprovalStatusBreakdownData(period);
-      if (statusBreakdown != null) {
-        state = state.copyWith(approvalStatusBreakdown: statusBreakdown);
+        state = state.copyWith(trendData: data, isLoading: false);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      // optionally handle other errors
-      debugPrint(e.toString());
+      state = state.copyWith(isLoading: false);
     }
   }
 
-  Future<void> fetchApprovalTrendBreakDown(String period) async {
+  Future<void> fetchApprovalKpi() async {
+    state = state.copyWith(isLoading: true);
     try {
-      final data = await hotelReservationinstance.getApprovalTrendBreakdownData(
-        period,
+      final kpis = await hotelReservationinstance.getApprovalKpiData(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
       );
 
-      if (data != null) {
-        state = state.copyWith(approvalTrendData: data);
+      if (kpis != null) {
+        state = state.copyWith(approvalKpiData: kpis, isLoading: false);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   Future<void> fetchRequests({
@@ -746,22 +819,26 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
+    state = state.copyWith(isLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(requestData: []);
+      if (isRefresh || status.isNotEmpty) {
+        state = state.copyWith(requestData: [], isLoading: false);
       }
 
       final requests = await hotelReservationinstance.getRequests(
-        offset: 0,
-        limit: 10,
+        offset: 1,
+        limit: 8,
         searchText: searchText,
         status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
       );
 
       // No merging needed
       state = state.copyWith(requestData: requests);
     } catch (e) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -774,20 +851,271 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(actionItems: []);
+      if (isRefresh || status.isNotEmpty) {
+        state = state.copyWith(actionItems: [], isLoading: false);
       }
 
       final items = await hotelReservationinstance.getActionItems(
-        offset: 0,
-        limit: 10,
+        offset: 1,
+        limit: 8,
         searchText: searchText,
         status: status,
+
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
       );
 
       // No merging needed
       state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  bool lastApprover(List<ApprovalDetailModel> approvals) {
+    if (approvals.isEmpty) return false;
+
+    if (approvals.any(
+      (status) =>
+          status.approvalStatus?.toLowerCase() == 'pending' ||
+          status.approvalStatus?.toLowerCase() == 'rejected',
+    )) {
+      return false;
+    }
+
+    if (approvals
+            .where(
+              (status) => status.approvalStatus?.toLowerCase() == 'in progress',
+            )
+            .length ==
+        1) {
+      return true;
+    }
+
+    return false;
+  }
+
+  void showApprovalCommentDialog({
+    required ApprovalDialogType type,
+    required int approverId,
+    required int requestId,
+  }) {
+    // final showDecionNumber = lastApprover(
+    //   state.requestDetails.approvalDetails ?? [],
+    // );
+    KAppX.extendedRouter.dialog.showKDialog(
+      builder: (_) => ApprovalCommentDialog(
+        type: type,
+        // showDecisionNumber: showDecionNumber,
+        onSubmit: (comment, decisionNo) async {
+          final status = type == ApprovalDialogType.approve
+              ? ApprovalStatus.approved
+              : ApprovalStatus.rejected;
+
+          await onApprove(
+            approverId,
+            requestId,
+            comment.trim(), // always safe
+            status.apiValue,
+            decisionNo, // ✅ backend-safe string
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> sendChatMessage({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    try {
+      final requestId = state.requestDetails.request?.id;
+      if (requestId == null) {
+        throw Exception("Request ID missing");
+      }
+
+      final hasMessage = chatController.text.trim().isNotEmpty;
+      final hasAttachment = state.attachments.isNotEmpty;
+
+      String messageType = 'text';
+
+      String? fileUrl;
+      String? fileName;
+      String? fileType;
+      String? fileSize;
+
+      /// 1️⃣ Upload attachment if exists
+      if (hasAttachment) {
+        final localFile = state.attachments.first;
+
+        final category = getFileTypeFromPath(localFile['file_name']);
+        messageType = mapCategoryToMessageType(category); // image | file
+
+        final uploadedFiles = await hotelReservationinstance.uploadAttachments(
+          state.attachments,
+        );
+
+        if (uploadedFiles.isEmpty) {
+          throw Exception("File upload failed");
+        }
+
+        final uploaded = uploadedFiles.first;
+
+        fileUrl = uploaded['file_url'];
+        fileName = uploaded['file_name'];
+        fileType = messageType;
+        fileSize = uploaded['file_size']?.toString();
+      }
+
+      /// ------------------------------------------------------------
+      /// CASE 1️⃣ : ONLY ATTACHMENT (NO MESSAGE)
+      /// ------------------------------------------------------------
+      if (!hasMessage && hasAttachment) {
+        final payload = {
+          "request_id": requestId,
+          "service_id": serviceId,
+          "sub_service_id": subServiceId,
+          "file_url": fileUrl,
+          "file_name": fileName,
+          "file_type": fileType,
+          "file_size": fileSize,
+        };
+
+        debugPrint('📎 Attachment-only payload: $payload');
+
+        await hotelReservationinstance.sendAttachment(payload, requestId);
+      }
+
+      /// ------------------------------------------------------------
+      /// CASE 2️⃣ : CHAT (with OR without attachment)
+      /// ------------------------------------------------------------
+      if (hasMessage) {
+        final payload = {
+          "request_id": requestId,
+          "service_id": serviceId,
+          "sub_service_id": subServiceId,
+          "message": chatController.text.trim(),
+          "messageType": hasAttachment ? messageType : 'text',
+          "file_url": hasAttachment ? fileUrl : null,
+          "file_name": hasAttachment ? fileName : null,
+          "file_type": hasAttachment ? fileType : null,
+          "file_size": hasAttachment ? fileSize : null,
+        };
+
+        debugPrint('💬 Chat payload: $payload');
+
+        await hotelReservationinstance.sendChat(payload, requestId);
+      }
+      fetchChatById(requestId);
+      fetchAttachmentsById(requestId);
+
+      /// 3️⃣ Clear UI state
+      // chatController.clear();
+      state.attachments.clear();
+    } catch (e, st) {
+      debugPrint('❌ Failed to send chat: $e');
+      debugPrintStack(stackTrace: st);
+      rethrow;
+    }
+  }
+
+  Future<void> onComplete(int approverId, int requestId) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      // 1️⃣ Upload files
+
+      // 2️⃣ Build payload
+      final payload = {
+        "request_id": requestId,
+        "status": "Completed",
+        "comment": '',
+        "approval_id": approverId,
+      };
+
+      debugPrint("✅ Final Payload: $payload");
+
+      // 3️⃣ Send request
+      await hotelReservationinstance.onApprove(payload);
+      await Future.delayed(Duration(seconds: 3));
+      KAppX.router.pop();
+      fetchActionItems();
+      fetchRequests();
+      fetchApprovalKpi();
+      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+      fetchStatusBreakdown('monthly');
+      fetchTrendBreakDown(DateTime.now().year.toString());
+      fetchKpi();
+    } catch (e) {
+      debugPrint('❌ Error submitting request: $e');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+    return;
+  }
+
+  Future<void> onApprove(
+    int approverId,
+    int requestId,
+    String comment,
+    String status,
+    String? decisionNo,
+  ) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      // 1️⃣ Upload files
+
+      // 2️⃣ Build payload
+      final payload = {
+        "request_id": requestId,
+        "status": status,
+        "comment": comment,
+        "approval_id": approverId,
+      };
+      if (decisionNo != null) {
+        payload['decision_number'] = decisionNo;
+      }
+
+      debugPrint("✅ Final Payload: $payload");
+
+      // 3️⃣ Send request
+      await hotelReservationinstance.onApprove(payload);
+      await Future.delayed(Duration(seconds: 3));
+      KAppX.router.pop();
+      // if (decisionNo != null) {
+      KAppX.router.pop();
+      // }
+      await fetchActionItems();
+      await fetchRequests();
+    } catch (e) {
+      debugPrint('❌ Error submitting request: $e');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> onSendInProgress(int approverId, int requestId) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      // 1️⃣ Upload files
+
+      // 2️⃣ Build payload
+      final payload = {"request_id": requestId, "status": "In Progress"};
+
+      debugPrint("✅ Final Payload: $payload");
+
+      // 3️⃣ Send request
+      // await hotelReservationinstance.onSendInProgress(payload);
+      await Future.delayed(Duration(seconds: 3));
+      KAppX.router.pop();
+      await fetchActionItems();
+      await fetchRequests();
+    } catch (e) {
+      debugPrint('❌ Error submitting request: $e');
+    } finally {
       state = state.copyWith(isLoading: false);
     }
   }
@@ -936,46 +1264,121 @@ class _VSController extends StateNotifier<_ViewState> {
     return ActionButtonsType.none;
   }
 
-  Future<void> onClose(int approverId, int requestId, String status) async {
+  void updateButtonDisabledFromApprovals(List<ApprovalDetailModel> approvals) {
+    final active = getActiveApprovalLevel(approvals);
+
+    // No active approval → disable
+    if (active == null) {
+      state = state.copyWith(isButtonDisabled: true);
+      return;
+    }
+
+    // If active approval is NOT allowed → disable
+    if (active.isAllowed != null && active.isAllowed != true) {
+      state = state.copyWith(isButtonDisabled: true);
+      return;
+    }
+
+    final status = active.approvalStatus?.toLowerCase();
+
+    // ✅ Disable ONLY if ACTIVE is approved or assigned
+    final shouldDisable = status == 'approved' || status == 'assigned';
+
+    state = state.copyWith(isButtonDisabled: shouldDisable);
+  }
+
+  bool _isPendingOrInProgress(String? status) {
+    final s = status?.toLowerCase();
+    return s == 'in progress';
+  }
+
+  bool _isCompleted(String? status) {
+    return status?.toLowerCase() == 'completed' ||
+        status?.toLowerCase() == 'approved';
+  }
+
+  DateTime _parseDate(String? value) {
     try {
-      state = state.copyWith(isLoading: true);
-
-      // 1️⃣ Upload files
-
-      final userData = KAppX.globalProvider.read(userInfoProvider);
-
-      // 2️⃣ Build payload
-      final payload = {
-        "request_id": requestId,
-        "status": status,
-        "comment": chatController.text,
-        "approval_id": approverId,
-      };
-
-      debugPrint("✅ Final Payload: $payload");
-
-      // 3️⃣ Send request
-      await hotelReservationinstance.onClose(payload);
-      // await fetchActionItems();
-      await fetchRequests();
-      KAppX.router.pop();
-    } catch (e) {
-      debugPrint('❌ Error submitting request: $e');
-    } finally {
-      state = state.copyWith(isLoading: false);
+      return DateTime.parse(value ?? '');
+    } catch (_) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
     }
   }
 
-  void onSelectedAccomidationType(String value) =>
-      state = state.copyWith(accommodationType: value);
+  Map<String, String> resolveApproverMap(List<ApprovalDetailModel>? approvals) {
+    if (approvals == null || approvals.isEmpty) {
+      return {};
+    }
 
-  void onSelectedMealPreference(List<String> value) =>
-      state = state.copyWith(mealPreference: value);
-  void onSelectedServicePreference(List<String> value) =>
-      state = state.copyWith(servicePreference: value);
+    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    final pendingList = approvals
+        .where((a) => _isPendingOrInProgress(a.approvalStatus))
+        .toList();
+
+    if (pendingList.isNotEmpty) {
+      pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
+      final next = pendingList.first;
+
+      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
+      if (next.approverRoleId != null) {
+        final name = next.approverUser?.employeeName;
+        final email = next.approverUser?.email;
+        final roleName = next.approverRole?.name;
+
+        if ((name ?? '').isNotEmpty) {
+          return {
+            'name': name!,
+            if ((email ?? '').isNotEmpty) 'email': email!,
+            if ((roleName ?? '').isNotEmpty) 'role': roleName!,
+          };
+        }
+      }
+
+      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
+      final department = next.department?.departmentName;
+      final section = next.section?.sectionName;
+
+      if ((department ?? '').isNotEmpty) {
+        return {
+          'department': department!,
+          if ((section ?? '').isNotEmpty) 'section': section!,
+        };
+      }
+
+      return {};
+    }
+
+    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
+    final completedList = approvals
+        .where((a) => _isCompleted(a.approvalStatus))
+        .toList();
+
+    if (completedList.isEmpty) {
+      return {};
+    }
+
+    completedList.sort((a, b) {
+      final levelCompare = (a.level ?? 0).compareTo(b.level ?? 0);
+      if (levelCompare != 0) return levelCompare;
+      return _parseDate(a.updatedAt).compareTo(_parseDate(b.updatedAt));
+    });
+
+    final last = completedList.last;
+
+    final name =
+        last.approvedByUser?.employeeName ?? last.approverUser?.employeeName;
+
+    final email = last.approverUser?.email;
+
+    if ((name ?? '').isNotEmpty) {
+      return {'name': name!, if ((email ?? '').isNotEmpty) 'email': email!};
+    }
+
+    return {};
+  }
 
   void onUploadFileSuccess(FileUploadItem url) {
-    final urls = state.selectedFileUrl;
+    final urls = List<FileUploadItem>.from(state.selectedFileUrl);
     urls.add(url);
     state = state.copyWith(selectedFileUrl: urls);
   }
@@ -986,105 +1389,64 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void updateTabIndex(int index) {
     state = state.copyWith(tabIndex: index);
+    if (index == 0) {
+      fetchRequests();
+      fetchKpi();
+      fetchStatusBreakdown('weekly');
+      fetchTrendBreakDown('2026');
+    } else {
+      fetchActionItems();
+      fetchApprovalKpi();
+      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalTrendBreakDown('2026');
+    }
   }
 
   void onRemoveFile(int index) {
-    final urls = state.selectedFileUrl;
+    final urls = List<FileUploadItem>.from(state.selectedFileUrl);
     urls.removeAt(index);
     state = state.copyWith(selectedFileUrl: urls);
   }
 
-  bool validateHotelRequestForm() {
-    // 1. Validate all text fields inside the Form
-    if (!state.formKey.currentState!.validate()) {
-      return false;
-    }
-
-    // 2. Accommodation Type
-    if (state.accommodationType.isEmpty) {
-      return false;
-    }
-
-    // 3. Check-in Date
-    if (checkInController.text.isEmpty) {
-      return false;
-    }
-
-    // 4. Check-out Date
-    if (checkOutController.text.isEmpty) {
-      return false;
-    }
-
-    // 5. Meal Preference (optional but recommended)
-    if (state.mealPreference.isEmpty) {
-      return false;
-    }
-
-    // 6. Services (optional)
-    if (state.servicePreference.isEmpty) {
-      return false;
-    }
-
-    // 7. Guests Count Validation (controller-based)
-    if (noOfGuestsController.text.isEmpty) {
-      return false;
-    }
-
-    // 8. Description
-    if (descriptionController.text.isEmpty) {
-      return false;
-    }
-
-    // 9. File Upload (optional)
-    if (state.selectedFileUrl.isEmpty) {
-      return false;
-    }
-
-    return true;
-  }
-
-  // void onSelectedVehicleRequiredFor(String value) =>
-  //     state = state.copyWith(vehicleRequiredfor: value);
-
-  // void onSelectedVehicleRequiredLocation(String value) =>
-  //     state = state.copyWith(vehicleRequiredLocation: value);
-
-  // void onSelectedPurposeOfTravel(String value) =>
-  //     state = state.copyWith(purposeofTravel: value);
-
-  // void onSelectedExpectedDaysInTravel(int value) =>
-  //     state = state.copyWith(expectedDaysinTravel: value);
-
-  // void onSelectedExpectedHoursInTravel(int value) =>
-  //     state = state.copyWith(expectedHoursinTravel: value);
-  // void onSelectTravelTimeUI(String time) =>
-  //     state = state.copyWith(travelTimeForUI: time);
   void refreshUI() {
     // triggers rebuild in UI
-    state = state.copyWith();
+    state = state.copyWith(isLoading: false);
   }
 
   Future<void> pickFile() async {
+    const int maxFileSizeInBytes = 10 * 1024 * 1024; // 5 MB
+
     final result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
+      allowMultiple: false,
       type: FileType.custom,
       allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'],
     );
 
-    if (result != null) {
-      final newFiles = result.files.map((file) {
-        return {
-          "file_name": file.name,
-          "file_type": file.extension,
-          "file_size": file.size,
-          "path": file.path,
-          "file_url": file.path, // local file location added here
-          "description": '', // optional, can be updated later
-        };
-      }).toList();
+    if (result == null || result.files.isEmpty) return;
 
-      state = state.copyWith(attachments: [...state.attachments, ...newFiles]);
+    final file = result.files.first;
+
+    /// ❌ SIZE CHECK
+    if (file.size > maxFileSizeInBytes) {
+      Fluttertoast.showToast(msg: "File size must be less than 10 MB");
+      return;
     }
+
+    final attachment = {
+      "file_name": file.name,
+      "file_type": file.extension,
+      "file_size": file.size,
+      "path": file.path,
+      "file_url": file.path,
+      "description": '',
+    };
+
+    /// ✅ ONLY ONE ATTACHMENT
+    state = state.copyWith(attachments: [attachment]);
+  }
+
+  void removeAttachment() {
+    state = state.copyWith(attachments: []);
   }
 
   void removeFile(Map<String, dynamic> file) {
@@ -1093,208 +1455,77 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(attachments: updated);
   }
 
-  Future<void> sendChatMessage({
-    required int serviceId,
-    required int subServiceId,
-  }) async {
-    try {
-      final requestId = state.requestDetails.id;
-      if (requestId == null) {
-        throw Exception("Request ID missing");
-      }
-
-      final hasMessage = chatController.text.trim().isNotEmpty;
-      final hasAttachment = state.attachments.isNotEmpty;
-
-      String messageType = 'text';
-
-      String? fileUrl;
-      String? fileName;
-      String? fileType;
-      String? fileSize;
-
-      /// 1️⃣ Upload attachment if exists
-      if (hasAttachment) {
-        final localFile = state.attachments.first;
-
-        final category = getFileTypeFromPath(localFile['file_name']);
-        messageType = mapCategoryToMessageType(category); // image | file
-
-        final uploadedFiles = await hotelReservationinstance.uploadAttachments(
-          state.attachments,
-        );
-
-        if (uploadedFiles.isEmpty) {
-          throw Exception("File upload failed");
-        }
-
-        final uploaded = uploadedFiles.first;
-
-        fileUrl = uploaded['file_url'];
-        fileName = uploaded['file_name'];
-        fileType = messageType;
-        fileSize = uploaded['file_size']?.toString();
-      }
-
-      /// ------------------------------------------------------------
-      /// CASE 1️⃣ : ONLY ATTACHMENT (NO MESSAGE)
-      /// ------------------------------------------------------------
-      if (!hasMessage && hasAttachment) {
-        final payload = {
-          "request_id": requestId,
-          "service_id": serviceId,
-          "sub_service_id": subServiceId,
-          "file_url": fileUrl,
-          "file_name": fileName,
-          "file_type": fileType,
-          "file_size": fileSize,
-        };
-
-        debugPrint('📎 Attachment-only payload: $payload');
-
-        // await hotelReservationinstance.sendAttachment(payload, requestId);
-      }
-
-      /// ------------------------------------------------------------
-      /// CASE 2️⃣ : CHAT (with OR without attachment)
-      /// ------------------------------------------------------------
-      if (hasMessage) {
-        final payload = {
-          "request_id": requestId,
-          "service_id": serviceId,
-          "sub_service_id": subServiceId,
-          "message": chatController.text.trim(),
-          "messageType": hasAttachment ? messageType : 'text',
-          "file_url": hasAttachment ? fileUrl : null,
-          "file_name": hasAttachment ? fileName : null,
-          "file_type": hasAttachment ? fileType : null,
-          "file_size": hasAttachment ? fileSize : null,
-        };
-
-        debugPrint('💬 Chat payload: $payload');
-
-        await hotelReservationinstance.sendChat(payload, requestId);
-      }
-      // fetchChatById(requestId);
-      // fetchAttachmentsById(requestId);
-
-      /// 3️⃣ Clear UI state
-      // chatController.clear();
-      state.attachments.clear();
-    } catch (e, st) {
-      debugPrint('❌ Failed to send chat: $e');
-      debugPrintStack(stackTrace: st);
-      rethrow;
-    }
+  List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {
+    return (values['passportVisaAttachment'] as List<FileUploadItem>? ?? [])
+        .map((file) => file.toJson())
+        .toList();
   }
 
-  // Future<String> sendChat(int id, String message) async {
-  //   try {
-  //     state = state.copyWith(isLoading: true);
+  Map<String, dynamic> _buildPayload(
+    int serviceId,
+    int subServiceId,
+    Map<String, dynamic> values,
+  ) {
+    final userInfo = KAppX.globalProvider.read(userInfoProvider);
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
 
-  //     List<dynamic> uploadedFiles = [];
+    return {
+      /// ================= ROLE / DEPARTMENT =================
+      "role_id": selectedRole?.roleId,
+      "department_id": userInfo?.data?.department?.id,
+      "section_id": userInfo?.data?.section?.id,
 
-  //     // 🧩 1️⃣ Upload only if not a text message
-  //     if (type != 'text') {
-  //       debugPrint('📎 Attachment Message: $message');
-  //       uploadedFiles = await hotelReservationinstance.uploadAttachments(
-  //         state.attachments,
-  //       );
+      /// ================= SERVICE INFO =================
+      "service_id": serviceId,
+      "sub_service_id": subServiceId,
 
-  //       // ✅ Safety check: ensure upload success
-  //       if (uploadedFiles.isEmpty || uploadedFiles[0]["file_url"] == null) {
-  //         throw Exception('File upload failed or returned empty response.');
-  //       }
-  //     }
+      /// ================= HOTEL DETAILS =================
+      "type_of_accommodation": values['accommodationType'] ?? "",
 
-  //     // 🧩 2️⃣ Detect image types (png, jpg, jpeg, gif, etc.)
+      "hotel_name": values['hotelName'] ?? "",
 
-  //     if (type != 'text') {
-  //       final uploadedFileType = (uploadedFiles.first["file_type"] ?? '')
-  //           .toLowerCase();
-  //       if (uploadedFileType.contains('png') ||
-  //           uploadedFileType.contains('jpg') ||
-  //           uploadedFileType.contains('jpeg') ||
-  //           uploadedFileType.contains('gif') ||
-  //           uploadedFileType.contains('bmp') ||
-  //           uploadedFileType.contains('webp') ||
-  //           uploadedFileType.contains('tiff')) {
-  //         type = 'image';
-  //       } else {
-  //         type = uploadedFileType;
-  //       }
-  //     }
+      "price": int.tryParse(values['hotelPrice']?.toString() ?? "0") ?? 0,
 
-  //     // 🧩 3️⃣ Build payload safely
-  //     final payload = {
-  //       "request_id": id,
-  //       "service_id": 20,
-  //       "sub_service_id": 12,
-  //       "message": type == 'text'
-  //           ? message
-  //           : uploadedFiles.first["file_url"], // safe access
-  //       "messageType": type,
-  //       "file_name": type != 'text' ? uploadedFiles.first["file_name"] : null,
-  //       "file_type": type != 'text' ? type : null,
-  //       "file_size": type != 'text' ? uploadedFiles.first["file_size"] : null,
-  //     };
+      /// ================= MEALS =================
+      "meal": values['meals'] ?? [],
 
-  //     debugPrint("✅ Final Payload: $payload");
+      /// ================= SERVICES =================
+      "service": values['services'] ?? [],
 
-  //     // 🧩 4️⃣ Send request
-  //     final resMessage = await hotelReservationinstance.sendChat(
-  //       payload,
-  //       id,
-  //       type,
-  //     );
+      /// ================= BOOKING DATE =================
+      "booking_date": values['requestDate'],
 
-  //     // 🧩 5️⃣ Refresh UI state
-  //     await fetchRequestDetailsById(id);
+      /// ================= CHECK-IN =================
+      "check_in_date": values['checkInDate'],
 
-  //     chatController.clear();
+      "check_in_time": values['checkInTime'] ?? "",
 
-  //     state = state.copyWith(attachments: []);
-  //     // 🧩 6️⃣ Close chat modal or pop page
-  //     // KAppX.router.pop();
+      /// ================= CHECK-OUT =================
+      "check_out_date": values['checkOutDate'],
 
-  //     return resMessage;
-  //   } catch (e, stack) {
-  //     debugPrint('❌ Error submitting chat: $e');
-  //     debugPrint('Stacktrace: $stack');
-  //     return 'Not sent';
-  //   } finally {
-  //     state = state.copyWith(isLoading: false);
-  //   }
-  // }
+      "check_out_time": values['checkOutTime'] ?? "",
 
-  // Future<String> sendAttachment(int id, String message) async {
-  //   try {
-  //     state = state.copyWith(isLoading: true);
+      /// ================= GUEST INFO =================
+      "number_of_guests":
+          int.tryParse(values['numberOfGuests']?.toString() ?? "0") ?? 0,
 
-  //     // 2️⃣ Build payload
-  //     final payload = {
-  //       "request_id": id,
-  //       "service_id": 20,
-  //       "sub_service_id": 12,
-  //       "message": message,
-  //       "messageType": "text",
-  //       "file_name": null,
-  //       "file_type": null,
-  //       "file_size": null,
-  //     };
+      /// ================= PURPOSE =================
+      "purpose_of_visit": values['purposeOfVisit'] ?? "",
 
-  //     debugPrint("✅ Final Payload: $payload");
+      /// ================= DESCRIPTION =================
+      "description": values['description'] ?? "",
 
-  //     // 3️⃣ Send request
-  //     final resMessage = await logisticsDashboardinstance.sendChat(payload, id);
-  //     return resMessage;
-  //   } catch (e) {
-  //     debugPrint('❌ Error submitting request: $e');
-  //     return 'Not sent';
-  //   } finally {
-  //     state = state.copyWith(isLoading: false);
-  //   }
-  // }
+      /// ================= MEETING ROOM =================
+      "need_meeting_room": values['needMeetingRoom'] == 'Yes',
+
+      /// ================= ATTACHMENTS =================
+      "attachments": _buildAttachments(values),
+    };
+  }
+
+  int _toInt(dynamic value) {
+    return int.tryParse(value?.toString() ?? '0') ?? 0;
+  }
 
   Future<void> sendHotelReservationRequest(
     int serviceId,
@@ -1304,50 +1535,21 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      final userData = KAppX.globalProvider.read(rolesProvider);
-
-      // Build attachments list
-      final List<Map<String, dynamic>> attachments = state.selectedFileUrl
-          .map((file) => file.toJson())
-          .toList();
-
-      // BUILD FINAL PAYLOAD
-      final payload = {
-        "role_id": userData?.roleId, // or state.selectedRole?.id
-        "department_id": userData?.departmentId,
-        "section_id": userData?.sectionId,
-
-        "service_id": 26, // ← Replace with real service ID
-        "sub_service_id": 17, // ← Replace with real sub-service ID
-
-        "type_of_accommodation": state.accommodationType,
-        "price": int.tryParse(hotelPriceController.text) ?? 0,
-        "meal": state.mealPreference,
-        "service": state.servicePreference,
-
-        "hotel_name": hotelNameController.text.trim(),
-        "booking_date": DateTime.now().toIso8601String().split("T").first,
-
-        "check_in_date": checkInController.text.trim(),
-        "check_in_time": checkInTimeController.text
-            .trim(), // If you need picker; add controller
-        "check_out_date": checkOutController.text.trim(),
-        "check_out_time": checkOutTimeController.text.trim(),
-
-        "number_of_guests": int.tryParse(noOfGuestsController.text.trim()) ?? 0,
-
-        "description": descriptionController.text.trim(),
-
-        "attachments": attachments,
-      };
+      final payload = _buildPayload(
+        serviceId,
+        subServiceId,
+        values,
+        // state.hrTasks,
+      );
 
       debugPrint("✅ Final Payload: $payload");
-      print("=====================================");
-      print("FINAL PAYLOAD: $payload");
-      print("=====================================");
 
-      // SEND REQUEST
-      await hotelReservationinstance.sendHotelReservationRequest(payload);
+      final response = await hotelReservationinstance
+          .hotelReservationCreateRequest(payload);
+
+      if (response['status'] == 'success') {
+        _refreshDashboard();
+      }
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
     } finally {
@@ -1355,11 +1557,19 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  void _refreshDashboard() {
+    fetchKpi();
+    fetchStatusBreakdown('monthly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalKpi();
+    fetchRequests();
+    fetchActionItems();
+  }
+
   @override
   void dispose() {
-    // for (var p in state.passengers) {
-    //   p.dispose();
-    // }
     super.dispose();
   }
 }

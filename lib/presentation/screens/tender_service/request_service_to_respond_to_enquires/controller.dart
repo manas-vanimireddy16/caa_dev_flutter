@@ -249,7 +249,7 @@ class _VSController extends StateNotifier<_ViewState> {
       if (state.tabIndex == 0) {
         await fetchRequests(isRefresh: true, searchText: value);
       } else {
-        await fetchactionItems(isRefresh: true, searchText: value);
+        await fetchActionItems(isRefresh: true, searchText: value);
       }
 
       if (currentVersion != _searchVersion) return; // ignore old response
@@ -742,7 +742,7 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchactionItems({
+  Future<void> fetchActionItems({
     bool isRefresh = false,
     String searchText = '',
     String status = '',
@@ -937,7 +937,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await respondToEnquiriesInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchactionItems();
+      fetchActionItems();
       fetchRequests();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('monthly');
@@ -985,7 +985,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
-      await fetchactionItems();
+      await fetchActionItems();
       await fetchRequests();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -1009,7 +1009,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await respondToEnquiriesInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchactionItems();
+      await fetchActionItems();
       await fetchRequests();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -1296,7 +1296,7 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchactionItems();
+      fetchActionItems();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('monthly');
       fetchApprovalTrendBreakDown('2026');
@@ -1440,7 +1440,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests();
-    fetchactionItems();
+    fetchActionItems();
   }
 
   @override

@@ -198,7 +198,7 @@ class _ITServicesHomeScreenState extends ConsumerState<ITServicesHomeScreen> {
       {
         "code": "VPN_SERVICE", // ✅ FIXED
         "name": "VPN Service",
-        "route": VpnDashboard(),
+        "route": SalalahDashboard(service: Service(), subService: SubService()),
       },
       {
         "code": "CAA059", // ✅ FIXED

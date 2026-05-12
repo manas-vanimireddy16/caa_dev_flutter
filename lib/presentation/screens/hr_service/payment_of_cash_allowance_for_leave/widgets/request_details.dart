@@ -1,20 +1,3 @@
-// import 'package:auto_route/auto_route.dart';
-// import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-// import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-// import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-// import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-// import 'package:code_setup/presentation/screens/approvals/common_widgets.dart';
-// import 'package:code_setup/presentation/screens/logistics/models/logistics_detail_model.dart';
-// import 'package:code_setup/presentation/screens/logistics/view.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/attachments_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_details_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_history_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_tabs.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/workflow_tab.dart';
-// import 'package:code_setup/utils/app_extensions/app_extension.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 part of '../view.dart';
 
 @RoutePage()
@@ -84,7 +67,7 @@ class _PaymentofCashAllowanceForLeaveDetailsScreenState
           //     ? null
           //     : state.requestDetails;
           final request = state.requestDetails;
-          final requestId = request.id;
+          final requestId = request?.id;
           final List<AttachmentModel> attachments = state.attachmentsById;
           final chats = state.chatById;
           final List<ApprovalDetailModel> approvals =
@@ -97,7 +80,6 @@ class _PaymentofCashAllowanceForLeaveDetailsScreenState
             state.requestDetails,
             approvals,
           );
-          final nextApprover = controller.resolveApproverMap(approvals);
 
           final approverId = active?.id;
 
@@ -111,23 +93,23 @@ class _PaymentofCashAllowanceForLeaveDetailsScreenState
                 ProfileCard(
                   title: "Profile",
                   subtitle: "User Info",
-                  name: request.createdByUser?.employeeName ?? '',
+                  name: request?.createdByUser?.employeeName ?? '',
                   avatarUrl: "https://i.pravatar.cc/150?img=3",
                   isOnline: true,
                   info: {
-                    "Request ID": (request.id ?? 0).toString(),
-                    "Customer ID": (request.userId ?? 0).toString(),
+                    "Request ID": (request?.id ?? 0).toString(),
+                    "Customer ID": (request?.userId ?? 0).toString(),
                     "Job Title/Designation":
-                        request.createdByUser?.directorate ?? 'N/A',
-                    "Department": request.createdByUser?.category ?? 'N/A',
-                    "Email": request.createdByUser?.email ?? 'N/A',
-                    "Phone": request.createdByUser?.mobile ?? 'N/A',
+                        request?.createdByUser?.directorate ?? 'N/A',
+                    "Department": request?.createdByUser?.category ?? 'N/A',
+                    "Email": request?.createdByUser?.email ?? 'N/A',
+                    "Phone": request?.createdByUser?.mobile ?? 'N/A',
                     // "Request Type": request?.requestFor ?? 'N/A',
                   },
                 ),
 
                 5.toHorizontalSizedBox,
-                RequestTabs(
+                RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
                   subService: widget.subService,
@@ -138,46 +120,11 @@ class _PaymentofCashAllowanceForLeaveDetailsScreenState
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
                   CommonRequestDetails(
-                    statusInfo: {
-                      "Approval Status": request.status ?? 'N/A',
-                      "Requested Date": request.createdAt ?? 'N/A',
-                      // "Last Updated":
-                      //     request?.updatedAt?.split('T').first ?? 'N/A',
-                      if (nextApprover.containsKey('department'))
-                        'Department': nextApprover['department']!,
-                      if (nextApprover.containsKey('section'))
-                        'Section': nextApprover['section']!,
+                    statusInfo: controller.buildStatusInformation(),
 
-                      if (nextApprover.containsKey('name'))
-                        'Approver Name': nextApprover['name']!,
-                      if (nextApprover.containsKey('email'))
-                        'Approver Email': nextApprover['email']!,
-                    },
-
-                    requestInfo: {
-                      /// ───── LEFT COLUMN ─────
-                      "Sub Service Type":
-                          request.subService?.subServiceName ?? 'N/A',
-                      "Employee Name": request.employeeName ?? 'N/A',
-                      "Employee ID": request.employeeId ?? 'N/A',
-                      "Job Title": request.jobTitle ?? 'N/A',
-                      "Financial Grade": request.financialGrade ?? 'N/A',
-                      "Allowance Value": request.allowancePercentage ?? 'N/A',
-
-                      "Shift Start Date": request.shiftStartDate.toString(),
-                      "Shift End Date":
-                          request.shiftEndDate.toString() ,
-
-                      /// ───── RIGHT COLUMN ─────
-                      "Service Type": request.service?.name ?? 'N/A',
-
-                      "Description": request.description ?? 'N/A',
-                    },
-                    technicalInfo: {
-                      'Extension Number':
-                          request.createdByUser?.extensionNumber.toString() ??
-                          '0',
-                    },
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
+                    // table: controller.mapAccommodationTableForDetails(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(
@@ -200,12 +147,7 @@ class _PaymentofCashAllowanceForLeaveDetailsScreenState
                         subServiceId: widget.subServiceId,
                       );
                     },
-                    onAssign: () async {
-                      controller.showAssignEngineerDialog(
-                        approverId: approverId ?? 0,
-                        context: context,
-                      );
-                    },
+
                     onApprove: () async {
                       controller.showApprovalCommentDialog(
                         type: ApprovalDialogType.approve,

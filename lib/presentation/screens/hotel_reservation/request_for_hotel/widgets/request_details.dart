@@ -80,13 +80,13 @@ class _HotelReservationRequestDetailsTabScreenState
             return const Center(child: CircularProgressIndicator());
           }
 
+          // final request = state.requestDetails.request == null
+          //     ? null
+          //     : state.requestDetails;
           final request = state.requestDetails.request;
           final requestId = request?.id;
-          final List<WorkflowDetailModel> workflows =
-              state.requestDetails.workflowDetails ?? [];
-          final List<AttachmentModel> attachments =
-              state.requestDetails.attachments ?? [];
-          final chats = state.requestDetails.chatMessages ?? [];
+          final List<AttachmentModel> attachments = state.attachmentsById;
+          final chats = state.chatById;
           final List<ApprovalDetailModel> approvals =
               state.requestDetails.approvalDetails ?? [];
           final selectedTab = state.requestDetailTab;
@@ -99,6 +99,8 @@ class _HotelReservationRequestDetailsTabScreenState
           );
 
           final approverId = active?.id;
+
+          // controller.onSelectedApprovalId(approverRoleId ?? 0);
           // final canApprove = controller.shouldShowApprovalButtons(approvals);
 
           return SingleChildScrollView(
@@ -119,7 +121,7 @@ class _HotelReservationRequestDetailsTabScreenState
                     "Department": request?.createdByUser?.category ?? 'N/A',
                     "Email": request?.createdByUser?.email ?? 'N/A',
                     "Phone": request?.createdByUser?.mobile ?? 'N/A',
-                    "Request Type": request?.requestFor ?? 'N/A',
+                    // "Request Type": request?.requestFor ?? 'N/A',
                   },
                 ),
 
@@ -139,34 +141,53 @@ class _HotelReservationRequestDetailsTabScreenState
 
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
+                    // table: controller.mapAccommodationTableForDetails(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(
                     from: widget.from,
                     showButtons: actionType != ActionButtonsType.none,
-                    actionType: actionType,
+                    actionType: actionType, // ✅ FIX HERE
                     entries: chats,
                     controller: controller.chatController,
-                    attachments: [],
+                    buttonsDisabled: state.isButtonDisabled,
+                    attachments: state.attachments,
+                    onAttach: () async {
+                      await controller.pickFile();
+                    },
+                    onRemove: () {
+                      controller.removeAttachment();
+                    },
                     onSend: () async {
-                      // controller.sendChat(
+                      await controller.sendChatMessage(
+                        serviceId: widget.serviceId,
+                        subServiceId: widget.subServiceId,
+                      );
+                    },
+
+                    onApprove: () async {
+                      controller.showApprovalCommentDialog(
+                        type: ApprovalDialogType.approve,
+                        approverId: approverId ?? 0,
+                        requestId: requestId ?? 0,
+                      );
+                      // controller.onApprove(
+                      //   approverId ?? 0,
                       //   requestId ?? 0,
-                      //   controller.chatController.text,
+                      //   'Approved',
                       // );
                     },
-                    onApprove: () async {
-                      controller.onClose(
-                        approverId ?? 0,
-                        requestId ?? 0,
-                        "Approved",
-                      );
-                    },
                     onReject: () async {
-                      controller.onClose(
-                        approverId ?? 0,
-                        requestId ?? 0,
-                        "Rejected",
+                      controller.showApprovalCommentDialog(
+                        type: ApprovalDialogType.reject,
+                        approverId: approverId ?? 0,
+                        requestId: requestId ?? 0,
                       );
+                      // controller.onReject(
+                      //   approverId ?? 0,
+                      //   requestId ?? 0,
+                      //   'Rejected',
+                      // );
                     },
                   )
                 else if (selectedTab == 2)

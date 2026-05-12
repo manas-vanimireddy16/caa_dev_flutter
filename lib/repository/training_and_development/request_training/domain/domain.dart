@@ -3,7 +3,9 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/courses_participents_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/request_training_model.dart';
 import 'package:code_setup/repository/training_and_development/request_training/data/data.dart';
 
 abstract class RequestTrainingRepository {
@@ -11,7 +13,9 @@ abstract class RequestTrainingRepository {
 
   Future<List<EmployeeList>> getUsers(int departmentId);
 
-  Future<void> sendRequestTrainingRequest(Map<String, dynamic> payload);
+  Future<Map<String, dynamic>> requestTrainingCreateRequest(
+    Map<String, dynamic> payload,
+  );
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,
   );
@@ -21,8 +25,8 @@ abstract class RequestTrainingRepository {
     required int subServiceId,
   });
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId);
-
-  Future<List<TrainingandDevelopmentRequestModel>> getRequests({
+  Future<List<CourseName>> getCourseandParticipants();
+  Future<List<RequestTrainingModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -33,7 +37,7 @@ abstract class RequestTrainingRepository {
     String searchText = '',
   });
 
-  Future<List<TrainingandDevelopmentRequestModel>> getActionItems({
+  Future<List<RequestTrainingModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -73,4 +77,5 @@ abstract class RequestTrainingRepository {
     required int serviceId,
     required int subServiceId,
   });
+  Future<List<AttachmentModel>> getAttachmentsById(int id);
 }

@@ -1,14 +1,17 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
+import 'package:code_setup/presentation/models/master_roles.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/payment_of_cash_allowance_for_leave_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/payment_of_shift_allowance_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/hr_service/payment_of_cash_allowance_for_leave/domain/domain.dart';
@@ -22,46 +25,7 @@ import 'package:http_parser/http_parser.dart';
 class PaymentofCashAllowanceForLeaveRepositoryImple
     implements PaymentofCashAllowanceForLeaveRepository {
   @override
-  Future<List<EmployeeList>> getUsers(int departmentId) async {
-    final client = await KAppX.network.secureClient();
-    if (client == null) {
-      throw Exception("HTTP client not initialized");
-    }
-
-    try {
-      final response = await client.get(
-        ApiEndPoint.assignTaskToEmployeeUsersList(departmentId),
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
-
-        // 🔴 IMPORTANT: data['data'] is [ List<Employee>, totalCount ]
-        final List<dynamic> rawData = data['data'] as List<dynamic>? ?? [];
-
-        // rawData[0] contains the actual employee list
-        final List<dynamic> employeeList =
-            rawData.isNotEmpty && rawData[0] is List
-            ? rawData[0] as List<dynamic>
-            : [];
-
-        return employeeList
-            .map((e) => EmployeeList.fromJson(e as Map<String, dynamic>))
-            .toList();
-      }
-
-      throw Exception(
-        'Failed to fetch positions request for coverage: ${response.statusCode}',
-      );
-    } catch (e, st) {
-      debugPrint('getUsers error: $e');
-      debugPrintStack(stackTrace: st);
-      throw Exception("Error fetching positions request for coverage");
-    }
-  }
-
-  @override
-  Future<Map<String, dynamic>> sendPaymentofCashAllowanceForLeaveRequest(
+  Future<Map<String, dynamic>> paymentofCashAllowanceForLeaveCreateRequest(
     Map<String, dynamic> payload,
   ) async {
     final client = await KAppX.network.secureClient();
@@ -839,6 +803,63 @@ class PaymentofCashAllowanceForLeaveRepositoryImple
       }
     } catch (e) {
       throw Exception("Error fetching chatById details: $e");
+    }
+  }
+
+  @override
+  Future<List<Employee>> getUsers() async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw Exception("HTTP client not initialized");
+    }
+
+    try {
+      final response = await client.get(ApiEndPoint.assignmentDecisionUsers);
+
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final List list = data['data'] as List? ?? [];
+
+        return list
+            .map((e) => Employee.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+
+      throw Exception(
+        'Failed to fetch positions assignment decision: ${response.statusCode}',
+      );
+    } catch (e, st) {
+      debugPrint('getUsers error: $e');
+      debugPrintStack(stackTrace: st);
+      throw Exception("Error fetching positions assignment decision");
+    }
+  }
+
+  @override
+  Future<List<MasterRolesModel>> getRolesList() async {
+    final client = await KAppX.network.secureClient();
+    final userInfo = KAppX.globalProvider.read(rolesProvider);
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.masterRoles;
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          final List<dynamic> list = data['data'];
+
+          return list
+              .map((e) => MasterRolesModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception('Failed to roles list ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching roles list: $e");
     }
   }
 }

@@ -319,14 +319,14 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, String> buildRequestCardData(
     TrainingandDevelopmentRequestModel item,
   ) {
-    final approvers = resolveApproverDisplayList(item.approvalDetails);
+    final approvers = resolveApproverDisplayList(item.base?.approvalDetails);
 
     return {
-      'Request Id': item.id?.toString() ?? '-',
+      'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.status ?? '-',
-      'Purpose of Training': item.purposeOfTraining ?? '-',
-      'Event Date': item.dateOfEvent ?? '-',
-      'Number of Attendees': item.numberOfAttendees?.toString() ?? '-',
+      // 'Purpose of Training': item.purposeOfTraining ?? '-',
+      // 'Event Date': item.dateOfEvent ?? '-',
+      // 'Number of Attendees': item.numberOfAttendees?.toString() ?? '-',
       if (approvers.length == 2) ...{
         'Department': approvers[0],
         'Section': approvers[1],

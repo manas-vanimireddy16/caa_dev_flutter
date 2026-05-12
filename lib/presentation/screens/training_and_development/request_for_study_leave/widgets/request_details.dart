@@ -1,20 +1,3 @@
-// import 'package:auto_route/auto_route.dart';
-// import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-// import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-// import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-// import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-// import 'package:code_setup/presentation/screens/approvals/common_widgets.dart';
-// import 'package:code_setup/presentation/screens/logistics/models/logistics_detail_model.dart';
-// import 'package:code_setup/presentation/screens/logistics/view.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/attachments_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_details_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_history_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_tabs.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/workflow_tab.dart';
-// import 'package:code_setup/utils/app_extensions/app_extension.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 part of '../view.dart';
 
 @RoutePage()
@@ -95,7 +78,6 @@ class _RequestForStudyLeaveDetailsScreenState
             state.requestDetails,
             approvals,
           );
-          final nextApprover = controller.resolveApproverMap(approvals);
 
           final approverId = active?.id;
 
@@ -125,7 +107,7 @@ class _RequestForStudyLeaveDetailsScreenState
                 ),
 
                 5.toHorizontalSizedBox,
-                RequestTabs(
+                RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
                   subService: widget.subService,
@@ -136,45 +118,11 @@ class _RequestForStudyLeaveDetailsScreenState
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
                   CommonRequestDetails(
-                    statusInfo: {
-                      "Approval Status": request?.status ?? 'N/A',
-                      "Requested Date": request?.createdAt ?? 'N/A',
-                      // "Last Updated":
-                      //     request?.updatedAt?.split('T').first ?? 'N/A',
-                      if (nextApprover.containsKey('department'))
-                        'Department': nextApprover['department']!,
-                      if (nextApprover.containsKey('section'))
-                        'Section': nextApprover['section']!,
+                    statusInfo: controller.buildStatusInformation(),
 
-                      if (nextApprover.containsKey('name'))
-                        'Approver Name': nextApprover['name']!,
-                      if (nextApprover.containsKey('email'))
-                        'Approver Email': nextApprover['email']!,
-                    },
-
-                    requestInfo: {
-                      /// ───── LEFT COLUMN ─────
-                      "Sub Service Type":
-                          request?.subService?.subServiceName ?? 'N/A',
-
-                      "Course Start Date": request?.courseStartDate ?? 'N/A',
-                      "Course End Date": request?.courseEndDate ?? 'N/A',
-
-                      "Duration of Training":
-                          '${request?.courseStartDate} - ${request?.courseEndDate}',
-
-                      /// ───── RIGHT COLUMN ─────
-                      "Service Type": request?.service?.name ?? 'N/A',
-
-                      "Description": request?.description ?? 'N/A',
-                      "Media Coverage Required":
-                          request?.mediaCoverageRequired ?? 'N/A',
-                    },
-                    technicalInfo: {
-                      'Extension Number':
-                          request?.createdByUser?.extensionNumber.toString() ??
-                          '0',
-                    },
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
+                    // table: controller.mapAccommodationTableForDetails(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(
@@ -197,6 +145,7 @@ class _RequestForStudyLeaveDetailsScreenState
                         subServiceId: widget.subServiceId,
                       );
                     },
+
                     onApprove: () async {
                       controller.showApprovalCommentDialog(
                         type: ApprovalDialogType.approve,

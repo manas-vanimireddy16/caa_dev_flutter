@@ -88,20 +88,20 @@ class CommonAttachmentsTabContent extends StatelessWidget {
             ),
 
             /// Preview
-            IconButton(
-              icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
-              onPressed: () {
-                debugPrint("Preview → ${file.fileUrl}");
-              },
-            ),
+            // IconButton(
+            //   icon: const Icon(Icons.remove_red_eye, color: Colors.blue),
+            //   onPressed: () {
+            //     debugPrint("Preview → ${file.fileUrl}");
+            //   },
+            // ),
 
-            /// 🔴 Delete
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () {
-                debugPrint("Delete Attachment Id → ${file.id}");
-              },
-            ),
+            // /// 🔴 Delete
+            // IconButton(
+            //   icon: const Icon(Icons.delete, color: Colors.red),
+            //   onPressed: () {
+            //     debugPrint("Delete Attachment Id → ${file.id}");
+            //   },
+            // ),
           ],
         ),
       ),

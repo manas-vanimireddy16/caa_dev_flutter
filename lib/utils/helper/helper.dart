@@ -18,6 +18,16 @@ String formatDate(String? raw) {
   }
 }
 
+String formatFormDate(String? raw) {
+  if (raw == null || raw.isEmpty) return "";
+  try {
+    final dt = DateTime.parse(raw).toLocal();
+    return DateFormat("yyyy-MM-dd").format(dt); //| hh:mm a
+  } catch (_) {
+    return raw;
+  }
+}
+
 String formatTime(String? raw) {
   if (raw == null || raw.isEmpty) return "";
   try {
