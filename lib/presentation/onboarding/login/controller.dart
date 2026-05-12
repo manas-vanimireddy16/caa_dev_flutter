@@ -47,7 +47,7 @@ class _VSController extends StateNotifier<_ViewState> {
     initializeMsal();
 
     // Check if a user session already exists on app start
-    userSession();
+    // userSession();
   }
 
   Future<void> initializeMsal() async {
@@ -74,16 +74,20 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> signIn() async {
     try {
+      debugPrint('🔄 Attempting to acquire token...');
       AuthenticationResult result = await msal.acquireToken(
         scopes: ['user.read'],
       );
 
+      debugPrint(
+        '✅ Token acquired successfully! accessToken: ${result.accessToken}',
+      );
       accessToken = result.accessToken;
 
       // Fetch your app auth token using SSO access token
       await onGettingSSOAccessTokenFetchAuthToken(accessToken);
-    } on MsalException catch (e) {
-      print('Error during login: ${e.message}');
+    } catch (e) {
+      debugPrint('❌ ERROR DURING LOGIN: $e');
     }
   }
 

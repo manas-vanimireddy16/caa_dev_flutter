@@ -10,7 +10,7 @@ class _KNetworkHeaderKeys {
 class KNetworkingDefaults {
   KNetworkingDefaults._();
 
-  final String baseUrl = 'https://caa.altomouhit.com';
+  final String baseUrl = 'https://caa-qa.altomouhit.com';
 
   final Map<String, String> defaultHeaders = {
     _KNetworkHeaderKeys.contentType: 'application/json',
