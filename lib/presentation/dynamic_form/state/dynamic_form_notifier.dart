@@ -523,6 +523,38 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
       final attendees = values['attendees'];
       values['number_of_attendees'] = attendees.length.toString();
     }
+
+    if (key == 'travel_date_from' || key == 'travel_date_to') {
+      DateTime? start;
+      DateTime? end;
+
+      final rawStart = values['travel_date_from'];
+      final rawEnd = values['travel_date_to'];
+
+      if (rawStart is DateTime) {
+        start = rawStart;
+      } else if (rawStart is String) {
+        start = DateTime.tryParse(rawStart);
+      }
+
+      if (rawEnd is DateTime) {
+        end = rawEnd;
+      } else if (rawEnd is String) {
+        end = DateTime.tryParse(rawEnd);
+      }
+
+      if (start != null && end != null) {
+        final diff = end.difference(start).inDays;
+
+        if (diff >= 0) {
+          values['duration'] = (diff + 1).toString();
+        } else {
+          values['duration'] = '';
+        }
+      } else {
+        values['duration'] = '';
+      }
+    }
   }
 
   /// ------------------------------------------------

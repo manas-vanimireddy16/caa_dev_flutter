@@ -348,8 +348,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           ],
         );
       case ActionButtonsType.approveRejectAllocateVehicle:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        return Wrap(
           children: [
             _actionButton("Approve", Colors.green, () async {
               await widget.onApprove?.call();

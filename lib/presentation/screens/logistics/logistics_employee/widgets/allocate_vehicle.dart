@@ -253,8 +253,7 @@ class _AllocateVehicleDialogWidgetState
             const SizedBox(height: 30),
 
             /// BUTTONS
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            Wrap(
               children: [
                 OutlinedButton.icon(
                   onPressed: () => Navigator.pop(context),

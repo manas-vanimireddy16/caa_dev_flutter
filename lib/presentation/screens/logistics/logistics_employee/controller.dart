@@ -717,9 +717,8 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails.request;
     return {
-      /// ───── RIGHT COLUMN ─────
-      "Request For": request?.requestFor ?? 'N/A',
-
+      /// ───── RIGHT /COLUMN ─────
+      //"Request For": request?.requestFor ?? 'N/A',
       "Service Type": request?.service?.name ?? 'N/A',
 
       /// ───── LEFT COLUMN ─────
@@ -838,6 +837,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Vehicle Required For',
       type: FieldType.select,
       required: true,
+      placeholder: 'Select ',
       options: const [
         DropdownOption(value: 'Conferences', label: 'Conferences'),
         DropdownOption(
@@ -853,6 +853,7 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'vehicle_required_location',
       label: 'Vehicle Required Location',
       type: FieldType.select,
+      placeholder: 'Select ',
       required: true,
       options: const [
         DropdownOption(value: 'Inside Muscat', label: 'Inside Muscat'),
@@ -875,8 +876,9 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Type of Request',
       type: FieldType.select,
       required: true,
+      placeholder: 'Select ',
       options: const [
-        DropdownOption(value: 'new_request', label: 'New Request'),
+        DropdownOption(value: 'New Request', label: 'New Request'),
         DropdownOption(
           value: 'Extension of Previous Request',
           label: 'Extension of Previous Request',
@@ -890,6 +892,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Purpose of Travel',
       type: FieldType.select,
       required: true,
+      placeholder: 'Select ',
       options: const [
         DropdownOption(value: 'Site Visit', label: 'Site Visit'),
         DropdownOption(value: 'Airport Duty', label: 'Airport Duty'),
@@ -903,6 +906,7 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'type_of_vehicle_required',
       label: 'Type of Vehicle Required',
       type: FieldType.select,
+      placeholder: 'Select ',
       required: true,
       options: const [
         DropdownOption(value: 'Light vehicle', label: 'Light Vehicle'),
@@ -912,9 +916,27 @@ class _VSController extends StateNotifier<_ViewState> {
 
     /// ================= TRAVEL DATE =================
     DynamicField(
-      name: 'travel_date',
-      label: 'Travel Date',
+      name: 'travel_date_from',
+      label: 'Travel Date From',
+      placeholder: 'Select',
       type: FieldType.date,
+      required: true,
+    ),
+
+    /// ================= TRAVEL DATE TO =================
+    DynamicField(
+      name: 'travel_date_to',
+      label: 'Travel Date To',
+      placeholder: 'Select',
+      type: FieldType.date,
+      required: true,
+    ),
+
+    DynamicField(
+      name: 'duration',
+      label: 'Duration',
+      placeholder: 'Auto calculated',
+      type: FieldType.time,
       required: true,
     ),
 
@@ -922,6 +944,7 @@ class _VSController extends StateNotifier<_ViewState> {
     DynamicField(
       name: 'travel_time',
       label: 'Travel Time',
+      placeholder: 'Select',
       type: FieldType.time,
       required: true,
     ),
@@ -932,6 +955,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Description',
       type: FieldType.text,
       required: false,
+      placeholder: 'Write Here...',
       // hintText: 'Write Here...',
     ),
 
@@ -1753,7 +1777,7 @@ class _VSController extends StateNotifier<_ViewState> {
       final level = approval.level ?? -1;
 
       // 1️⃣ IN PROGRESS always wins
-      if (status == 'in progress') {
+      if (status.toString().toLowerCase() == 'in progress') {
         return approval;
       }
 
@@ -2019,16 +2043,13 @@ class _VSController extends StateNotifier<_ViewState> {
     final userInfo = KAppX.globalProvider.read(userInfoProvider);
 
     return {
-      /// ⭐ USER INFO
       "req_user_department_id": userInfo?.data?.department?.id ?? 0,
 
       "req_user_section_id": userInfo?.data?.section?.id ?? 0,
 
-      /// ⭐ SERVICE INFO
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      /// ⭐ REQUEST DETAILS
       "category": values['request_type'] ?? "",
 
       "vehicle_required_for": values['vehicle_required_for'] ?? "",
@@ -2043,7 +2064,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
       "type_of_vehicle_required": values['type_of_vehicle_required'] ?? "",
 
-      "date_of_travel": values['travel_date'] ?? "",
+      "travel_date_from": values['travel_date_from'] ?? "",
+
+      "travel_date_to": values['travel_date_to'] ?? "",
+
+      "duration": values['duration'] ?? 0,
 
       "time_of_travel": values['travel_time'] ?? "",
 
@@ -2051,7 +2076,6 @@ class _VSController extends StateNotifier<_ViewState> {
 
       "description": values['description'] ?? "",
 
-      /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
     };
   }

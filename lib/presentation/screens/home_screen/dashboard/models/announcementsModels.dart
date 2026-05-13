@@ -41,7 +41,7 @@ class AnnouncementModel {
           json['field_announcement_caa_status'] as String?,
       fieldAnnouncementCaaTitle:
           json['field_announcement_caa_title'] as String?,
-      fieldBanner: json['field_banner'] as String?,
+      fieldBanner: json['field_caa_banner'] as String?,
       fieldCreatedAnnouncementOn:
           json['field_created_announcement_on'] as String?,
       nid: json['nid'] as String?,
@@ -58,7 +58,7 @@ class AnnouncementModel {
       'field_announcement_caa_priority': fieldAnnouncementCaaPriority,
       'field_announcement_caa_status': fieldAnnouncementCaaStatus,
       'field_announcement_caa_title': fieldAnnouncementCaaTitle,
-      'field_banner': fieldBanner,
+      'field_caa_banner': fieldBanner,
       'field_created_announcement_on': fieldCreatedAnnouncementOn,
       'nid': nid,
     };

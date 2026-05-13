@@ -47,64 +47,55 @@ class SettingsScreen extends ConsumerWidget {
           child: ListView(
             children: [
               // --------- Theme ----------
-              Text(
-                'Appearance',
-                style: TextStyle(
-                  fontSize: currentTheme.fontSizes.s14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade700,
-                ),
-              ),
-              8.toVerticalSizedBox,
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.brightness_6_rounded,
-                      color: Colors.grey.shade700,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Theme',
-                            style: TextStyle(
-                              fontSize: currentTheme.fontSizes.s14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            state.isDarkMode
-                                ? 'Dark mode is enabled'
-                                : 'Light mode is enabled',
-                            style: TextStyle(
-                              fontSize: currentTheme.fontSizes.s12,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Switch.adaptive(
-                      value: state.isDarkMode,
-                      onChanged: controller.onToggleTheme,
-                    ),
-                  ],
-                ),
-              ),
 
+              // Container(
+              //   padding: const EdgeInsets.symmetric(
+              //     horizontal: 12,
+              //     vertical: 12,
+              //   ),
+              //   decoration: BoxDecoration(
+              //     color: Colors.grey.shade50,
+              //     borderRadius: BorderRadius.circular(12),
+              //     border: Border.all(color: Colors.grey.shade200),
+              //   ),
+              //   child: Row(
+              //     children: [
+              //       Icon(
+              //         Icons.brightness_6_rounded,
+              //         color: Colors.grey.shade700,
+              //       ),
+              //       const SizedBox(width: 12),
+              //       Expanded(
+              //         child: Column(
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             Text(
+              //               'Theme',
+              //               style: TextStyle(
+              //                 fontSize: currentTheme.fontSizes.s14,
+              //                 fontWeight: FontWeight.w600,
+              //               ),
+              //             ),
+              //             const SizedBox(height: 2),
+              //             Text(
+              //               state.isDarkMode
+              //                   ? 'Dark mode is enabled'
+              //                   : 'Light mode is enabled',
+              //               style: TextStyle(
+              //                 fontSize: currentTheme.fontSizes.s12,
+              //                 color: Colors.grey.shade600,
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //       Switch.adaptive(
+              //         value: state.isDarkMode,
+              //         onChanged: controller.onToggleTheme,
+              //       ),
+              //     ],
+              //   ),
+              // ),
               24.toVerticalSizedBox,
 
               // --------- Role ----------
@@ -189,6 +180,7 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+              20.toVerticalSizedBox,
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(

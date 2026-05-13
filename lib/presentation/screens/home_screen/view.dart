@@ -47,7 +47,7 @@ class HomePage extends ConsumerWidget {
 
         routes: [
           AnnouncementRoute(),
-          ApprovalsList(),
+          // ApprovalsList(),
           ServicesRoute(),
           SettingsRoute(),
         ],
@@ -107,8 +107,23 @@ class HomePage extends ConsumerWidget {
                   currentTheme: currentTheme,
                 ),
 
+                // _buildNavItem(
+                //   icon: Icons.design_services,
+
+                //   label: 'Quick Links',
+
+                //   isActive: tabsRouter.activeIndex == 1,
+
+                //   onTap: () {
+                //     tabsRouter.setActiveIndex(1);
+
+                //     stateController.onTabChanged(1);
+                //   },
+
+                //   currentTheme: currentTheme,
+                // ),
                 _buildNavItem(
-                  icon: Icons.design_services,
+                  icon: Icons.work,
 
                   label: 'Services',
 
@@ -123,9 +138,9 @@ class HomePage extends ConsumerWidget {
                   currentTheme: currentTheme,
                 ),
                 _buildNavItem(
-                  icon: Icons.home,
+                  icon: Icons.settings,
 
-                  label: 'Services',
+                  label: 'Settings',
 
                   isActive: tabsRouter.activeIndex == 2,
 
@@ -133,21 +148,6 @@ class HomePage extends ConsumerWidget {
                     tabsRouter.setActiveIndex(2);
 
                     stateController.onTabChanged(2);
-                  },
-
-                  currentTheme: currentTheme,
-                ),
-                _buildNavItem(
-                  icon: Icons.home,
-
-                  label: 'Settings',
-
-                  isActive: tabsRouter.activeIndex == 3,
-
-                  onTap: () {
-                    tabsRouter.setActiveIndex(3);
-
-                    stateController.onTabChanged(3);
                   },
 
                   currentTheme: currentTheme,

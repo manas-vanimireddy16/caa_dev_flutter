@@ -47,7 +47,7 @@ class _VSController extends StateNotifier<_ViewState> {
     initializeMsal();
 
     // Check if a user session already exists on app start
-    // userSession();
+    userSession();
   }
 
   Future<void> initializeMsal() async {

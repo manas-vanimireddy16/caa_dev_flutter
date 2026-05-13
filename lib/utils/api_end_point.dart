@@ -1975,7 +1975,7 @@ class ApiEndPoint {
   static const String residentalUnitRentalApartmentTypes =
       '/v1/asset-affairs-service/admin-config/apartment-types';
   static const String residentalUnitRentalUnitLocations =
-      'https://caa.altomouhit.com/v1/asset-affairs-service/admin-config/unit-locations';
+      'https://caa-qa.altomouhit.com/v1/asset-affairs-service/admin-config/unit-locations';
 
   /// ===================== REQUEST APIs =====================
 
