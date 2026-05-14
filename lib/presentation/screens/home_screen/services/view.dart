@@ -288,7 +288,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
 
                                 if (subService != null) {
                                   controller.navigateToRoute(
-                                    name: subService.subServiceName ?? '',
+                                    name: subService.code ?? '',
                                     service: data,
                                     subService: subService,
                                   );

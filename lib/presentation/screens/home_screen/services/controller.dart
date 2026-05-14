@@ -227,7 +227,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // case 'Request Transportation for Foreign Employee':
       //   KAppX.router.push(LogisticsForeignersRequestPortalRoute());
       //   break;
-      case 'Request a Vehicle: Daily/Emergency':
+      case 'CAA031':
         KAppX.router.push(
           LogisticsRequestPortalRoute(
             service: service ?? Service(),
@@ -235,7 +235,7 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      case 'Request for Vehicle Maintenance':
+      case 'CAA032':
         KAppX.router.push(
           RequestForVehicleMaintenanceRoute(
             service: service ?? Service(),
@@ -251,7 +251,7 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      case 'Request for Hotel Reservation':
+      case 'CAA046':
         KAppX.router.push(
           HotelReservationRoute(
             service: service ?? Service(),
@@ -259,13 +259,13 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      // case 'Report Security Threat':
-      //   KAppX.router.push(
-      //     SecurityThreatRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
+      case 'CAA006':
+        KAppX.router.push(
+          SecurityThreatRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
       //   break;
 
       // case 'Request to Organize Security Awareness':
@@ -363,7 +363,7 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      case 'Request Training':
+      case 'CAA015':
         KAppX.router.push(
           RequestTrainingRoute(
             service: service ?? Service(),
@@ -371,7 +371,7 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      case 'Request For Study Leave':
+      case 'CAA016':
         KAppX.router.push(
           RequestForStudyLeaveRoute(
             service: service ?? Service(),

@@ -4773,7 +4773,7 @@ class OrganizeSecurityAwarenessRouteArgs {
 class PaymentofCashAllowanceForLeaveDetailsRoute
     extends _i84.PageRouteInfo<PaymentofCashAllowanceForLeaveDetailsRouteArgs> {
   PaymentofCashAllowanceForLeaveDetailsRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
@@ -4826,7 +4826,7 @@ class PaymentofCashAllowanceForLeaveDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final int id;
 
@@ -4875,7 +4875,7 @@ class PaymentofCashAllowanceForLeaveNewRequestRoute
     extends
         _i84.PageRouteInfo<PaymentofCashAllowanceForLeaveNewRequestRouteArgs> {
   PaymentofCashAllowanceForLeaveNewRequestRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required int serviceId,
     required int subServiceId,
     required _i86.Service service,
@@ -4920,7 +4920,7 @@ class PaymentofCashAllowanceForLeaveNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final int serviceId;
 
@@ -4961,7 +4961,7 @@ class PaymentofCashAllowanceForLeaveNewRequestRouteArgs {
 class PaymentofCashAllowanceForLeaveRoute
     extends _i84.PageRouteInfo<PaymentofCashAllowanceForLeaveRouteArgs> {
   PaymentofCashAllowanceForLeaveRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required _i86.Service service,
     required _i86.SubService subService,
     List<_i84.PageRouteInfo>? children,
@@ -4997,7 +4997,7 @@ class PaymentofCashAllowanceForLeaveRouteArgs {
     required this.subService,
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final _i86.Service service;
 
@@ -8234,7 +8234,7 @@ class RequestForProjectApprovalRouteArgs {
 class RequestForStudyLeaveDetailsRoute
     extends _i84.PageRouteInfo<RequestForStudyLeaveDetailsRouteArgs> {
   RequestForStudyLeaveDetailsRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
@@ -8286,7 +8286,7 @@ class RequestForStudyLeaveDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final int id;
 
@@ -8334,7 +8334,7 @@ class RequestForStudyLeaveDetailsRouteArgs {
 class RequestForStudyLeaveNewRequestRoute
     extends _i84.PageRouteInfo<RequestForStudyLeaveNewRequestRouteArgs> {
   RequestForStudyLeaveNewRequestRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required int serviceId,
     required int subServiceId,
     required _i86.Service service,
@@ -8378,7 +8378,7 @@ class RequestForStudyLeaveNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final int serviceId;
 
@@ -8418,7 +8418,7 @@ class RequestForStudyLeaveNewRequestRouteArgs {
 class RequestForStudyLeaveRoute
     extends _i84.PageRouteInfo<RequestForStudyLeaveRouteArgs> {
   RequestForStudyLeaveRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required _i86.Service service,
     required _i86.SubService subService,
     List<_i84.PageRouteInfo>? children,
@@ -8454,7 +8454,7 @@ class RequestForStudyLeaveRouteArgs {
     required this.subService,
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final _i86.Service service;
 
@@ -9914,7 +9914,7 @@ class RequestToRenewalHousingContractRouteArgs {
 class RequestTrainingDetailsRoute
     extends _i84.PageRouteInfo<RequestTrainingDetailsRouteArgs> {
   RequestTrainingDetailsRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
@@ -9966,7 +9966,7 @@ class RequestTrainingDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final int id;
 
@@ -10014,7 +10014,7 @@ class RequestTrainingDetailsRouteArgs {
 class RequestTrainingNewRequestRoute
     extends _i84.PageRouteInfo<RequestTrainingNewRequestRouteArgs> {
   RequestTrainingNewRequestRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required int serviceId,
     required int subServiceId,
     required _i86.Service service,
@@ -10058,7 +10058,7 @@ class RequestTrainingNewRequestRouteArgs {
     required this.subService,
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final int serviceId;
 
@@ -10098,7 +10098,7 @@ class RequestTrainingNewRequestRouteArgs {
 class RequestTrainingRoute
     extends _i84.PageRouteInfo<RequestTrainingRouteArgs> {
   RequestTrainingRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required _i86.Service service,
     required _i86.SubService subService,
     List<_i84.PageRouteInfo>? children,
@@ -10134,7 +10134,7 @@ class RequestTrainingRouteArgs {
     required this.subService,
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final _i86.Service service;
 
@@ -12533,6 +12533,8 @@ class SecurityThreatNewRequestRoute
     extends _i84.PageRouteInfo<SecurityThreatNewRequestRouteArgs> {
   SecurityThreatNewRequestRoute({
     _i85.Key? key,
+    required int serviceId,
+    required int subServiceId,
     required _i86.Service service,
     required _i86.SubService subService,
     List<_i84.PageRouteInfo>? children,
@@ -12540,6 +12542,8 @@ class SecurityThreatNewRequestRoute
          SecurityThreatNewRequestRoute.name,
          args: SecurityThreatNewRequestRouteArgs(
            key: key,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
            service: service,
            subService: subService,
          ),
@@ -12554,6 +12558,8 @@ class SecurityThreatNewRequestRoute
       final args = data.argsAs<SecurityThreatNewRequestRouteArgs>();
       return _i74.SecurityThreatNewRequestScreen(
         key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
         service: args.service,
         subService: args.subService,
       );
@@ -12564,11 +12570,17 @@ class SecurityThreatNewRequestRoute
 class SecurityThreatNewRequestRouteArgs {
   const SecurityThreatNewRequestRouteArgs({
     this.key,
+    required this.serviceId,
+    required this.subServiceId,
     required this.service,
     required this.subService,
   });
 
   final _i85.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
 
   final _i86.Service service;
 
@@ -12576,7 +12588,7 @@ class SecurityThreatNewRequestRouteArgs {
 
   @override
   String toString() {
-    return 'SecurityThreatNewRequestRouteArgs{key: $key, service: $service, subService: $subService}';
+    return 'SecurityThreatNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
   }
 
   @override
@@ -12584,12 +12596,19 @@ class SecurityThreatNewRequestRouteArgs {
     if (identical(this, other)) return true;
     if (other is! SecurityThreatNewRequestRouteArgs) return false;
     return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
         service == other.service &&
         subService == other.subService;
   }
 
   @override
-  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
 }
 
 /// generated route for
@@ -12599,18 +12618,22 @@ class SecurityThreatRequestDetailsTabRoute
   SecurityThreatRequestDetailsTabRoute({
     _i85.Key? key,
     required int id,
-    String from = '',
+    required int serviceId,
+    required int subServiceId,
     required _i86.Service service,
     required _i86.SubService subService,
+    String from = '',
     List<_i84.PageRouteInfo>? children,
   }) : super(
          SecurityThreatRequestDetailsTabRoute.name,
          args: SecurityThreatRequestDetailsTabRouteArgs(
            key: key,
            id: id,
-           from: from,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
            service: service,
            subService: subService,
+           from: from,
          ),
          initialChildren: children,
        );
@@ -12624,9 +12647,11 @@ class SecurityThreatRequestDetailsTabRoute
       return _i74.SecurityThreatRequestDetailsTabScreen(
         key: args.key,
         id: args.id,
-        from: args.from,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
         service: args.service,
         subService: args.subService,
+        from: args.from,
       );
     },
   );
@@ -12636,24 +12661,30 @@ class SecurityThreatRequestDetailsTabRouteArgs {
   const SecurityThreatRequestDetailsTabRouteArgs({
     this.key,
     required this.id,
-    this.from = '',
+    required this.serviceId,
+    required this.subServiceId,
     required this.service,
     required this.subService,
+    this.from = '',
   });
 
   final _i85.Key? key;
 
   final int id;
 
-  final String from;
+  final int serviceId;
+
+  final int subServiceId;
 
   final _i86.Service service;
 
   final _i86.SubService subService;
 
+  final String from;
+
   @override
   String toString() {
-    return 'SecurityThreatRequestDetailsTabRouteArgs{key: $key, id: $id, from: $from, service: $service, subService: $subService}';
+    return 'SecurityThreatRequestDetailsTabRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
   }
 
   @override
@@ -12662,18 +12693,22 @@ class SecurityThreatRequestDetailsTabRouteArgs {
     if (other is! SecurityThreatRequestDetailsTabRouteArgs) return false;
     return key == other.key &&
         id == other.id &&
-        from == other.from &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
         service == other.service &&
-        subService == other.subService;
+        subService == other.subService &&
+        from == other.from;
   }
 
   @override
   int get hashCode =>
       key.hashCode ^
       id.hashCode ^
-      from.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
       service.hashCode ^
-      subService.hashCode;
+      subService.hashCode ^
+      from.hashCode;
 }
 
 /// generated route for

@@ -612,6 +612,7 @@ class _VSController extends StateNotifier<_ViewState> {
     chatController = TextEditingController();
     titleController = TextEditingController();
     searchController = TextEditingController();
+    fetchApprovalKpi();
     fetchKpi();
     fetchRequests();
     fetchStatusBreakdown('monthly');
@@ -718,17 +719,18 @@ class _VSController extends StateNotifier<_ViewState> {
     final request = state.requestDetails.request;
     return {
       /// ───── RIGHT /COLUMN ─────
-      //"Request For": request?.requestFor ?? 'N/A',
+      "Request For": request?.vehicleRequiredFor ?? 'N/A',
       "Service Type": request?.service?.name ?? 'N/A',
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
       "Purpose of Travel": request?.purposeOfTravel ?? 'N/A',
-      "Travel Date": formatDate(request?.dateOfTravel ?? 'N/A'),
+      // "Travel Date": formatDate(request?.dateOfTravel ?? 'N/A'),
       "Travel Time": formatTime(request?.timeOfTravel ?? 'N/A'),
       "Location": request?.vehicleRequiredLocation ?? 'N/A',
-      // "Driver Name": request?.driverName ?? 'N/A',
-      // "Vehicle Number": request?.vehicleNumber ?? 'N/A',
+      "Travel Date From": request?.travelDateFrom ?? 'N/A',
+      "Travel Date To": request?.travelDateTo ?? 'N/A',
+      "Duration": request?.duration.toString() ?? 'N/A',
       "Description": request?.description ?? 'N/A',
       // 'Type Of Enquire': request?.titleOfEnquiry ?? 'N/A',
       // 'Phone Number': request?.phone ?? 'N/A',

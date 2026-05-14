@@ -164,7 +164,7 @@ class RequestStatusBreakdownCard extends StatelessWidget {
                   Text(
                     'Total Requests',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFF6B7280),
+                      color: const Color(0xFFDADADA),
                       fontSize: currentTheme.fontSizes.s11,
                       fontWeight: FontWeight.w500,
                     ),
@@ -323,17 +323,19 @@ Color getStatusColor(String? status) {
   switch (status?.toLowerCase()) {
     // make it case-insensitive
     case 'pending':
-      return Colors.orange;
+      return const Color(0xFFFFA726);
     case 'completed':
-      return Colors.green;
+      return const Color(0xFF0D652D);
     case 'approved':
-      return Colors.green;
+      return const Color(0xFF0D652D);
     case 'expired':
-      return Colors.pink;
+      return const Color(0xFFC02211);
     case 'in progress':
       return Colors.blue;
     case 'failed':
-      return Colors.red;
+      return const Color(0xFFC02211);
+    case 'rejected':
+      return const Color(0xFFC02211);
     default:
       return Colors.grey; // default color if status doesn't match
   }

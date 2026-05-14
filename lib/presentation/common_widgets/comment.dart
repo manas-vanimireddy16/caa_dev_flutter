@@ -136,9 +136,9 @@ class CommentEntry extends StatelessWidget {
   /// Status with chip
   Widget _statusItem(String label, String status) {
     final Color color = status.toLowerCase() == "approved"
-        ? Colors.green
+        ? const Color(0xFF0D652D)
         : status.toLowerCase() == "rejected"
-        ? Colors.red
+        ? const Color(0xFFC02211)
         : Colors.orange;
 
     return Expanded(
@@ -256,7 +256,7 @@ class _AttachmentPreview extends StatelessWidget {
           ),
           InkWell(
             onTap: onRemove,
-            child: const Icon(Icons.close, color: Colors.red),
+            child: const Icon(Icons.close, color: const Color(0xFFC02211)),
           ),
         ],
       ),
@@ -304,7 +304,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Approve", Colors.green, () async {
+            _actionButton("Approve", const Color(0xFF0D652D), () async {
               await widget.onApprove?.call();
             }),
           ],
@@ -314,7 +314,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Assign", Colors.green, () async {
+            _actionButton("Assign", const Color(0xFF0D652D), () async {
               if (widget.source.toLowerCase() == 'securityawarenessassign') {
                 KAppX.router.push(
                   OrganizeSecurityAwarenessNewRequestRoute(
@@ -328,7 +328,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               await widget.onAssign?.call();
             }),
             10.toHorizontalSizedBox,
-            _actionButton("Reject", Colors.red, () async {
+            _actionButton("Reject", const Color(0xFFC02211), () async {
               await widget.onReject?.call();
             }),
           ],
@@ -338,11 +338,11 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Approve", Colors.green, () async {
+            _actionButton("Approve", const Color(0xFF0D652D), () async {
               await widget.onApprove?.call();
             }),
             10.toHorizontalSizedBox,
-            _actionButton("Reject", Colors.red, () async {
+            _actionButton("Reject", const Color(0xFFC02211), () async {
               await widget.onReject?.call();
             }),
           ],
@@ -350,11 +350,11 @@ class _AddCommentBoxState extends State<AddCommentBox> {
       case ActionButtonsType.approveRejectAllocateVehicle:
         return Wrap(
           children: [
-            _actionButton("Approve", Colors.green, () async {
+            _actionButton("Approve", const Color(0xFF0D652D), () async {
               await widget.onApprove?.call();
             }),
             10.toHorizontalSizedBox,
-            _actionButton("Reject", Colors.red, () async {
+            _actionButton("Reject", const Color(0xFFC02211), () async {
               await widget.onReject?.call();
             }),
             _actionButton(
@@ -373,11 +373,11 @@ class _AddCommentBoxState extends State<AddCommentBox> {
             _actionButton("Assign", Colors.blue, () async {
               await widget.onAssign?.call();
             }),
-            _actionButton("Approve", Colors.green, () async {
+            _actionButton("Approve", const Color(0xFF0D652D), () async {
               await widget.onApprove?.call();
             }),
             10.toHorizontalSizedBox,
-            _actionButton("Reject", Colors.red, () async {
+            _actionButton("Reject", const Color(0xFFC02211), () async {
               await widget.onReject?.call();
             }),
           ],
@@ -391,11 +391,11 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               await widget.onReassign?.call();
             }),
             8.toHorizontalSizedBox,
-            _actionButton("Close", Colors.green, () async {
+            _actionButton("Close", const Color(0xFF0D652D), () async {
               await widget.onClose?.call();
             }),
             8.toHorizontalSizedBox,
-            _actionButton("Reject", Colors.red, () async {
+            _actionButton("Reject", const Color(0xFFC02211), () async {
               await widget.onReject?.call();
             }),
           ],
@@ -405,11 +405,11 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Close", Colors.green, () async {
+            _actionButton("Close", const Color(0xFF0D652D), () async {
               await widget.onClose?.call();
             }),
             10.toHorizontalSizedBox,
-            _actionButton("Reject", Colors.red, () async {
+            _actionButton("Reject", const Color(0xFFC02211), () async {
               await widget.onReject?.call();
             }),
           ],
@@ -429,7 +429,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("In Progress", Colors.green, () async {
+            _actionButton("In Progress", const Color(0xFF0D652D), () async {
               await widget.onInProgress?.call();
               return;
             }),
@@ -439,7 +439,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Complete", Colors.green, () async {
+            _actionButton("Complete", const Color(0xFF0D652D), () async {
               await widget.onComplete?.call();
             }),
           ],
@@ -479,7 +479,11 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           const SizedBox(width: 8),
           InkWell(
             onTap: widget.onRemove,
-            child: const Icon(Icons.close, size: 18, color: Colors.red),
+            child: const Icon(
+              Icons.close,
+              size: 18,
+              color: const Color(0xFFC02211),
+            ),
           ),
         ],
       ),
@@ -536,7 +540,10 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                       ),
                       if (widget.showButtons && isCommentMode)
                         IconButton(
-                          icon: const Icon(Icons.close, color: Colors.red),
+                          icon: const Icon(
+                            Icons.close,
+                            color: const Color(0xFFC02211),
+                          ),
                           onPressed: () {
                             widget.controller.clear();
                             setState(() => isCommentMode = false);

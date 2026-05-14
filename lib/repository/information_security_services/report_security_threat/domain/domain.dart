@@ -2,74 +2,96 @@ import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/security_access/models/request_model.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
-import 'package:code_setup/repository/security_access/data/data.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat.dart';
+import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
+import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/cancel_request_model.dart';
 import 'package:code_setup/repository/information_security_services/report_security_threat/data/data.dart';
+import 'package:code_setup/repository/logistics/request_a_vehicle/data/data.dart';
+import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/data/data.dart';
 
-abstract class SecurityThreatRepoistory {
-  factory SecurityThreatRepoistory() => SecurityThreatRepoistoryImple();
+abstract class SecurityThreatRepository {
+  factory SecurityThreatRepository() => SecurityThreatImpl();
 
-  Future<void> sendSecurityThreatRequest(Map<String, dynamic> payload);
+  Future<List<EmployeeList>> getUsers(int departmentId);
+
+  Future<Map<String, dynamic>> securityThreatCreateRequest(
+    Map<String, dynamic> payload,
+  );
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,
   );
-  Future<RequestDetailData?> getRequestsById(int id);
-  Future<KPIResponse?> getKpiData();
-  Future<StatusBreakdownModel?> getStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period);
-  Future<List<ThreatRequestDetail>> getRequests({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
+  Future<RequestDetailData?> getRequestsById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
   });
-  Future<List<ThreatRequestDetail>> getCombinedRequests({
+  Future<KPIResponse?> getKpiData(int serviceId, int subServiceId);
+
+  Future<List<SecurityThreatRequestModel>> getRequests({
     required int offset,
     required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
-  });
-  Future<List<ThreatRequestDetail>> getActionItems({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
-  });
-  Future<List<ThreatRequestDetail>> getCombinedActionItems({
-    required int offset,
-    required int limit,
+    required int serviceId,
+    required int subServiceId,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
     String searchText = '',
   });
 
-  Future<KPIResponse?> getApprovalKpiData();
-  Future<KPIResponse?> getCombinedKpiData();
-  Future<KPIResponse?> getCombinedApprovalKpiData();
-  Future<StatusBreakdownModel?> getApprovalStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(String period);
+  Future<List<SecurityThreatRequestModel>> getActionItems({
+    required int offset,
+    required int limit,
+    required int serviceId,
+    required int subServiceId,
+    // String sortBy = 'created_at',
+    // String sortOrder = 'DESC',
+    String status = '', // 👈 changed to List
+    String searchText = '',
+  });
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<void> onApprove(Map<String, dynamic> payload);
 
-  Future<StatusBreakdownModel?> getCombinedStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getCombinedTrendBreakdownData(String period);
+  Future<String> sendChat(Map<String, dynamic> payload, int id);
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id);
+  Future<List<ChatMessageModel>> getchatById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<List<AttachmentModel>> getAttachmentsById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  });
 
-  Future<StatusBreakdownModel?> getCombinedApprovalStatusBreakdownData(
-    String period,
-  );
-  Future<TrendBreakdownModel> getCombinedApprovalTrendBreakdownData(
-    String period,
-  );
+  Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<TrendBreakdownModel> getApprovalTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
 
-  Future<void> onClose(Map<String, dynamic> payload);
-  Future<String> sendChat(Map<String, dynamic> payload, int id, String type);
-  Future<List<PendingApprovalUser>> getEngineersList();
-  Future<void> onAssignEngineer(Map<String, dynamic> payload);
+  Future<StatusBreakdownModel?> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<List<DepartmentModel>> getDepartments();
+  Future<List<SectionModel>> getSections({required String? userDepartmentId});
+  Future<void> onAllocateVehicle(Map<String, dynamic> payload, int requestId);
 }

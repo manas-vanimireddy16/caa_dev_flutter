@@ -95,7 +95,7 @@ class _AnnouncementWidgetState extends ConsumerState<AnnouncementWidget> {
                                 ),
                                 child: KImageProvider(
                                   image:
-                                      'https://drupal.swiftinsights.ai${ann.fieldBanner}',
+                                      'https://drupaldev.altomouhit.com/${ann.fieldBanner}',
                                   width: double.infinity,
                                   height: 200,
                                   fit: BoxFit.cover,

@@ -1975,7 +1975,7 @@ class ApiEndPoint {
   static const String residentalUnitRentalApartmentTypes =
       '/v1/asset-affairs-service/admin-config/apartment-types';
   static const String residentalUnitRentalUnitLocations =
-      'https://caa-qa.altomouhit.com/v1/asset-affairs-service/admin-config/unit-locations';
+      'https://caa.altomouhit.com/v1/asset-affairs-service/admin-config/unit-locations';
 
   /// ===================== REQUEST APIs =====================
 
@@ -3629,4 +3629,110 @@ class ApiEndPoint {
   /// Approval trend breakdown
   static const String vehicleMaintenanceApprovalTrendBreakdown =
       '/v1/it-service/logistics/analytics/vehicle-maintenance-approvals/trend-breakdown';
+
+  /// Security Threat APIs
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+
+  static const String securityThreatSendRequest =
+      '/v1/it-service/security-threat/request';
+
+  /// Get my requests
+
+  static const String securityThreatGetRequests =
+      '/v1/it-service/security-threat/requests';
+
+  /// Get approval list (For approvers)
+
+  static const String securityThreatGetActionItems =
+      '/v1/it-service/security-threat/requests/for-approval';
+
+  /// Get request by ID
+
+  static String securityThreatRequestById(int requestId) =>
+      '/v1/it-service/security-threat/request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  /// Update request
+
+  static String securityThreatUpdateRequest(int requestId) =>
+      '/v1/it-service/security-threat/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String securityThreatApprove =
+      '/v1/it-service/security-threat/approve';
+
+  /// ===================== ANALYTICS APIs =====================
+
+  /// Status breakdown
+
+  static const String securityThreatStatusBreakdown =
+      '/v1/it-service/security-threat/analytics/status-breakdown';
+  static const String securityThreatApprovalStatusBreakdown =
+      '/v1/it-service/security-threat/analytics/approvals/status-breakdown';
+  static const String securityThreatApprovalTrendBreakdown =
+      '/v1/it-service/security-threat/analytics/approvals/trend-breakdown';
+
+  /// KPI cards
+
+  static const String securityThreatKpiCards =
+      '/v1/it-service/security-threat/analytics/kpi-cards';
+
+  /// Approval KPI cards
+
+  static const String securityThreatApprovalKpiCards =
+      '/v1/it-service/security-threat/analytics/approvals/kpi-cards';
+
+  /// Trend breakdown
+
+  static const String securityThreatTrendBreakdown =
+      '/v1/it-service/security-threat/analytics/trend-breakdown';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat
+
+  static String securityThreatSendChatById(int requestId) =>
+      '/v1/it-service/security-threat/request/$requestId/chat';
+
+  /// Get chats
+
+  static String securityThreatChatsById(int requestId) =>
+      '/v1/it-service/security-threat/request/$requestId/chats';
+
+  /// Update chat
+
+  static String securityThreatUpdateChat(int chatId) =>
+      '/v1/it-service/security-threat/chats/$chatId';
+
+  /// Delete chat
+
+  static String securityThreatDeleteChat(int chatId) =>
+      '/v1/it-service/security-threat/chats/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+
+  static String securityThreatSendAttachmentById(int requestId) =>
+      '/v1/it-service/security-threat/request/$requestId/attachment';
+
+  /// Get attachments
+
+  static String securityThreatAttachmentsById(int requestId) =>
+      '/v1/it-service/security-threat/request/$requestId/attachments';
+
+  /// Update attachment
+
+  static String securityThreatUpdateAttachment(int attachmentId) =>
+      '/v1/it-service/security-threat/attachments/$attachmentId';
+
+  /// Delete attachment
+
+  static String securityThreatDeleteAttachment(int attachmentId) =>
+      '/v1/it-service/security-threat/attachments/$attachmentId';
 }

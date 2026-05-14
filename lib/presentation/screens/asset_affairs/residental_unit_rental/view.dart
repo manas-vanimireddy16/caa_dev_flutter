@@ -157,7 +157,7 @@ class _ResidentalUnitRentalScreenState
             monthLabels: state.months,
             metric: "Total Tickets",
             selectedYear: controller.currentYear.toString(),
-            barColor: Colors.blue,
+            barColor: const Color(0xFF283593),
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),

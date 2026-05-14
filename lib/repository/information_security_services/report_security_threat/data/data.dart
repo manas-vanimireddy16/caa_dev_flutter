@@ -1,17 +1,20 @@
 import 'dart:developer';
 import 'dart:io';
-
-import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/security_access/models/request_model.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
-import 'package:code_setup/repository/security_access/domain/domain.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat.dart';
+import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
+import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/cancel_request_model.dart';
 import 'package:code_setup/repository/information_security_services/report_security_threat/domain/domain.dart';
+import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
+import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
 import 'package:code_setup/utils/api_end_point.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
@@ -19,38 +22,75 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 
-class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
+class SecurityThreatImpl implements SecurityThreatRepository {
   @override
-  Future<void> sendSecurityThreatRequest(Map<String, dynamic> payload) async {
+  Future<List<EmployeeList>> getUsers(int departmentId) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.reportSecurityThreatPostRequest;
-    try {
-      if (client != null) {
-        final response = await client.post(url, data: payload);
+    if (client == null) {
+      throw Exception("HTTP client not initialized");
+    }
 
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ New VPN ticket sent successfully');
-          ShowFlutterToast().showFlutterToastSuccess(
-            response.data['message'] ?? 'Request sent successfully',
-          );
-        } else {
-          ShowFlutterToast().showFlutterToastFailure(
-            response.data['message'] ?? 'Failed to send VPN request',
-          );
-          debugPrint(
-            '⚠️ Failed to send vehicle request: ${response.statusCode}',
-          );
-        }
+    try {
+      final response = await client.get(
+        ApiEndPoint.assignTaskToEmployeeUsersList(departmentId),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+
+        // 🔴 IMPORTANT: data['data'] is [ List<Employee>, totalCount ]
+        final List<dynamic> rawData = data['data'] as List<dynamic>? ?? [];
+
+        // rawData[0] contains the actual employee list
+        final List<dynamic> employeeList =
+            rawData.isNotEmpty && rawData[0] is List
+            ? rawData[0] as List<dynamic>
+            : [];
+
+        return employeeList
+            .map((e) => EmployeeList.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+
+      throw Exception(
+        'Failed to fetch positions request for coverage: ${response.statusCode}',
+      );
+    } catch (e, st) {
+      debugPrint('getUsers error: $e');
+      debugPrintStack(stackTrace: st);
+      throw Exception("Error fetching positions request for coverage");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> securityThreatCreateRequest(
+    Map<String, dynamic> payload,
+  ) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.securityThreatSendRequest;
+
+    try {
+      if (client == null) {
+        throw ApiException('Client is null — cannot send Study Leave request');
+      }
+
+      final response = await client.post(url, data: payload);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ShowFlutterToast().showFlutterToastSuccess(
+          response.data['message'] ?? 'Request sent successfully',
+        );
+        return response.data as Map<String, dynamic>; // ✅ RETURN HERE
       } else {
-        debugPrint('❌ Client is null — cannot send vehicle request');
+        ShowFlutterToast().showFlutterToastFailure(
+          response.data['message'] ?? 'Failed to send request',
+        );
+        return response.data as Map<String, dynamic>; // ✅ RETURN HERE
       }
     } on DioException catch (e) {
-      log('caught error');
       final message = e.response?.data['message'] ?? e.message;
       throw ApiException(message);
-      throw e;
     } catch (e) {
-      log('error fetching status breakdown $e');
       throw ApiException(e.toString());
     }
   }
@@ -125,11 +165,11 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
             final fileData = files.first;
 
             // ✅ Extract clean document ID (no /download/)
-            final documentId = fileData['documentId'];
+            // final documentId = fileData['documentId'];
 
             uploadedResults.add({
               'file_name': fileData['originalName'] ?? fileName,
-              'file_url': documentId, // only documentId
+              'file_url': fileData['downloadUrl'],
               'file_type': extension,
               'file_size': fileData['size'] ?? fileSize,
             });
@@ -151,13 +191,17 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<KPIResponse?> getKpiData() async {
-    String url = ApiEndPoint.reportSecurityThreatKpi;
+  Future<KPIResponse?> getKpiData(int serviceId, int subServiceId) async {
+    String url = ApiEndPoint.securityThreatKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
-        final response = await client.get(url);
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
           final data = response.data as Map<String, dynamic>;
@@ -180,13 +224,20 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<KPIResponse?> getCombinedKpiData() async {
-    String url = ApiEndPoint.combinedReportSecurityThreatKpi;
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    String url = ApiEndPoint.securityThreatApprovalKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
-        final response = await client.get(url);
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
           final data = response.data as Map<String, dynamic>;
@@ -209,43 +260,22 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<KPIResponse?> getCombinedApprovalKpiData() async {
-    String url = ApiEndPoint.combinedReportSecurityThreatApprovalKpi;
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final response = await client.get(url);
-
-        if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          return KPIResponse.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      return null;
-    } on DioException catch (error) {
-      log('caught dio error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching KPI data $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<StatusBreakdownModel> getStatusBreakdownData(String period) async {
+  Future<StatusBreakdownModel> getApprovalStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {'time_period': period};
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.reportSecurityThreatStatusBreakdown,
+          ApiEndPoint.securityThreatApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -270,17 +300,25 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period) async {
+  Future<TrendBreakdownModel> getApprovalTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {"year": period};
+        final queryParams = {
+          "year": period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
 
         /// Remove null values
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.reportSecurityThreatTrendBreakdown,
+          ApiEndPoint.securityThreatApprovalTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -305,16 +343,22 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<StatusBreakdownModel> getCombinedStatusBreakdownData(
-    String period,
-  ) async {
+  Future<StatusBreakdownModel> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {'time_period': period};
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.combinedReportSecurityThreatApprovalStatusBreakdown,
+          ApiEndPoint.securityThreatStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -339,19 +383,25 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<TrendBreakdownModel> getCombinedTrendBreakdownData(
-    String period,
-  ) async {
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {"year": period};
+        final queryParams = {
+          "year": period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
 
         /// Remove null values
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.combinedReportSecurityThreatTrendBreakdown,
+          ApiEndPoint.securityThreatTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -376,180 +426,11 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<StatusBreakdownModel> getCombinedApprovalStatusBreakdownData(
-    String period,
-  ) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {'time_period': period};
-        queryParams.removeWhere((key, value) => value == null);
-        final response = await client.get(
-          ApiEndPoint.combinedReportSecurityThreatApprovalStatusBreakdown,
-          queryParameters: queryParams,
-        );
-
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-          return StatusBreakdownModel.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      throw ApiException('Client is null');
-    } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching status breakdown $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<TrendBreakdownModel> getCombinedApprovalTrendBreakdownData(
-    String period,
-  ) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {"year": period};
-
-        /// Remove null values
-        queryParams.removeWhere((key, value) => value == null);
-
-        final response = await client.get(
-          ApiEndPoint.combinedReportSecurityThreatApprovalTrendBreakdown,
-          queryParameters: queryParams,
-        );
-
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-          return TrendBreakdownModel.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      throw ApiException('Client is null');
-    } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching trend breakdown $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<KPIResponse?> getApprovalKpiData() async {
-    String url = ApiEndPoint.reportSecurityThreatApprovalKpi;
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final response = await client.get(url);
-
-        if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          return KPIResponse.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      return null;
-    } on DioException catch (error) {
-      log('caught dio error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching KPI data $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<StatusBreakdownModel> getApprovalStatusBreakdownData(
-    String period,
-  ) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {'time_period': period};
-        queryParams.removeWhere((key, value) => value == null);
-        final response = await client.get(
-          ApiEndPoint.reportSecurityThreatApprovalStatusBreakdown,
-          queryParameters: queryParams,
-        );
-
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-          return StatusBreakdownModel.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      throw ApiException('Client is null');
-    } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching status breakdown $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(
-    String period,
-  ) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {"year": period};
-
-        /// Remove null values
-        queryParams.removeWhere((key, value) => value == null);
-
-        final response = await client.get(
-          ApiEndPoint.reportSecurityThreatApprovalTrendBreakdown,
-          queryParameters: queryParams,
-        );
-
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-          return TrendBreakdownModel.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      throw ApiException('Client is null');
-    } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching trend breakdown $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<List<ThreatRequestDetail>> getRequests({
+  Future<List<SecurityThreatRequestModel>> getRequests({
     required int offset,
     required int limit,
+    required int serviceId,
+    required int subServiceId,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
@@ -559,8 +440,22 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.reportSecurityThreatRequests;
-        final response = await client.get(url);
+        final Map<String, dynamic> queryParams = {
+          'offset': offset,
+          'limit': limit,
+          // 'service_id': serviceId,
+          // 'sub_service_id': subServiceId,
+        };
+
+        if (searchText.isNotEmpty) {
+          queryParams['search_text'] = searchText;
+        }
+
+        if (status.isNotEmpty) {
+          queryParams['status'] = status;
+        }
+        final url = ApiEndPoint.securityThreatGetRequests;
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
           final data = response.data as Map<String, dynamic>;
@@ -568,24 +463,30 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
 
           return list
               .map(
-                (e) => ThreatRequestDetail.fromJson(e as Map<String, dynamic>),
+                (e) => SecurityThreatRequestModel.fromJson(
+                  e as Map<String, dynamic>,
+                ),
               )
               .toList();
         } else {
-          throw Exception('Failed to fetch services: ${response.statusCode}');
+          throw Exception(
+            'Failed to fetch Accommodation Muscat request: ${response.statusCode}',
+          );
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching services: $e");
+      throw Exception("Error fetching Accommodation Muscat request: $e");
     }
   }
 
   @override
-  Future<List<ThreatRequestDetail>> getActionItems({
+  Future<List<SecurityThreatRequestModel>> getActionItems({
     required int offset,
     required int limit,
+    required int serviceId,
+    required int subServiceId,
     String status = '',
     String searchText = '',
   }) async {
@@ -597,6 +498,8 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
           'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
 
         if (status.isNotEmpty) {
@@ -608,7 +511,7 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
         }
 
         final response = await client.get(
-          ApiEndPoint.reportSecurityThreatActionItems,
+          ApiEndPoint.securityThreatGetActionItems,
           queryParameters: queryParams,
         );
 
@@ -620,8 +523,9 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
           /// Parse each Action Item
           final actionItems = list
               .map(
-                (item) =>
-                    ThreatRequestDetail.fromJson(item as Map<String, dynamic>),
+                (item) => SecurityThreatRequestModel.fromJson(
+                  item as Map<String, dynamic>,
+                ),
               )
               .toList();
 
@@ -636,153 +540,28 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
       /// If client is null
       return [];
     } on DioException catch (error) {
-      final message = error.response?.data['message'] ?? error.message;
+      final message =
+          '${error.response?.data['message']} Accommodation Muscat request';
       throw ApiException(message);
     } catch (e) {
-      throw ApiException(e.toString());
+      throw ApiException('${e.toString()} Accommodation Muscat request');
     }
   }
 
   @override
-  Future<List<ThreatRequestDetail>> getCombinedRequests({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
-  }) async {
+  Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final url = ApiEndPoint.combinedReportSecurityThreatRequests;
-        final response = await client.get(url);
-
-        if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          final List<dynamic> list = data['data'];
-
-          return list
-              .map(
-                (e) => ThreatRequestDetail.fromJson(e as Map<String, dynamic>),
-              )
-              .toList();
-        } else {
-          throw Exception('Failed to fetch services: ${response.statusCode}');
-        }
-      } else {
-        return [];
-      }
-    } catch (e) {
-      throw Exception("Error fetching services: $e");
-    }
-  }
-
-  @override
-  Future<List<ThreatRequestDetail>> getCombinedActionItems({
-    required int offset,
-    required int limit,
-    String status = '',
-    String searchText = '',
-  }) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {
-          'offset': offset.toString(),
-          'limit': limit.toString(),
-          'order_by': 'created_at',
-          'sort_order': 'DESC',
-        };
-
-        if (status.isNotEmpty) {
-          queryParams['status'] = status;
-        }
-
-        if (searchText.isNotEmpty) {
-          queryParams['search_text'] = searchText;
-        }
-
-        final response = await client.get(
-          ApiEndPoint.combinedReportSecurityThreatActionItems,
-          queryParameters: queryParams,
-        );
-
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-
-          final List<dynamic> list = data['data'] ?? [];
-
-          /// Parse each Action Item
-          final actionItems = list
-              .map(
-                (item) =>
-                    ThreatRequestDetail.fromJson(item as Map<String, dynamic>),
-              )
-              .toList();
-
-          return actionItems;
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-
-      /// If client is null
-      return [];
-    } on DioException catch (error) {
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<RequestDetailData?> getRequestsById(int id) async {
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final url = ApiEndPoint.reportSecurityThreatRequestById(id);
-        final response = await client.get(url);
-
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> json = response.data;
-
-          /// Convert JSON → Model
-          final result = RequestDetailModel.fromJson(json);
-
-          /// Return only `data` (so UI can access sub-objects)
-          return result.data;
-        } else {
-          throw Exception('Failed: ${response.statusCode}');
-        }
-      } else {
-        return null;
-      }
-    } catch (e) {
-      throw Exception("Error fetching request details: $e");
-    }
-  }
-
-  @override
-  Future<String> sendChat(
-    Map<String, dynamic> payload,
-    int id,
-    String type,
-  ) async {
-    final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.reportSecurityThreatRequestById(id);
+    final String url = ApiEndPoint.securityThreatSendChatById(id);
 
     try {
       if (client != null) {
         final response = await client.post(url, data: payload);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ Request sent successfully');
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('✅ Message sent successfully');
 
           return response.data["message"] ?? "Success";
         } else {
@@ -803,9 +582,42 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<void> onClose(Map<String, dynamic> payload) async {
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.securityAccessApproval;
+    final String url = ApiEndPoint.securityThreatSendAttachmentById(id);
+
+    try {
+      if (client != null) {
+        final response = await client.post(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('✅ Message sent successfully');
+
+          return response.data["message"] ?? "Success";
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          return response.data["message"] ?? "Something went wrong";
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+        return "Something went wrong";
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  @override
+  Future<void> onApprove(Map<String, dynamic> payload) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.securityThreatApprove;
 
     try {
       if (client != null) {
@@ -835,69 +647,200 @@ class SecurityThreatRepoistoryImple implements SecurityThreatRepoistory {
   }
 
   @override
-  Future<List<PendingApprovalUser>> getEngineersList() async {
+  Future<List<ChatMessageModel>> getchatById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     final client = await KAppX.network.secureClient();
-    final userInfo = KAppX.globalProvider.read(rolesProvider);
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.reportSecurityThreatEngineers(
-          userInfo?.roleId ?? 0,
-        );
-        final response = await client.get(url);
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final url = ApiEndPoint.securityThreatChatsById(id);
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          final List<dynamic> list = data['data'];
+          final Map<String, dynamic> json = response.data;
 
-          return list
-              .map(
-                (e) => PendingApprovalUser.fromJson(e as Map<String, dynamic>),
-              )
-              .toList();
+          /// Convert JSON → Model
+          final result = ChatByIdResponseModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
         } else {
-          throw Exception('Failed to engineers ${response.statusCode}');
+          throw Exception('Failed: ${response.statusCode}');
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching engineers: $e");
+      throw Exception("Error fetching chatById details: $e");
     }
   }
 
   @override
-  Future<void> onAssignEngineer(Map<String, dynamic> payload) async {
+  Future<List<AttachmentModel>> getAttachmentsById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.reportSecurityThreatAssignToEngineer;
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.securityThreatAttachmentsById(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = AttachmentByIdResponseModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching attachmentById details: $e");
+    }
+  }
+
+  @override
+  Future<RequestDetailData?> getRequestsById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final url = ApiEndPoint.securityThreatRequestById(id);
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = RequestDetailModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception("Error fetching request details: $e");
+    }
+  }
+
+  @override
+  Future<List<DepartmentModel>> getDepartments() async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.departmentsList;
+        final queryParams = {'offset': 1, 'limit': 1000};
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return (data['data'] as List)
+              .map((e) => DepartmentModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception('Failed with status code: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception('Error in getActionItems: $e');
+    }
+  }
+
+  @override
+  Future<List<SectionModel>> getSections({
+    required String? userDepartmentId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'offset': 1,
+          'limit': 1000,
+          'department_id': userDepartmentId,
+        };
+        final url = ApiEndPoint.sections;
+
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return (data['data'] as List)
+              .map((e) => SectionModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception('Failed with status code: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception('Error in getActionItems: $e');
+    }
+  }
+
+  @override
+  Future<void> onAllocateVehicle(
+    Map<String, dynamic> payload,
+    int requestId,
+  ) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.vehicleAllocate(requestId);
+
     try {
       if (client != null) {
         final response = await client.put(url, data: payload);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ Assigned engineer successfully');
           ShowFlutterToast().showFlutterToastSuccess(
-            response.data['message'] ?? 'Assigned engineer successfully',
+            '${response.data['message']}',
           );
+          debugPrint('✅ Request sent successfully');
         } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
           ShowFlutterToast().showFlutterToastFailure(
-            response.data['message'] ?? 'Failed to Assign engineer',
-          );
-          debugPrint(
-            '⚠️ Failed to send vehicle request: ${response.statusCode}',
+            '${response.statusMessage}',
           );
         }
       } else {
-        debugPrint('❌ Client is null — cannot Fail to Assign engineer');
+        debugPrint('❌ Client is null — cannot send request');
       }
     } on DioException catch (e) {
-      log('caught error');
-      final message = e.response?.data['message'] ?? e.message;
-      throw ApiException(message);
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
       throw e;
     } catch (e) {
-      log('error failed to Assigned Engineer $e');
-      throw ApiException(e.toString());
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
     }
   }
 }

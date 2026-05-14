@@ -1,52 +1,42 @@
-// import 'package:auto_route/auto_route.dart';
-// import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-// import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-// import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-// import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-// import 'package:code_setup/presentation/screens/approvals/common_widgets.dart';
-// import 'package:code_setup/presentation/screens/logistics/models/logistics_detail_model.dart';
-// import 'package:code_setup/presentation/screens/logistics/view.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/attachments_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_details_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_history_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_tabs.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/workflow_tab.dart';
-// import 'package:code_setup/utils/app_extensions/app_extension.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 part of '../view.dart';
 
 @RoutePage()
 class SecurityThreatRequestDetailsTabScreen extends ConsumerStatefulWidget {
   final String from;
   final int id;
+  final int serviceId;
+  final int subServiceId;
   final Service service;
   final SubService subService;
   const SecurityThreatRequestDetailsTabScreen({
     super.key,
     required this.id,
-    this.from = '',
+    required this.serviceId,
+    required this.subServiceId,
     required this.service,
     required this.subService,
+    this.from = '',
   });
 
   @override
-  ConsumerState createState() => _SecurityThreatRequestDetailsTabScreennState();
+  ConsumerState createState() => _SecurityThreatRequestDetailsTabScreenState();
 }
 
-class _SecurityThreatRequestDetailsTabScreennState
+class _SecurityThreatRequestDetailsTabScreenState
     extends ConsumerState<SecurityThreatRequestDetailsTabScreen> {
   late _VSControllerParams _providerArgs;
+
   @override
   void initState() {
     super.initState();
+
+    /// ✅ Create proper provider params object
     _providerArgs = _VSControllerParams(
       service: widget.service,
       subService: widget.subService,
     );
 
-    /// Fetch ONLY once
+    /// ✅ Fetch ONLY once (after init)
     Future.microtask(() {
       ref
           .read(_vsProvider(_providerArgs).notifier)
@@ -70,25 +60,28 @@ class _SecurityThreatRequestDetailsTabScreennState
           if (state.requestDetails == null || state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          final userInfo = KAppX.globalProvider.read(rolesProvider);
+
+          // final request = state.requestDetails.request == null
+          //     ? null
+          //     : state.requestDetails;
           final request = state.requestDetails.request;
           final requestId = request?.id;
-          final List<WorkflowDetailModel> workflows =
-              state.requestDetails.workflowDetails ?? [];
-          final List<AttachmentModel> attachments =
-              state.requestDetails.attachments ?? [];
-          final chats = state.requestDetails.chatMessages ?? [];
+          final List<AttachmentModel> attachments = state.attachmentsById;
+          final chats = state.chatById;
           final List<ApprovalDetailModel> approvals =
               state.requestDetails.approvalDetails ?? [];
           final selectedTab = state.requestDetailTab;
           final active = controller.getActiveApprovalLevel(
             state.requestDetails.approvalDetails ?? [],
           );
-          final actionType = controller.getActionButtonsType(approvals);
+          final actionType = controller.getActionButtonsType(
+            state.requestDetails,
+            approvals,
+          );
 
-          final approverRoleId = active?.approverRoleId;
+          final approverId = active?.id;
+
           // controller.onSelectedApprovalId(approverRoleId ?? 0);
-          final threatIndex = (request?.typeOfThreat ?? 1) - 1;
           // final canApprove = controller.shouldShowApprovalButtons(approvals);
 
           return SingleChildScrollView(
@@ -120,7 +113,6 @@ class _SecurityThreatRequestDetailsTabScreennState
                   subService: widget.subService,
                 ),
                 5.toHorizontalSizedBox,
-                5.toHorizontalSizedBox,
                 const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
@@ -139,25 +131,40 @@ class _SecurityThreatRequestDetailsTabScreennState
                     actionType: actionType, // ✅ FIX HERE
                     entries: chats,
                     controller: controller.chatController,
-                    attachments: [],
-                    onSend: () async {},
-                    onClose: () async {},
-                    onReject: () async {},
-                    onAssign: () async {
-                      await controller.showAssignEngineerDialog(
-                        requestId: requestId ?? 0,
-                        approverRoleId: approverRoleId ?? 0,
-                        // departmentId: userInfo?.departmentId,
-                        // sectionId: userInfo?.sectionId,
+                    buttonsDisabled: state.isButtonDisabled,
+                    attachments: state.attachments,
+                    onAttach: () async {
+                      await controller.pickFile();
+                    },
+                    onRemove: () {
+                      controller.removeAttachment();
+                    },
+                    onSend: () async {
+                      await controller.sendChatMessage(
+                        serviceId: widget.serviceId,
+                        subServiceId: widget.subServiceId,
                       );
-                    }, // You can connect later
-                    onReassign: () async {
-                      controller.showAssignEngineerDialog(
+                    },
+
+                    onClose: () async {
+                      controller.showApproveForm(context, approverId ?? 0);
+                      // controller.onApprove(
+                      //   approverId ?? 0,
+                      //   requestId ?? 0,
+                      //   'Approved',
+                      // );
+                    },
+                    onReject: () async {
+                      controller.showApprovalCommentDialog(
+                        type: ApprovalDialogType.reject,
+                        approverId: approverId ?? 0,
                         requestId: requestId ?? 0,
-                        approverRoleId: approverRoleId ?? 0,
-                        // departmentId: userInfo?.departmentId,
-                        // sectionId: userInfo?.sectionId,
                       );
+                      // controller.onReject(
+                      //   approverId ?? 0,
+                      //   requestId ?? 0,
+                      //   'Rejected',
+                      // );
                     },
                   )
                 else if (selectedTab == 2)

@@ -14,36 +14,40 @@ class StatusChip extends StatelessWidget {
 
     switch (status.toLowerCase()) {
       case "approved":
-        bg = Colors.green.shade100;
-        text = Colors.green.shade700;
+        bg = const Color(0xFFD6E4D6);
+        text = const Color(0xFF0D652D);
         icon = Icons.check_circle;
         break;
+
       case "completed":
-        bg = Colors.green.shade100;
-        text = Colors.green.shade700;
+        bg = const Color(0xFFD6E4D6);
+        text = const Color(0xFF0D652D);
         icon = Icons.check_circle;
         break;
+
       case "pending":
-        bg = Colors.orange.shade100;
-        text = Colors.orange.shade700;
+        bg = const Color(0xFFF9F2EB);
+        text = const Color(0xFFD79334);
         icon = Icons.access_time;
         break;
+
       case "in progress":
-        bg = Colors.green.shade100;
-        text = const Color.fromARGB(255, 94, 147, 233);
-        icon = Icons.check_circle;
+        bg = const Color(0xFFE8EEFF);
+        text = const Color(0xFF283593);
+        icon = Icons.sync;
         break;
+
       case "assigned":
-        bg = Colors.green.shade100;
-        text = const Color.fromARGB(255, 94, 147, 233);
-        icon = Icons.check_circle;
+        bg = const Color(0xFFE8EEFF);
+        text = const Color(0xFF283593);
+        icon = Icons.assignment_turned_in;
         break;
+
       case "rejected":
-        bg = Colors.red.shade100;
-        text = Colors.red.shade700;
+        bg = const Color(0xFFF2DADA);
+        text = const Color(0xFFA50E0E);
         icon = Icons.cancel;
         break;
-      // no `default` needed anymore since we set initial values
     }
 
     return Container(

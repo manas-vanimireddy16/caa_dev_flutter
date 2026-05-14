@@ -23,10 +23,10 @@ class TabItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue : Colors.transparent,
+          color: isSelected ? const Color(0xFF26285F) : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? Colors.blue : Colors.grey.shade400,
+            color: isSelected ? const Color(0xFF26285F) : Colors.grey.shade400,
           ),
         ),
         child: Text(

@@ -1,12 +1,10 @@
 import 'dart:async';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
-import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
-import 'package:code_setup/presentation/common_widgets/RadioButton.dart';
+import 'package:code_setup/presentation/common_widgets/approval_comment_dialog.dart';
 import 'package:code_setup/presentation/common_widgets/chat.dart';
 import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
 import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
@@ -17,47 +15,75 @@ import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.da
 import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';
 import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
+import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
+import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
+import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
+import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_notifier.dart';
+import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
 import 'package:code_setup/presentation/models/activity_feed_model.dart';
+import 'package:code_setup/presentation/models/allowance_employee.dart';
 import 'package:code_setup/presentation/models/buttons_enum.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/file_upload_model.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
+import 'package:code_setup/presentation/models/master_roles.dart';
+import 'package:code_setup/presentation/models/selection_dialog_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/request_for_project_approval.dart';
-import 'package:code_setup/presentation/screens/logistics/models/dashBoardRequest.dart'
-    hide ChatMessage, Service;
+import 'package:code_setup/presentation/screens/asset_affairs/models/unit_locations_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_list.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/hr_task.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat.dart';
+import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
+import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
+import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
 import 'package:code_setup/repository/information_security_services/report_security_threat/domain/domain.dart';
+import 'package:code_setup/repository/it_services/request_event_support/domain/domain.dart';
+import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
+import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
+import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/rendering.dart' hide Border;
+// import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
-part 'widgets/new_security_threat_request.dart';
+part 'widgets/report_security_threat_new_request.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
-part 'widgets/assign_engineer_dialog.dart';
-
+part 'widgets/request_details_tabs.dart';
 part 'widgets/request_list.dart';
 part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
-part 'widgets/request_details_tab.dart';
+part 'widgets/approve_form.dart';
+part 'widgets/allocate_vehicle.dart';
 
 @RoutePage()
 class SecurityThreatScreen extends ConsumerStatefulWidget {
   final Service service;
   final SubService subService;
+
   const SecurityThreatScreen({
     super.key,
     required this.service,
@@ -69,81 +95,52 @@ class SecurityThreatScreen extends ConsumerStatefulWidget {
       _SecurityThreatScreenState();
 }
 
-class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen>
-    with SingleTickerProviderStateMixin {
-  late TextEditingController searchController;
+class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen> {
   late FocusNode _focusNode;
-  late TabController _tabController;
   late _VSControllerParams _providerArgs;
   late PageController _pageController;
 
   @override
-  @override
   void initState() {
     super.initState();
+
+    final selected = ref.read(selectedServiceProvider);
+
+    final service = widget.service.id != null
+        ? widget.service
+        : selected.service;
+
+    final subService = widget.subService.id != null
+        ? widget.subService
+        : selected.subService;
+
     _providerArgs = _VSControllerParams(
-      service: widget.service,
-      subService: widget.subService,
+      service: service,
+      subService: subService,
     );
-    searchController = TextEditingController(
-      text: ref.read(searchQueryProvider),
-    );
+
     _focusNode = FocusNode();
-
-    searchController.addListener(() {
-      setState(() {}); // rebuild suffixIcon
-    });
     _pageController = PageController();
-
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        ref.read(selectedrequesteventTabProvider.notifier).state =
-            _tabController.index;
-      }
-    });
   }
 
   @override
   void dispose() {
-    searchController.dispose();
     _focusNode.dispose();
-    _tabController.dispose();
-    _pageController.dispose();
     super.dispose();
+    _pageController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentYear = DateTime.now().year;
-    final filterLabelList = List.generate(
-      6,
-      (index) => (currentYear - index).toString(),
-    );
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
-    final active = controller.getActiveApprovalLevel(
-      state.requestDetails.approvalDetails ?? [],
-    );
-    final statsList = StatSummaryHelper.buildStatList(
-      state.kpiData.data?.toJson(),
-    );
-    final statsApproverList = StatSummaryHelper.buildStatList(
-      state.approvalKpiData.data?.toJson(),
-    );
-
-    // // Keep TabController in sync with provider
-    // if (_tabController.index != selectedTab) {
-    //   _tabController.index = selectedTab;
-    // }
 
     return KScaffold(
       backgroundColor: Colors.white,
-      // appBar: KAppBar(title: const Text('Report Security Threat ')),
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
-          // KPI Cards
+          /// KPI
           StatSummaryRow(stats: controller.currentStats),
           20.toHorizontalSizedBox,
 
@@ -164,12 +161,11 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen>
             monthLabels: state.months,
             metric: "Total Tickets",
             selectedYear: controller.currentYear.toString(),
-            barColor: Colors.blue,
+            barColor: AppColors.primaryBlue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
           16.toHorizontalSizedBox,
 
           /// MAIN CARD

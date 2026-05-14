@@ -23,7 +23,7 @@ class DashboardRepositoryImplementation implements DashboardRepository {
       final client = await KAppX.network.secureClient();
       if (client != null) {
         const url =
-            'https://caa-qa.altomouhit.com/v1/user-service/service/bookmarks/69';
+            'https://caa.altomouhit.com/v1/user-service/service/bookmarks/69';
 
         final response = await client.get(url);
 
@@ -58,7 +58,7 @@ class DashboardRepositoryImplementation implements DashboardRepository {
   //   final client = Dio();
 
   //   try {
-  //     final url = 'https://caa-qa.altomouhit.com/v1/user-service/services';
+  //     final url = 'https://caa.altomouhit.com/v1/user-service/services';
   //     final response = await client.get(
   //       url,
   //       options: Options(
@@ -83,7 +83,7 @@ class DashboardRepositoryImplementation implements DashboardRepository {
 
     try {
       final url =
-          'https://caa-qa.altomouhit.com/v1/user-service/department/users/count';
+          'https://caa.altomouhit.com/v1/user-service/department/users/count';
       final response = await client.get(url);
 
       if (response.statusCode == 200) {
@@ -111,7 +111,7 @@ class DashboardRepositoryImplementation implements DashboardRepository {
     final client = Dio();
 
     try {
-      final url = 'https://caa-qa.altomouhit.com/v1/user-service/departments';
+      final url = 'https://caa.altomouhit.com/v1/user-service/departments';
       final response = await client.get(url);
 
       if (response.statusCode == 200) {
@@ -182,7 +182,7 @@ class DashboardRepositoryImplementation implements DashboardRepository {
 
     try {
       final url =
-          'https://caa-qa.altomouhit.com/v1/user-service/department/users/count';
+          'https://caa.altomouhit.com/v1/user-service/department/users/count';
       final response = await client.get(url);
 
       if (response.statusCode == 200) {
@@ -209,7 +209,7 @@ class DashboardRepositoryImplementation implements DashboardRepository {
 
     try {
       final url =
-          'https://caa-qa.altomouhit.com/v1/user-service/department/users/count';
+          'https://caa.altomouhit.com/v1/user-service/department/users/count';
       final response = await client.get(url);
 
       if (response.statusCode == 200) {
@@ -262,8 +262,7 @@ class DashboardRepositoryImplementation implements DashboardRepository {
     final client = Dio();
     // 🔧 endpoint path
     final payload = {"user_id": userId, "service_id": serviceId};
-    final url =
-        'https://caa-qa.altomouhit.com/v1/user-service/service/bookmark';
+    final url = 'https://caa.altomouhit.com/v1/user-service/service/bookmark';
 
     try {
       final response = await client.post(
@@ -298,7 +297,7 @@ class DashboardRepositoryImplementation implements DashboardRepository {
 
     try {
       final url =
-          'https://caa-qa.altomouhit.com/v1/it-service/helpdesk/manager/requests/$userId';
+          'https://caa.altomouhit.com/v1/it-service/helpdesk/manager/requests/$userId';
       final response = await client.get(
         url,
         options: Options(

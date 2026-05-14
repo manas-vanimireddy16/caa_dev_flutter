@@ -8,7 +8,6 @@ import 'package:code_setup/presentation/screens/information_security_services/mo
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/repository/security_access/data/data.dart';
-import 'package:code_setup/repository/information_security_services/report_security_threat/data/data.dart';
 import 'package:code_setup/repository/information_security_services/request_to_organize_security_awareness/data/data.dart';
 
 abstract class OrganizeSecurityAwarenessRepoistory {

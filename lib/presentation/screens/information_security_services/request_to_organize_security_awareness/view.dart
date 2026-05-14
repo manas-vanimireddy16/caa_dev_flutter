@@ -34,7 +34,6 @@ import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.da
 import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
-import 'package:code_setup/repository/information_security_services/report_security_threat/domain/domain.dart';
 import 'package:code_setup/repository/information_security_services/request_to_organize_security_awareness/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';

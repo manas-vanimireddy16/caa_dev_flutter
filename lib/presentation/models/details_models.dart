@@ -1106,6 +1106,9 @@ class RequestModel {
   final String? vehicleCondition;
   final String? reason;
   final String? driverName;
+  final String? travelDateFrom;
+  final String? travelDateTo;
+  final int? duration;
 
   // ─────────────────────────────
   // ACCOMMODATION FIELDS
@@ -1456,6 +1459,28 @@ class RequestModel {
   final bool? haveYouEverReceivedAuthority;
   final String? scholarship;
 
+  ///Security Threat
+
+  final String? contactNumber;
+
+  final String? ticketName;
+
+  final String? sourceOfIncident;
+
+  final List<String>? typeOfIncidentDetected;
+
+  final String? incidentNotificationInCaa;
+
+  final String? identificationMeasures;
+
+  final String? evidenceCollected;
+
+  final String? eradicationMitigationMeasures;
+
+  final String? recoveryMeasures;
+
+  final String? otherMitigationMeasures;
+
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1772,6 +1797,28 @@ class RequestModel {
     this.qualificationRequired,
     this.haveYouEverReceivedAuthority,
     this.scholarship,
+    this.travelDateFrom,
+    this.travelDateTo,
+    this.duration,
+    this.contactNumber,
+
+    this.ticketName,
+
+    this.sourceOfIncident,
+
+    this.typeOfIncidentDetected,
+
+    this.incidentNotificationInCaa,
+
+    this.identificationMeasures,
+
+    this.evidenceCollected,
+
+    this.eradicationMitigationMeasures,
+
+    this.recoveryMeasures,
+
+    this.otherMitigationMeasures,
   });
 
   // ─────────────────────────────
@@ -2162,6 +2209,32 @@ class RequestModel {
       qualificationRequired: json['qualification_required'],
       haveYouEverReceivedAuthority: json['have_you_ever_received_authority'],
       scholarship: json['scholarship'],
+      travelDateFrom: json['travel_date_from'],
+      travelDateTo: json['travel_date_to'],
+      duration: json['duration'],
+
+      // security threat
+      contactNumber: json['contact_number'],
+
+      ticketName: json['ticket_name'],
+
+      sourceOfIncident: json['source_of_incident'],
+
+      typeOfIncidentDetected: (json['type_of_incident_detected'] as List?)
+          ?.map((e) => e.toString())
+          .toList(),
+
+      incidentNotificationInCaa: json['incident_notification_in_caa'],
+
+      identificationMeasures: json['identification_measures'],
+
+      evidenceCollected: json['evidence_collected'],
+
+      eradicationMitigationMeasures: json['eradication_mitigation_measures'],
+
+      recoveryMeasures: json['recovery_measures'],
+
+      otherMitigationMeasures: json['other_mitigation_measures'],
     );
   }
 

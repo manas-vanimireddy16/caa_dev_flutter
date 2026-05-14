@@ -351,7 +351,7 @@ class RequestTrendBreakdownCard extends StatelessWidget {
     required this.monthLabels,
     this.metric = 'Total Tickets',
     this.selectedYear = "2025",
-    this.barColor = const Color(0xFFBD8A52),
+    this.barColor = const Color(0xFF283593),
     this.onYearTap,
     required this.onChanged,
     required this.filterLabelList,

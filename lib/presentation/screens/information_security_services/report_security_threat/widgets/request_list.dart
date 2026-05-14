@@ -35,7 +35,7 @@ class RequestsPage extends ConsumerWidget {
           data: controller.buildRequestCardData(item),
           onTap: () async {
             await controller.openRequestDetails(
-              item?.id ?? 0,
+              item.base?.id ?? 0,
               fromActionItems: isActionItem,
             );
             controller.updateTabIndex(0);
