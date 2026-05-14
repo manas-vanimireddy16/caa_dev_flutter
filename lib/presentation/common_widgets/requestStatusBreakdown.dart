@@ -107,10 +107,103 @@ class RequestStatusBreakdownCard extends StatelessWidget {
     );
   }
 
+  //   Widget _buildContent(BuildContext context, List<ChartData> chartSections) {
+  //     final currentTheme = KAppX.globalProvider
+  //         .read(KAppX.theme.current)
+  //         .themeBox;
+  //     return Row(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         // Pie Chart Section
+  //         SizedBox(
+  //           height: 190,
+  //           width: 140,
+  //           child: Stack(
+  //             alignment: Alignment.center,
+  //             children: [
+  //               PieChart(
+  //                 PieChartData(
+  //                   sectionsSpace: 3,
+  //                   centerSpaceRadius: 45,
+  //                   sections: chartSections
+  //                       // ✅ Filter out any section where status == "Total"
+  //                       .where(
+  //                         (section) => section.status?.toLowerCase() != 'total',
+  //                       )
+  //                       .map((section) {
+  //                         return PieChartSectionData(
+  //                           color: getStatusColor(section.status),
+  //                           value: section.percentage,
+  //                           title: '', // you can add % if needed
+  //                           radius: 22,
+  //                           borderSide: const BorderSide(
+  //                             color: Colors.white,
+  //                             width: 2,
+  //                           ),
+  //                         );
+  //                       })
+  //                       .toList(),
+  //                 ),
+  //                 swapAnimationDuration: const Duration(milliseconds: 800),
+  //                 swapAnimationCurve: Curves.easeInOut,
+  //               ),
+
+  //               // Center Total
+  //               Column(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: [
+  //                   Text(
+  //                     '${data.isNotEmpty ? data[0].count ?? 0 : 0}',
+  //                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+  //                       fontWeight: FontWeight.w700,
+  //                       color: const Color(0xFF111827),
+  //                       fontSize: currentTheme.fontSizes.s25,
+  //                     ),
+  //                   ),
+  //                   2.toVerticalSizedBox,
+  //                   Text(
+  //                     'Total Requests',
+  //                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
+  //                       color: const Color(0xFFDADADA),
+  //                       fontSize: currentTheme.fontSizes.s11,
+  //                       fontWeight: FontWeight.w500,
+  //                     ),
+  //                     textAlign: TextAlign.center,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //         32.toHorizontalSizedBox,
+  //         // Legend Section
+  //         Expanded(
+  //           child: _BreakdownLegend(
+  //             // totalValue: breakdown?.totalRequests ?? 0,
+  //             sections: chartSections,
+  //           ),
+  //         ),
+  //       ],
+  //     );
+  //   }
+  // }
   Widget _buildContent(BuildContext context, List<ChartData> chartSections) {
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)
         .themeBox;
+
+    // ✅ Check if closed exists
+    final hasClosed = chartSections.any(
+      (e) => e.status?.toLowerCase() == 'closed',
+    );
+
+    // ✅ Remove approved if closed exists
+    final filteredSections = hasClosed
+        ? chartSections
+              .where((e) => e.status?.toLowerCase() != 'approved')
+              .toList()
+        : chartSections;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -124,9 +217,9 @@ class RequestStatusBreakdownCard extends StatelessWidget {
               PieChart(
                 PieChartData(
                   sectionsSpace: 3,
-                  centerSpaceRadius: 45,
-                  sections: chartSections
-                      // ✅ Filter out any section where status == "Total"
+                  centerSpaceRadius: 40,
+
+                  sections: filteredSections
                       .where(
                         (section) => section.status?.toLowerCase() != 'total',
                       )
@@ -134,7 +227,7 @@ class RequestStatusBreakdownCard extends StatelessWidget {
                         return PieChartSectionData(
                           color: getStatusColor(section.status),
                           value: section.percentage,
-                          title: '', // you can add % if needed
+                          title: '',
                           radius: 22,
                           borderSide: const BorderSide(
                             color: Colors.white,
@@ -148,41 +241,46 @@ class RequestStatusBreakdownCard extends StatelessWidget {
                 swapAnimationCurve: Curves.easeInOut,
               ),
 
-              // Center Total
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '${data.isNotEmpty ? data[0].count ?? 0 : 0}',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF111827),
-                      fontSize: currentTheme.fontSizes.s25,
+              // ✅ Properly centered content
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${data.isNotEmpty ? data[0].count ?? 0 : 0}',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF111827),
+                            fontSize: currentTheme.fontSizes.s25,
+                            height: 1,
+                          ),
                     ),
-                  ),
-                  2.toVerticalSizedBox,
-                  Text(
-                    'Total Requests',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: const Color(0xFFDADADA),
-                      fontSize: currentTheme.fontSizes.s11,
-                      fontWeight: FontWeight.w500,
+
+                    4.toVerticalSizedBox,
+
+                    Text(
+                      'Total Requests',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: const Color(0xFFDADADA),
+                        fontSize: currentTheme.fontSizes.s10,
+                        fontWeight: FontWeight.w500,
+                        height: 1,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
         ),
+
         32.toHorizontalSizedBox,
+
         // Legend Section
-        Expanded(
-          child: _BreakdownLegend(
-            // totalValue: breakdown?.totalRequests ?? 0,
-            sections: chartSections,
-          ),
-        ),
+        Expanded(child: _BreakdownLegend(sections: filteredSections)),
       ],
     );
   }
@@ -325,6 +423,7 @@ Color getStatusColor(String? status) {
     case 'pending':
       return const Color(0xFFFFA726);
     case 'completed':
+    case 'closed':
       return const Color(0xFF0D652D);
     case 'approved':
       return const Color(0xFF0D652D);

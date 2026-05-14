@@ -1030,7 +1030,6 @@ class RequestDetailData {
   );
 
   Map<String, dynamic> toJson() => {
-    "request": request?.toJson(),
     "workflow_details": workflowDetails == null
         ? []
         : List<dynamic>.from(workflowDetails!.map((x) => x.toJson())),
@@ -1481,6 +1480,16 @@ class RequestModel {
 
   final String? otherMitigationMeasures;
 
+  // foreign employee
+  final int? numberOfPassengers;
+
+  final String? employeeIdPassport;
+  final String? originCity;
+  final String? destinationCity;
+
+  final String? arrivalDepartureDatetime;
+
+  final String? specialInstructions;
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1819,6 +1828,12 @@ class RequestModel {
     this.recoveryMeasures,
 
     this.otherMitigationMeasures,
+    this.numberOfPassengers,
+    this.employeeIdPassport,
+    this.originCity,
+    this.destinationCity,
+    this.arrivalDepartureDatetime,
+    this.specialInstructions,
   });
 
   // ─────────────────────────────
@@ -2235,128 +2250,22 @@ class RequestModel {
       recoveryMeasures: json['recovery_measures'],
 
       otherMitigationMeasures: json['other_mitigation_measures'],
+      numberOfPassengers: json['number_of_passengers'],
+
+      employeeIdPassport: json['employee_id_passport'],
+
+      originCity: json['origin_city'],
+      destinationCity: json['destination_city'],
+
+      arrivalDepartureDatetime: json['arrival_departure_datetime'],
+
+      specialInstructions: json['special_instructions'],
     );
   }
 
   // ─────────────────────────────
   // TO JSON
   // ─────────────────────────────
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "service_id": serviceId,
-      "sub_service_id": subServiceId,
-      "description": description,
-      "status": status,
-      "priority": priority,
-      "type_of_threat": typeOfThreat,
-      "workflow_execution_id": workflowExecutionId,
-      "created_by": createdBy,
-      "created_at": createdAt,
-      "updated_by": updatedBy,
-      "updated_at": updatedAt,
-      "user_id": userId,
-      "req_user_department_id": reqUserDepartmentId,
-      "req_user_section_id": reqUserSectionId,
-
-      "contact_number": contactNum,
-      "extension_number": extnNum,
-      "email": email,
-      "person_name": personName,
-      "person_contact_number": personContactNumber,
-      "request_for": requestFor,
-      "problem": problem,
-      "request_date": requestDate,
-      "service_type_id": serviceTypeId,
-      "request_type": requestType,
-
-      "category": category,
-      "vehicle_required_for": vehicleRequiredFor,
-      "vehicle_required_location": vehicleRequiredLocation,
-      "title": title,
-      "purpose_of_travel": purposeOfTravel,
-      "type_of_vehicle_required": typeOfVehicleRequired,
-      "type_of_request": typeOfRequest,
-      "date_of_travel": dateOfTravel,
-      "time_of_travel": timeOfTravel,
-      "exp_duration_of_use_hrs": expDurationOfUseHrs,
-      "exp_duration_of_use_days": expDurationOfUseDays,
-
-      "hotel_name": hotelName,
-      "type_of_accommodation": typeOfAccommodation,
-      "number_of_guests": numberOfGuests,
-      "meal": meal,
-      "price": price,
-      "requested_by": requestedBy,
-      "hr_approval": hrApproval,
-      "pr_approval": prApproval,
-      "check_in_date": checkInDate,
-      "check_in_time": checkInTime,
-      "check_out_date": checkOutDate,
-      "check_out_time": checkOutTime,
-      "date_of_request": dateOfRequest,
-      "visitor_name": visitorName,
-
-      "created_by_user": createdByUser?.toJson(),
-      "service": service?.toJson(),
-      "sub_service": subService?.toJson(),
-      "req_department": reqDepartment?.toJson(),
-      "req_section": reqSection?.toJson(),
-      "date_of_submission": dateOfSubmission,
-      "phone_number": phoneNumber,
-      "place": place,
-      "event_date": eventDate,
-      "event_time": eventTime,
-      "media_coverage_required": mediaCoverageRequired,
-      "name_full_family_name": nameFullFamilyName,
-      "nationality": nationality,
-      "dob": dob,
-      "passport_id_card_no": passportIdCardNo,
-      "category_of_permit": categoryOfPermit,
-      "type_of_permit": typeOfPermit,
-      "permission_to_required_areas": permissionToRequiredAreas,
-      "occupation_staff": occupationStaff,
-      "temporary_start_time": temporaryStartTime,
-      "temporary_duration": temporaryDuration,
-      "for_visitor": forVisitor,
-
-      "acknowledge_security_policies": acknowledgeSecurityPolicies,
-      "acknowledge_disciplinary_action": acknowledgeDisciplinaryAction,
-      "consent_approve_to_issue_permit": consentApproveToIssuePermit,
-      "consent_do_not_approve_to_issue_permit":
-          consentDoNotApproveToIssuePermit,
-      "consent_justification": consentJustification,
-
-      "request_id": requestId,
-      "expiration_date": expirationDate,
-      "attachment_url": attachmentUrl,
-      "is_deleted": isDeleted,
-
-      "assigned_to_user_id": assignedToUserId,
-      "assigned_at": assignedAt,
-      "reviewer_user_id": reviewerUserId,
-
-      "assigned_employee_name": assignedEmployeeName,
-      "civil_id_card_number": civilIdCardNumber,
-      "employee_id": employeeId,
-      "current_job_position": currentJobPosition,
-      "assigned_job_position": assignedJobPosition,
-
-      "start_date": startDate,
-      "end_date": endDate,
-      "assignment_allowance": assignmentAllowance,
-      "reason_for_request": reasonForRequest,
-
-      "is_replaced": isReplaced,
-      "replacement_employee_name": replacementEmployeeName,
-      "replacement_employee_id": replacementEmployeeId,
-      "replacement_civil_id_card_number": replacementCivilIdCardNumber,
-      "replacement_reason": replacementReason,
-      "replaced_by_user_id": replacedByUserId,
-      "replaced_at": replacedAt,
-    };
-  }
 
   // ─────────────────────────────
   // COPYWITH

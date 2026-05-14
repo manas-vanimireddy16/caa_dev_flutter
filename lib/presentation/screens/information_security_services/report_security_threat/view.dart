@@ -41,18 +41,12 @@ import 'package:code_setup/presentation/screens/hr_service/models/grade_list_mod
 import 'package:code_setup/presentation/screens/hr_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat.dart';
-import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
-import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
 import 'package:code_setup/repository/information_security_services/report_security_threat/domain/domain.dart';
-import 'package:code_setup/repository/it_services/request_event_support/domain/domain.dart';
-import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
-import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
@@ -60,14 +54,10 @@ import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/rendering.dart' hide Border;
-// import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
 
 part 'widgets/report_security_threat_new_request.dart';
 part 'controller.dart';
@@ -76,8 +66,7 @@ part 'widgets/request_details_tabs.dart';
 part 'widgets/request_list.dart';
 part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
-part 'widgets/approve_form.dart';
-part 'widgets/allocate_vehicle.dart';
+part 'widgets/close_form.dart';
 
 @RoutePage()
 class SecurityThreatScreen extends ConsumerStatefulWidget {
@@ -159,9 +148,9 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen> {
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
+            metric: "Total Requests",
             selectedYear: controller.currentYear.toString(),
-            barColor: AppColors.primaryBlue,
+            barColor: Color(0xFF5C6BC0),
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),

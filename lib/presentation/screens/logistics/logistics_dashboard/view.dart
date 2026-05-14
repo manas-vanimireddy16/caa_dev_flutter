@@ -288,13 +288,13 @@ class _LogisticsDashboardScreenState
                                       // ),
                                       // );
                                     } else {
-                                      KAppX.router.push(
-                                        LogisticsForeignRequestDetailsTabRoute(
-                                          from: 'foreign',
-                                          id: item.id ?? 0,
-                                          // data: details, // uncomment if needed
-                                        ),
-                                      );
+                                      // KAppX.router.push(
+                                      //   LogisticsForeignRequestDetailsTabRoute(
+                                      //     from: 'foreign',
+                                      //     id: item.id ?? 0,
+                                      //     // data: details, // uncomment if needed
+                                      //   ),
+                                      // );
                                     }
                                   },
                                 );

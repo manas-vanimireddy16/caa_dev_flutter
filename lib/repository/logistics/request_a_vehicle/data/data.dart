@@ -439,8 +439,8 @@ class RequestAVehicleRepositoryImpl implements RequestAVehicleRepository {
     try {
       if (client != null) {
         final Map<String, dynamic> queryParams = {
-          'offset': offset,
-          'limit': limit,
+          // 'offset': offset,
+          // 'limit': limit,
           // 'service_id': serviceId,
           // 'sub_service_id': subServiceId,
         };
@@ -492,8 +492,8 @@ class RequestAVehicleRepositoryImpl implements RequestAVehicleRepository {
       final client = await KAppX.network.secureClient();
       if (client != null) {
         final queryParams = {
-          'offset': offset.toString(),
-          'limit': limit.toString(),
+          // 'offset': offset.toString(),
+          // 'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
           'service_id': serviceId,

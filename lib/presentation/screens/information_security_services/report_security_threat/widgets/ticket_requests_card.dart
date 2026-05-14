@@ -33,6 +33,10 @@ class TicketRequestsCard extends ConsumerWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B873E),
+                    foregroundColor: Colors.white,
+                  ),
                   onPressed: controller.openNewRequestForm,
                   child: const Text('New Request'),
                 ),

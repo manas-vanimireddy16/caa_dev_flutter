@@ -62,16 +62,14 @@ class _VSController extends StateNotifier<_ViewState> {
 
   String titleForIndex(int index) {
     switch (index) {
+      // case 0:
+      // return 'Dashboard';
       case 0:
-        return 'Dashboard';
-      case 1:
         return 'Request a Vehicle: Daily/Emergency';
-      case 2:
-        return 'Request for Vehicle Maintenance1';
-      case 3:
-        return 'Request Contract Service';
-      case 4:
-        return 'Request for Vehicle Maintenance';
+      case 1:
+        return 'Transportation for Foreign Employee';
+      // case 3:
+      //   return 'Request for Vehicle Maintenance';
 
       default:
         return '  Home';

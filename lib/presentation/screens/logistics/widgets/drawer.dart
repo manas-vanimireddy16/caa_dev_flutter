@@ -13,53 +13,44 @@ class _DrawerMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final serviceName = 'Logistics Service';
+    const serviceCode = 'CAAS010';
 
     final roles = KAppX.globalProvider.read(rolesProvider)?.services ?? [];
 
-    /// ✅ GET MAIN SERVICE
+    /// ✅ FIND MAIN SERVICE BY CODE
     final Service service = roles.firstWhere(
-      (r) => (r.name ?? '').trim() == serviceName,
+      (r) => (r.code ?? '').trim() == serviceCode,
       orElse: () => Service(),
     );
 
     /// ✅ DRAWER ITEMS
     final items = [
-      // DrawerItemData(
-      //   index: 0,
-      //   icon: KImageProvider(image: KIcons.dashboard),
-      //   label: 'Dashboard',
-      // ),
+      DrawerItemData(
+        index: 0,
+        icon: KImageProvider(image: KIcons.dashboard),
+        label: 'Request A Vehicle: Daily/Emergency',
+        code: 'CAA031',
+      ),
+
       DrawerItemData(
         index: 1,
         icon: KImageProvider(image: KIcons.dashboard),
-        label: 'Request A Vehicle: Daily/Emergency',
+        label: 'Transportation for Foreign Employee',
+        code: 'CAA032',
       ),
-      DrawerItemData(
-        index: 2,
-        icon: KImageProvider(image: KIcons.dashboard),
-        label: 'Request for Vehicle Maintenance',
-      ),
-      // DrawerItemData(
-      //   index: 3,
-      //   icon: KImageProvider(image: KIcons.dashboard),
-      //   label: 'Request Contract Service',
-      // ),
-      // DrawerItemData(
-      //   index: 4,
-      //   icon: KImageProvider(image: KIcons.dashboard),
-      //   label: 'Request for Vehicle Maintenance',
-      // ),
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         60.toVerticalSizedBox,
-        KDrawerHeader(),
+
+        const KDrawerHeader(),
+
         20.toVerticalSizedBox,
 
         KDivider(color: Colors.grey, padding: EdgeInsets.zero),
+
         20.toVerticalSizedBox,
 
         /// HEADER
@@ -73,9 +64,11 @@ class _DrawerMenu extends ConsumerWidget {
                 width: 20.toAutoScaledWidth,
                 tintColor: Colors.black,
               ),
+
               16.toHorizontalSizedBox,
+
               Text(
-                serviceName,
+                service.name ?? '',
                 style: TextStyle(
                   fontSize: currentTheme.fontSizes.s16,
                   fontWeight: currentTheme.fontWeights.wBolder,
@@ -88,14 +81,16 @@ class _DrawerMenu extends ConsumerWidget {
 
         10.toVerticalSizedBox,
 
-        /// LIST
+        /// MENU LIST
         Expanded(
           child: ListView.separated(
             padding: EdgeInsets.zero,
             itemCount: items.length,
             separatorBuilder: (_, __) => const SizedBox(height: 4),
+
             itemBuilder: (context, i) {
               final item = items[i];
+
               final bool isSelected = item.index == activeIndex;
 
               return DrawerMenuItem(
@@ -103,25 +98,25 @@ class _DrawerMenu extends ConsumerWidget {
                 isSelected: isSelected,
                 currentTheme: currentTheme,
 
-                /// 🔥 MAIN LOGIC
                 onTap: () {
-                  /// 1️⃣ FIND SUBSERVICE FROM SERVICE
-                  final subService = service.subservices?.firstWhere(
-                    (s) =>
-                        (s.subServiceName ?? '').toLowerCase().trim() ==
-                        (item.label).toLowerCase().trim(),
-                    orElse: () => SubService(),
-                  );
+                  /// ✅ FIND SUBSERVICE BY CODE
+                  final SubService subService =
+                      service.subservices?.firstWhere(
+                        (s) =>
+                            (s.code ?? '').trim() == (item.code ?? '').trim(),
+                        orElse: () => SubService(),
+                      ) ??
+                      SubService();
 
-                  /// 2️⃣ UPDATE GLOBAL PROVIDER
+                  /// ✅ UPDATE GLOBAL STATE
                   ref
                       .read(selectedServiceProvider.notifier)
                       .state = SelectedServiceState(
                     service: service,
-                    subService: subService ?? SubService(),
+                    subService: subService,
                   );
 
-                  /// 3️⃣ SWITCH TAB
+                  /// ✅ CHANGE TAB
                   onItemTap(item.index);
                 },
               );

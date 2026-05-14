@@ -45,7 +45,7 @@ class _KBottomNavigatorScreenState
     } else if (widget.fromPage == 'logistics') {
       routes = const [
         LogisticsDashboardRoute(),
-        LogisticsForeignersRequestPortalRoute(),
+        // LogisticsForeignersRequestPortalRoute(),
         // SalalahDashboard(),
         // Services(),
       ];

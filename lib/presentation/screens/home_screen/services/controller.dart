@@ -224,9 +224,14 @@ class _VSController extends StateNotifier<_ViewState> {
       // case 'Security and Access':
       //   KAppX.router.push(RequestForAccessHomeRoute());
       //   break;
-      // case 'Request Transportation for Foreign Employee':
-      //   KAppX.router.push(LogisticsForeignersRequestPortalRoute());
-      //   break;
+      case 'CAA032':
+        KAppX.router.push(
+          LogisticsForeignersRequestPortalRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       case 'CAA031':
         KAppX.router.push(
           LogisticsRequestPortalRoute(
@@ -235,14 +240,14 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      case 'CAA032':
-        KAppX.router.push(
-          RequestForVehicleMaintenanceRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
+      // case 'CAA033':
+      //   KAppX.router.push(
+      //     RequestForVehicleMaintenanceRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
       // case 'Request for Access Card':
       //   KAppX.router.push(
       //     AccessCardRequestRoute(
@@ -363,22 +368,22 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      case 'CAA015':
-        KAppX.router.push(
-          RequestTrainingRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'CAA016':
-        KAppX.router.push(
-          RequestForStudyLeaveRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
+      // case 'CAA015':
+      //   KAppX.router.push(
+      //     RequestTrainingRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
+      // case 'CAA016':
+      //   KAppX.router.push(
+      //     RequestForStudyLeaveRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
       // case 'Transfer from One Job to Another Job Nature':
       //   KAppX.router.push(
       //     TransferFromOneJobtoAnotherJobNatureRoute(
@@ -460,7 +465,7 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      // case 'Salalah':
+      // case 'CAA003':
       //   KAppX.router.push(
       //     SalalahDashboard(
       //       service: service ?? Service(),

@@ -119,14 +119,14 @@ import 'package:code_setup/presentation/screens/legal_consultation_services/requ
     as _i55;
 import 'package:code_setup/presentation/screens/legal_consultation_services/view.dart'
     as _i25;
-import 'package:code_setup/presentation/screens/logistics/foreign_request/view.dart'
-    as _i28;
 import 'package:code_setup/presentation/screens/logistics/logistics_dashboard/view.dart'
     as _i27;
 import 'package:code_setup/presentation/screens/logistics/logistics_employee/view.dart'
     as _i30;
 import 'package:code_setup/presentation/screens/logistics/request_for_vehicle_maintenance/view.dart'
     as _i59;
+import 'package:code_setup/presentation/screens/logistics/transportation_for_foreign_employee/view.dart'
+    as _i28;
 import 'package:code_setup/presentation/screens/logistics/view.dart' as _i29;
 import 'package:code_setup/presentation/screens/media_services/dashboard/view.dart'
     as _i33;
@@ -3378,15 +3378,23 @@ class LogisticsForeignRequestDetailsTabRoute
     extends _i84.PageRouteInfo<LogisticsForeignRequestDetailsTabRouteArgs> {
   LogisticsForeignRequestDetailsTabRoute({
     _i85.Key? key,
-    String from = '',
     required int id,
+    required int serviceId,
+    required int subServiceId,
+    required _i86.Service service,
+    required _i86.SubService subService,
+    String from = '',
     List<_i84.PageRouteInfo>? children,
   }) : super(
          LogisticsForeignRequestDetailsTabRoute.name,
          args: LogisticsForeignRequestDetailsTabRouteArgs(
            key: key,
-           from: from,
            id: id,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+           from: from,
          ),
          initialChildren: children,
        );
@@ -3399,8 +3407,12 @@ class LogisticsForeignRequestDetailsTabRoute
       final args = data.argsAs<LogisticsForeignRequestDetailsTabRouteArgs>();
       return _i28.LogisticsForeignRequestDetailsTabScreen(
         key: args.key,
-        from: args.from,
         id: args.id,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+        from: args.from,
       );
     },
   );
@@ -3409,39 +3421,73 @@ class LogisticsForeignRequestDetailsTabRoute
 class LogisticsForeignRequestDetailsTabRouteArgs {
   const LogisticsForeignRequestDetailsTabRouteArgs({
     this.key,
-    this.from = '',
     required this.id,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+    this.from = '',
   });
 
   final _i85.Key? key;
 
-  final String from;
-
   final int id;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i86.Service service;
+
+  final _i86.SubService subService;
+
+  final String from;
 
   @override
   String toString() {
-    return 'LogisticsForeignRequestDetailsTabRouteArgs{key: $key, from: $from, id: $id}';
+    return 'LogisticsForeignRequestDetailsTabRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! LogisticsForeignRequestDetailsTabRouteArgs) return false;
-    return key == other.key && from == other.from && id == other.id;
+    return key == other.key &&
+        id == other.id &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService &&
+        from == other.from;
   }
 
   @override
-  int get hashCode => key.hashCode ^ from.hashCode ^ id.hashCode;
+  int get hashCode =>
+      key.hashCode ^
+      id.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      from.hashCode;
 }
 
 /// generated route for
 /// [_i28.LogisticsForeignersRequestPortalScreen]
-class LogisticsForeignersRequestPortalRoute extends _i84.PageRouteInfo<void> {
-  const LogisticsForeignersRequestPortalRoute({
+class LogisticsForeignersRequestPortalRoute
+    extends _i84.PageRouteInfo<LogisticsForeignersRequestPortalRouteArgs> {
+  LogisticsForeignersRequestPortalRoute({
+    _i85.Key? key,
+    required _i86.Service service,
+    required _i86.SubService subService,
     List<_i84.PageRouteInfo>? children,
   }) : super(
          LogisticsForeignersRequestPortalRoute.name,
+         args: LogisticsForeignersRequestPortalRouteArgs(
+           key: key,
+           service: service,
+           subService: subService,
+         ),
          initialChildren: children,
        );
 
@@ -3450,9 +3496,45 @@ class LogisticsForeignersRequestPortalRoute extends _i84.PageRouteInfo<void> {
   static _i84.PageInfo page = _i84.PageInfo(
     name,
     builder: (data) {
-      return const _i28.LogisticsForeignersRequestPortalScreen();
+      final args = data.argsAs<LogisticsForeignersRequestPortalRouteArgs>();
+      return _i28.LogisticsForeignersRequestPortalScreen(
+        key: args.key,
+        service: args.service,
+        subService: args.subService,
+      );
     },
   );
+}
+
+class LogisticsForeignersRequestPortalRouteArgs {
+  const LogisticsForeignersRequestPortalRouteArgs({
+    this.key,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i85.Key? key;
+
+  final _i86.Service service;
+
+  final _i86.SubService subService;
+
+  @override
+  String toString() {
+    return 'LogisticsForeignersRequestPortalRouteArgs{key: $key, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! LogisticsForeignersRequestPortalRouteArgs) return false;
+    return key == other.key &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
 }
 
 /// generated route for
@@ -3473,11 +3555,24 @@ class LogisticsHomeRoute extends _i84.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i28.LogisticsPassengersVehicleRequestScreen]
-class LogisticsPassengersVehicleRequestRoute extends _i84.PageRouteInfo<void> {
-  const LogisticsPassengersVehicleRequestRoute({
+class LogisticsPassengersVehicleRequestRoute
+    extends _i84.PageRouteInfo<LogisticsPassengersVehicleRequestRouteArgs> {
+  LogisticsPassengersVehicleRequestRoute({
+    _i85.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i86.Service service,
+    required _i86.SubService subService,
     List<_i84.PageRouteInfo>? children,
   }) : super(
          LogisticsPassengersVehicleRequestRoute.name,
+         args: LogisticsPassengersVehicleRequestRouteArgs(
+           key: key,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+         ),
          initialChildren: children,
        );
 
@@ -3486,9 +3581,60 @@ class LogisticsPassengersVehicleRequestRoute extends _i84.PageRouteInfo<void> {
   static _i84.PageInfo page = _i84.PageInfo(
     name,
     builder: (data) {
-      return const _i28.LogisticsPassengersVehicleRequestScreen();
+      final args = data.argsAs<LogisticsPassengersVehicleRequestRouteArgs>();
+      return _i28.LogisticsPassengersVehicleRequestScreen(
+        key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+      );
     },
   );
+}
+
+class LogisticsPassengersVehicleRequestRouteArgs {
+  const LogisticsPassengersVehicleRequestRouteArgs({
+    this.key,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i85.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i86.Service service;
+
+  final _i86.SubService subService;
+
+  @override
+  String toString() {
+    return 'LogisticsPassengersVehicleRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! LogisticsPassengersVehicleRequestRouteArgs) return false;
+    return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
 }
 
 /// generated route for

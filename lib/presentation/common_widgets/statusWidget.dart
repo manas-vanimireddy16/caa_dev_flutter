@@ -14,6 +14,7 @@ class StatusChip extends StatelessWidget {
 
     switch (status.toLowerCase()) {
       case "approved":
+      case "closed":
         bg = const Color(0xFFD6E4D6);
         text = const Color(0xFF0D652D);
         icon = Icons.check_circle;

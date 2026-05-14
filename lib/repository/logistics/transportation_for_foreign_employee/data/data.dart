@@ -1,15 +1,20 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
-import 'package:code_setup/presentation/screens/hotel_reservation/models/request_data.dart';
-import 'package:code_setup/presentation/screens/security_access/models/request_model.dart';
-import 'package:code_setup/repository/housing_accommodation_service/hotel_reservation/domain/domain.dart';
+import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/foreign_employee_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
+import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/cancel_request_model.dart';
+import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
+import 'package:code_setup/repository/logistics/transportation_for_foreign_employee/domain/domain.dart';
+import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
 import 'package:code_setup/utils/api_end_point.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
@@ -17,13 +22,53 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 
-class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
+class TransportationForForeignEmployeeRepositoryImpl
+    implements TransportationForForeignEmployeeRepository {
   @override
-  Future<Map<String, dynamic>> hotelReservationCreateRequest(
+  Future<List<EmployeeList>> getUsers(int departmentId) async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw Exception("HTTP client not initialized");
+    }
+
+    try {
+      final response = await client.get(
+        ApiEndPoint.assignTaskToEmployeeUsersList(departmentId),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+
+        // 🔴 IMPORTANT: data['data'] is [ List<Employee>, totalCount ]
+        final List<dynamic> rawData = data['data'] as List<dynamic>? ?? [];
+
+        // rawData[0] contains the actual employee list
+        final List<dynamic> employeeList =
+            rawData.isNotEmpty && rawData[0] is List
+            ? rawData[0] as List<dynamic>
+            : [];
+
+        return employeeList
+            .map((e) => EmployeeList.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+
+      throw Exception(
+        'Failed to fetch positions request for coverage: ${response.statusCode}',
+      );
+    } catch (e, st) {
+      debugPrint('getUsers error: $e');
+      debugPrintStack(stackTrace: st);
+      throw Exception("Error fetching positions request for coverage");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> foreignEmployeeVehicleCreateRequest(
     Map<String, dynamic> payload,
   ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.hotelReservationSendRequest;
+    final String url = ApiEndPoint.foreignEmployeeVehicleSendRequest;
 
     try {
       if (client == null) {
@@ -148,7 +193,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
 
   @override
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId) async {
-    String url = ApiEndPoint.hotelReservationKpiCards;
+    String url = ApiEndPoint.foreignEmployeeVehicleKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -184,7 +229,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
     required int serviceId,
     required int subServiceId,
   }) async {
-    String url = ApiEndPoint.hotelReservationApprovalKpiCards;
+    String url = ApiEndPoint.foreignEmployeeVehicleApprovalKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
@@ -231,7 +276,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.hotelReservationApprovalStatusBreakdown,
+          ApiEndPoint.foreignEmployeeVehicleApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -274,7 +319,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.hotelReservationApprovalTrendBreakdown,
+          ApiEndPoint.foreignEmployeeVehicleApprovalTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -314,7 +359,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.hotelReservationStatusBreakdown,
+          ApiEndPoint.foreignEmployeeVehicleStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -357,7 +402,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.hotelReservationTrendBreakdown,
+          ApiEndPoint.foreignEmployeeVehicleTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -382,7 +427,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<List<HotelReservationRequestModel>> getRequests({
+  Future<List<ForeignEmployeeVehicleRequestModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -410,7 +455,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
         if (status.isNotEmpty) {
           queryParams['status'] = status;
         }
-        final url = ApiEndPoint.hotelReservationGetRequests;
+        final url = ApiEndPoint.foreignEmployeeVehicleGetRequests;
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
@@ -419,7 +464,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
 
           return list
               .map(
-                (e) => HotelReservationRequestModel.fromJson(
+                (e) => ForeignEmployeeVehicleRequestModel.fromJson(
                   e as Map<String, dynamic>,
                 ),
               )
@@ -438,7 +483,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<List<HotelReservationRequestModel>> getActionItems({
+  Future<List<ForeignEmployeeVehicleRequestModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -467,7 +512,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
         }
 
         final response = await client.get(
-          ApiEndPoint.hotelReservationGetActionItems,
+          ApiEndPoint.foreignEmployeeVehicleGetActionItems,
           queryParameters: queryParams,
         );
 
@@ -479,7 +524,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           /// Parse each Action Item
           final actionItems = list
               .map(
-                (item) => HotelReservationRequestModel.fromJson(
+                (item) => ForeignEmployeeVehicleRequestModel.fromJson(
                   item as Map<String, dynamic>,
                 ),
               )
@@ -507,7 +552,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.hotelReservationSendChatById(id);
+    final String url = ApiEndPoint.foreignEmployeeVehicleSendChatById(id);
 
     try {
       if (client != null) {
@@ -540,7 +585,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   @override
   Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.hotelReservationSendAttachmentById(id);
+    final String url = ApiEndPoint.foreignEmployeeVehicleSendAttachmentById(id);
 
     try {
       if (client != null) {
@@ -573,7 +618,7 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   @override
   Future<void> onApprove(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.hotelReservationApprove;
+    final String url = ApiEndPoint.foreignEmployeeVehicleApprove;
 
     try {
       if (client != null) {
@@ -603,13 +648,21 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<List<ChatMessageModel>> getchatById(int id) async {
+  Future<List<ChatMessageModel>> getchatById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.hotelReservationChatsById(id);
-        final response = await client.get(url);
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final url = ApiEndPoint.foreignEmployeeVehicleChatsById(id);
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> json = response.data;
@@ -631,12 +684,16 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   }
 
   @override
-  Future<List<AttachmentModel>> getAttachmentsById(int id) async {
+  Future<List<AttachmentModel>> getAttachmentsById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.hotelReservationAttachmentsById(id);
+        final url = ApiEndPoint.foreignEmployeeVehicleAttachmentsById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -669,11 +726,11 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
     try {
       if (client != null) {
         final queryParams = {
-          // 'service_id': serviceId,
-          // 'sub_service_id': subServiceId,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
-        final url = ApiEndPoint.hotelReservationRequestById(id);
-        final response = await client.get(url);
+        final url = ApiEndPoint.foreignEmployeeVehicleRequestById(id);
+        final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> json = response.data;
@@ -691,6 +748,100 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
       }
     } catch (e) {
       throw Exception("Error fetching request details: $e");
+    }
+  }
+
+  @override
+  Future<List<DepartmentModel>> getDepartments() async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.departmentsList;
+        final queryParams = {'offset': 1, 'limit': 1000};
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return (data['data'] as List)
+              .map((e) => DepartmentModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception('Failed with status code: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception('Error in getActionItems: $e');
+    }
+  }
+
+  @override
+  Future<List<SectionModel>> getSections({
+    required String? userDepartmentId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'offset': 1,
+          'limit': 1000,
+          'department_id': userDepartmentId,
+        };
+        final url = ApiEndPoint.sections;
+
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return (data['data'] as List)
+              .map((e) => SectionModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception('Failed with status code: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception('Error in getActionItems: $e');
+    }
+  }
+
+  @override
+  Future<void> onAllocateVehicle(
+    Map<String, dynamic> payload,
+    int requestId,
+  ) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.foreignEmployeeVehicleAllocate(requestId);
+
+    try {
+      if (client != null) {
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            '${response.data['message']}',
+          );
+          debugPrint('✅ Request sent successfully');
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          ShowFlutterToast().showFlutterToastFailure(
+            '${response.statusMessage}',
+          );
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
     }
   }
 }

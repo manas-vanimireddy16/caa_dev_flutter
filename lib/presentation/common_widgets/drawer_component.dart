@@ -96,11 +96,13 @@ class DrawerItemData {
   final int index;
   final Widget icon;
   final String label;
+  final String? code;
 
   const DrawerItemData({
     required this.index,
     required this.icon,
     required this.label,
+    this.code,
   });
 }
 

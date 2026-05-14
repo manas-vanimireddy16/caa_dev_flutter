@@ -3735,4 +3735,98 @@ class ApiEndPoint {
 
   static String securityThreatDeleteAttachment(int attachmentId) =>
       '/v1/it-service/security-threat/attachments/$attachmentId';
+
+  /// Foreign Employee Vehicle APIs
+  /// ===================== REQUEST APIs =====================
+
+  /// Send Request (Create Request)
+  static const String foreignEmployeeVehicleSendRequest =
+      '/v1/it-service/logistics/foreign-vehicle-request';
+
+  /// Get my requests
+  static const String foreignEmployeeVehicleGetRequests =
+      '/v1/it-service/logistics/foreign-vehicle-requests';
+
+  /// Get approval list (For approvers)
+  static const String foreignEmployeeVehicleGetActionItems =
+      '/v1/it-service/logistics/foreign-vehicle-requests/for-approval';
+
+  /// Get request by ID
+  static String foreignEmployeeVehicleRequestById(int requestId) =>
+      '/v1/it-service/logistics/foreign-vehicle-request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+  /// (Optional – if backend supports)
+
+  static String foreignEmployeeVehicleUpdateRequest(int requestId) =>
+      '/v1/it-service/logistics/foreign-vehicle-request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String foreignEmployeeVehicleApprove =
+      '/v1/it-service/logistics/approve';
+
+  /// ===================== ANALYTICS APIs =====================
+
+  /// Approval status breakdown
+  static const String foreignEmployeeVehicleApprovalStatusBreakdown =
+      '/v1/it-service/logistics/analytics/foreign-approvals/status-breakdown';
+
+  /// Vehicle status breakdown
+  static const String foreignEmployeeVehicleStatusBreakdown =
+      '/v1/it-service/logistics/analytics/foreign-vehicle/status-breakdown';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat
+  static String foreignEmployeeVehicleSendChatById(int requestId) =>
+      '/v1/it-service/logistics/foreign-vehicle-request/$requestId/chat';
+
+  /// Get chats
+  static String foreignEmployeeVehicleChatsById(int requestId) =>
+      '/v1/it-service/logistics/foreign-vehicle-request/$requestId/chats';
+
+  /// Update chat
+  static String foreignEmployeeVehicleUpdateChat(int chatId) =>
+      '/v1/it-service/logistics/chats/$chatId';
+
+  /// Delete chat
+  static String foreignEmployeeVehicleDeleteChat(int chatId) =>
+      '/v1/it-service/logistics/chats/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String foreignEmployeeVehicleSendAttachmentById(int requestId) =>
+      '/v1/it-service/logistics/foreign-vehicle-request/$requestId/attachment';
+
+  /// Get attachments
+  static String foreignEmployeeVehicleAttachmentsById(int requestId) =>
+      '/v1/it-service/logistics/foreign-vehicle-request/$requestId/attachments';
+
+  /// Update attachment
+  static String foreignEmployeeVehicleUpdateAttachment(int attachmentId) =>
+      '/v1/it-service/logistics/attachments/$attachmentId';
+
+  /// Delete attachment
+  static String foreignEmployeeVehicleDeleteAttachment(int attachmentId) =>
+      '/v1/it-service/logistics/attachments/$attachmentId';
+
+  /// ===================== ANALYTICS APIs =====================
+
+  /// KPI Cards
+  static const String foreignEmployeeVehicleKpiCards =
+      '/v1/it-service/logistics/analytics/foreign-vehicle/kpi-cards';
+
+  /// Approval Analytics
+  static const String foreignEmployeeVehicleApprovalAnalytics =
+      '/v1/it-service/logistics/analytics/logistics-approvals';
+  static const String foreignEmployeeVehicleTrendBreakdown =
+      '/v1/it-service/logistics/analytics/foreign-vehicle/trend-breakdown';
+  static const String foreignEmployeeVehicleApprovalTrendBreakdown =
+      '/v1/it-service/logistics/analytics/foreign-approvals/trend-breakdown';
+  static const String foreignEmployeeVehicleApprovalKpiCards =
+      '/v1/it-service/logistics/analytics/foreign-approvals/kpi-cards';
+  static String foreignEmployeeVehicleAllocate(int requestId) =>
+      '/v1/it-service/logistics/foreign-vehicle-request/$requestId/details';
 }

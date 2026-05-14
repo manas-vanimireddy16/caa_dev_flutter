@@ -40,6 +40,10 @@ class TicketRequestsCard extends ConsumerWidget {
                   onPressed: controller.openNewRequestForm,
                   child: const Text('New Request'),
                 ),
+                ElevatedButton(
+                  onPressed: controller.openNewRequestForm,
+                  child: const Text('New Request'),
+                ),
               ],
             ),
 
@@ -58,7 +62,7 @@ class TicketRequestsCard extends ConsumerWidget {
             /// Tabs
             RequestTabs(
               selectedIndex: state.tabIndex,
-              actionItemCount: state.approvalKpiData.data?.pending ?? 0,
+              actionItemCount: state.approvalKpiData?.data?.pending ?? 0,
               onTabChanged: (index) {
                 focusNode.unfocus();
                 controller.searchController.clear();

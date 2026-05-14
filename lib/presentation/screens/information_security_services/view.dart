@@ -13,6 +13,7 @@ import 'package:code_setup/modules/domain/models/roles_model.dart';
 
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/common_widgets/drawer_component.dart';
+import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/drawer/drawer.dart';
