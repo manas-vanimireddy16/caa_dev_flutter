@@ -305,14 +305,19 @@ class _VSController extends StateNotifier<_ViewState> {
 
 // part of 'view.dart';
 
-// final loginVsProvider = StateNotifierProvider<_VSController, _ViewState>((ref) {
-//   final stateController = _VSController();
+// // -------------------------------------------------------------
+// // PROVIDER
+// // -------------------------------------------------------------
+// final _vsProvider =
+//     StateNotifierProvider.autoDispose<_VSController, _ViewState>((ref) {
+//       final controller = _VSController();
+//       // controller.initState();
+//       return controller;
+//     });
 
-//   stateController.initState();
-
-//   return stateController;
-// });
-
+// // -------------------------------------------------------------
+// // STATE
+// // -------------------------------------------------------------
 // class _ViewState {
 //   final bool isLoading;
 //   final UserRoleResponse userRoles;
@@ -344,275 +349,108 @@ class _VSController extends StateNotifier<_ViewState> {
 //   }
 // }
 
+// // -------------------------------------------------------------
+// // CONTROLLER
+// // -------------------------------------------------------------
 // class _VSController extends StateNotifier<_ViewState> {
 //   _VSController() : super(_ViewState.init());
 
-//   late SingleAccountPca msal;
+//   // -------------------------------------------------------------
+//   // LOGIN DIRECTLY USING JWT (NO MSAL)
+//   // -------------------------------------------------------------
+//   Future<void> loginWithJwtDirectly() async {
+//     const jwt =
+//         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwMTMsImlzX2FkbWluIjpmYWxzZSwiZW1wbG95ZWVfaWQiOiIxMjgwNSIsImVtcGxveWVlX25hbWUiOiJTYW1iYSBSYWp1IiwiZW1wbG95ZWVfYXJhYmljX25hbWUiOiLYrdmF2YrYryDYqNmGINmF2K3ZhdivINio2YYg2KPYrdmF2K8g2KfZhNi52KfZhdix2YoiLCJwZXJzb25fdHlwZSI6IkNBQSIsInNlY3Rpb24iOjEwMSwic2VjdGlvbl9uYW1lIjoiVGVjaG5pY2FsIFN1cHBvcnQgU2VjdGlvbiIsInBvc2l0aW9uIjo3OCwicG9zaXRpb25fbmFtZSI6IkhlYWQgb2YgTmV0d29ya3MgU2VjdGlvbiIsImRlcGFydG1lbnQiOjUwLCJkZXBhcnRtZW50X25hbWUiOiJJbmZvcm1hdGlvbiBUZWNobm9sb2d5IERlcGFydG1lbnQiLCJlbWFpbCI6InNhbWJhQGFtbmV0ZGlnaXRhbC5jb20iLCJpYXQiOjE3NjM5ODU5NTQsImV4cCI6MTc2NzU4NTk1NH0.NpDfj2gLljd4FKFN2F3Ojk4XJ2UX4d2dbumrj0JDHxU";
 
-//   String accessToken = '';
-
-//   void initState() {
-//     initializeMsal();
+//     decodeJwtPayloadSafe(jwt);
 //   }
 
-//   Future<void> initializeMsal() async {
-//     try {
-//       msal = await SingleAccountPca.create(
-//         clientId: '80314aeb-8563-4924-bbf3-b0a76e75a73c',
-
-//         androidConfig: AndroidConfig(
-//           configFilePath: 'assets/msal_config.json',
-//           redirectUri:
-//               'msauth://com.example.sso_testing/+yTKwzXT6K1fl0HQWwIryOQSHEw=',
-//         ),
-
-//         appleConfig: AppleConfig(
-//           authority:
-//               "https://login.microsoftonline.com/a0d55139-70f6-49e4-b912-4d13d30fc66b",
-
-//           authorityType: AuthorityType.aad,
-
-//           broker: Broker.safariBrowser,
-//         ),
-//       );
-
-//       debugPrint('✅ MSAL initialized successfully');
-//     } catch (e) {
-//       debugPrint('❌ MSAL Initialization Error: $e');
-//     }
-//   }
-
-//   Future<void> signIn() async {
-//     try {
-//       state = state.copyWith(isLoading: true);
-
-//       debugPrint('🔄 Attempting to acquire token...');
-
-//       final AuthenticationResult result = await msal.acquireToken(
-//         scopes: ['user.read'],
-//       );
-
-//       debugPrint('✅ Token acquired successfully');
-
-//       accessToken = result.accessToken;
-
-//       await onGettingSSOAccessTokenFetchAuthToken(accessToken);
-//     } catch (e) {
-//       debugPrint('❌ ERROR DURING LOGIN: $e');
-
-//       state = state.copyWith(isLoading: false);
-//     }
-//   }
-
-//   Future<void> loginWithJwt(String token) async {
-//     try {
-//       state = state.copyWith(isLoading: true);
-
-//       await decodeJwtPayloadSafe(token);
-//     } catch (e) {
-//       debugPrint("JWT Login Error: $e");
-
-//       state = state.copyWith(isLoading: false);
-//     }
-//   }
-
-//   Future<void> onGettingSSOAccessTokenFetchAuthToken(String accessToken) async {
-//     try {
-//       final authRepo = AuthRepository();
-
-//       final response = await authRepo.getAuthTokenWithSSOAccessToken(
-//         accessToken,
-//       );
-
-//       if (response != null && response.isNotEmpty) {
-//         final authToken = response['token'];
-
-//         await decodeJwtPayloadSafe(authToken);
-//       } else {
-//         state = state.copyWith(isLoading: false);
-//       }
-//     } catch (e) {
-//       debugPrint("❌ Auth Token Error: $e");
-
-//       state = state.copyWith(isLoading: false);
-//     }
-//   }
-
+//   // -------------------------------------------------------------
+//   // DECODE JWT
+//   // -------------------------------------------------------------
 //   Future<void> decodeJwtPayloadSafe(String token) async {
 //     final kAuthCred = KAuthCred();
 
 //     try {
 //       final parts = token.split('.');
+//       if (parts.length != 3) throw FormatException("Invalid JWT");
 
-//       if (parts.length != 3) {
-//         throw FormatException('Invalid JWT token structure');
-//       }
-
-//       final payload = parts[1];
-
-//       final normalized = base64Url.normalize(payload);
-
-//       final decodedBytes = base64Url.decode(normalized);
-
-//       final decodedString = utf8.decode(decodedBytes);
-
+//       final payload = base64Url.normalize(parts[1]);
+//       final decodedString = utf8.decode(base64Url.decode(payload));
 //       final payloadMap = json.decode(decodedString);
 
 //       payloadMap['accessToken'] = token;
 
-//       log('user details - $payloadMap');
+//       final user = User.fromJson(payloadMap);
 
-//       if (payloadMap is! Map<String, dynamic>) {
-//         throw FormatException('Payload is not a valid JSON object');
-//       }
-
-//       final User user = User.fromJson(payloadMap);
-
-//       /// STORE PROFILE
+//       // Save user in local storage
 //       await kAuthCred.storeProfileData(user);
 
+//       // Fetch roles & user info
 //       if (user.userId != null) {
-//         /// FETCH ROLES
 //         await fetchUserRoles(user.userId!);
-
-//         /// FETCH USER INFO
 //         await fetchUserInfo(user.userId!);
-
-//         /// STORE USER INFO
-//         if (state.userInfo.data != null) {
-//           await kAuthCred.storeUserInfo(state.userInfo);
-//         }
 //       }
 
-//       /// STOP LOADER
-//       state = state.copyWith(isLoading: false);
+//       if (state.userRoles.data != null) {
+//         await kAuthCred.storeRoleData(state.userRoles);
+//       }
 
-//       /// NAVIGATE DIRECTLY
-//       KAppX.router.replace(HomeRoute());
-//     } on FormatException catch (e) {
-//       log('FormatException while decoding JWT: $e');
+//       if (state.userInfo.data != null) {
+//         await kAuthCred.storeUserInfo(state.userInfo);
+//       }
 
-//       state = state.copyWith(isLoading: false);
+//       // After everything → redirect
+//       userSession();
 //     } catch (e) {
-//       log('Unexpected error decoding JWT: $e');
-
-//       state = state.copyWith(isLoading: false);
+//       log("JWT Decode Error: $e");
 //     }
 //   }
 
+//   // -------------------------------------------------------------
+//   // FETCH
+//   // -------------------------------------------------------------
 //   Future<void> fetchUserRoles(int id) async {
 //     try {
-//       final repo = RolesRepo();
-
-//       final userRoles = await repo.getUserRoles(id);
-
-//       await selectOrStoreRole(userRoles);
-
+//       final rolesRepo = RolesRepo();
+//       final userRoles = await rolesRepo.getUserRoles(id);
 //       state = state.copyWith(userRoles: userRoles);
 //     } catch (e) {
-//       debugPrint("fetchUserRoles error: $e");
+//       debugPrint("Error fetching roles: $e");
 //     }
 //   }
 
 //   Future<void> fetchUserInfo(int id) async {
 //     try {
 //       final rolesRepo = RolesRepo();
-
 //       final userInfo = await rolesRepo.getUserInfo(id);
-
 //       state = state.copyWith(userInfo: userInfo);
 //     } catch (e) {
-//       debugPrint('Error fetching user info: $e');
+//       debugPrint("Error fetching info: $e");
 //     }
 //   }
 
-//   Future<void> selectOrStoreRole(UserRoleResponse userRoles) async {
-//     final storage = KAuthCred();
+//   // -------------------------------------------------------------
+//   // LOGOUT
+//   // -------------------------------------------------------------
+//   Future<void> logout() async {
+//     await KAuthCred().deleteProfileData();
+//     // await KAuthCred().deleteRoleData();
+//     // await KAuthCred().deleteUserInfo();
 
-//     final saved = await storage.getSelectedRole();
-
-//     if (saved != null) {
-//       print("🔵 Using saved role ${saved.roleName}");
-
-//       return;
-//     }
-
-//     final first = userRoles.data!.rolesSummary!.first;
-
-//     final detail = userRoles.data!.roleDetails!.firstWhere(
-//       (e) => e.role?.id == first.roleId,
-
-//       orElse: () => userRoles.data!.roleDetails!.first,
-//     );
-
-//     final selected = SelectedUserRole(
-//       roleId: first.roleId!,
-//       roleName: first.roleName!,
-//       departmentId: detail.department?.id ?? 0,
-//       sectionId: detail.section?.id ?? 0,
-//       services: detail.services ?? [],
-//     );
-
-//     await storage.storeSelectedRole(selected);
-
-//     print("🎯 Selected Role: ${selected.services}");
+//     KAppX.router.replace(MicrosoftLoginRoute());
 //   }
 
-//   Future<void> signOut() async {
-//     try {
-//       state = state.copyWith(isLoading: true);
-
-//       await msal.signOut();
-
-//       final storage = KAuthCred();
-
-//       await storage.deleteProfileData();
-
-//       await storage.deleteUserInfoData();
-
-//       accessToken = '';
-
-//       state = _ViewState.init();
-
-//       KAppX.router.replace(MicrosoftLoginRoute());
-
-//       debugPrint("✅ Logout Successful");
-//     } catch (e) {
-//       debugPrint("❌ Logout Error: $e");
-//     } finally {
-//       state = state.copyWith(isLoading: false);
-//     }
-//   }
-
-//   Future<void> logoutJwt() async {
-//     try {
-//       state = state.copyWith(isLoading: true);
-
-//       final storage = KAuthCred();
-
-//       /// CLEAR PROFILE
-//       await storage.deleteProfileData();
-
-//       /// CLEAR USER INFO
-//       await storage.deleteUserInfoData();
-
-//       /// OPTIONAL
-//       // await storage.deleteSelectedRole();
-
-//       /// CLEAR MEMORY TOKEN
-//       accessToken = '';
-
-//       /// RESET STATE
-//       state = _ViewState.init();
-
-//       /// NAVIGATE TO LOGIN
-//       KAppX.router.replace(MicrosoftLoginRoute());
-
-//       debugPrint("✅ JWT Logout Successful");
-//     } catch (e) {
-//       debugPrint("❌ Logout Error: $e");
-//     } finally {
-//       state = state.copyWith(isLoading: false);
-//     }
+//   // -------------------------------------------------------------
+//   // SESSION CHECK
+//   // -------------------------------------------------------------
+//   void userSession() {
+//     KAuthCred().getProfileData().then((userInfo) {
+//       if (userInfo?.accessToken != null) {
+//         KAppX.router.replace(HomeRoute());
+//       } else {
+//         KAppX.router.replace(MicrosoftLoginRoute());
+//       }
+//     });
 //   }
 // }
