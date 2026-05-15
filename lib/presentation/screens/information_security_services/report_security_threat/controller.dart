@@ -71,6 +71,13 @@ class _ViewState {
     'November',
     'December',
   ];
+  final List<String> threatTypes = [
+    'Malware Threat',
+    'Email Threat',
+    'Identity & Access Threat',
+    'Application & System Threat',
+    'Others',
+  ];
 
   /// FORM KEY
   final formKey = GlobalKey<FormState>();
@@ -264,28 +271,24 @@ class _VSController extends StateNotifier<_ViewState> {
       List.generate(6, (index) => (currentYear - index).toString());
   List<StatSummaryData> requestStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.kpiData.data?.toJson(),
-        isSecurityThreat: true,
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> approverStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.approvalKpiData.data?.toJson(),
-        isSecurityThreat: true,
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
 
-  List<StatSummaryData> currentStats(
-    String Function(String key) titleForKey,
-  ) =>
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
       state.tabIndex == 0
-          ? requestStatsList(titleForKey)
-          : approverStatsList(titleForKey);
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
 
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
@@ -341,7 +344,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Date': formatDate(item.base?.createdAt.toString() ?? ''),
       'Request Type': item.base?.subService?.subServiceName ?? 'N/A',
       'Priority': item.priority ?? 'N/A',
-      'Type Of Threat': item.typeOfThreat.toString() ?? 'N/A',
+      'Type Of Threat': getThreatType(item.typeOfThreat ?? 0),
 
       /// ================= EMPLOYEE INFO =================
 
@@ -364,18 +367,11 @@ class _VSController extends StateNotifier<_ViewState> {
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
       "Ticket Name": request?.ticketName ?? 'N/A',
       'Source of Incident Detected': request?.sourceOfIncident ?? 'N/A',
-      'Type Of Threat': request?.typeOfThreat.toString() ?? 'N/A',
+      'Type Of Threat': getThreatType(request?.typeOfThreat ?? 0),
       'Priority': request?.priority ?? 'N/A',
       'Description': request?.description ?? 'N/A',
       'Type of Incident Detected':
           request?.typeOfIncidentDetected?.join(', ').toString() ?? 'N/A',
-      'Type of Threat': request?.typeOfThreat.toString() ?? 'N/A',
-
-      // 'Type Of Enquire': request?.titleOfEnquiry ?? 'N/A',
-      // 'Phone Number': request?.phone ?? 'N/A',
-      // 'Budget Code': request?.budgetCode ?? 'N/A',
-      // 'Estimated Cost': request?.estimatedCost ?? 'N/A',
-      // 'Request Type': request?.requestType ?? 'N/A',
     };
   }
 
@@ -459,6 +455,13 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
+  String getThreatType(int index) {
+    if (index > 0 && index <= state.threatTypes.length) {
+      return state.threatTypes[index - 1];
+    }
+    return '';
+  }
+
   final securityThreatInstance = SecurityThreatRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
@@ -481,6 +484,14 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.number,
       required: true,
       placeholder: 'Enter Contact Number',
+      validator: (value, values) {
+        final phone = value?.toString() ?? '';
+        if (phone.length != 8) {
+          return 'Phone number must be 8 digits';
+        }
+
+        return null;
+      },
     ),
 
     /// ================= TICKET NAME =================
@@ -1065,8 +1076,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // 3️⃣ Send request
       await securityThreatInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
-      KAppX.router.pop();
+      // await Future.delayed(Duration(seconds: 3));
+      // KAppX.router.pop();
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
@@ -1171,7 +1182,7 @@ class _VSController extends StateNotifier<_ViewState> {
               children: [
                 /// HEADER
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
+                  padding: const EdgeInsets.fromLTRB(14, 20, 16, 16),
                   child: Row(
                     children: [
                       const Expanded(
@@ -1682,6 +1693,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (response['status'] == 'success') {
+        Future.delayed(const Duration(seconds: 3));
         _refreshDashboard();
       }
     } catch (e, st) {

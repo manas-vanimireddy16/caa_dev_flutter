@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 typedef VisibilityCondition = bool Function(Map<String, dynamic> values);
 typedef CustomFieldBuilder =
     Widget Function(BuildContext context, WidgetRef ref);
+typedef FieldValidator =
+    String? Function(dynamic value, Map<String, dynamic> values);
 
 class DynamicField {
   final String name;
@@ -26,6 +28,7 @@ class DynamicField {
   final bool Function(Map<String, dynamic> values)? requiredWhen;
   final bool Function(Map<String, dynamic> values)? disabledWhen;
   final List<String>? disabledOptions;
+  final FieldValidator? validator;
 
   const DynamicField({
     required this.name,
@@ -46,6 +49,7 @@ class DynamicField {
     this.requiredWhen,
     this.disabledWhen,
     this.disabledOptions,
+    this.validator,
   });
 }
 

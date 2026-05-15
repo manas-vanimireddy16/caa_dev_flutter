@@ -145,7 +145,7 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen> {
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
             title: l10n.requestsStatusBreakdown,
-            filterLabel: l10n.periodFilterLabels[1],
+            filterLabel: l10n.periodFilterLabels[0],
             filterLabelList: l10n.periodFilterLabels,
             centerMetricLabel: l10n.totalRequests,
             legendHeading: l10n.breakdown,

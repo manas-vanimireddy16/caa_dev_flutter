@@ -20,29 +20,41 @@ class ApproveRequestDialogWidget extends ConsumerStatefulWidget {
 class _ApproveRequestDialogWidgetState
     extends ConsumerState<ApproveRequestDialogWidget> {
   final _formKey = GlobalKey<FormState>();
+
   late _VSControllerParams _providerArgs;
-
-  @override
-  void initState() {
-    super.initState();
-
-    /// ✅ Create proper provider params object
-    _providerArgs = _VSControllerParams(
-      service: widget.service,
-      subService: widget.subService,
-    );
-  }
 
   final TextEditingController returnDateController = TextEditingController();
 
   final TextEditingController returnTimeController = TextEditingController();
 
   final TextEditingController commentsController = TextEditingController();
+
   final TextEditingController reasonController = TextEditingController();
 
   String? vehicleCondition;
 
+  bool isSubmitting = false;
+
   final List<String> conditions = ['Yes', 'No'];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _providerArgs = _VSControllerParams(
+      service: widget.service,
+      subService: widget.subService,
+    );
+  }
+
+  @override
+  void dispose() {
+    returnDateController.dispose();
+    returnTimeController.dispose();
+    commentsController.dispose();
+    reasonController.dispose();
+    super.dispose();
+  }
 
   Future<void> pickDate() async {
     final pickedDate = await showDatePicker(
@@ -78,50 +90,6 @@ class _ApproveRequestDialogWidgetState
     }
   }
 
-  @override
-  void dispose() {
-    returnDateController.dispose();
-    returnTimeController.dispose();
-    commentsController.dispose();
-    reasonController.dispose();
-    super.dispose();
-  }
-
-  void onSubmit() {
-    if (!_formKey.currentState!.validate()) return;
-
-    final controller = ref.read(_vsProvider(_providerArgs).notifier);
-    final state = ref.read(_vsProvider(_providerArgs));
-    final active = controller.getActiveApprovalLevel(
-      state.requestDetails.approvalDetails ?? [],
-    );
-    final approverId = active?.id;
-
-    final payload = {
-      "request_id": state.requestDetails.request?.id,
-      "approval_id": approverId,
-      "status": "Approved",
-
-      "comment": commentsController.text.trim(),
-
-      "request_type": "foreign",
-
-      "actual_vehicle_return_time": convertTo24Hour(returnTimeController.text),
-
-      "actual_return_date": convertDate(returnDateController.text),
-
-      "vehicle_condition": vehicleCondition?.toLowerCase(),
-
-      "reason": vehicleCondition == "No" ? reasonController.text.trim() : null,
-    };
-
-    debugPrint("PAYLOAD => $payload");
-
-    controller.onApprove(payload);
-
-    // widget.onSuccess?.call();
-  }
-
   String convertDate(String date) {
     final parsed = DateFormat('dd-MM-yyyy').parse(date);
     return DateFormat('yyyy-MM-dd').format(parsed);
@@ -132,9 +100,90 @@ class _ApproveRequestDialogWidgetState
     return DateFormat('HH:mm:ss').format(parsed);
   }
 
+  Widget mandatoryLabel(String text) {
+    return RichText(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: Colors.grey.shade800,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        children: const [
+          TextSpan(
+            text: ' *',
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> onSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (isSubmitting) return;
+
+    setState(() {
+      isSubmitting = true;
+    });
+
+    try {
+      final controller = ref.read(_vsProvider(_providerArgs).notifier);
+
+      final state = ref.read(_vsProvider(_providerArgs));
+
+      final active = controller.getActiveApprovalLevel(
+        state.requestDetails.approvalDetails ?? [],
+      );
+
+      final approverId = active?.id;
+
+      final payload = {
+        "request_id": state.requestDetails.request?.id,
+        "approval_id": approverId,
+        "status": "Approved",
+        "comment": commentsController.text.trim(),
+        "request_type": "foreign",
+        "actual_vehicle_return_time": convertTo24Hour(
+          returnTimeController.text,
+        ),
+        "actual_return_date": convertDate(returnDateController.text),
+        "vehicle_condition": vehicleCondition?.toLowerCase(),
+        "reason": vehicleCondition == "No"
+            ? reasonController.text.trim()
+            : null,
+      };
+
+      debugPrint("PAYLOAD => $payload");
+
+      /// API CALL
+      await controller.onApprove(payload);
+
+      /// CLOSE FAST AFTER SUCCESS
+      if (mounted) {
+        Navigator.pop(context);
+
+        widget.onSuccess?.call();
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      if (mounted) {
+        setState(() {
+          isSubmitting = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final state = ref.watch(_vsProvider(_providerArgs));
+
+    final status = state.requestDetails.request?.status?.toLowerCase();
+
+    final isClosed = status == 'closed';
 
     return Form(
       key: _formKey,
@@ -146,10 +195,16 @@ class _ApproveRequestDialogWidgetState
             TextFormField(
               controller: returnDateController,
               readOnly: true,
-              onTap: pickDate,
-              decoration: const InputDecoration(
-                labelText: 'Vehicle Return Date',
-                suffixIcon: Icon(Icons.calendar_today_outlined),
+              onTap: isSubmitting ? null : pickDate,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select return date';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                label: mandatoryLabel('Vehicle Return Date'),
+                suffixIcon: const Icon(Icons.calendar_today_outlined),
               ),
             ),
 
@@ -159,30 +214,37 @@ class _ApproveRequestDialogWidgetState
             TextFormField(
               controller: returnTimeController,
               readOnly: true,
-              onTap: pickTime,
-              decoration: const InputDecoration(
-                labelText: 'Vehicle Return Time',
-                suffixIcon: Icon(Icons.access_time_outlined),
+              onTap: isSubmitting ? null : pickTime,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select return time';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                label: mandatoryLabel('Vehicle Return Time'),
+                suffixIcon: const Icon(Icons.access_time_outlined),
               ),
             ),
 
             const SizedBox(height: 20),
 
             /// VEHICLE CONDITION
-            /// VEHICLE CONDITION
             DropdownButtonFormField<String>(
               value: vehicleCondition,
-              decoration: const InputDecoration(
-                labelText: 'Vehicle Condition *',
+              decoration: InputDecoration(
+                label: mandatoryLabel('Vehicle Condition'),
               ),
               items: conditions.map((e) {
                 return DropdownMenuItem(value: e, child: Text(e));
               }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  vehicleCondition = value;
-                });
-              },
+              onChanged: isSubmitting
+                  ? null
+                  : (value) {
+                      setState(() {
+                        vehicleCondition = value;
+                      });
+                    },
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please select vehicle condition';
@@ -197,10 +259,7 @@ class _ApproveRequestDialogWidgetState
               TextFormField(
                 controller: reasonController,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Reason *',
-                  hintText: 'Enter reason',
-                ),
+                enabled: !isSubmitting,
                 validator: (value) {
                   if (vehicleCondition == "No" &&
                       (value == null || value.trim().isEmpty)) {
@@ -208,6 +267,10 @@ class _ApproveRequestDialogWidgetState
                   }
                   return null;
                 },
+                decoration: InputDecoration(
+                  label: mandatoryLabel('Reason'),
+                  hintText: 'Enter reason',
+                ),
               ),
             ],
 
@@ -217,6 +280,7 @@ class _ApproveRequestDialogWidgetState
             TextFormField(
               controller: commentsController,
               maxLines: 5,
+              enabled: !isSubmitting,
               decoration: const InputDecoration(
                 labelText: 'Comments (Optional)',
                 hintText: 'Add your comments',
@@ -226,23 +290,44 @@ class _ApproveRequestDialogWidgetState
             const SizedBox(height: 30),
 
             /// BUTTONS
-            Wrap(
-              children: [
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close, size: 18),
-                  label: const Text('CANCEL'),
-                ),
+            if (!isClosed)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  /// CANCEL
+                  OutlinedButton.icon(
+                    onPressed: isSubmitting
+                        ? null
+                        : () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, size: 18),
+                    label: const Text('CANCEL'),
+                  ),
 
-                const SizedBox(width: 12),
+                  const SizedBox(width: 12),
 
-                ElevatedButton.icon(
-                  onPressed: onSubmit,
-                  icon: const Icon(Icons.check_circle_outline, size: 18),
-                  label: const Text('SUBMIT'),
-                ),
-              ],
-            ),
+                  /// SUBMIT
+                  ElevatedButton(
+                    onPressed: isSubmitting ? null : onSubmit,
+                    child: isSubmitting
+                        ? const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.check_circle_outline, size: 18),
+                              SizedBox(width: 8),
+                              Text('SUBMIT'),
+                            ],
+                          ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

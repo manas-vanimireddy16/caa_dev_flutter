@@ -380,6 +380,8 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
   /// ------------------------------------------------
   void updateValue(String key, dynamic value) {
     final values = Map<String, dynamic>.from(state.values);
+    final errors = Map<String, String?>.from(state.errors);
+
     values[key] = value;
 
     if (key == 'requested_unit_type') {
@@ -432,6 +434,7 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
 
       if (start != null && end != null) {
         final diff = end.difference(start).inDays;
+
         if (diff >= 0) {
           values['missionDays'] = (diff + 1).toString();
         } else {
@@ -453,8 +456,6 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
       }
     }
 
-    state = state.copyWith(values: values);
-
     /// -----------------------------
     /// ASSET VALUE AUTO CALC (CIA)
     /// -----------------------------
@@ -462,7 +463,9 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
         key == 'integrity' ||
         key == 'availability') {
       final c = int.tryParse(values['confidentiality']?.toString() ?? '0') ?? 0;
+
       final i = int.tryParse(values['integrity']?.toString() ?? '0') ?? 0;
+
       final a = int.tryParse(values['availability']?.toString() ?? '0') ?? 0;
 
       if (c != 0 && i != 0 && a != 0) {
@@ -474,12 +477,14 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
 
     if (key == 'business_impact' || key == 'likelihood') {
       final l = int.tryParse(values['confidentiality']?.toString() ?? '0') ?? 0;
+
       final b = int.tryParse(values['integrity']?.toString() ?? '0') ?? 0;
+
       final assetValue =
           double.tryParse(values['asset_value']?.toString() ?? '0') ?? 0;
+
       if (l != 0 && b != 0) {
-        final riskRating = (l * b * assetValue).toString();
-        values['risk_value'] = riskRating;
+        values['risk_value'] = (l * b * assetValue).toString();
       } else {
         values['risk_value'] = '0';
       }
@@ -519,8 +524,10 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
         values['duration_of_stay'] = '';
       }
     }
+
     if (key == 'attendees') {
       final attendees = values['attendees'];
+
       values['number_of_attendees'] = attendees.length.toString();
     }
 
@@ -555,6 +562,98 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
         values['duration'] = '';
       }
     }
+
+    /// ------------------------------------------------
+    /// ✅ LIVE VALIDATION
+    /// ------------------------------------------------
+    final field = _fieldsMap[key];
+
+    if (field != null) {
+      final isRequired =
+          field.required || (field.requiredWhen?.call(values) ?? false);
+
+      /// REQUIRED VALIDATION
+      if (isRequired) {
+        bool isEmpty = false;
+
+        if (value == null) {
+          isEmpty = true;
+        } else if (value is String && value.trim().isEmpty) {
+          isEmpty = true;
+        } else if (value is List && value.isEmpty) {
+          isEmpty = true;
+        }
+
+        if (isEmpty) {
+          errors[key] = '${field.label} is required';
+        } else {
+          errors.remove(key);
+        }
+      }
+
+      /// CUSTOM VALIDATOR
+      if (field.validator != null) {
+        final error = field.validator!(value, values);
+
+        if (error != null) {
+          errors[key] = error;
+        } else {
+          errors.remove(key);
+        }
+      }
+    }
+
+    /// ------------------------------------------------
+    /// ✅ SINGLE STATE UPDATE
+    /// ------------------------------------------------
+    state = state.copyWith(values: values, errors: errors);
+  }
+
+  void validateField(String fieldName) {
+    final field = _fieldsMap[fieldName];
+    if (field == null) return;
+
+    // 🔥 Skip validation entirely for disabled fields
+    final isDisabled =
+        field.disabled || (field.disabledWhen?.call(state.values) ?? false);
+    if (isDisabled) return;
+
+    final value = state.values[fieldName];
+    final errors = Map<String, String?>.from(state.errors);
+
+    final isRequired =
+        field.required || (field.requiredWhen?.call(state.values) ?? false);
+
+    if (isRequired) {
+      bool isEmpty = false;
+
+      if (value == null) {
+        isEmpty = true;
+      } else if (value is String && value.trim().isEmpty) {
+        isEmpty = true;
+      } else if (value is List && value.isEmpty) {
+        isEmpty = true;
+      }
+
+      if (isEmpty) {
+        errors[field.name] = '${field.label} is required';
+        state = state.copyWith(errors: errors);
+        return;
+      }
+    }
+
+    // 🔥 If required check passed (not empty), clear any stale required error
+    // before running custom validator
+    errors.remove(field.name);
+
+    if (field.validator != null) {
+      final error = field.validator!(value, state.values);
+      if (error != null) {
+        errors[field.name] = error;
+      }
+    }
+
+    state = state.copyWith(errors: errors);
   }
 
   /// ------------------------------------------------
@@ -649,6 +748,18 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
 
         /// 🚨 VERY IMPORTANT
         continue; // skip universal validation
+      }
+
+      /// -----------------------------
+      /// ✅ CUSTOM VALIDATOR
+      /// -----------------------------
+      if (field.validator != null) {
+        final error = field.validator!(value, state.values);
+
+        if (error != null) {
+          errors[field.name] = error;
+          continue;
+        }
       }
 
       /// -----------------------------

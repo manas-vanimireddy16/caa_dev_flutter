@@ -380,6 +380,17 @@ class _BottomActionBar extends ConsumerWidget {
 
           Expanded(
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isLast
+                    ? const Color(0xFF0D652D)
+                    : Colors.white,
+                foregroundColor: isLast
+                    ? Colors.white
+                    : const Color(0xFF0D652D),
+                side: isLast
+                    ? BorderSide.none
+                    : const BorderSide(color: Colors.grey),
+              ),
               onPressed: isLast ? (enableSubmit ? onSubmit : null) : onNext,
               child: Text(isLast ? 'Submit' : 'Next'),
             ),

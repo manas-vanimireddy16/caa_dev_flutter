@@ -1154,6 +1154,7 @@ info@caa.gov.om
 
     /// 3️⃣ Role must match
     if (approval.approverRoleId != null &&
+        approval.approverRoleId != 0 &&
         approval.approverRoleId != selectedRole?.roleId) {
       debugPrint(
         '❌ Denied: Role mismatch (${approval.approverRoleId} != ${selectedRole?.roleId})',

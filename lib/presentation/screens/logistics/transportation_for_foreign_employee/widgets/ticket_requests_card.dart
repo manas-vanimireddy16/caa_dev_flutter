@@ -40,10 +40,6 @@ class TicketRequestsCard extends ConsumerWidget {
                   onPressed: controller.openNewRequestForm,
                   child: const Text('New Request'),
                 ),
-                ElevatedButton(
-                  onPressed: controller.openNewRequestForm,
-                  child: const Text('New Request'),
-                ),
               ],
             ),
 

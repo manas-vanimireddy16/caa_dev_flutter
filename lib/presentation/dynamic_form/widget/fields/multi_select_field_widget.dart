@@ -22,79 +22,82 @@ class MultiSelectDropdownFieldWidget extends ConsumerWidget {
         .where((o) => selectedValues.contains(o.value))
         .toList();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        /// LABEL
-        if (field.label.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: Text(
-              field.label,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-
-        /// FIELD UI
-        GestureDetector(
-          onTap: field.disabled
-              ? null
-              : () {
-                  _openMultiSelectSheet(context, ref, field, selectedValues);
-                },
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: state.errors[field.name] != null
-                    ? Colors.red
-                    : Colors.grey.shade400,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16), // 🔥 FIX
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// LABEL
+          if (field.label.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Text(
+                field.label,
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
-              borderRadius: BorderRadius.circular(8),
             ),
-            child: selectedOptions.isEmpty
-                ? Text(
-                    "Select ${field.label}",
-                    style: TextStyle(color: Colors.grey.shade600),
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      /// SELECTED COUNT
-                      Text(
-                        "${selectedOptions.length} Selected",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
+
+          /// FIELD UI
+          GestureDetector(
+            onTap: field.disabled
+                ? null
+                : () {
+                    _openMultiSelectSheet(context, ref, field, selectedValues);
+                  },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: state.errors[field.name] != null
+                      ? Colors.red
+                      : Colors.grey.shade400,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: selectedOptions.isEmpty
+                  ? Text(
+                      "Select ${field.label}",
+                      style: TextStyle(color: Colors.grey.shade600),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /// SELECTED COUNT
+                        Text(
+                          "${selectedOptions.length} Selected",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
 
-                      const SizedBox(height: 6),
+                        const SizedBox(height: 6),
 
-                      /// CHIPS
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: selectedOptions
-                            .map((o) => Chip(label: Text(o.label)))
-                            .toList(),
-                      ),
-                    ],
-                  ),
-          ),
-        ),
-
-        /// ERROR
-        if (state.errors[field.name] != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              state.errors[field.name]!,
-              style: const TextStyle(color: Colors.red, fontSize: 12),
+                        /// CHIPS
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: selectedOptions
+                              .map((o) => Chip(label: Text(o.label)))
+                              .toList(),
+                        ),
+                      ],
+                    ),
             ),
           ),
-      ],
+
+          /// ERROR
+          if (state.errors[field.name] != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                state.errors[field.name]!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -120,7 +123,6 @@ class MultiSelectDropdownFieldWidget extends ConsumerWidget {
           onChanged: (newList) {
             notifier.updateValue(field.name, newList);
 
-            /// ⭐ VERY VERY IMPORTANT
             field.onChanged?.call(newList, ref);
           },
         );

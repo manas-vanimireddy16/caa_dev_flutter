@@ -27,7 +27,7 @@ class _NumberFieldWidgetState extends ConsumerState<NumberFieldWidget> {
     final formState = ref.read(dynamicFormProvider);
     final values = formState.values;
 
-    /// ✅ INITIAL VALUE (STATE FIRST → FIELD FALLBACK)
+    /// ✅ INITIAL VALUE
     final stateValue = values[widget.field.name]?.toString();
 
     final initialValue = (stateValue != null && stateValue.isNotEmpty)
@@ -36,7 +36,7 @@ class _NumberFieldWidgetState extends ConsumerState<NumberFieldWidget> {
 
     _controller = TextEditingController(text: initialValue);
 
-    /// ✅ SYNC INITIAL VALUE TO STATE (ONLY IF EMPTY)
+    /// ✅ SYNC INITIAL VALUE TO STATE
     if ((stateValue == null || stateValue.isEmpty) &&
         widget.field.initialValue != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -58,21 +58,32 @@ class _NumberFieldWidgetState extends ConsumerState<NumberFieldWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(dynamicFormProvider);
-    final notifier = ref.read(dynamicFormProvider.notifier);
+    /// ✅ WATCH ONLY THIS FIELD VALUE
+    final value = ref.watch(
+      dynamicFormProvider.select(
+        (state) => state.values[widget.field.name]?.toString() ?? '',
+      ),
+    );
 
-    final values = state.values;
+    /// ✅ WATCH ONLY THIS FIELD ERROR
+    final error = ref.watch(
+      dynamicFormProvider.select((state) => state.errors[widget.field.name]),
+    );
+
+    final notifier = ref.read(dynamicFormProvider.notifier);
 
     /// ✅ DYNAMIC DISABLE LOGIC
     final isDisabled =
         widget.field.disabled ||
-        (widget.field.disabledWhen?.call(values) ?? false);
-
-    final value = values[widget.field.name]?.toString() ?? '';
+        (widget.field.disabledWhen?.call(
+              ref.read(dynamicFormProvider).values,
+            ) ??
+            false);
 
     /// ✅ PREVENT CURSOR JUMP
     if (_controller.text != value && !_focusNode.hasFocus) {
       _controller.text = value;
+
       _controller.selection = TextSelection.fromPosition(
         TextPosition(offset: _controller.text.length),
       );
@@ -84,20 +95,26 @@ class _NumberFieldWidgetState extends ConsumerState<NumberFieldWidget> {
         controller: _controller,
         focusNode: _focusNode,
         enabled: !isDisabled,
+
         hintText: widget.field.placeholder,
         fieldHeadingText: widget.field.label,
-        errorText: state.errors[widget.field.name],
+
+        /// ✅ LIVE ERROR
+        errorText: error,
+
         isRequired: widget.field.required,
 
         /// ✅ NUMBER KEYBOARD
         keyboardType: TextInputType.number,
 
-        /// ✅ ONLY NUMBERS ALLOWED
+        /// ✅ ONLY NUMBERS
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
 
         onChanged: isDisabled
             ? null
-            : (val) => notifier.updateValue(widget.field.name, val),
+            : (val) {
+                notifier.updateValue(widget.field.name, val);
+              },
       ),
     );
   }

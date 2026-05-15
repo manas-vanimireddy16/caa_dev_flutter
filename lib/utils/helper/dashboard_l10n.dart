@@ -16,12 +16,12 @@ class DashboardL10n {
 
   // ── Section titles ────────────────────────────────────────────────────────
   String get requestsStatusBreakdown =>
-      _t('Requests Status Breakdown', 'تفاصيل حالة الطلبات');
+      _t('Request Status Breakdown', 'تحليل حالة الطلب');
 
   String get requestTrendBreakdown =>
-      _t('Request Trend Breakdown', 'طلب انهيار الاتجاه');
+      _t('Request Trend Breakdown', 'تحليل اتجاهات الطلب');
 
-  String get breakdown => _t('Breakdown', 'التفصيل');
+  String get breakdown => _t('Breakdown', 'التحليل');
 
   String get totalRequests => _t('Total Requests', 'إجمالي الطلبات');
 
@@ -36,7 +36,7 @@ class DashboardL10n {
 
   String get myRequests => _t('My Requests', 'طلباتي');
 
-  String get actionItems => _t('Action Items', 'عناصر العمل');
+  String get actionItems => _t('Action Items', 'عناصر الإجراءات');
 
   String get noDataFound => _t('No Data Found', 'لا توجد بيانات');
 
@@ -78,16 +78,15 @@ class DashboardL10n {
     }
   }
 
-  String requestIdLabel(String id) =>
-      _t('Request ID: $id', 'رقم الطلب: $id');
+  String requestIdLabel(String id) => _t('Request ID: $id', 'رقم الطلب: $id');
 
   // ── Filter periods ────────────────────────────────────────────────────────
   List<String> get periodFilterLabels => [
-        _t('Weekly', 'أسبوعي'),
-        _t('Monthly', 'شهريا'),
-        _t('Quarterly', 'ربع سنوي'),
-        _t('Yearly', 'سنوي'),
-      ];
+    _t('Weekly', 'أسبوعي'),
+    _t('Monthly', 'شهري'),
+    _t('Quarterly', 'ربع سنوي'),
+    _t('Yearly', 'سنوي'),
+  ];
 
   String periodFilterValue(String localizedLabel) {
     final index = periodFilterLabels.indexOf(localizedLabel);
@@ -155,7 +154,7 @@ class DashboardL10n {
       case 'approved':
         return _t('Approved', 'تمت الموافقة');
       case 'closed':
-        return _t('Closed', 'مغلق');
+        return _t('Close Request', 'إغلاق الطلب');
       case 'pending':
         return _t('Pending', 'قيد الانتظار');
       case 'rejected':
