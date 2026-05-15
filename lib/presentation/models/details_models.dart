@@ -1468,7 +1468,7 @@ class RequestModel {
 
   final List<String>? typeOfIncidentDetected;
 
-  final String? incidentNotificationInCaa;
+  final List<String>? incidentNotificationInCaa;
 
   final String? identificationMeasures;
 
@@ -2239,7 +2239,9 @@ class RequestModel {
           ?.map((e) => e.toString())
           .toList(),
 
-      incidentNotificationInCaa: json['incident_notification_in_caa'],
+      incidentNotificationInCaa: (json['incident_notification_in_caa'] as List?)
+          ?.map((e) => e.toString())
+          .toList(),
 
       identificationMeasures: json['identification_measures'],
 

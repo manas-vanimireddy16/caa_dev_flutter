@@ -33,8 +33,8 @@ class AnnouncementScreen extends ConsumerWidget {
         padding: EdgeInsets.zero, // remove default padding
         children: [
           ProfileCard(
-            title: "Profile",
-            subtitle: "User Information",
+            title: "My Profile",
+            subtitle: "Find the Profile Details",
             name: user?.data?.employeeName ?? '',
             avatarUrl:
                 "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
@@ -51,7 +51,7 @@ class AnnouncementScreen extends ConsumerWidget {
             child: AnnouncementWidget(
               announcements: state.announcements, // ✅ pass the whole list
               title: 'Announcements',
-              subtitle: 'Stay updated with the latest news',
+              subtitle: 'Stay informed with latest updates',
             ),
           ),
         ],

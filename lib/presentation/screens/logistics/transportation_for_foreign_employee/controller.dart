@@ -832,13 +832,6 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= NO OF PASSENGERS =================
 
     /// ================= CONTACT NUMBER =================
-    DynamicField(
-      name: 'contact_number',
-      label: 'Contact Number',
-      type: FieldType.number,
-      required: true,
-      placeholder: 'Enter Number',
-    ),
 
     /// ================= PURPOSE =================
     DynamicField(
@@ -960,6 +953,13 @@ class _VSController extends StateNotifier<_ViewState> {
         DropdownOption(value: '9', label: '9'),
         DropdownOption(value: '10', label: '10'),
       ],
+    ),
+    DynamicField(
+      name: 'contact_number',
+      label: 'Contact Number',
+      type: FieldType.number,
+      required: true,
+      placeholder: 'Enter Number',
     ),
     DynamicField(
       name: 'passenger_names',
@@ -2149,6 +2149,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .foreignEmployeeVehicleCreateRequest(payload);
 
       if (response['status'] == 'success') {
+        Future.delayed(const Duration(seconds: 3));
         _refreshDashboard();
       }
     } catch (e, st) {

@@ -44,6 +44,25 @@ class DashboardL10n {
 
   String get reportSecurityThreat =>
       _t('Report Security Threat', 'الإبلاغ عن تهديد أمني');
+  String get myProfile => _t('My Profile', 'ملفي الشخصي');
+
+  String get findTheProfileDetails =>
+      _t('Find the Profile Details', 'البحث عن تفاصيل الملف الشخصي');
+
+  String get announcements => _t('Announcements', 'الإعلانات');
+
+  String get announcementsSubtext =>
+      _t('Stay informed with latest updates', 'ابقَ على اطلاع بآخر التحديثات');
+
+  String get settings => _t('Settings', 'الأمان');
+
+  String get services => _t('Services', 'الخدمات');
+
+  String get home => _t('Home', 'الصفحة الرئيسية');
+
+  String get selectRole => _t('Select Role', 'اختر الدور');
+
+  String get logout => _t('Logout', 'تسجيل الخروج');
 
   String securityNavTitle(int index) {
     switch (index) {
@@ -191,6 +210,88 @@ class DashboardL10n {
         return _t('Type Of Threat', 'نوع التهديد');
       case 'Approver':
         return _t('Approver', 'الموافق');
+      default:
+        return _formatKey(key);
+    }
+  }
+
+  String requestDetailsLabel(String key) {
+    switch (key) {
+      case 'status_information':
+        return _t('Status Information', 'معلومات الحالة');
+
+      case 'assigned_to':
+        return _t('Assigned To', 'معين الى');
+
+      case 'Status':
+        return _t('Status', 'الحالة');
+
+      case 'section_name':
+        return _t('Section Name', 'اسم القسم');
+
+      case 'requested_date':
+        return _t('Requested Date', 'تاريخ الطلب');
+
+      case 'request_information':
+        return _t('Request Information', 'معلومات الطلب');
+
+      case 'ticket_name':
+        return _t('Ticket Name', 'اسم التذكرة');
+
+      case 'enter_ticket_name':
+        return _t('Enter Ticket Name', 'أدخل اسم التذكرة');
+
+      case 'source_of_incident':
+        return _t('Source of Incident', 'مصدر الحادث');
+
+      case 'specify_source_of_incident':
+        return _t(
+          'Please specify the source of incident',
+          'يرجى تحديد مصدر الحادث',
+        );
+
+      case 'type_of_incident_detected':
+        return _t('Type of Incident Detected', 'نوع الحادث المكتشف');
+
+      case 'specify_type_of_incident':
+        return _t(
+          'Please specify the type of incident',
+          'يرجى تحديد نوع الحادث',
+        );
+
+      case 'incident_ticket_number':
+        return _t('Incident Ticket Number', 'رقم تذكرة الحادث');
+
+      case 'denial_of_service':
+        return _t('Denial of Service', 'رفض الخدمة');
+
+      case 'unauthorized_use_access_data_compromised_account':
+        return _t(
+          'Unauthorized Use / Access / Use of Data / Compromised User Account',
+          'استخدام غير مصرح به / الوصول / استخدام البيانات / حساب المستخدم المخترق',
+        );
+
+      case 'unauthorized_changes_systems_software_data':
+        return _t(
+          'Unauthorized changes to systems, software, or data',
+          'تغييرات غير مصرح بها على الأنظمة أو البرامج أو البيانات',
+        );
+
+      case 'malicious_code':
+        return _t('Malicious Code', 'كود ضار');
+
+      case 'type_of_threat':
+        return _t('Type Of Threat', 'نوع التهديد');
+
+      case 'service_type':
+        return _t('Service Type', 'نوع الخدمة');
+
+      case 'Priority':
+        return _t('Priority', 'الأولوية');
+
+      case 'description':
+        return _t('Description', 'الوصف');
+
       default:
         return _formatKey(key);
     }

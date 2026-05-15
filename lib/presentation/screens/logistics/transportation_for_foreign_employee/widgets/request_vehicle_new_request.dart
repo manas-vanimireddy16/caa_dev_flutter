@@ -57,8 +57,9 @@ class _LogisticsPassengersVehicleRequestScreenState
           title: 'Performance Management',
           stepTitles: const ['step 1', 'step 2'],
           steps: [
-            controller.transportationRequestFields,
             controller.transportationRequestFields2,
+
+            controller.transportationRequestFields,
           ],
 
           /// ⭐ VERY IMPORTANT
