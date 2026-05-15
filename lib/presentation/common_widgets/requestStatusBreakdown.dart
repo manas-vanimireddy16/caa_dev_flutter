@@ -15,6 +15,10 @@ class RequestStatusBreakdownCard extends StatelessWidget {
   final VoidCallback? onFilterTap;
   final Function(String?) onChanged;
   final List<String> filterLabelList;
+  final String centerMetricLabel;
+  final String legendHeading;
+  final String Function(String status)? statusLabelBuilder;
+  final bool preserveFilterLabelOnChange;
 
   const RequestStatusBreakdownCard({
     super.key,
@@ -26,6 +30,10 @@ class RequestStatusBreakdownCard extends StatelessWidget {
     required this.breakdown,
     this.filterLabelList = const ['Weekly', 'Monthly', 'Quarterly', 'Yearly'],
     required this.onChanged,
+    this.centerMetricLabel = 'Total Requests',
+    this.legendHeading = 'Breakdown',
+    this.statusLabelBuilder,
+    this.preserveFilterLabelOnChange = false,
   });
 
   //int get totalValue => data.values.fold(0, (prev, e) => prev + e.value);
@@ -98,7 +106,11 @@ class RequestStatusBreakdownCard extends StatelessWidget {
 
             onChanged: (v) {
               if (v != null) {
-                onChanged(v.toString().toLowerCase());
+                onChanged(
+                  preserveFilterLabelOnChange
+                      ? v.toString()
+                      : v.toString().toLowerCase(),
+                );
               }
             },
           ),
@@ -261,7 +273,7 @@ class RequestStatusBreakdownCard extends StatelessWidget {
                     4.toVerticalSizedBox,
 
                     Text(
-                      'Total Requests',
+                      centerMetricLabel,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: const Color(0xFFDADADA),
@@ -280,17 +292,28 @@ class RequestStatusBreakdownCard extends StatelessWidget {
         32.toHorizontalSizedBox,
 
         // Legend Section
-        Expanded(child: _BreakdownLegend(sections: filteredSections)),
+        Expanded(
+          child: _BreakdownLegend(
+            sections: filteredSections,
+            legendHeading: legendHeading,
+            statusLabelBuilder: statusLabelBuilder,
+          ),
+        ),
       ],
     );
   }
 }
 
 class _BreakdownLegend extends StatelessWidget {
-  // final int totalValue;
   final List<ChartData> sections;
+  final String legendHeading;
+  final String Function(String status)? statusLabelBuilder;
 
-  const _BreakdownLegend({required this.sections});
+  const _BreakdownLegend({
+    required this.sections,
+    required this.legendHeading,
+    this.statusLabelBuilder,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -298,7 +321,7 @@ class _BreakdownLegend extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Breakdown',
+          legendHeading,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w600,
             color: const Color(0xFF111827),
@@ -318,7 +341,9 @@ class _BreakdownLegend extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 8),
             child: _LegendItem(
               color: getStatusColor(section.status),
-              label: section.status ?? 'NA',
+              label: statusLabelBuilder != null
+                  ? statusLabelBuilder!(section.status ?? 'NA')
+                  : (section.status ?? 'NA'),
               value: section.count ?? 0,
             ),
           ),

@@ -26,6 +26,7 @@ import 'package:code_setup/presentation/models/request_detail.dart'
     hide Service;
 
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/assets/icons.dart';
 
 import 'package:flutter/material.dart';
@@ -95,7 +96,7 @@ class SecuritySelfHomePage extends ConsumerWidget {
             ),
 
             title: Text(
-              stateController.titleForIndex(activeIndex),
+              DashboardL10n.of(tabsContext).securityNavTitle(activeIndex),
               style: TextStyle(
                 fontSize: currentTheme.fontSizes.s16,
                 fontWeight: currentTheme.fontWeights.wBold,

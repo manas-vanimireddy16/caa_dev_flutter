@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class StatusChip extends StatelessWidget {
   final String status;
+  final String? displayLabel;
 
-  const StatusChip({super.key, required this.status});
+  const StatusChip({super.key, required this.status, this.displayLabel});
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +64,7 @@ class StatusChip extends StatelessWidget {
           Icon(icon, size: 16, color: text),
           const SizedBox(width: 4),
           Text(
-            status,
+            displayLabel ?? status,
             style: TextStyle(color: text, fontWeight: FontWeight.w500),
           ),
         ],

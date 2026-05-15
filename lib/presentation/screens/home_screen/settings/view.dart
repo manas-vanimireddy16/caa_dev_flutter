@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
+import 'package:code_setup/presentation/screens/home_screen/services/view.dart';
+import 'package:code_setup/presentation/screens/home_screen/view.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
@@ -11,8 +13,10 @@ import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/onboarding/login/view.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/localization_provider/localization_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:msal_auth/msal_auth.dart';
 
 part 'controller.dart';
@@ -123,7 +127,7 @@ class SettingsScreen extends ConsumerWidget {
                     .toList(),
                 onChanged: (v) {
                   if (v != null) {
-                    controller.onSelectRole(v);
+                    controller.onSelectRole(v, context);
                   }
                 },
               ),

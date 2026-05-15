@@ -6,15 +6,16 @@ class RequestTabs extends StatelessWidget {
   final int actionItemCount;
 
   final Function(int) onTabChanged;
+  final String myRequestsLabel;
+  final String actionItemsLabel;
 
   const RequestTabs({
     super.key,
-
     this.selectedIndex = 0,
-
     required this.actionItemCount,
-
     required this.onTabChanged,
+    this.myRequestsLabel = 'My Requests',
+    this.actionItemsLabel = 'Action Items',
   });
 
   @override
@@ -22,15 +23,13 @@ class RequestTabs extends StatelessWidget {
     return Row(
       children: [
         _tabItem(
-          title: "My Requests",
-
+          title: myRequestsLabel,
           isSelected: selectedIndex == 0,
-
           onTap: () => onTabChanged(0),
         ),
 
         _tabItem(
-          title: "Action Items",
+          title: actionItemsLabel,
 
           count: actionItemCount,
 
@@ -78,8 +77,7 @@ class RequestTabs extends StatelessWidget {
 
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(right: 16),
-
+                      padding: const EdgeInsetsDirectional.only(end: 16),
                       child: Text(
                         title,
 
@@ -97,9 +95,8 @@ class RequestTabs extends StatelessWidget {
 
                     /// Notification Badge
                     if (count != null && count > 0)
-                      Positioned(
-                        right: 0,
-
+                      PositionedDirectional(
+                        end: 0,
                         top: -10,
 
                         child: Container(
