@@ -9,6 +9,7 @@ import 'package:code_setup/presentation/dynamic_form/widget/fields/checkbox_fiel
 import 'package:code_setup/presentation/dynamic_form/widget/fields/date_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/file_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/multi_select_field_widget.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/number_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/radio_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/select_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/text_field_widget.dart';
@@ -399,9 +400,11 @@ class FieldRenderer extends ConsumerWidget {
     switch (field.type) {
       case FieldType.text:
       case FieldType.email:
-      case FieldType.number:
       case FieldType.textarea:
         return TextFieldWidget(field: field);
+
+      case FieldType.number:
+        return NumberFieldWidget(field: field);
 
       case FieldType.select:
         return SelectFieldWidget(field: field);
