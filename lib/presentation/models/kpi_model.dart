@@ -24,6 +24,7 @@ class KPIData {
   final int? totalRequests;
   final int? totalApprovals;
   final int? approved;
+  final int? closed;
   final int? pending;
   final int? rejected;
   final int? expired;
@@ -33,6 +34,7 @@ class KPIData {
     this.totalRequests,
     this.totalApprovals,
     this.approved,
+    this.closed,
     this.pending,
     this.rejected,
     this.expired,
@@ -45,6 +47,7 @@ class KPIData {
       totalApprovals: json['total_approvals'],
       approved: json['approved'],
       pending: json['pending'],
+      closed: json['closed'],
       rejected: json['rejected'],
       expired: json['expired'],
       pendingActionItems:
@@ -56,6 +59,7 @@ class KPIData {
     'totalRequests': totalRequests,
     'totalApprovals': totalApprovals,
     'approved': approved,
+    'closed': closed,
     'pending': pending,
     'rejected': rejected,
     'expired': expired,

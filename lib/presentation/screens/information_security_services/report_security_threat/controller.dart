@@ -262,14 +262,24 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> get requestStatsList => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    isSecurityThreat: true,
+  );
+
+  // );isSecurityThreat: true,
 
   List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+      StatSummaryHelper.buildStatList(
+        state.approvalKpiData.data?.toJson(),
+        isSecurityThreat: true,
+      );
+
+  // );isSecurityThreat: true,
 
   List<StatSummaryData> get currentStats =>
       state.tabIndex == 0 ? requestStatsList : approverStatsList;
+
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');

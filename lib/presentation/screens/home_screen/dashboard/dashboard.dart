@@ -36,13 +36,14 @@ class AnnouncementScreen extends ConsumerWidget {
             title: "Profile",
             subtitle: "User Information",
             name: user?.data?.employeeName ?? '',
-            avatarUrl: "https://i.pravatar.cc/150?img=4",
+            avatarUrl:
+                "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
             isOnline: true,
             info: {
-              "email": user?.data?.email ?? '',
-              "phone": user?.data?.mobile ?? '',
-              "location": user?.data?.location ?? '',
-              "role": user?.data?.position?.name ?? '',
+              "Email": user?.data?.email ?? '',
+              "Phone": user?.data?.mobile ?? '',
+              "Location": user?.data?.location ?? '',
+              "Role": user?.data?.position?.name ?? '',
             },
           ),
           Padding(

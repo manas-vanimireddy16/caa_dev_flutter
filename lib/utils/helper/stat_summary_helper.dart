@@ -4,22 +4,46 @@ import 'package:flutter/material.dart';
 class StatSummaryHelper {
   static const List<String> ignoredKeys = ['pendingActionItems'];
 
-  static List<StatSummaryData> buildStatList(Map<String, dynamic>? map) {
+  static List<StatSummaryData> buildStatList(
+    Map<String, dynamic>? map, {
+    bool isSecurityThreat = false,
+  }) {
     if (map == null) return [];
 
     return map.entries
-        .where(
-          (entry) => entry.value != null && !ignoredKeys.contains(entry.key),
-        )
-        .map(
-          (item) => StatSummaryData(
-            title: formatKey(item.key),
-            count: item.value.toString(),
+        .where((entry) {
+          if (entry.value == null) return false;
+
+          if (ignoredKeys.contains(entry.key)) return false;
+
+          /// Hide original closed card
+          /// because approved becomes closed
+          if (isSecurityThreat && entry.key == 'closed') {
+            return false;
+          }
+
+          return true;
+        })
+        .map((item) {
+          String title = formatKey(item.key);
+          String count = item.value.toString();
+          String key = item.key;
+
+          /// Replace Approved -> Closed
+          if (isSecurityThreat && item.key == 'approved') {
+            title = 'Closed';
+            count = (map['closed'] ?? 0).toString();
+            key = 'closed';
+          }
+
+          return StatSummaryData(
+            title: title,
+            count: count,
             description: "",
-            icon: getIcon(item.key),
-            iconBgColor: getColor(item.key),
-          ),
-        )
+            icon: getIcon(key),
+            iconBgColor: getColor(key),
+          );
+        })
         .toList();
   }
 
@@ -40,13 +64,18 @@ class StatSummaryHelper {
   static IconData getIcon(String key) {
     switch (key) {
       case 'approved':
+      case 'closed':
         return Icons.check_circle_outline;
+
       case 'pending':
         return Icons.pending_actions_outlined;
+
       case 'rejected':
         return Icons.cancel_outlined;
+
       case 'expired':
         return Icons.timer_off_outlined;
+
       default:
         return Icons.insert_chart_outlined;
     }
@@ -55,13 +84,18 @@ class StatSummaryHelper {
   static Color getColor(String key) {
     switch (key) {
       case 'approved':
+      case 'closed':
         return const Color(0xFFE8F5E9);
+
       case 'pending':
         return const Color(0xFFFFF8E1);
+
       case 'rejected':
         return const Color(0xFFFFEBEE);
+
       case 'expired':
         return const Color(0xFFF3E5F5);
+
       default:
         return const Color(0xFFE3F2FD);
     }

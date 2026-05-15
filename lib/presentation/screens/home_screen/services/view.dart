@@ -166,7 +166,6 @@ part 'controller.dart';
 //     );
 //   }
 // }
-
 @RoutePage()
 class ServicesScreen extends ConsumerStatefulWidget {
   const ServicesScreen({super.key});
@@ -176,7 +175,9 @@ class ServicesScreen extends ConsumerStatefulWidget {
 }
 
 class _ServicesScreenState extends ConsumerState<ServicesScreen>
-    with SingleTickerProviderStateMixin {
+    with
+        SingleTickerProviderStateMixin,
+        AutoRouteAwareStateMixin<ServicesScreen> {
   late TabController _tabController;
 
   @override
@@ -187,10 +188,35 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
 
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
-        // ref.read(servicesProvider.notifier)
-        //     .onTabChanged(_tabController.index);
+        // Optional tab logic
       }
     });
+  }
+
+  // FIRST TIME TAB OPEN
+  @override
+  void didInitTabRoute(TabPageRoute? previousRoute) {
+    super.didInitTabRoute(previousRoute);
+
+    _loadData();
+  }
+
+  // WHEN USER RETURNS TO THIS TAB
+  @override
+  void didChangeTabRoute(TabPageRoute previousRoute) {
+    super.didChangeTabRoute(previousRoute);
+
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final controller = ref.read(servicesProvider.notifier);
+    final user = KAppX.globalProvider.read(userProvider);
+
+    await Future.wait([
+      controller.fetchUserRoles(user?.userId ?? 0),
+      controller.fetchBookmarks(),
+    ]);
   }
 
   @override
@@ -206,15 +232,19 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
         .themeBox;
 
     final state = ref.watch(servicesProvider);
+
     final controller = ref.read(servicesProvider.notifier);
+
     final user = KAppX.globalProvider.read(userProvider);
 
     return DefaultTabController(
       length: 4,
       child: KScaffold(
         backgroundColor: Colors.white,
+
         appBar: AppBar(
           title: const Text('Services'),
+
           bottom: const TabBar(
             tabs: [
               Tab(text: 'All Services'),
@@ -224,8 +254,10 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
             ],
           ),
         ),
+
         body: TabBarView(
           controller: _tabController,
+
           children: [
             // 🔹 TAB 1 – ALL SERVICES
             Builder(
@@ -236,14 +268,18 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
                   onRefresh: () async {
                     await controller.fetchUserRoles(user?.userId ?? 0);
                   },
+
                   child: services.isEmpty
                       ? ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
+
                           children: const [
                             SizedBox(height: 200),
+
                             Center(
                               child: Text(
                                 'No services available',
+
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ),
@@ -251,15 +287,21 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
                         )
                       : ListView.builder(
                           physics: const AlwaysScrollableScrollPhysics(),
+
                           itemCount: services.length,
+
                           itemBuilder: (context, index) {
                             final data = services[index];
 
                             return CustomInfoCard(
                               title: data.name ?? 'No Name',
+
                               subtitle: data.description ?? 'No Description',
+
                               icon: Icons.miscellaneous_services,
+
                               iconColor: Colors.blueAccent,
+
                               subServices: data.subservices != null
                                   ? data.subservices!
                                         .map(
@@ -267,29 +309,38 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
                                         )
                                         .toList()
                                   : [],
+
                               isBookmarked: false,
+
                               onBookmarkToggle: () {
                                 controller.updateBookmark(
                                   userId: user?.userId ?? 0,
+
                                   serviceId: data.id ?? 0,
                                 );
                               },
+
                               onCardTap: () {
                                 controller.navigateToRoute(
                                   name: data.name ?? '',
+
                                   service: data,
                                 );
                               },
+
                               onSubServiceTap: (subName) {
                                 final subService = data.subservices?.lastWhere(
                                   (s) => s.subServiceName == subName,
+
                                   orElse: () => SubService(),
                                 );
 
                                 if (subService != null) {
                                   controller.navigateToRoute(
                                     name: subService.code ?? '',
+
                                     service: data,
+
                                     subService: subService,
                                   );
                                 }
@@ -310,14 +361,18 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
                   onRefresh: () async {
                     await controller.fetchBookmarks();
                   },
+
                   child: bookmarks.isEmpty
                       ? ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
+
                           children: const [
                             SizedBox(height: 200),
+
                             Center(
                               child: Text(
                                 'No bookmarked services',
+
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ),
@@ -325,19 +380,26 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
                         )
                       : ListView.builder(
                           physics: const AlwaysScrollableScrollPhysics(),
+
                           itemCount: bookmarks.length,
+
                           itemBuilder: (context, index) {
                             final data = bookmarks[index];
+
                             final serviceId = int.tryParse(
                               data.serviceId ?? "",
                             );
 
                             return CustomInfoCard(
                               title: data.serviceName ?? 'No Name',
+
                               subtitle:
                                   data.serviceDescription ?? 'No Description',
+
                               icon: Icons.miscellaneous_services,
+
                               iconColor: Colors.blueAccent,
+
                               subServices: data.subServices != null
                                   ? data.subServices!
                                         .map(
@@ -345,10 +407,13 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
                                         )
                                         .toList()
                                   : [],
+
                               isBookmarked: true,
+
                               onBookmarkToggle: () {
                                 controller.updateBookmark(
                                   userId: user?.userId ?? 0,
+
                                   serviceId: serviceId ?? 0,
                                 );
                               },
@@ -364,13 +429,17 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
               onRefresh: () async {
                 await controller.fetchUserRoles(user?.userId ?? 0);
               },
+
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
+
                 children: const [
                   SizedBox(height: 200),
+
                   Center(
                     child: Text(
                       'Quick Links',
+
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   ),
@@ -383,13 +452,17 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
               onRefresh: () async {
                 await controller.fetchUserRoles(user?.userId ?? 0);
               },
+
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
+
                 children: const [
                   SizedBox(height: 200),
+
                   Center(
                     child: Text(
                       'Important Links',
+
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   ),
