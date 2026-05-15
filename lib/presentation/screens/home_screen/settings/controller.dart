@@ -13,9 +13,19 @@ class SettingsController extends StateNotifier<SettingsState> {
 
   void initState() {
     initializeMsal();
+    _loadSavedLanguage();
     final user = KAppX.globalProvider.read(userInfoProvider);
     final int id = int.tryParse(user?.data?.id ?? '') ?? 0;
     fetchUserRoles(id); // //(1017);(id); //(40);(id); //
+  }
+
+  void _loadSavedLanguage() {
+    final code = Hive.box('language').get('lang', defaultValue: 'en') as String;
+    final language = state.languageList.firstWhere(
+      (l) => l.code == code,
+      orElse: () => state.languageList.first,
+    );
+    state = state.copyWith(selectedLanguage: language);
   }
 
   SettingsController(this.ref) : super(SettingsState.initial());
@@ -50,7 +60,7 @@ class SettingsController extends StateNotifier<SettingsState> {
     }
   }
 
-  Future<void> onSelectRole(RoleDetail role) async {
+  Future<void> onSelectRole(RoleDetail role, BuildContext context) async {
     final storage = KAuthCred();
 
     final selected = SelectedUserRole(
@@ -63,13 +73,24 @@ class SettingsController extends StateNotifier<SettingsState> {
 
     await storage.storeSelectedRole(selected);
 
-    // Update state
     state = state.copyWith(
       selectedRole: role,
       selectedRoleName: role.role?.name,
     );
 
-    print("🔵 Role changed to: ${role.role?.name}");
+    if (!context.mounted) return;
+
+    // Switch bottom nav from Settings (2) → Services (1)
+    ref.read(bottomNavigatorVsProvider.notifier).onTabChanged(1);
+    AutoTabsRouter.of(context).setActiveIndex(1);
+
+    // Re-fetch services for the newly selected role
+    final user = KAppX.globalProvider.read(userProvider);
+    final servicesNotifier = ref.read(servicesProvider.notifier);
+    await servicesNotifier.fetchUserRoles(user?.userId ?? 0);
+    await servicesNotifier.fetchBookmarks();
+
+    debugPrint("🔵 Role changed to: ${role.role?.name}");
   }
 
   Future<void> signOut() async {
@@ -116,8 +137,8 @@ class SettingsController extends StateNotifier<SettingsState> {
     state = state.copyWith(roleId: roleId);
   }
 
-  void onSelectLanguage(LanguageItem language) {
-    // TODO: Hook into your localization solution and rebuild app with new locale
+  Future<void> onSelectLanguage(LanguageItem language) async {
+    await setAppLocale(ref, language.code);
     state = state.copyWith(selectedLanguage: language);
   }
 

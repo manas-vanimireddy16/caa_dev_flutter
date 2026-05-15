@@ -346,6 +346,9 @@ class RequestCard extends StatelessWidget {
   final Map<String, dynamic> data;
   final VoidCallback? onTap;
   final VoidCallback? onSelfAssign;
+  final String Function(String key)? fieldLabelBuilder;
+  final String Function(String status)? statusLabelBuilder;
+  final String Function(String id)? requestIdLabelBuilder;
 
   const RequestCard({
     super.key,
@@ -353,6 +356,9 @@ class RequestCard extends StatelessWidget {
     required this.data,
     this.onTap,
     this.onSelfAssign,
+    this.fieldLabelBuilder,
+    this.statusLabelBuilder,
+    this.requestIdLabelBuilder,
   });
 
   // ✅ NEW: resolve status properly
@@ -379,12 +385,26 @@ class RequestCard extends StatelessWidget {
   }
 
   String _humanizeKey(String key) {
+    if (fieldLabelBuilder != null) return fieldLabelBuilder!(key);
     return key
         .replaceAll('_', ' ')
         .replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (m) => '${m[1]} ${m[2]}')
         .split(' ')
         .map((e) => e.isEmpty ? e : e[0].toUpperCase() + e.substring(1))
         .join(' ');
+  }
+
+  String _requestIdText() {
+    final id = data["id"] ?? data["Request Id"] ?? "-";
+    if (requestIdLabelBuilder != null) {
+      return requestIdLabelBuilder!(id.toString());
+    }
+    return "Request ID: $id";
+  }
+
+  String _statusLabel() {
+    final status = _resolveStatus(data["status"]);
+    return statusLabelBuilder?.call(status) ?? status;
   }
 
   Card _buildCard({required Widget child}) {
@@ -432,14 +452,18 @@ class RequestCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    "Request ID: ${data["id"] ?? data["Request Id"] ?? "-"}",
+                    _requestIdText(),
                     style: TextStyle(
                       fontWeight: currentTheme.fontWeights.wBolder,
                       fontSize: currentTheme.fontSizes.s16,
                     ),
+                    textAlign: TextAlign.start,
                   ),
                 ),
-                StatusChip(status: _resolveStatus(data["status"])),
+                StatusChip(
+                  status: _resolveStatus(data["status"]),
+                  displayLabel: _statusLabel(),
+                ),
               ],
             ),
             12.toVerticalSizedBox,
@@ -497,13 +521,17 @@ class RequestCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Request ID: ${data["id"] ?? data["Request Id"] ?? "-"}",
+              _requestIdText(),
               style: TextStyle(
                 fontWeight: theme.fontWeights.wBolder,
                 fontSize: theme.fontSizes.s16,
               ),
+              textAlign: TextAlign.start,
             ),
-            StatusChip(status: _resolveStatus(data["status"])),
+            StatusChip(
+              status: _resolveStatus(data["status"]),
+              displayLabel: _statusLabel(),
+            ),
           ],
         ),
         12.toVerticalSizedBox,
@@ -538,6 +566,7 @@ class RequestCard extends StatelessWidget {
 
   Widget _buildInfoRow(String label, String value) {
     return RichText(
+      textAlign: TextAlign.start,
       text: TextSpan(
         text: "$label: ",
         style: const TextStyle(

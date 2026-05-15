@@ -49,7 +49,7 @@ class StatSummaryRow extends StatelessWidget {
           return Wrap(
             spacing: spacing,
             runSpacing: runSpacing,
-            alignment: WrapAlignment.start,
+            alignment: WrapAlignment.start, // mirrors in RTL
             children: stats.map((data) {
               return StatSummaryCard(data: data, maxWidth: cardMaxWidth);
             }).toList(),
@@ -135,7 +135,7 @@ class StatSummaryCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 9, top: 3),
+                padding: EdgeInsetsDirectional.only(start: 9, top: 3),
                 child: Container(
                   decoration: BoxDecoration(
                     color: data.iconBgColor,

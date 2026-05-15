@@ -344,6 +344,7 @@ class RequestTrendBreakdownCard extends StatelessWidget {
   final void Function()? onYearTap;
   final Function(String?) onChanged;
   final List<String> filterLabelList;
+  final String title;
 
   const RequestTrendBreakdownCard({
     super.key,
@@ -355,6 +356,7 @@ class RequestTrendBreakdownCard extends StatelessWidget {
     this.onYearTap,
     required this.onChanged,
     required this.filterLabelList,
+    this.title = 'Request Trend Breakdown',
   });
   // : assert(monthlyData.length == 12),
   //      assert(monthLabels.length == 12);
@@ -394,7 +396,7 @@ class RequestTrendBreakdownCard extends StatelessWidget {
                 12.toHorizontalSizedBox,
                 Expanded(
                   child: Text(
-                    "Request Trend  Breakdown",
+                    title,
                     style: textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: currentTheme.fontSizes.s16,
@@ -436,7 +438,7 @@ class RequestTrendBreakdownCard extends StatelessWidget {
                 Container(
                   width: 18,
                   height: 18,
-                  margin: const EdgeInsets.only(right: 8),
+                  margin: const EdgeInsetsDirectional.only(end: 8),
                   decoration: BoxDecoration(
                     color: barColor,
                     borderRadius: BorderRadius.circular(4),

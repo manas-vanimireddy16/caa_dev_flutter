@@ -10,7 +10,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:msal_auth/msal_auth.dart';
 import 'environment/environment.dart';
-import '../utils/localization_provider/localization_provider.dart';
+import 'package:code_setup/utils/localization_provider/localization_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,16 +21,10 @@ void main() async {
   await Hive.openBox('loginToken');
   await Hive.openBox('userDetails');
 
-  final selectedLang = Hive.box('language');
-  String language = selectedLang.get('lang', defaultValue: 'en');
-
   runApp(
     UncontrolledProviderScope(
       container: KAppX.globalProvider,
-      child: ProviderScope(
-        overrides: [localeProvider.overrideWith((ref) => Locale(language))],
-        child: const MyApp(),
-      ),
+      child: const ProviderScope(child: MyApp()),
     ),
   );
 }

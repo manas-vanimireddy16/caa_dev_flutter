@@ -262,23 +262,30 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList => StatSummaryHelper.buildStatList(
-    state.kpiData.data?.toJson(),
-    isSecurityThreat: true,
-  );
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.kpiData.data?.toJson(),
+        isSecurityThreat: true,
+        titleForKey: titleForKey,
+      );
 
-  // );isSecurityThreat: true,
-
-  List<StatSummaryData> get approverStatsList =>
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) =>
       StatSummaryHelper.buildStatList(
         state.approvalKpiData.data?.toJson(),
         isSecurityThreat: true,
+        titleForKey: titleForKey,
       );
 
-  // );isSecurityThreat: true,
-
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(
+    String Function(String key) titleForKey,
+  ) =>
+      state.tabIndex == 0
+          ? requestStatsList(titleForKey)
+          : approverStatsList(titleForKey);
 
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
@@ -331,8 +338,6 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
-      // 'Request Name': item.title ?? 'N/A',
-      // 'Category': item.category ?? 'N/A',
       'Date': formatDate(item.base?.createdAt.toString() ?? ''),
       'Request Type': item.base?.subService?.subServiceName ?? 'N/A',
       'Priority': item.priority ?? 'N/A',

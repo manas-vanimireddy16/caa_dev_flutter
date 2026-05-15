@@ -48,6 +48,7 @@ import 'package:code_setup/presentation/screens/training_and_development/models/
 import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
 import 'package:code_setup/repository/information_security_services/report_security_threat/domain/domain.dart';
 import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
@@ -123,6 +124,7 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -130,7 +132,11 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen> {
         padding: const EdgeInsets.all(12),
         children: [
           /// KPI
-          StatSummaryRow(stats: controller.currentStats),
+          StatSummaryRow(
+            stats: controller.currentStats(
+              (key) => l10n.statTitle(key, isSecurityThreat: true),
+            ),
+          ),
           20.toHorizontalSizedBox,
 
           /// Status Breakdown
@@ -138,8 +144,16 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen> {
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
-            onChanged: controller.onStatusFilterChanged,
+            title: l10n.requestsStatusBreakdown,
+            filterLabel: l10n.periodFilterLabels[1],
+            filterLabelList: l10n.periodFilterLabels,
+            centerMetricLabel: l10n.totalRequests,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
+            preserveFilterLabelOnChange: true,
+            onChanged: (value) => controller.onStatusFilterChanged(
+              value != null ? l10n.periodFilterValue(value) : null,
+            ),
             breakdown: state.statusBreakdown.data,
           ),
 
@@ -148,7 +162,8 @@ class _SecurityThreatScreenState extends ConsumerState<SecurityThreatScreen> {
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Requests",
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
             barColor: Color(0xFF5C6BC0),
             filterLabelList: controller.filterLabelList,

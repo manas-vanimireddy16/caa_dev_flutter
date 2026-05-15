@@ -7,6 +7,7 @@ class StatSummaryHelper {
   static List<StatSummaryData> buildStatList(
     Map<String, dynamic>? map, {
     bool isSecurityThreat = false,
+    String Function(String key)? titleForKey,
   }) {
     if (map == null) return [];
 
@@ -25,16 +26,18 @@ class StatSummaryHelper {
           return true;
         })
         .map((item) {
-          String title = formatKey(item.key);
-          String count = item.value.toString();
           String key = item.key;
+          String count = item.value.toString();
 
           /// Replace Approved -> Closed
           if (isSecurityThreat && item.key == 'approved') {
-            title = 'Closed';
             count = (map['closed'] ?? 0).toString();
             key = 'closed';
           }
+
+          String title = titleForKey != null
+              ? titleForKey(key)
+              : formatKey(key);
 
           return StatSummaryData(
             title: title,
