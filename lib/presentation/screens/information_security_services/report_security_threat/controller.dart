@@ -357,33 +357,68 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
-  Map<String, String> buildRequestInformationData() {
-    final request = state.requestDetails.request;
-    return {
-      /// ───── RIGHT COLUMN ─────
-      "Service Type": request?.service?.name ?? 'N/A',
+  String _na(DashboardL10n? l10n) => l10n?.notAvailableValue() ?? 'N/A';
 
-      /// ───── LEFT COLUMN ─────
-      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      "Ticket Name": request?.ticketName ?? 'N/A',
-      'Source of Incident Detected': request?.sourceOfIncident ?? 'N/A',
-      'Type Of Threat': getThreatType(request?.typeOfThreat ?? 0),
-      'Priority': request?.priority ?? 'N/A',
-      'Description': request?.description ?? 'N/A',
-      'Type of Incident Detected':
-          request?.typeOfIncidentDetected?.join(', ').toString() ?? 'N/A',
+  String _detailStr(String? v, DashboardL10n? l10n) {
+    if (v == null || v.isEmpty) return _na(l10n);
+    return v;
+  }
+
+  Map<String, String> buildRequestInformationData([DashboardL10n? l10n]) {
+    final request = state.requestDetails.request;
+    final incidents = request?.typeOfIncidentDetected ?? [];
+    final incidentSep = l10n?.isArabic == true ? '، ' : ', ';
+    final incidentStr = incidents.isEmpty
+        ? _na(l10n)
+        : l10n == null
+        ? incidents.join(', ')
+        : incidents.map(l10n.securityThreatIncidentType).join(incidentSep);
+
+    final threatEn = getThreatType(request?.typeOfThreat ?? 0);
+    final threatStr = threatEn.isEmpty
+        ? _na(l10n)
+        : (l10n?.securityThreatThreatType(threatEn) ?? threatEn);
+
+    final priorityRaw = request?.priority ?? '';
+    final priorityStr = priorityRaw.isEmpty
+        ? _na(l10n)
+        : (l10n?.securityThreatPriority(priorityRaw) ?? priorityRaw);
+
+    final sourceRaw = request?.sourceOfIncident;
+    final sourceStr = (sourceRaw == null || sourceRaw.isEmpty)
+        ? _na(l10n)
+        : (l10n?.securityThreatSourceOfIncident(sourceRaw) ?? sourceRaw);
+
+    return {
+      "Service Type": _detailStr(request?.service?.name, l10n),
+      "Sub Service Type": _detailStr(request?.subService?.subServiceName, l10n),
+      "Ticket Name": _detailStr(request?.ticketName, l10n),
+      'Source of Incident Detected': sourceStr,
+      'Type Of Threat': threatStr,
+      'Priority': priorityStr,
+      'Description': _detailStr(request?.description, l10n),
+      'Type of Incident Detected': incidentStr,
     };
   }
 
-  Map<String, String> buildStatusInformation() {
+  Map<String, String> buildStatusInformation([DashboardL10n? l10n]) {
     final request = state.requestDetails.request;
     final approvals = state.requestDetails.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
+
+    final statusRaw = request?.status;
+    final statusStr = statusRaw == null || statusRaw.isEmpty
+        ? _na(l10n)
+        : (l10n?.detailApprovalStatus(statusRaw) ?? statusRaw);
+
+    final created = request?.createdAt;
+    final dateStr = created == null || created.isEmpty
+        ? _na(l10n)
+        : (l10n?.formatDetailDate(created) ?? formatDate(created));
+
     return {
-      "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": formatDate(request?.createdAt ?? 'N/A'),
-      // "Last Updated":
-      //     request?.updatedAt?.split('T').first ?? 'N/A',
+      "Approval Status": statusStr,
+      "Requested Date": dateStr,
       if (nextApprover.containsKey('department'))
         'Department': nextApprover['department']!,
       if (nextApprover.containsKey('section'))
@@ -396,12 +431,10 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
-  Map<String, String> buildTechnicalInformation() {
+  Map<String, String> buildTechnicalInformation([DashboardL10n? l10n]) {
     final request = state.requestDetails.request;
-    return {
-      'Extension Number':
-          request?.createdByUser?.extensionNumber.toString() ?? '0',
-    };
+    final ext = request?.createdByUser?.extensionNumber.toString() ?? '0';
+    return {'Extension Number': ext.isEmpty ? _na(l10n) : ext};
   }
 
   String _buildDepartmentSection(Map<String, String> approverMap) {
@@ -465,167 +498,239 @@ class _VSController extends StateNotifier<_ViewState> {
   final securityThreatInstance = SecurityThreatRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  List<DynamicField> get securityThreatRequestFields => [
-    /// ================= DEPARTMENT =================
-    DynamicField(
-      name: 'department',
-      label: 'Department',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Select Department',
-      disabled: true,
-      initialValue: userInfo?.data?.department?.departmentName ?? '',
-    ),
+  List<DynamicField> buildSecurityThreatRequestFields(DashboardL10n l10n) {
+    return [
+      /// ================= DEPARTMENT =================
+      DynamicField(
+        name: 'department',
+        label: l10n.requestDetailsLabel('Department'),
+        type: FieldType.text,
+        required: true,
+        placeholder: l10n.securityThreatFormDeptPlaceholder,
+        disabled: true,
+        initialValue: userInfo?.data?.department?.departmentName ?? '',
+      ),
 
-    /// ================= CONTACT NUMBER =================
-    DynamicField(
-      name: 'contact_number',
-      label: 'Contact Number',
-      type: FieldType.number,
-      required: true,
-      placeholder: 'Enter Contact Number',
-      validator: (value, values) {
-        final phone = value?.toString() ?? '';
-        if (phone.length != 8) {
-          return 'Phone number must be 8 digits';
-        }
+      /// ================= CONTACT NUMBER =================
+      DynamicField(
+        name: 'contact_number',
+        label: l10n.requestDetailsLabel('Contact Number'),
+        type: FieldType.number,
+        required: true,
+        placeholder: l10n.securityThreatFormContactPlaceholder,
+        validator: (value, values) {
+          final phone = value?.toString().trim() ?? '';
+          if (phone.isEmpty) return null;
+          if (phone.length != 8) {
+            return l10n.securityThreatPhoneDigitsHint;
+          }
+          return null;
+        },
+      ),
 
-        return null;
-      },
-    ),
+      /// ================= TICKET NAME =================
+      DynamicField(
+        name: 'ticket_name',
+        label: l10n.requestDetailsLabel('Ticket Name'),
+        type: FieldType.text,
+        required: true,
+        placeholder: l10n.securityThreatFormTicketPlaceholder,
+      ),
 
-    /// ================= TICKET NAME =================
-    DynamicField(
-      name: 'ticket_name',
-      label: 'Ticket Name',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter request title (min 5, max 250 characters)',
-    ),
+      /// ================= SOURCE OF INCIDENT =================
+      DynamicField(
+        name: 'source_of_incident',
+        label: l10n.requestDetailsLabel('source_of_incident'),
+        type: FieldType.radio,
+        required: true,
+        options: [
+          DropdownOption(
+            value: 'Internal / Insider',
+            label: l10n.securityThreatSourceOfIncident('Internal / Insider'),
+          ),
+          DropdownOption(
+            value: 'External / Outsider',
+            label: l10n.securityThreatSourceOfIncident('External / Outsider'),
+          ),
+          DropdownOption(
+            value: 'System / Device',
+            label: l10n.securityThreatSourceOfIncident('System / Device'),
+          ),
+          DropdownOption(
+            value: 'Third Party / Vendor',
+            label: l10n.securityThreatSourceOfIncident('Third Party / Vendor'),
+          ),
+          DropdownOption(
+            value: 'Physical / Environmental',
+            label: l10n.securityThreatSourceOfIncident(
+              'Physical / Environmental',
+            ),
+          ),
+          DropdownOption(
+            value: 'Unknown / Under Investigation',
+            label: l10n.securityThreatSourceOfIncident(
+              'Unknown / Under Investigation',
+            ),
+          ),
+          DropdownOption(
+            value: 'Others',
+            label: l10n.securityThreatSourceOfIncident('Others'),
+          ),
+        ],
+      ),
+      DynamicField(
+        name: 'other_source_of_incident',
+        label: '',
+        type: FieldType.text,
+        required: true,
+        placeholder: l10n.securityThreatFormOtherDetailsPlaceholder,
+        visibleWhen: (value) => value['source_of_incident'] == 'Others',
+      ),
 
-    /// ================= SOURCE OF INCIDENT =================
-    DynamicField(
-      name: 'source_of_incident',
-      label: 'Source of Incident',
-      type: FieldType.radio,
-      required: true,
-      options: [
-        'Internal / Insider',
-        'External / Outsider',
-        'System / Device',
-        'Third Party / Vendor',
-        'Physical / Environmental',
-        'Unknown / Under Investigation',
-        'Others',
-      ],
-    ),
-    DynamicField(
-      name: 'other_source_of_incident',
-      label: '',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter Details (min 5, max 250 characters)',
-      visibleWhen: (value) => value['source_of_incident'] == 'Others',
-    ),
-
-    /// ================= TYPE OF INCIDENT DETECTED =================
-    DynamicField(
-      name: 'type_of_incident_detected',
-      label: 'Type of Incident Detected',
-      type: FieldType.multiselect, // <-- MULTI SELECT
-      required: true,
-      placeholder: 'Select Incident Type',
-      options: const [
-        DropdownOption(value: 'Denial of Service', label: 'Denial of Service'),
-        DropdownOption(
-          value:
+      /// ================= TYPE OF INCIDENT DETECTED =================
+      DynamicField(
+        name: 'type_of_incident_detected',
+        label: l10n.requestDetailsLabel('type_of_incident_detected'),
+        type: FieldType.multiselect,
+        required: true,
+        placeholder: l10n.securityThreatFormSelectTypeIncidentDetected,
+        options: [
+          DropdownOption(
+            value: 'Denial of Service',
+            label: l10n.securityThreatIncidentType('Denial of Service'),
+          ),
+          DropdownOption(
+            value:
+                'Unauthorized Use / Access / Use of Data / Compromised User Account',
+            label: l10n.securityThreatIncidentType(
               'Unauthorized Use / Access / Use of Data / Compromised User Account',
-          label:
-              'Unauthorized Use / Access / Use of Data / Compromised User Account',
-        ),
-        DropdownOption(
-          value: 'Unauthorized changes to systems, software, or data',
-          label: 'Unauthorized changes to systems, software, or data',
-        ),
-        DropdownOption(value: 'Malicious Code', label: 'Malicious Code'),
-        DropdownOption(
-          value: 'Unplanned Downtime',
-          label: 'Unplanned Downtime',
-        ),
-        DropdownOption(
-          value: 'Loss or Theft of equipment',
-          label: 'Loss or Theft of equipment',
-        ),
-        DropdownOption(
-          value: 'Ransomware Attacks',
-          label: 'Ransomware Attacks',
-        ),
-        DropdownOption(
-          value: 'Physical Security Breach',
-          label: 'Physical Security Breach',
-        ),
-        DropdownOption(
-          value: 'Leakage of Secret or Top Secret Data',
-          label: 'Leakage of Secret or Top Secret Data',
-        ),
+            ),
+          ),
+          DropdownOption(
+            value: 'Unauthorized changes to systems, software, or data',
+            label: l10n.securityThreatIncidentType(
+              'Unauthorized changes to systems, software, or data',
+            ),
+          ),
+          DropdownOption(
+            value: 'Malicious Code',
+            label: l10n.securityThreatIncidentType('Malicious Code'),
+          ),
+          DropdownOption(
+            value: 'Unplanned Downtime',
+            label: l10n.securityThreatIncidentType('Unplanned Downtime'),
+          ),
+          DropdownOption(
+            value: 'Loss or Theft of equipment',
+            label: l10n.securityThreatIncidentType(
+              'Loss or Theft of equipment',
+            ),
+          ),
+          DropdownOption(
+            value: 'Ransomware Attacks',
+            label: l10n.securityThreatIncidentType('Ransomware Attacks'),
+          ),
+          DropdownOption(
+            value: 'Physical Security Breach',
+            label: l10n.securityThreatIncidentType('Physical Security Breach'),
+          ),
+          DropdownOption(
+            value: 'Leakage of Secret or Top Secret Data',
+            label: l10n.securityThreatIncidentType(
+              'Leakage of Secret or Top Secret Data',
+            ),
+          ),
+          DropdownOption(
+            value: 'Others',
+            label: l10n.securityThreatIncidentType('Others'),
+          ),
+        ],
+      ),
+      DynamicField(
+        name: 'other_type_of_incident',
+        label: '',
+        type: FieldType.text,
+        required: true,
+        placeholder: l10n.securityThreatFormOtherDetailsPlaceholder,
+        visibleWhen: (value) {
+          final selected = value['type_of_incident_detected'] as List?;
 
-        DropdownOption(value: 'Others', label: 'Others'),
-      ],
-    ),
-    DynamicField(
-      name: 'other_type_of_incident',
-      label: '',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter Details (min 5, max 250 characters)',
-      visibleWhen: (value) {
-        final selected = value['type_of_incident_detected'] as List?;
+          return selected?.contains('Others') ?? false;
+        },
+      ),
 
-        return selected?.contains('Others') ?? false;
-      },
-    ),
+      /// ================= TYPE OF THREAT =================
+      DynamicField(
+        name: 'type_of_threat',
+        label: l10n.requestDetailsLabel('Type Of Threat'),
+        type: FieldType.select,
+        required: true,
+        placeholder: l10n.select,
+        options: [
+          DropdownOption(
+            value: 1,
+            label: l10n.securityThreatThreatType('Malware Threat'),
+          ),
+          DropdownOption(
+            value: 2,
+            label: l10n.securityThreatThreatType('Email Threat'),
+          ),
+          DropdownOption(
+            value: 3,
+            label: l10n.securityThreatThreatType('Identity & Access Threat'),
+          ),
+          DropdownOption(
+            value: 4,
+            label: l10n.securityThreatThreatType('Application & System Threat'),
+          ),
+          DropdownOption(
+            value: 5,
+            label: l10n.securityThreatThreatType('Others'),
+          ),
+        ],
+      ),
 
-    /// ================= TYPE OF THREAT =================
-    DynamicField(
-      name: 'type_of_threat',
-      label: 'Type Of Threat',
-      type: FieldType.select,
-      required: true,
-      placeholder: 'Select',
-      options: const [
-        DropdownOption(value: 1, label: 'Malware Threat'),
-        DropdownOption(value: 2, label: 'Email Threat'),
-        DropdownOption(value: 3, label: 'Identity & Access Threat'),
-        DropdownOption(value: 4, label: 'Application & System Threat'),
-        DropdownOption(value: 5, label: 'Others'),
-      ],
-    ),
+      /// ================= DESCRIPTION =================
+      DynamicField(
+        name: 'description',
+        label: l10n.securityThreatFormDescLabel,
+        type: FieldType.text,
+        required: true,
+        placeholder: l10n.securityThreatFormDescriptionPlaceholder,
+      ),
 
-    /// ================= DESCRIPTION =================
-    DynamicField(
-      name: 'description',
-      label: 'Description / Additional Notes',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Write here (min 3, max 250 characters)',
-    ),
-
-    /// ================= PRIORITIES =================
-    DynamicField(
-      name: 'priority',
-      label: 'Priorities',
-      type: FieldType.select,
-      required: true,
-      placeholder: 'Select Priority',
-      options: const [
-        DropdownOption(value: 'P1-Very Low', label: 'P1-Very Low'),
-        DropdownOption(value: 'P2-Low', label: 'P2-Low'),
-        DropdownOption(value: 'P3-Moderate', label: 'P3-Moderate'),
-        DropdownOption(value: 'P4-High', label: 'P4-High'),
-        DropdownOption(value: 'P5-Very High', label: 'P5-Very High'),
-      ],
-    ),
-  ];
+      /// ================= PRIORITIES =================
+      DynamicField(
+        name: 'priority',
+        label: l10n.securityThreatFormPrioritiesLabel,
+        type: FieldType.select,
+        required: true,
+        placeholder: l10n.securityThreatFormSelectPriority,
+        options: [
+          DropdownOption(
+            value: 'P1-Very Low',
+            label: l10n.securityThreatPriority('P1-Very Low'),
+          ),
+          DropdownOption(
+            value: 'P2-Low',
+            label: l10n.securityThreatPriority('P2-Low'),
+          ),
+          DropdownOption(
+            value: 'P3-Moderate',
+            label: l10n.securityThreatPriority('P3-Moderate'),
+          ),
+          DropdownOption(
+            value: 'P4-High',
+            label: l10n.securityThreatPriority('P4-High'),
+          ),
+          DropdownOption(
+            value: 'P5-Very High',
+            label: l10n.securityThreatPriority('P5-Very High'),
+          ),
+        ],
+      ),
+    ];
+  }
 
   /// ========================= API CALLS =========================
 

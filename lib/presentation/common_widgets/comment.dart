@@ -7,6 +7,7 @@ import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/models/buttons_enum.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:flutter/material.dart';
 
@@ -76,7 +77,9 @@ class StatusBadge extends StatelessWidget {
 
 class CommentEntry extends StatelessWidget {
   final ChatMessageModel data;
-  const CommentEntry({super.key, required this.data});
+  final DashboardL10n? l10n;
+
+  const CommentEntry({super.key, required this.data, this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -96,14 +99,20 @@ class CommentEntry extends StatelessWidget {
       child: Column(
         children: [
           /// -------- ROW 1 --------
-          Row(children: [_item("Date / Time", dateTime), _item("Role", role)]),
+          Row(children: [
+            _item(l10n?.routingTileDateTime ?? 'Date / Time', dateTime),
+            _item(l10n?.routingTileRole ?? 'Role', role),
+          ]),
 
           const SizedBox(height: 12),
           Divider(color: Colors.grey.shade300, height: 1),
           const SizedBox(height: 12),
 
           /// -------- ROW 2 --------
-          Row(children: [_item("Action", action), _item("Status", status)]),
+          Row(children: [
+            _item(l10n?.routingTileAction ?? 'Action', action),
+            _item(l10n?.routingTileStatus ?? 'Status', status),
+          ]),
         ],
       ),
     );
@@ -202,6 +211,9 @@ class AddCommentBox extends StatefulWidget {
 
   final bool buttonsDisabled;
 
+  final String? commentHint;
+  final String? needMoreInfoLabel;
+
   const AddCommentBox({
     super.key,
     this.from = '',
@@ -222,6 +234,8 @@ class AddCommentBox extends StatefulWidget {
     this.onInProgress,
     this.onComplete,
     this.buttonsDisabled = false,
+    this.commentHint,
+    this.needMoreInfoLabel,
   });
 
   @override
@@ -532,8 +546,9 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                           controller: widget.controller,
                           minLines: 1,
                           maxLines: 4,
-                          decoration: const InputDecoration(
-                            hintText: 'Add a comment...',
+                          decoration: InputDecoration(
+                            hintText:
+                                widget.commentHint ?? 'Add a comment...',
                             border: InputBorder.none,
                           ),
                         ),
@@ -576,11 +591,11 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           InkWell(
             onTap: () => setState(() => isCommentMode = true),
             child: Row(
-              children: const [
-                Icon(Icons.info_outline, size: 18, color: Colors.blue),
+              children: [
+                const Icon(Icons.info_outline, size: 18, color: Colors.blue),
                 SizedBox(width: 6),
                 Text(
-                  "Need more info",
+                  widget.needMoreInfoLabel ?? 'Need more info',
                   style: TextStyle(
                     color: Colors.blue,
                     fontWeight: FontWeight.w600,

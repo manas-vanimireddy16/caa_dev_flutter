@@ -372,7 +372,7 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
     }
 
     /// ✅ SET STATE ONCE
-    state = state.copyWith(values: initialValues);
+    state = state.copyWith(values: initialValues, errors: {});
   }
 
   /// ------------------------------------------------
@@ -572,18 +572,16 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
       final isRequired =
           field.required || (field.requiredWhen?.call(values) ?? false);
 
-      /// REQUIRED VALIDATION
+      bool isEmpty = false;
+      if (value == null) {
+        isEmpty = true;
+      } else if (value is String && value.trim().isEmpty) {
+        isEmpty = true;
+      } else if (value is List && value.isEmpty) {
+        isEmpty = true;
+      }
+
       if (isRequired) {
-        bool isEmpty = false;
-
-        if (value == null) {
-          isEmpty = true;
-        } else if (value is String && value.trim().isEmpty) {
-          isEmpty = true;
-        } else if (value is List && value.isEmpty) {
-          isEmpty = true;
-        }
-
         if (isEmpty) {
           errors[key] = '${field.label} is required';
         } else {
@@ -591,12 +589,13 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
         }
       }
 
-      /// CUSTOM VALIDATOR
       if (field.validator != null) {
         final error = field.validator!(value, values);
 
         if (error != null) {
           errors[key] = error;
+        } else if (isRequired && isEmpty) {
+          errors[key] = '${field.label} is required';
         } else {
           errors.remove(key);
         }

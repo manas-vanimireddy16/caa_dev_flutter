@@ -294,6 +294,7 @@
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/assets/icons.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -341,8 +342,13 @@ class WorkflowStepView {
 /// ---------------------------------------------------------------------------
 class RequestWorkflowTimeline extends StatelessWidget {
   final RequestDetailData details;
+  final DashboardL10n? l10n;
 
-  const RequestWorkflowTimeline({super.key, required this.details});
+  const RequestWorkflowTimeline({
+    super.key,
+    required this.details,
+    this.l10n,
+  });
 
   // ------------------ MAP STATUS ------------------
   WorkflowStepStatus mapStatus(String? s) {
@@ -498,9 +504,9 @@ class RequestWorkflowTimeline extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Request Workflow",
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+            Text(
+              l10n?.requestWorkflowSectionTitle ?? 'Request Workflow',
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
             ),
             const Divider(height: 24),
             ListView.builder(
@@ -510,6 +516,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
               itemBuilder: (context, index) {
                 final s = steps[index];
                 return _buildStep(
+                  l10n: l10n,
                   index: index,
                   total: steps.length,
                   status: s.status,
@@ -530,6 +537,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
 
   // ------------------ STEP UI ------------------
   Widget _buildStep({
+    DashboardL10n? l10n,
     required int index,
     required int total,
     required WorkflowStepStatus status,
@@ -543,6 +551,9 @@ class RequestWorkflowTimeline extends StatelessWidget {
     final showLine = index < total - 1;
     final showActor = actor != "-" && actor.isNotEmpty;
     final showDetails = status == WorkflowStepStatus.approved;
+    final actionLabel = l10n?.workflowActionTakenBy ?? 'Action taken by';
+    String employeeLineFor(String id) =>
+        l10n?.workflowEmployeeIdLine(id) ?? 'Employee ID: $id';
 
     return IntrinsicHeight(
       child: Row(
@@ -580,7 +591,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
                     if (showActor) ...[
                       const SizedBox(height: 6),
                       Text(
-                        "Action Taken By:",
+                        '$actionLabel:',
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -589,7 +600,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
                       Text(actor),
                     ],
                     if (empId.isNotEmpty && empId != "-")
-                      Text("Employee ID: $empId"),
+                      Text(employeeLineFor(empId)),
                     const SizedBox(height: 4),
                     Text(
                       date,

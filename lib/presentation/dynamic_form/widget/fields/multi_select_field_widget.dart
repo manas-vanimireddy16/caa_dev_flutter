@@ -1,5 +1,6 @@
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,6 +13,7 @@ class MultiSelectDropdownFieldWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(dynamicFormProvider);
     final notifier = ref.read(dynamicFormProvider.notifier);
+    final l10n = DashboardL10n.of(context);
 
     final List<dynamic> selectedValues =
         (state.values[field.name] as List?) ?? [];
@@ -42,7 +44,13 @@ class MultiSelectDropdownFieldWidget extends ConsumerWidget {
             onTap: field.disabled
                 ? null
                 : () {
-                    _openMultiSelectSheet(context, ref, field, selectedValues);
+                    _openMultiSelectSheet(
+                      context,
+                      ref,
+                      field,
+                      selectedValues,
+                      l10n,
+                    );
                   },
             child: Container(
               width: double.infinity,
@@ -57,7 +65,7 @@ class MultiSelectDropdownFieldWidget extends ConsumerWidget {
               ),
               child: selectedOptions.isEmpty
                   ? Text(
-                      "Select ${field.label}",
+                      l10n.dynamicFormMultiSelectHint(field.label),
                       style: TextStyle(color: Colors.grey.shade600),
                     )
                   : Column(
@@ -65,7 +73,9 @@ class MultiSelectDropdownFieldWidget extends ConsumerWidget {
                       children: [
                         /// SELECTED COUNT
                         Text(
-                          "${selectedOptions.length} Selected",
+                          l10n.dynamicFormMultiSelectCount(
+                            selectedOptions.length,
+                          ),
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
@@ -108,6 +118,7 @@ class MultiSelectDropdownFieldWidget extends ConsumerWidget {
     WidgetRef ref,
     DynamicField field,
     List<dynamic> selectedValues,
+    DashboardL10n l10n,
   ) {
     final notifier = ref.read(dynamicFormProvider.notifier);
     final options = field.options ?? [];
@@ -120,6 +131,7 @@ class MultiSelectDropdownFieldWidget extends ConsumerWidget {
           field: field,
           options: options,
           selectedValues: selectedValues,
+          l10n: l10n,
           onChanged: (newList) {
             notifier.updateValue(field.name, newList);
 
@@ -138,12 +150,14 @@ class _MultiSelectSheet extends StatefulWidget {
   final List options;
   final List<dynamic> selectedValues;
   final Function(List<dynamic>) onChanged;
+  final DashboardL10n l10n;
 
   const _MultiSelectSheet({
     required this.field,
     required this.options,
     required this.selectedValues,
     required this.onChanged,
+    required this.l10n,
   });
 
   @override
@@ -177,7 +191,7 @@ class _MultiSelectSheetState extends State<_MultiSelectSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Select ${widget.field.label}",
+                  widget.l10n.dynamicFormMultiSelectHint(widget.field.label),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -188,16 +202,16 @@ class _MultiSelectSheetState extends State<_MultiSelectSheet> {
                     widget.onChanged(tempSelected);
                     Navigator.pop(context);
                   },
-                  child: const Text("DONE"),
+                  child: Text(widget.l10n.dynamicFormMultiSelectDone),
                 ),
               ],
             ),
 
             /// SEARCH
             TextField(
-              decoration: const InputDecoration(
-                hintText: "Search...",
-                prefixIcon: Icon(Icons.search),
+              decoration: InputDecoration(
+                hintText: widget.l10n.dynamicFormSearchHint,
+                prefixIcon: const Icon(Icons.search),
               ),
               onChanged: (v) {
                 setState(() {

@@ -17,6 +17,7 @@ import 'package:code_setup/presentation/dynamic_form/widget/fields/time_field_wi
 import 'package:code_setup/presentation/dynamic_form/widget/fields/toggle_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/step_header.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -187,6 +188,10 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(dynamicFormProvider.notifier).initialize(widget.steps);
+    });
   }
 
   @override
@@ -219,6 +224,7 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
   Widget build(BuildContext context) {
     final state = ref.watch(dynamicFormProvider);
     final notifier = ref.read(dynamicFormProvider.notifier);
+    final l10n = DashboardL10n.of(context);
 
     final currentStep = state.currentStep;
     final currentFields = widget.steps[currentStep];
@@ -236,7 +242,7 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
     return KScaffold(
       appBar: KAppBar(
         title: Text(
-          'New Request',
+          widget.title,
           style: TextStyle(
             fontSize: currentTheme.fontSizes.s18,
             fontWeight: currentTheme.fontWeights.wBold,
@@ -255,7 +261,7 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
               child: Wrap(
                 children: [
                   Text(
-                    'Provide details about your ${widget.title}',
+                    l10n.dynamicFormSubtitle(widget.title),
                     style: TextStyle(
                       fontSize: currentTheme.fontSizes.s15,
                       fontWeight: currentTheme.fontWeights.wRegular,
@@ -302,6 +308,7 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
             ),
 
             _BottomActionBar(
+              l10n: l10n,
               showPrevious: currentStep > 0,
               isLast: isLastStep,
               onPrevious: notifier.previousStep,
@@ -330,6 +337,7 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
 }
 
 class _BottomActionBar extends ConsumerWidget {
+  final DashboardL10n l10n;
   final bool showPrevious;
   final bool isLast;
   final VoidCallback onPrevious;
@@ -339,6 +347,7 @@ class _BottomActionBar extends ConsumerWidget {
   final bool Function(Map<String, dynamic> values)? enableSubmitWhen;
 
   const _BottomActionBar({
+    required this.l10n,
     required this.showPrevious,
     required this.isLast,
     required this.onPrevious,
@@ -372,7 +381,7 @@ class _BottomActionBar extends ConsumerWidget {
             Expanded(
               child: OutlinedButton(
                 onPressed: onPrevious,
-                child: const Text('Previous'),
+                child: Text(l10n.dynamicFormPrevious),
               ),
             ),
 
@@ -392,7 +401,9 @@ class _BottomActionBar extends ConsumerWidget {
                     : const BorderSide(color: Colors.grey),
               ),
               onPressed: isLast ? (enableSubmit ? onSubmit : null) : onNext,
-              child: Text(isLast ? 'Submit' : 'Next'),
+              child: Text(
+                isLast ? l10n.dynamicFormSubmit : l10n.dynamicFormNext,
+              ),
             ),
           ),
         ],

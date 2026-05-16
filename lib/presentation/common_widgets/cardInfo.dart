@@ -357,6 +357,7 @@ class CardInfo extends StatelessWidget {
                           padding: const EdgeInsets.all(6),
                           child: InfoTile(
                             title: _label(gridEntries.elementAt(i).key),
+                            iconKey: gridEntries.elementAt(i).key,
                             text:
                                 gridEntries.elementAt(i).key.toLowerCase() ==
                                     "status"
@@ -380,6 +381,7 @@ class CardInfo extends StatelessWidget {
                             padding: const EdgeInsets.all(6),
                             child: InfoTile(
                               title: _label(gridEntries.elementAt(i + 1).key),
+                              iconKey: gridEntries.elementAt(i + 1).key,
                               text:
                                   gridEntries
                                           .elementAt(i + 1)
@@ -479,14 +481,25 @@ class InfoTile extends StatelessWidget {
   final String title;
   final String? text;
   final Widget? textWidget;
+  final String? iconKey;
 
-  const InfoTile({super.key, required this.title, this.text, this.textWidget});
+  const InfoTile({
+    super.key,
+    required this.title,
+    this.text,
+    this.textWidget,
+    this.iconKey,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(_getIconForKey(title), color: Colors.indigo.shade900, size: 20),
+        Icon(
+          _getIconForKey(iconKey ?? title),
+          color: Colors.indigo.shade900,
+          size: 20,
+        ),
         const SizedBox(width: 8),
         Expanded(
           child: Column(
@@ -515,6 +528,7 @@ class InfoTile extends StatelessWidget {
   IconData _getIconForKey(String key) {
     switch (key.toLowerCase()) {
       case "status":
+      case "approval status":
         return Icons.verified;
 
       case "requested date":

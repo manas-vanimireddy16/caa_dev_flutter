@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 /// Localized labels for service dashboard screens (EN / AR).
 class DashboardL10n {
@@ -41,6 +42,236 @@ class DashboardL10n {
   String get noDataFound => _t('No Data Found', 'لا توجد بيانات');
 
   String get select => _t('Select', 'اختر');
+
+  String get requestDetailScreenTitle => _t('Request Detail', 'تفاصيل الطلب');
+
+  String get requestDetailsTabLabel => _t('Request Details', 'تفاصيل الطلب');
+
+  String get routingHistoryTabLabel => _t('Routing History', 'سجل التوجيه');
+
+  String get attachmentsTabLabel => _t('Attachments', 'المرفقات');
+
+  String get workFlowTabLabel => _t('Work Flow', 'سير العمل');
+
+  String get coverageInformationSection =>
+      _t('Coverage Information', 'معلومات التغطية');
+
+  String get technicalDetailsSection =>
+      _t('Technical Details', 'التفاصيل الفنية');
+
+  String notAvailableValue() => _t('N/A', 'غير متاح');
+
+  String formatDetailDate(String? raw) {
+    if (raw == null || raw.isEmpty || raw == 'N/A') {
+      return notAvailableValue();
+    }
+    try {
+      final dt = DateTime.parse(raw).toLocal();
+      return DateFormat.yMMMd(isArabic ? 'ar' : 'en').format(dt);
+    } catch (_) {
+      return raw;
+    }
+  }
+
+  /// Approval row on request details (align wording with KPI "Closed" where applicable).
+  String detailApprovalStatus(String status) {
+    final n = status.toLowerCase().trim();
+    if (n == 'closed') return _t('Closed', 'مغلق');
+    return statusLabel(status);
+  }
+
+  String securityThreatPhoneValidationError() =>
+      _t('Phone number must be 8 digits', 'يجب أن يكون رقم الهاتف 8 أرقام');
+
+  /// Shown while typing until the field has exactly 8 digits.
+  String get securityThreatPhoneDigitsHint =>
+      _t('Please enter 8 digits', 'يرجى إدخال 8 أرقام');
+
+  String get requestWorkflowSectionTitle =>
+      _t('Request Workflow', 'سير عمل الطلب');
+
+  String get workflowActionTakenBy =>
+      _t('Action taken by', 'تم الإجراء بواسطة');
+
+  String workflowEmployeeIdLine(String id) =>
+      _t('Employee ID: $id', 'رقم الموظف: $id');
+
+  String get commentsRoutingOverviewTitle => _t(
+        'Comments / Routing Overview',
+        'التعليقات / نظرة عامة على التوجيه',
+      );
+
+  String get routingTileDateTime => _t('Date / Time', 'التاريخ / الوقت');
+
+  String get routingTileRole => _t('Role', 'الدور');
+
+  String get routingTileAction => _t('Action', 'الإجراء');
+
+  String get routingTileStatus => _t('Status', 'الحالة');
+
+  String get noCommentsYet => _t('No comments yet', 'لا توجد تعليقات بعد');
+
+  String get noAttachmentsAvailable =>
+      _t('No attachments available', 'لا توجد مرفقات');
+
+  String attachmentSizeLine(String size) => _t('Size: $size', 'الحجم: $size');
+
+  String attachmentUploadedByLine(String name) =>
+      _t('Uploaded by: $name', 'تم الرفع بواسطة: $name');
+
+  String attachmentUploadedAtLine(String at) =>
+      _t('Uploaded at: $at', 'تاريخ الرفع: $at');
+
+  String get attachmentUnknownFile =>
+      _t('Unknown File', 'ملف غير معروف');
+
+  String get routingAddCommentHint =>
+      _t('Add a comment...', 'أضف تعليقاً...');
+
+  String get needMoreInfo =>
+      _t('Need more info', 'أحتاج المزيد من المعلومات');
+
+  String get dynamicFormPrevious => _t('Previous', 'السابق');
+
+  String get dynamicFormNext => _t('Next', 'التالي');
+
+  String get dynamicFormSubmit => _t('Submit', 'إرسال');
+
+  String dynamicFormSubtitle(String title) =>
+      _t('Provide details about your $title', 'قدّم تفاصيل حول $title');
+
+  String dynamicFormMultiSelectHint(String fieldLabel) =>
+      _t('Select $fieldLabel', 'اختر $fieldLabel');
+
+  String dynamicFormMultiSelectCount(int n) =>
+      _t('$n Selected', isArabic ? 'تم اختيار $n' : '$n Selected');
+
+  String get dynamicFormMultiSelectDone => _t('DONE', 'تم');
+
+  String get dynamicFormSearchHint => _t('Search...', 'بحث...');
+
+  String securityThreatSourceOfIncident(String en) {
+    switch (en) {
+      case 'Internal / Insider':
+        return _t('Internal / Insider', 'داخلي / موظف');
+      case 'External / Outsider':
+        return _t('External / Outsider', 'خارجي / طرف خارجي');
+      case 'System / Device':
+        return _t('System / Device', 'نظام / جهاز');
+      case 'Third Party / Vendor':
+        return _t('Third Party / Vendor', 'طرف ثالث / مورّد');
+      case 'Physical / Environmental':
+        return _t('Physical / Environmental', 'مادي / بيئي');
+      case 'Unknown / Under Investigation':
+        return _t('Unknown / Under Investigation', 'غير معروف / قيد التحقيق');
+      case 'Others':
+        return _t('Others', 'أخرى');
+      default:
+        return en;
+    }
+  }
+
+  String securityThreatIncidentType(String en) {
+    switch (en) {
+      case 'Denial of Service':
+        return _t('Denial of Service', 'رفض الخدمة');
+      case 'Unauthorized Use / Access / Use of Data / Compromised User Account':
+        return _t(
+          'Unauthorized Use / Access / Use of Data / Compromised User Account',
+          'استخدام غير مصرح به / الوصول / استخدام البيانات / حساب مستخدم مُخترق',
+        );
+      case 'Unauthorized changes to systems, software, or data':
+        return _t(
+          'Unauthorized changes to systems, software, or data',
+          'تغييرات غير مصرح بها على الأنظمة أو البرامج أو البيانات',
+        );
+      case 'Malicious Code':
+        return _t('Malicious Code', 'كود ضار');
+      case 'Unplanned Downtime':
+        return _t('Unplanned Downtime', 'توقف غير مخطط');
+      case 'Loss or Theft of equipment':
+        return _t('Loss or Theft of equipment', 'فقدان أو سرقة المعدات');
+      case 'Ransomware Attacks':
+        return _t('Ransomware Attacks', 'هجمات برمجيات الفدية');
+      case 'Physical Security Breach':
+        return _t('Physical Security Breach', 'اختراق أمني مادي');
+      case 'Leakage of Secret or Top Secret Data':
+        return _t(
+          'Leakage of Secret or Top Secret Data',
+          'تسرّب بيانات سرية أو للغاية سرية',
+        );
+      case 'Others':
+        return _t('Others', 'أخرى');
+      default:
+        return en;
+    }
+  }
+
+  String securityThreatThreatType(String en) {
+    switch (en) {
+      case 'Malware Threat':
+        return _t('Malware Threat', 'تهديد برمجيات خبيثة');
+      case 'Email Threat':
+        return _t('Email Threat', 'تهديد عبر البريد');
+      case 'Identity & Access Threat':
+        return _t('Identity & Access Threat', 'تهديد الهوية والوصول');
+      case 'Application & System Threat':
+        return _t('Application & System Threat', 'تهديد التطبيقات والأنظمة');
+      case 'Others':
+        return _t('Others', 'أخرى');
+      default:
+        return en;
+    }
+  }
+
+  String securityThreatPriority(String en) {
+    switch (en) {
+      case 'P1-Very Low':
+        return _t('P1-Very Low', 'P1-منخفض جداً');
+      case 'P2-Low':
+        return _t('P2-Low', 'P2-منخفض');
+      case 'P3-Moderate':
+        return _t('P3-Moderate', 'P3-متوسط');
+      case 'P4-High':
+        return _t('P4-High', 'P4-مرتفع');
+      case 'P5-Very High':
+        return _t('P5-Very High', 'P5-مرتفع جداً');
+      default:
+        return en;
+    }
+  }
+
+  String get securityThreatFormDeptPlaceholder =>
+      _t('Select Department', 'اختر القسم');
+
+  String get securityThreatFormContactPlaceholder =>
+      _t('Enter Contact Number', 'أدخل رقم الاتصال');
+
+  String get securityThreatFormTicketPlaceholder => _t(
+    'Enter request title (min 5, max 250 characters)',
+    'أدخل عنوان الطلب (5 أحرف كحد أدنى، 250 كحد أقصى)',
+  );
+
+  String get securityThreatFormOtherDetailsPlaceholder => _t(
+    'Enter Details (min 5, max 250 characters)',
+    'أدخل التفاصيل (5 أحرف كحد أدنى، 250 كحد أقصى)',
+  );
+
+  String get securityThreatFormSelectTypeIncidentDetected =>
+      _t('Select Type of Incident Detected', 'اختر نوع الحادث المكتشف');
+
+  String get securityThreatFormDescriptionPlaceholder => _t(
+    'Write here (min 3, max 250 characters)',
+    'اكتب هنا (3 أحرف كحد أدنى، 250 كحد أقصى)',
+  );
+
+  String get securityThreatFormPrioritiesLabel => _t('Priorities', 'الأولويات');
+
+  String get securityThreatFormDescLabel =>
+      _t('Description / Additional Notes', 'الوصف / ملاحظات إضافية');
+
+  String get securityThreatFormSelectPriority =>
+      _t('Select Priority', 'اختر الأولوية');
 
   String get reportSecurityThreat =>
       _t('Report Security Threat', 'الإبلاغ عن تهديد أمني');
@@ -291,6 +522,51 @@ class DashboardL10n {
 
       case 'description':
         return _t('Description', 'الوصف');
+
+      case 'Approval Status':
+        return _t('Approval Status', 'حالة الموافقة');
+
+      case 'Department':
+        return _t('Department', 'القسم');
+
+      case 'Section':
+        return _t('Section', 'الشعبة');
+
+      case 'Approver Name':
+        return _t('Approver Name', 'اسم المعتمد');
+
+      case 'Approver Email':
+        return _t('Approver Email', 'البريد الإلكتروني للمعتمد');
+
+      case 'Contact Number':
+        return _t('Contact Number', 'رقم الاتصال');
+
+      case 'Service Type':
+        return _t('Service Type', 'نوع الخدمة');
+
+      case 'Sub Service Type':
+        return _t('Sub Service Type', 'نوع الخدمة الفرعي');
+
+      case 'Ticket Name':
+        return _t('Ticket Name', 'اسم التذكرة');
+
+      case 'Source of Incident Detected':
+        return _t('Source of Incident Detected', 'مصدر الحادث المكتشف');
+
+      case 'Type Of Threat':
+        return _t('Type Of Threat', 'نوع التهديد');
+
+      case 'Type of Incident Detected':
+        return _t('Type of Incident Detected', 'نوع الحادث المكتشف');
+
+      case 'Extension Number':
+        return _t('Extension Number', 'رقم التحويلة');
+
+      case 'Status Information':
+        return _t('Status Information', 'معلومات الحالة');
+
+      case 'Request Information':
+        return _t('Request Information', 'معلومات الطلب');
 
       default:
         return _formatKey(key);

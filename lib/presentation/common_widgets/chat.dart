@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 
 class CommentsCard extends StatelessWidget {
   final String from;
@@ -11,7 +12,7 @@ class CommentsCard extends StatelessWidget {
   final bool showButtons;
   final List<ChatMessageModel> entries;
   final TextEditingController controller;
-final Future<void> Function()? onSend;
+  final Future<void> Function()? onSend;
   final List<Map<String, dynamic>> attachments;
 
   final VoidCallback? onAttach;
@@ -26,7 +27,9 @@ final Future<void> Function()? onSend;
   final Future<void> Function()? onComplete;
 
   final ActionButtonsType actionType;
-  final bool buttonsDisabled; // ✅ NEW
+  final bool buttonsDisabled;
+
+  final DashboardL10n? l10n;
 
   const CommentsCard({
     super.key,
@@ -45,10 +48,11 @@ final Future<void> Function()? onSend;
     this.onReassign,
     this.onApprove,
     this.onReplace,
-    this.buttonsDisabled = false, // ✅ NEW
+    this.buttonsDisabled = false,
     required this.attachments,
     this.onInProgress,
     this.onComplete,
+    this.l10n,
   });
 
   @override
@@ -75,7 +79,8 @@ final Future<void> Function()? onSend;
                 const Icon(Icons.history, size: 20, color: Colors.black87),
                 const SizedBox(width: 8),
                 Text(
-                  "Comments / Routing Overview",
+                  l10n?.commentsRoutingOverviewTitle ??
+                      'Comments / Routing Overview',
                   style: TextStyle(
                     fontSize: theme.fontSizes.s16,
                     fontWeight: FontWeight.bold,
@@ -92,10 +97,10 @@ final Future<void> Function()? onSend;
             SizedBox(
               height: 320,
               child: entries.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        "No comments yet",
-                        style: TextStyle(color: Colors.black38),
+                        l10n?.noCommentsYet ?? 'No comments yet',
+                        style: const TextStyle(color: Colors.black38),
                       ),
                     )
                   : ListView.separated(
@@ -103,7 +108,7 @@ final Future<void> Function()? onSend;
                       padding: const EdgeInsets.only(bottom: 12),
                       separatorBuilder: (_, __) => const SizedBox(height: 6),
                       itemBuilder: (_, index) =>
-                          CommentEntry(data: entries[index]),
+                          CommentEntry(data: entries[index], l10n: l10n),
                     ),
             ),
 
@@ -129,6 +134,8 @@ final Future<void> Function()? onSend;
               buttonsDisabled: buttonsDisabled,
               onInProgress: onInProgress,
               onComplete: onComplete,
+              commentHint: l10n?.routingAddCommentHint,
+              needMoreInfoLabel: l10n?.needMoreInfo,
             ),
           ],
         ),

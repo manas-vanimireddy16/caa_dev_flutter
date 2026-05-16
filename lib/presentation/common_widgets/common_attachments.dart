@@ -1,16 +1,24 @@
-import 'package:flutter/material.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:flutter/material.dart';
 
 class CommonAttachmentsTabContent extends StatelessWidget {
   final List<AttachmentModel> attachments;
+  final DashboardL10n? l10n;
 
-  const CommonAttachmentsTabContent({super.key, required this.attachments});
+  const CommonAttachmentsTabContent({
+    super.key,
+    required this.attachments,
+    this.l10n,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (attachments.isEmpty) {
-      return const Center(child: Text("No attachments available"));
+      return Center(
+        child: Text(l10n?.noAttachmentsAvailable ?? 'No attachments available'),
+      );
     }
 
     return Card(
@@ -49,7 +57,7 @@ class CommonAttachmentsTabContent extends StatelessWidget {
         leading: const Icon(Icons.attach_file, color: Colors.grey),
 
         title: Text(
-          file.fileName ?? "Unknown File",
+          file.fileName ?? (l10n?.attachmentUnknownFile ?? 'Unknown File'),
           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
         ),
 
@@ -58,19 +66,24 @@ class CommonAttachmentsTabContent extends StatelessWidget {
           children: [
             if (file.fileSize != null)
               Text(
-                "Size: ${file.fileSize}",
+                l10n?.attachmentSizeLine(file.fileSize.toString()) ??
+                    'Size: ${file.fileSize}',
                 style: const TextStyle(fontSize: 12),
               ),
 
             if (file.user != null)
               Text(
-                "Uploaded by: ${file.user?.employeeName}",
+                l10n?.attachmentUploadedByLine(
+                      file.user?.employeeName ?? '',
+                    ) ??
+                    'Uploaded by: ${file.user?.employeeName}',
                 style: const TextStyle(fontSize: 12, color: Colors.black54),
               ),
 
             if (file.createdAt != null)
               Text(
-                "Uploaded at: ${file.createdAt}",
+                l10n?.attachmentUploadedAtLine(file.createdAt.toString()) ??
+                    'Uploaded at: ${file.createdAt}',
                 style: const TextStyle(fontSize: 12, color: Colors.black45),
               ),
           ],

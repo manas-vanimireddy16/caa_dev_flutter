@@ -40,9 +40,8 @@ class _SecurityThreatNewRequestScreenState
 
   @override
   Widget build(BuildContext context) {
-    /// Watch state only if needed
-    final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -54,9 +53,9 @@ class _SecurityThreatNewRequestScreenState
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: 'New Request',
+          title: l10n.newRequest,
           stepTitles: const [''],
-          steps: [controller.securityThreatRequestFields],
+          steps: [controller.buildSecurityThreatRequestFields(l10n)],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

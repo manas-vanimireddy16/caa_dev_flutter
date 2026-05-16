@@ -161,15 +161,22 @@ class RadioFieldWidget extends ConsumerWidget {
               isRequired: field.required,
 
               options: field.options!
-                  .map(
-                    (opt) => KRadioOption<String>(
-                      value: opt.toString(),
-                      label: opt.toString(),
-                      isDisabled: disabledOptions.contains(
-                        opt.toString(),
-                      ), // ✅ KEY
-                    ),
-                  )
+                  .map((opt) {
+                    if (opt is DropdownOption) {
+                      final v = opt.value;
+                      return KRadioOption<String>(
+                        value: v.toString(),
+                        label: opt.label,
+                        isDisabled: disabledOptions.contains(v.toString()),
+                      );
+                    }
+                    final s = opt.toString();
+                    return KRadioOption<String>(
+                      value: s,
+                      label: s,
+                      isDisabled: disabledOptions.contains(s),
+                    );
+                  })
                   .toList(),
 
               selectedValue: effectiveValue,

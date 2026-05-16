@@ -20,6 +20,12 @@ class CommonRequestDetails extends StatelessWidget {
   final Map<String, String>? technicalInfo;
   final Map<String, String>? coverageInfo;
 
+  final String? coverageInformationTitle;
+  final String? statusInformationTitle;
+  final String? requestInformationTitle;
+  final String? technicalInformationTitle;
+  final String Function(String key)? requestDetailsLabelBuilder;
+
   const CommonRequestDetails({
     super.key,
     this.allowanceEmployees,
@@ -31,6 +37,11 @@ class CommonRequestDetails extends StatelessWidget {
     this.goals,
     this.showGoalsSection = false,
     this.table,
+    this.coverageInformationTitle,
+    this.statusInformationTitle,
+    this.requestInformationTitle,
+    this.technicalInformationTitle,
+    this.requestDetailsLabelBuilder,
   });
 
   @override
@@ -39,21 +50,30 @@ class CommonRequestDetails extends StatelessWidget {
       children: [
         /// -------- Coverage --------
         if (coverageInfo != null) ...[
-          CardInfo(title: "Coverage Information", info: coverageInfo!),
+          CardInfo(
+            title: coverageInformationTitle ?? "Coverage Information",
+            info: coverageInfo!,
+            requestDetailsBuilder: requestDetailsLabelBuilder,
+          ),
           6.toVerticalSizedBox,
         ],
 
         /// -------- Status --------
         if (statusInfo != null) ...[
-          CardInfo(title: "Status Information", info: statusInfo!),
+          CardInfo(
+            title: statusInformationTitle ?? "Status Information",
+            info: statusInfo!,
+            requestDetailsBuilder: requestDetailsLabelBuilder,
+          ),
           6.toVerticalSizedBox,
         ],
 
         /// -------- Request --------
         if (requestInfo != null) ...[
           CardInfo(
-            title: "Request Information",
+            title: requestInformationTitle ?? "Request Information",
             info: requestInfo!,
+            requestDetailsBuilder: requestDetailsLabelBuilder,
             customContent: table != null
                 ? RequestDetailTableRenderer(
                     table:
@@ -73,7 +93,11 @@ class CommonRequestDetails extends StatelessWidget {
 
         /// -------- Technical --------
         if (technicalInfo != null) ...[
-          CardInfo(title: "Technical Details", info: technicalInfo!),
+          CardInfo(
+            title: technicalInformationTitle ?? "Technical Details",
+            info: technicalInfo!,
+            requestDetailsBuilder: requestDetailsLabelBuilder,
+          ),
         ],
       ],
     );
