@@ -365,8 +365,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails.request;
     final incidents = request?.typeOfIncidentDetected ?? [];
-    final incidentStr =
-        incidents.isEmpty ? 'N/A' : incidents.join(', ');
+    final incidentStr = incidents.isEmpty ? 'N/A' : incidents.join(', ');
 
     final threatStr = getThreatType(request?.typeOfThreat ?? 0);
 
@@ -483,6 +482,20 @@ class _VSController extends StateNotifier<_ViewState> {
       return state.threatTypes[index - 1];
     }
     return '';
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
   }
 
   final securityThreatInstance = SecurityThreatRepository();
@@ -1795,7 +1808,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (response['status'] == 'success') {
-        Future.delayed(const Duration(seconds: 3));
+        Future.delayed(const Duration(seconds: 1));
         _refreshDashboard();
       }
     } catch (e, st) {

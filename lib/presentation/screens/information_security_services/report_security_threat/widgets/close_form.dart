@@ -297,9 +297,27 @@ class _ApproveRequestDialogWidgetState
               ),
 
               const SizedBox(height: 20),
+              RichText(
+                text: TextSpan(
+                  text: l10n.securyThreatAction,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                  children: const [
+                    TextSpan(
+                      text: ' *',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                ),
+              ),
 
               /// ================= IDENTIFICATION =================
-              buildMandatoryLabel(l10n.securityThreatCloseFormIdentificationLabel),
+              buildMandatoryLabel(
+                l10n.securityThreatCloseFormIdentificationLabel,
+              ),
 
               const SizedBox(height: 6),
 
@@ -382,7 +400,9 @@ class _ApproveRequestDialogWidgetState
               const SizedBox(height: 20),
 
               /// ================= OTHER =================
-              buildNormalLabel(l10n.securityThreatCloseFormOtherMitigationLabel),
+              buildNormalLabel(
+                l10n.securityThreatCloseFormOtherMitigationLabel,
+              ),
 
               const SizedBox(height: 6),
 

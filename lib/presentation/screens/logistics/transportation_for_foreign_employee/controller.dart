@@ -788,6 +788,20 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
+  }
+
   String _buildDepartmentSection(Map<String, String> approverMap) {
     final department = approverMap['department'];
     final section = approverMap['section'];
@@ -2150,7 +2164,7 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> submitProjectApprovalRequest(
+  Future<bool> submitProjectApprovalRequest(
     int serviceId,
     int subServiceId,
     Map<String, dynamic> values,
@@ -2162,7 +2176,6 @@ class _VSController extends StateNotifier<_ViewState> {
         serviceId,
         subServiceId,
         values,
-        // state.hrTasks,
       );
 
       debugPrint("✅ Final Payload: $payload");
@@ -2171,11 +2184,16 @@ class _VSController extends StateNotifier<_ViewState> {
           .foreignEmployeeVehicleCreateRequest(payload);
 
       if (response['status'] == 'success') {
-        Future.delayed(const Duration(seconds: 3));
-        _refreshDashboard();
+        await Future.wait([
+          _refreshDashboard(),
+          Future<void>.delayed(const Duration(milliseconds: 2500)),
+        ]);
+        return true;
       }
+      return false;
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
+      return false;
     } finally {
       state = state.copyWith(isLoading: false);
     }

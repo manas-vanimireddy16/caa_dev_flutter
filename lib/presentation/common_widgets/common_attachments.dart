@@ -73,9 +73,7 @@ class CommonAttachmentsTabContent extends StatelessWidget {
 
             if (file.user != null)
               Text(
-                l10n?.attachmentUploadedByLine(
-                      file.user?.employeeName ?? '',
-                    ) ??
+                l10n?.attachmentUploadedByLine(file.user?.employeeName ?? '') ??
                     'Uploaded by: ${file.user?.employeeName}',
                 style: const TextStyle(fontSize: 12, color: Colors.black54),
               ),

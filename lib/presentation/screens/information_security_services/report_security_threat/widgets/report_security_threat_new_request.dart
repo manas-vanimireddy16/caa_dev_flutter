@@ -28,14 +28,10 @@ class _SecurityThreatNewRequestScreenState
   void initState() {
     super.initState();
 
-    /// ✅ Create provider params ONCE
     _providerArgs = _VSControllerParams(
       service: widget.service,
       subService: widget.subService,
     );
-    // Future.microtask(() {
-    //   ref.read(_vsProvider(_providerArgs).notifier).initialize();
-    // });
   }
 
   @override
@@ -45,9 +41,6 @@ class _SecurityThreatNewRequestScreenState
 
     return KScaffold(
       backgroundColor: Colors.white,
-      // appBar: KAppBar(title: Text('Mission Transfer Request')),
-
-      /// ✅ DynamicForm MUST be root-level in a screen
       body: ProviderScope(
         overrides: [
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
@@ -56,20 +49,17 @@ class _SecurityThreatNewRequestScreenState
           title: l10n.newRequest,
           stepTitles: const [''],
           steps: [controller.buildSecurityThreatRequestFields(l10n)],
-
-          /// ⭐ VERY IMPORTANT
-          // enableSubmitWhen: (values) {
-          //   return state.hrTasks.isNotEmpty;
-          // },
           onSubmit: (values) async {
-            await controller.submitSecurityThreatRequest(
+            final success = await controller.submitSecurityThreatRequest(
               widget.serviceId,
               widget.subServiceId,
               values,
             );
 
             if (context.mounted) {
-              context.router.pop();
+              // Future.delayed(const Duration(seconds: 1), () {
+              KAppX.router.pop();
+              // });
             }
           },
         ),

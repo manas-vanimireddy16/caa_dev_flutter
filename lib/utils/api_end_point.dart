@@ -3,6 +3,8 @@ class ApiEndPoint {
 
   ///upload files
   static const String uploadFiles = '/v1/user-service/upload';
+  static const String downloadFiles = '/v1/user-service/download';
+
   static const String caaDrupal = '/api/caa-drupal';
 
   /// authentication
@@ -3780,11 +3782,11 @@ class ApiEndPoint {
 
   /// Send chat
   static String foreignEmployeeVehicleSendChatById(int requestId) =>
-      '/v1/it-service/logistics/foreign-vehicle-request/$requestId/chat';
+      '/v1/it-service/logistics/request/$requestId/chat';
 
   /// Get chats
   static String foreignEmployeeVehicleChatsById(int requestId) =>
-      '/v1/it-service/logistics/foreign-vehicle-request/$requestId/chats';
+      '/v1/it-service/logistics/request/$requestId/chats';
 
   /// Update chat
   static String foreignEmployeeVehicleUpdateChat(int chatId) =>
@@ -3798,11 +3800,11 @@ class ApiEndPoint {
 
   /// Add attachment
   static String foreignEmployeeVehicleSendAttachmentById(int requestId) =>
-      '/v1/it-service/logistics/foreign-vehicle-request/$requestId/attachment';
+      '/v1/it-service/logistics/request/$requestId/attachment';
 
   /// Get attachments
   static String foreignEmployeeVehicleAttachmentsById(int requestId) =>
-      '/v1/it-service/logistics/foreign-vehicle-request/$requestId/attachments';
+      '/v1/it-service/logistics/request/$requestId/attachments';
 
   /// Update attachment
   static String foreignEmployeeVehicleUpdateAttachment(int attachmentId) =>

@@ -49,6 +49,8 @@ class DashboardL10n {
 
   String get routingHistoryTabLabel => _t('Routing History', 'سجل التوجيه');
 
+  String get requestHistoryTabLabel => _t('Request History', 'سجل الطلب');
+
   String get attachmentsTabLabel => _t('Attachments', 'المرفقات');
 
   String get workFlowTabLabel => _t('Work Flow', 'مسار العمل ');
@@ -276,6 +278,24 @@ class DashboardL10n {
 
   String get transportFormSubmit => _t('SUBMIT', 'إرسال');
 
+  String get employeeInformationTitle =>
+      _t('Employee Information', 'معلومات الموظف');
+
+  String get fileListTitle => _t('File List', 'قائمة الملفات');
+
+  String get documentNameLabel => _t('Document Name', 'اسم المستند');
+
+  String get fileTypeLabel => _t('File type', 'نوع الملف');
+
+  String get uploadedDateLabel => _t('Uploaded Date', 'تاريخ الرفع');
+
+  String get viewButtonLabel => _t('View', 'عرض');
+
+  String get downloadButtonLabel => _t('Download', 'تحميل');
+
+  String get submittingRequest =>
+      _t('Submitting request…', 'جاري إرسال الطلب…');
+
   String transportRequestTypeOption(String en) {
     switch (en) {
       case 'New Request':
@@ -479,6 +499,7 @@ class DashboardL10n {
 
   String get securityThreatCloseFormHeadInfra =>
       _t('Head of Infrastructure', 'رئيس البنية التحتية');
+  String get securyThreatAction => _t('Action', 'الإجراء');
 
   String get securityThreatCloseFormIdentificationLabel =>
       _t('Identification Measures', 'تدابير التحديد');
@@ -829,25 +850,37 @@ class DashboardL10n {
         return _t('Extension Number', 'رقم المحول');
 
       case 'Purpose of Travel':
-        return _t('Purpose of Travel', 'غرض السفر');
+        return _t('Purpose of Travel', 'الغرض من السفر');
 
       case 'No of Passengers':
         return _t('No of Passengers', 'عدد الركاب');
 
       case 'Arrival/Departure Date & Time':
-        return _t(
-          'Arrival/Departure Date & Time',
-          'تاريخ ووقت الوصول / المغادرة',
-        );
+        return _t('Arrival/Departure Date & Time', 'تاريخ الوصول / المغادرة');
 
       case 'Vehicle Required Location':
-        return _t('Vehicle Required Location', 'موقع الحاجة للمركبة');
+        return _t('Vehicle Required Location', 'المركبة مطلوبة');
 
       case 'Vehicle Location':
         return _t('Vehicle Location', 'موقع المركبة');
 
       case 'Requested Date':
         return _t('Requested Date', 'تاريخ الطلب');
+
+      case 'Request Id':
+        return _t('Request Id', 'رقم الطلب');
+
+      case 'Employee ID':
+        return _t('Employee ID', 'رقم الموظف');
+
+      case 'Job Title / Designation':
+        return _t('Job Title / Designation', 'المسمى الوظيفي / التعيين');
+
+      case 'Email Address':
+        return _t('Email Address', 'البريد الإلكتروني');
+
+      case 'Assigned To':
+        return _t('Assigned To', 'معين إلى');
 
       case 'Description':
         return _t('Description', 'الوصف');

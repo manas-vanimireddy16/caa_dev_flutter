@@ -67,6 +67,8 @@ class _LogisticsForeignRequestDetailsTabScreenState
           //     ? null
           //     : state.requestDetails;
           final request = state.requestDetails.request;
+          final createdByUser =
+              request?.createdByUser ?? state.requestDetails.createdByUser;
           final requestId = request?.id;
           final List<AttachmentModel> attachments = state.attachmentsById;
           final chats = state.chatById;
@@ -100,7 +102,15 @@ class _LogisticsForeignRequestDetailsTabScreenState
                 const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
-                if (selectedTab == 0)
+                if (selectedTab == 0) ...[
+                  EmployeeInformationCard(
+                    l10n: l10n,
+                    requestId: requestId?.toString(),
+                    status: request?.status,
+                    assignedTo: controller.buildAssignedToLabel(approvals),
+                    user: createdByUser,
+                    labelBuilder: l10n.requestDetailsLabel,
+                  ),
                   CommonRequestDetails(
                     statusInformationTitle:
                         l10n.requestDetailsLabel('Status Information'),
@@ -111,7 +121,8 @@ class _LogisticsForeignRequestDetailsTabScreenState
                     statusInfo: controller.buildStatusInformation(),
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
-                  )
+                  ),
+                ]
                 else if (selectedTab == 1)
                   CommentsCard(
                     from: widget.from,
@@ -162,7 +173,10 @@ class _LogisticsForeignRequestDetailsTabScreenState
                     },
                   )
                 else if (selectedTab == 2)
-                  CommonAttachmentsTabContent(attachments: attachments)
+                  CommonAttachmentsTabContent(
+                    attachments: attachments,
+                    l10n: l10n,
+                  )
                 else if (selectedTab == 3)
                   RequestWorkflowTimeline(details: state.requestDetails),
               ],
