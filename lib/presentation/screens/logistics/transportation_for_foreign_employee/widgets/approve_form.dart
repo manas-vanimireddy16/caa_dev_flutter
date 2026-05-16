@@ -218,14 +218,8 @@ class _ApproveRequestDialogWidgetState
                 ),
               ),
               items: [
-                DropdownMenuItem(
-                  value: 'Yes',
-                  child: Text(l10n.transportYes),
-                ),
-                DropdownMenuItem(
-                  value: 'No',
-                  child: Text(l10n.transportNo),
-                ),
+                DropdownMenuItem(value: 'Yes', child: Text(l10n.transportYes)),
+                DropdownMenuItem(value: 'No', child: Text(l10n.transportNo)),
               ],
               onChanged: isSubmitting
                   ? null

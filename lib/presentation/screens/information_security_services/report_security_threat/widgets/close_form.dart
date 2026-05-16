@@ -313,10 +313,11 @@ class _ApproveRequestDialogWidgetState
                   ],
                 ),
               ),
+              const SizedBox(height: 12),
 
               /// ================= IDENTIFICATION =================
               buildMandatoryLabel(
-                l10n.securityThreatCloseFormIdentificationLabel,
+                l10n.securityThreatCloseFormOtherMitigationHint,
               ),
 
               const SizedBox(height: 6),
@@ -386,14 +387,14 @@ class _ApproveRequestDialogWidgetState
               const SizedBox(height: 20),
 
               /// ================= RECOVERY =================
-              buildMandatoryLabel(l10n.securityThreatCloseFormRecoveryLabel),
+              /// ================= RECOVERY =================
+              buildNormalLabel(l10n.securityThreatCloseFormRecoveryLabel),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: recoveryMeasuresController,
                 hint: l10n.securityThreatCloseFormRecoveryHint,
-                requiredField: true,
                 l10n: l10n,
               ),
 
@@ -408,7 +409,7 @@ class _ApproveRequestDialogWidgetState
 
               buildTextField(
                 controller: otherMitigationMeasuresController,
-                hint: l10n.securityThreatCloseFormOtherMitigationHint,
+                hint: l10n.securityThreatCloseMitigation,
                 l10n: l10n,
               ),
 

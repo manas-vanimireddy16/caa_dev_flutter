@@ -132,6 +132,7 @@ class _LogisticsForeignRequestDetailsTabScreenState
                     controller: controller.chatController,
                     buttonsDisabled: state.isButtonDisabled,
                     attachments: state.attachments,
+                    l10n: l10n,
                     onAttach: () async {
                       await controller.pickFile();
                     },
@@ -178,7 +179,10 @@ class _LogisticsForeignRequestDetailsTabScreenState
                     l10n: l10n,
                   )
                 else if (selectedTab == 3)
-                  RequestWorkflowTimeline(details: state.requestDetails),
+                  RequestWorkflowTimeline(
+                    details: state.requestDetails,
+                    l10n: l10n,
+                  ),
               ],
             ),
           );
