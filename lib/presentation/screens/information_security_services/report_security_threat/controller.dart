@@ -357,84 +357,74 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
-  String _na(DashboardL10n? l10n) => l10n?.notAvailableValue() ?? 'N/A';
-
-  String _detailStr(String? v, DashboardL10n? l10n) {
-    if (v == null || v.isEmpty) return _na(l10n);
+  String _detailStr(String? v) {
+    if (v == null || v.isEmpty) return 'N/A';
     return v;
   }
 
-  Map<String, String> buildRequestInformationData([DashboardL10n? l10n]) {
+  Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails.request;
     final incidents = request?.typeOfIncidentDetected ?? [];
-    final incidentSep = l10n?.isArabic == true ? '، ' : ', ';
-    final incidentStr = incidents.isEmpty
-        ? _na(l10n)
-        : l10n == null
-        ? incidents.join(', ')
-        : incidents.map(l10n.securityThreatIncidentType).join(incidentSep);
+    final incidentStr =
+        incidents.isEmpty ? 'N/A' : incidents.join(', ');
 
-    final threatEn = getThreatType(request?.typeOfThreat ?? 0);
-    final threatStr = threatEn.isEmpty
-        ? _na(l10n)
-        : (l10n?.securityThreatThreatType(threatEn) ?? threatEn);
-
-    final priorityRaw = request?.priority ?? '';
-    final priorityStr = priorityRaw.isEmpty
-        ? _na(l10n)
-        : (l10n?.securityThreatPriority(priorityRaw) ?? priorityRaw);
-
-    final sourceRaw = request?.sourceOfIncident;
-    final sourceStr = (sourceRaw == null || sourceRaw.isEmpty)
-        ? _na(l10n)
-        : (l10n?.securityThreatSourceOfIncident(sourceRaw) ?? sourceRaw);
+    final threatStr = getThreatType(request?.typeOfThreat ?? 0);
 
     return {
-      "Service Type": _detailStr(request?.service?.name, l10n),
-      "Sub Service Type": _detailStr(request?.subService?.subServiceName, l10n),
-      "Ticket Name": _detailStr(request?.ticketName, l10n),
-      'Source of Incident Detected': sourceStr,
-      'Type Of Threat': threatStr,
-      'Priority': priorityStr,
-      'Description': _detailStr(request?.description, l10n),
+      "Service Type": _detailStr(request?.service?.name),
+      "Sub Service Type": _detailStr(request?.subService?.subServiceName),
+      "Ticket Name": _detailStr(request?.ticketName),
+      'Source of Incident': _detailStr(request?.sourceOfIncident),
+      'Type Of Threat': threatStr.isEmpty ? 'N/A' : threatStr,
+      'Priority': _detailStr(request?.priority),
+      'Description': _detailStr(request?.description),
       'Type of Incident Detected': incidentStr,
+      if (request?.eradicationMitigationMeasures != null)
+        'Eradication/Mitigation Measures': _detailStr(
+          request?.eradicationMitigationMeasures,
+        ),
+      if (request?.eradicationMitigationMeasures != null)
+        'Incident Notification in CAA': _detailStr(
+          request?.eradicationMitigationMeasures,
+        ),
+      if (request?.evidenceCollected != null)
+        'Evidence Collected': _detailStr(request?.evidenceCollected),
+      if (request?.evidenceCollected != null)
+        'Evidence Collected (system logs, audit logs, Png, etc.):': _detailStr(
+          request?.evidenceCollected,
+        ),
+      if (request?.identificationMeasures != null)
+        'Identification Measures (Incident Verified, Assessed, Options Evaluated, Containment Measures):':
+            _detailStr(request?.identificationMeasures),
+      if (request?.otherMitigationMeasures != null)
+        'Other Mitigation Measures:': _detailStr(
+          request?.otherMitigationMeasures,
+        ),
     };
   }
 
-  Map<String, String> buildStatusInformation([DashboardL10n? l10n]) {
+  Map<String, String> buildStatusInformation() {
     final request = state.requestDetails.request;
     final approvals = state.requestDetails.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
 
-    final statusRaw = request?.status;
-    final statusStr = statusRaw == null || statusRaw.isEmpty
-        ? _na(l10n)
-        : (l10n?.detailApprovalStatus(statusRaw) ?? statusRaw);
-
-    final created = request?.createdAt;
-    final dateStr = created == null || created.isEmpty
-        ? _na(l10n)
-        : (l10n?.formatDetailDate(created) ?? formatDate(created));
-
     return {
-      "Approval Status": statusStr,
-      "Requested Date": dateStr,
+      "Approval Status": _detailStr(request?.status),
+      "Requested Date": formatDate(request?.createdAt ?? 'N/A'),
       if (nextApprover.containsKey('department'))
         'Department': nextApprover['department']!,
       if (nextApprover.containsKey('section'))
         'Section': nextApprover['section']!,
-
       if (nextApprover.containsKey('name'))
-        'Approver Name': nextApprover['name']!,
-      if (nextApprover.containsKey('email'))
-        'Approver Email': nextApprover['email']!,
+        'Assigned To': nextApprover['name']!,
+      if (nextApprover.containsKey('email')) 'Approver': nextApprover['email']!,
     };
   }
 
-  Map<String, String> buildTechnicalInformation([DashboardL10n? l10n]) {
+  Map<String, String> buildTechnicalInformation() {
     final request = state.requestDetails.request;
     final ext = request?.createdByUser?.extensionNumber.toString() ?? '0';
-    return {'Extension Number': ext.isEmpty ? _na(l10n) : ext};
+    return {'Extension Number': ext.isEmpty ? 'N/A' : ext};
   }
 
   String _buildDepartmentSection(Map<String, String> approverMap) {
@@ -535,6 +525,13 @@ class _VSController extends StateNotifier<_ViewState> {
         type: FieldType.text,
         required: true,
         placeholder: l10n.securityThreatFormTicketPlaceholder,
+        validator: (value, values) {
+          if (value.isEmpty) return null;
+          if (value.length < 6) {
+            return l10n.securityThreatTicketNameHint;
+          }
+          return null;
+        },
       ),
 
       /// ================= SOURCE OF INCIDENT =================

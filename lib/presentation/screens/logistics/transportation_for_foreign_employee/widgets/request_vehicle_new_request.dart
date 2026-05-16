@@ -28,44 +28,67 @@ class _LogisticsPassengersVehicleRequestScreenState
   void initState() {
     super.initState();
 
-    /// ✅ Create provider params ONCE
     _providerArgs = _VSControllerParams(
       service: widget.service,
       subService: widget.subService,
     );
-    // Future.microtask(() {
-    //   ref.read(_vsProvider(_providerArgs).notifier).initialize();
-    // });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(_vsProvider(_providerArgs).notifier).clearPassengerNames();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    /// Watch state only if needed
-    final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      // appBar: KAppBar(title: Text('Mission Transfer Request')),
 
-      /// ✅ DynamicForm MUST be root-level in a screen
       body: ProviderScope(
         overrides: [
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: 'Performance Management',
-          stepTitles: const ['step 1', 'step 2'],
+          title: l10n.transportForeignEmployeeNewRequest,
+          stepTitles: [
+            l10n.transportFormStepPassengers,
+            l10n.transportFormStepTripDetails,
+          ],
           steps: [
-            controller.transportationRequestFields2,
-
-            controller.transportationRequestFields,
+            controller.buildTransportationRequestFields2(l10n),
+            controller.buildTransportationRequestFields(l10n),
           ],
 
-          /// ⭐ VERY IMPORTANT
-          // enableSubmitWhen: (values) {
-          //   return state.hrTasks.isNotEmpty;
-          // },
+          canProceedFromStep: (ref, step, values) {
+            if (step != 0) return true;
+
+            ref.watch(
+              _vsProvider(_providerArgs).select((s) => s.passengerNames),
+            );
+
+            final count =
+                int.tryParse(values['no_of_passengers']?.toString() ?? '0') ??
+                    0;
+            if (count <= 0) return false;
+
+            final contact =
+                values['contact_number']?.toString().trim() ?? '';
+            if (contact.length != 8) return false;
+
+            final vsState = ref.read(_vsProvider(_providerArgs));
+            final names = vsState.passengerNames;
+            if (names.length != count) return false;
+
+            for (final n in names) {
+              final trimmed = n.trim();
+              if (trimmed.isEmpty || trimmed.length <= 2) return false;
+            }
+            return true;
+          },
+
           onSubmit: (values) async {
             await controller.submitProjectApprovalRequest(
               widget.serviceId,

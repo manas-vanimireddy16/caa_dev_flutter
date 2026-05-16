@@ -1,12 +1,5 @@
 import 'dart:io';
-import 'package:code_setup/presentation/common_widgets/show_toast.dart';
-import 'package:code_setup/presentation/models/file_upload_model.dart';
-import 'package:code_setup/repository/authentication/domain.dart';
-import 'package:code_setup/utils/app_extensions/app_extension.dart';
-import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
-import 'dart:io';
+
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/models/file_upload_model.dart';
 import 'package:code_setup/repository/authentication/domain.dart';
@@ -26,6 +19,10 @@ class FileUploadWidget extends StatefulWidget {
   /// ✅ FROM STATE (IMPORTANT)
   final List<FileUploadItem> existingFiles;
 
+  /// Section heading above the upload box (e.g. dynamic form field label).
+  /// When null, defaults to "Attachments".
+  final String? title;
+
   const FileUploadWidget({
     Key? key,
     this.onUploadSuccess,
@@ -34,6 +31,7 @@ class FileUploadWidget extends StatefulWidget {
     this.maxFileSizeInMB = 10,
     this.existingFiles = const [],
     this.allowedExtensions = const ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],
+    this.title,
   }) : super(key: key);
 
   @override
@@ -157,7 +155,9 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
-            "Attachments",
+            widget.title?.trim().isNotEmpty == true
+                ? widget.title!.trim()
+                : 'Attachments',
             style: TextStyle(
               fontWeight: currentTheme.fontWeights.wBold,
               fontSize: currentTheme.fontSizes.s12,

@@ -313,7 +313,7 @@ class SettingsState {
       selectedRole: RoleDetail(),
       languageList: const [
         LanguageItem(code: 'en', name: 'English'),
-        LanguageItem(code: 'ar', name: 'Arabic'),
+        LanguageItem(code: 'ar', name: 'العربية'),
       ],
       selectedLanguage: null,
       isLoggingOut: false,

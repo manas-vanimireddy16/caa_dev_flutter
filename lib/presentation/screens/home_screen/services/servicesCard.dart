@@ -41,43 +41,52 @@ class CustomInfoCard extends StatelessWidget {
             children: [
               /// Header Row
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: iconColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(icon, color: iconColor),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: iconColor.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(icon, color: iconColor),
                   ),
-                  GestureDetector(
-                    onTap: onBookmarkToggle,
-                    child: Icon(
-                      isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                      color: isBookmarked ? Colors.blue : Colors.grey,
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          subtitle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  // Bookmark temporarily disabled.
+                  // GestureDetector(
+                  //   onTap: onBookmarkToggle,
+                  //   child: Icon(
+                  //     isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                  //     color: isBookmarked ? Colors.blue : Colors.grey,
+                  //   ),
+                  // ),
                 ],
-              ),
-
-              const SizedBox(height: 8),
-
-              Text(
-                subtitle,
-                style: const TextStyle(color: Colors.grey, fontSize: 13),
               ),
 
               const SizedBox(height: 8),

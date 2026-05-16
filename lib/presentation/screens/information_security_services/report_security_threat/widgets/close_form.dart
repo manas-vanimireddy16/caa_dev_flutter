@@ -178,6 +178,7 @@ class _ApproveRequestDialogWidgetState
   Widget buildTextField({
     required TextEditingController controller,
     required String hint,
+    required DashboardL10n l10n,
     bool requiredField = false,
   }) {
     return TextFormField(
@@ -190,7 +191,7 @@ class _ApproveRequestDialogWidgetState
       ),
       validator: (value) {
         if (requiredField && (value == null || value.trim().isEmpty)) {
-          return 'This field is required';
+          return l10n.securityThreatCloseFormFieldRequired;
         }
 
         return null;
@@ -200,6 +201,8 @@ class _ApproveRequestDialogWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = DashboardL10n.of(context);
+
     return Container(
       width: 750,
       padding: const EdgeInsets.all(24),
@@ -210,34 +213,37 @@ class _ApproveRequestDialogWidgetState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// ================= ACTION TEXT =================
-              const Text(
-                'Action Text',
+              Text(
+                l10n.securityThreatCloseFormActionTitle,
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
               ),
 
               const SizedBox(height: 20),
 
               /// ================= COMMENTS =================
-              buildNormalLabel('Comments (Optional)'),
+              buildNormalLabel(l10n.securityThreatCloseFormCommentsLabel),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: commentsController,
-                hint: 'Enter comments',
+                hint: l10n.securityThreatCloseFormCommentsHint,
+                l10n: l10n,
               ),
 
               const SizedBox(height: 20),
 
               /// ================= INCIDENT =================
-              buildMandatoryLabel('Incident Notification in CAA'),
+              buildMandatoryLabel(
+                l10n.securityThreatCloseFormIncidentNotificationLabel,
+              ),
 
               const SizedBox(height: 10),
 
               CheckboxListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Head of Information Security'),
+                title: Text(l10n.securityThreatCloseFormHeadInfoSec),
                 value: headInformationSecurity,
                 onChanged: (isClosed || isSubmitting)
                     ? null
@@ -251,7 +257,7 @@ class _ApproveRequestDialogWidgetState
               CheckboxListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Director of Information Technology'),
+                title: Text(l10n.securityThreatCloseFormDirectorIt),
                 value: directorIT,
                 onChanged: (isClosed || isSubmitting)
                     ? null
@@ -265,7 +271,7 @@ class _ApproveRequestDialogWidgetState
               CheckboxListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Legal Department'),
+                title: Text(l10n.securityThreatCloseFormLegalDept),
                 value: legalDepartment,
                 onChanged: (isClosed || isSubmitting)
                     ? null
@@ -279,7 +285,7 @@ class _ApproveRequestDialogWidgetState
               CheckboxListTile(
                 dense: true,
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Head of Infrastructure'),
+                title: Text(l10n.securityThreatCloseFormHeadInfra),
                 value: headInfrastructure,
                 onChanged: (isClosed || isSubmitting)
                     ? null
@@ -293,27 +299,29 @@ class _ApproveRequestDialogWidgetState
               const SizedBox(height: 20),
 
               /// ================= IDENTIFICATION =================
-              buildMandatoryLabel('Identification Measures'),
+              buildMandatoryLabel(l10n.securityThreatCloseFormIdentificationLabel),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: identificationMeasuresController,
-                hint: 'Enter identification measures',
+                hint: l10n.securityThreatCloseFormIdentificationHint,
                 requiredField: true,
+                l10n: l10n,
               ),
 
               const SizedBox(height: 20),
 
               /// ================= EVIDENCE =================
-              buildMandatoryLabel('Evidence Collected'),
+              buildMandatoryLabel(l10n.securityThreatCloseFormEvidenceLabel),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: evidenceCollectedController,
-                hint: 'Enter evidence collected',
+                hint: l10n.securityThreatCloseFormEvidenceHint,
                 requiredField: true,
+                l10n: l10n,
               ),
 
               const SizedBox(height: 12),
@@ -346,39 +354,42 @@ class _ApproveRequestDialogWidgetState
               const SizedBox(height: 20),
 
               /// ================= ERADICATION =================
-              buildMandatoryLabel('Eradication / Mitigation Measures'),
+              buildMandatoryLabel(l10n.securityThreatCloseFormEradicationLabel),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: eradicationMeasuresController,
-                hint: 'Enter mitigation measures',
+                hint: l10n.securityThreatCloseFormEradicationHint,
                 requiredField: true,
+                l10n: l10n,
               ),
 
               const SizedBox(height: 20),
 
               /// ================= RECOVERY =================
-              buildMandatoryLabel('Recovery Measures'),
+              buildMandatoryLabel(l10n.securityThreatCloseFormRecoveryLabel),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: recoveryMeasuresController,
-                hint: 'Enter recovery measures',
+                hint: l10n.securityThreatCloseFormRecoveryHint,
                 requiredField: true,
+                l10n: l10n,
               ),
 
               const SizedBox(height: 20),
 
               /// ================= OTHER =================
-              buildNormalLabel('Other Mitigation Measures'),
+              buildNormalLabel(l10n.securityThreatCloseFormOtherMitigationLabel),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: otherMitigationMeasuresController,
-                hint: 'Enter other mitigation measures',
+                hint: l10n.securityThreatCloseFormOtherMitigationHint,
+                l10n: l10n,
               ),
 
               const SizedBox(height: 30),
@@ -405,8 +416,8 @@ class _ApproveRequestDialogWidgetState
                           ),
                         ),
 
-                        child: const Text(
-                          'CANCEL',
+                        child: Text(
+                          l10n.securityThreatCloseFormCancel,
                           style: TextStyle(
                             color: Color(0xFF0D652D),
                             fontSize: 11,
@@ -442,8 +453,8 @@ class _ApproveRequestDialogWidgetState
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text(
-                                'SUBMIT',
+                            : Text(
+                                l10n.securityThreatCloseFormSubmit,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,

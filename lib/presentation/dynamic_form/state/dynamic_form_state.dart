@@ -167,6 +167,12 @@ class DynamicForm extends ConsumerStatefulWidget {
   final String title;
   final bool Function(Map<String, dynamic> values)? enableSubmitWhen;
 
+  /// When non-null, the **Next** button is only enabled if this returns true
+  /// for the current step (e.g. custom widgets storing state outside [values]).
+  final bool Function(WidgetRef ref, int currentStep, Map<String, dynamic>
+          values)?
+      canProceedFromStep;
+
   const DynamicForm({
     super.key,
     required this.steps,
@@ -174,6 +180,7 @@ class DynamicForm extends ConsumerStatefulWidget {
     required this.onSubmit,
     required this.title,
     this.enableSubmitWhen,
+    this.canProceedFromStep,
   });
 
   @override
@@ -328,6 +335,7 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
                 }
               },
               enableSubmitWhen: widget.enableSubmitWhen,
+              canProceedFromStep: widget.canProceedFromStep,
             ),
           ],
         ),
@@ -346,6 +354,10 @@ class _BottomActionBar extends ConsumerWidget {
 
   final bool Function(Map<String, dynamic> values)? enableSubmitWhen;
 
+  final bool Function(WidgetRef ref, int currentStep, Map<String, dynamic>
+          values)?
+      canProceedFromStep;
+
   const _BottomActionBar({
     required this.l10n,
     required this.showPrevious,
@@ -354,6 +366,7 @@ class _BottomActionBar extends ConsumerWidget {
     required this.onNext,
     required this.onSubmit,
     this.enableSubmitWhen,
+    this.canProceedFromStep,
   });
 
   @override
@@ -365,6 +378,15 @@ class _BottomActionBar extends ConsumerWidget {
     /// run validation rule if provided
     if (enableSubmitWhen != null) {
       enableSubmit = enableSubmitWhen!(formState.values);
+    }
+
+    bool enableNext = true;
+    if (!isLast && canProceedFromStep != null) {
+      enableNext = canProceedFromStep!(
+        ref,
+        formState.currentStep,
+        formState.values,
+      );
     }
 
     return Container(
@@ -400,7 +422,9 @@ class _BottomActionBar extends ConsumerWidget {
                     ? BorderSide.none
                     : const BorderSide(color: Colors.grey),
               ),
-              onPressed: isLast ? (enableSubmit ? onSubmit : null) : onNext,
+              onPressed: isLast
+                  ? (enableSubmit ? onSubmit : null)
+                  : (enableNext ? onNext : null),
               child: Text(
                 isLast ? l10n.dynamicFormSubmit : l10n.dynamicFormNext,
               ),

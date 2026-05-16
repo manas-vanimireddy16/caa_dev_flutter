@@ -5,9 +5,9 @@ import 'package:code_setup/presentation/screens/home_screen/approvals/common_wid
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/announcementsModels.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/userModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/widgets/announcement/announcement.dart';
-import 'package:code_setup/presentation/screens/home_screen/dashboard/widgets/profileCard.dart';
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 part 'controller.dart';
@@ -19,13 +19,13 @@ class AnnouncementScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(_vsProvider);
-    final controller = ref.read(_vsProvider.notifier);
     final UserModel? user = state.user;
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Announcements'),
+        title: Text(l10n.announcements),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -33,25 +33,25 @@ class AnnouncementScreen extends ConsumerWidget {
         padding: EdgeInsets.zero, // remove default padding
         children: [
           ProfileCard(
-            title: "My Profile",
-            subtitle: "Find the Profile Details",
+            title: l10n.myProfile,
+            subtitle: l10n.findTheProfileDetails,
             name: user?.data?.employeeName ?? '',
             avatarUrl:
                 "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
             isOnline: true,
             info: {
-              "Email": user?.data?.email ?? '',
-              "Phone": user?.data?.mobile ?? '',
-              "Location": user?.data?.location ?? '',
-              "Role": user?.data?.position?.name ?? '',
+              l10n.profileEmailLabel: user?.data?.email ?? '',
+              l10n.profilePhoneLabel: user?.data?.mobile ?? '',
+              l10n.profileLocationLabel: user?.data?.location ?? '',
+              l10n.profileRoleLabel: user?.data?.position?.name ?? '',
             },
           ),
           Padding(
             padding: const EdgeInsets.all(11.0),
             child: AnnouncementWidget(
               announcements: state.announcements, // ✅ pass the whole list
-              title: 'Announcements',
-              subtitle: 'Stay informed with latest updates',
+              title: l10n.announcements,
+              subtitle: l10n.announcementsSubtext,
             ),
           ),
         ],

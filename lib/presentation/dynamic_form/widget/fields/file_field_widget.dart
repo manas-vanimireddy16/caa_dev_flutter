@@ -28,6 +28,7 @@ class FileFieldWidget extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         FileUploadWidget(
+          title: field.label.trim().isNotEmpty ? field.label.trim() : null,
           maxFiles: field.maxFiles ?? 1,
           maxFileSizeInMB: field.maxFileSizeInMB ?? 10,
 

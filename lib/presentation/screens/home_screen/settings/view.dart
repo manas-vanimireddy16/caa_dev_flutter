@@ -10,9 +10,9 @@ import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-import 'package:code_setup/presentation/onboarding/login/view.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/localization_provider/localization_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,7 +29,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(settingsProvider);
     final controller = ref.read(settingsProvider.notifier);
-    final logoutController = ref.read(loginVsProvider.notifier);
+    final l10n = DashboardL10n.of(context);
 
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)
@@ -38,8 +38,7 @@ class SettingsScreen extends ConsumerWidget {
     return KScaffold(
       appBar: KAppBar(
         title: Text(
-          '    Settings',
-
+          l10n.settings,
           style: TextStyle(
             fontWeight: currentTheme.fontWeights.wBold,
             fontSize: currentTheme.fontSizes.s18,
@@ -105,7 +104,7 @@ class SettingsScreen extends ConsumerWidget {
 
               // --------- Role ----------
               Text(
-                'Account',
+                l10n.accountSectionTitle,
                 style: TextStyle(
                   fontSize: currentTheme.fontSizes.s14,
                   fontWeight: FontWeight.w600,
@@ -115,8 +114,8 @@ class SettingsScreen extends ConsumerWidget {
               8.toVerticalSizedBox,
               KDropdownField<RoleDetail>(
                 value: state.selectedRole,
-                fieldHeadingText: 'Select Role',
-                hintText: 'Choose your active role',
+                fieldHeadingText: l10n.selectRole,
+                hintText: l10n.chooseActiveRoleHint,
                 items: (state.userRoles.data?.roleDetails ?? [])
                     .map<KDropdownItem<RoleDetail>>(
                       (role) => KDropdownItem<RoleDetail>(
@@ -137,8 +136,8 @@ class SettingsScreen extends ConsumerWidget {
               // --------- Language ----------
               KDropdownField<LanguageItem>(
                 value: state.selectedLanguage,
-                fieldHeadingText: 'Language',
-                hintText: 'Select language',
+                fieldHeadingText: l10n.languageLabel,
+                hintText: l10n.selectLanguageHint,
                 items: state.languageList
                     .map<KDropdownItem<LanguageItem>>(
                       (lang) => KDropdownItem<LanguageItem>(

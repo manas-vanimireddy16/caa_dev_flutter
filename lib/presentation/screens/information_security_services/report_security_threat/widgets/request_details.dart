@@ -118,15 +118,17 @@ class _SecurityThreatRequestDetailsTabScreenState
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
                   CommonRequestDetails(
-                    statusInformationTitle:
-                        l10n.requestDetailsLabel('Status Information'),
-                    requestInformationTitle:
-                        l10n.requestDetailsLabel('Request Information'),
+                    statusInformationTitle: l10n.requestDetailsLabel(
+                      'Status Information',
+                    ),
+                    requestInformationTitle: l10n.requestDetailsLabel(
+                      'Request Information',
+                    ),
                     technicalInformationTitle: l10n.technicalDetailsSection,
                     requestDetailsLabelBuilder: l10n.requestDetailsLabel,
-                    statusInfo: controller.buildStatusInformation(l10n),
-                    requestInfo: controller.buildRequestInformationData(l10n),
-                    technicalInfo: controller.buildTechnicalInformation(l10n),
+                    statusInfo: controller.buildStatusInformation(),
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(

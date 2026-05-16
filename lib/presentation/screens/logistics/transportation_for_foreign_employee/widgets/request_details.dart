@@ -48,10 +48,11 @@ class _LogisticsForeignRequestDetailsTabScreenState
   @override
   Widget build(BuildContext context) {
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: const Text('Request Detail')),
+      appBar: KAppBar(title: Text(l10n.requestDetailScreenTitle)),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(
@@ -101,11 +102,15 @@ class _LogisticsForeignRequestDetailsTabScreenState
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
                   CommonRequestDetails(
+                    statusInformationTitle:
+                        l10n.requestDetailsLabel('Status Information'),
+                    requestInformationTitle:
+                        l10n.requestDetailsLabel('Request Information'),
+                    technicalInformationTitle: l10n.technicalDetailsSection,
+                    requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: controller.buildStatusInformation(),
-
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
-                    // table: controller.mapAccommodationTableForDetails(),
                   )
                 else if (selectedTab == 1)
                   CommentsCard(

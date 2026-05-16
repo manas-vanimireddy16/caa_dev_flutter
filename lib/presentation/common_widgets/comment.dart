@@ -302,13 +302,14 @@ class _AddCommentBoxState extends State<AddCommentBox> {
     );
   }
 
-  Widget buildActionButtons(ActionButtonsType type) {
+  Widget buildActionButtons(BuildContext context, ActionButtonsType type) {
+    final l10n = DashboardL10n.of(context);
     switch (type) {
       case ActionButtonsType.assign:
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Assign", Colors.blue, () async {
+            _actionButton(l10n.commentButtonAssign, Colors.blue, () async {
               await widget.onAssign?.call();
             }),
           ],
@@ -318,9 +319,13 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Approve", const Color(0xFF0D652D), () async {
-              await widget.onApprove?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonApprove,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onApprove?.call();
+              },
+            ),
           ],
         );
 
@@ -328,23 +333,31 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Assign", const Color(0xFF0D652D), () async {
-              if (widget.source.toLowerCase() == 'securityawarenessassign') {
-                KAppX.router.push(
-                  OrganizeSecurityAwarenessNewRequestRoute(
-                    source: widget.source,
-                    service: Service(),
-                    subService: SubService(),
-                  ),
-                );
-                return;
-              }
-              await widget.onAssign?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonAssign,
+              const Color(0xFF0D652D),
+              () async {
+                if (widget.source.toLowerCase() == 'securityawarenessassign') {
+                  KAppX.router.push(
+                    OrganizeSecurityAwarenessNewRequestRoute(
+                      source: widget.source,
+                      service: Service(),
+                      subService: SubService(),
+                    ),
+                  );
+                  return;
+                }
+                await widget.onAssign?.call();
+              },
+            ),
             10.toHorizontalSizedBox,
-            _actionButton("Reject", const Color(0xFFC02211), () async {
-              await widget.onReject?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonReject,
+              const Color(0xFFC02211),
+              () async {
+                await widget.onReject?.call();
+              },
+            ),
           ],
         );
 
@@ -352,27 +365,43 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Approve", const Color(0xFF0D652D), () async {
-              await widget.onApprove?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonApprove,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onApprove?.call();
+              },
+            ),
             10.toHorizontalSizedBox,
-            _actionButton("Reject", const Color(0xFFC02211), () async {
-              await widget.onReject?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonReject,
+              const Color(0xFFC02211),
+              () async {
+                await widget.onReject?.call();
+              },
+            ),
           ],
         );
       case ActionButtonsType.approveRejectAllocateVehicle:
         return Wrap(
           children: [
-            _actionButton("Approve", const Color(0xFF0D652D), () async {
-              await widget.onApprove?.call();
-            }),
-            10.toHorizontalSizedBox,
-            _actionButton("Reject", const Color(0xFFC02211), () async {
-              await widget.onReject?.call();
-            }),
             _actionButton(
-              "Allocate Vehicle",
+              l10n.commentButtonApprove,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onApprove?.call();
+              },
+            ),
+            10.toHorizontalSizedBox,
+            _actionButton(
+              l10n.commentButtonReject,
+              const Color(0xFFC02211),
+              () async {
+                await widget.onReject?.call();
+              },
+            ),
+            _actionButton(
+              l10n.commentButtonAllocateVehicle,
               const Color.fromARGB(189, 2, 116, 209),
               () async {
                 await widget.onAssign?.call();
@@ -384,16 +413,24 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Assign", Colors.blue, () async {
+            _actionButton(l10n.commentButtonAssign, Colors.blue, () async {
               await widget.onAssign?.call();
             }),
-            _actionButton("Approve", const Color(0xFF0D652D), () async {
-              await widget.onApprove?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonApprove,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onApprove?.call();
+              },
+            ),
             10.toHorizontalSizedBox,
-            _actionButton("Reject", const Color(0xFFC02211), () async {
-              await widget.onReject?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonReject,
+              const Color(0xFFC02211),
+              () async {
+                await widget.onReject?.call();
+              },
+            ),
           ],
         );
 
@@ -401,17 +438,29 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Reassign", Colors.orange, () async {
-              await widget.onReassign?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonReassign,
+              Colors.orange,
+              () async {
+                await widget.onReassign?.call();
+              },
+            ),
             8.toHorizontalSizedBox,
-            _actionButton("Close", const Color(0xFF0D652D), () async {
-              await widget.onClose?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonClose,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onClose?.call();
+              },
+            ),
             8.toHorizontalSizedBox,
-            _actionButton("Reject", const Color(0xFFC02211), () async {
-              await widget.onReject?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonReject,
+              const Color(0xFFC02211),
+              () async {
+                await widget.onReject?.call();
+              },
+            ),
           ],
         );
 
@@ -419,13 +468,21 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Close", const Color(0xFF0D652D), () async {
-              await widget.onClose?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonClose,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onClose?.call();
+              },
+            ),
             10.toHorizontalSizedBox,
-            _actionButton("Reject", const Color(0xFFC02211), () async {
-              await widget.onReject?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonReject,
+              const Color(0xFFC02211),
+              () async {
+                await widget.onReject?.call();
+              },
+            ),
           ],
         );
 
@@ -433,7 +490,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Replace", Colors.blue, () async {
+            _actionButton(l10n.commentButtonReplace, Colors.blue, () async {
               await widget.onReplace?.call();
             }),
           ],
@@ -443,19 +500,27 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("In Progress", const Color(0xFF0D652D), () async {
-              await widget.onInProgress?.call();
-              return;
-            }),
+            _actionButton(
+              l10n.commentButtonInProgress,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onInProgress?.call();
+                return;
+              },
+            ),
           ],
         );
       case ActionButtonsType.complete:
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton("Complete", const Color(0xFF0D652D), () async {
-              await widget.onComplete?.call();
-            }),
+            _actionButton(
+              l10n.commentButtonComplete,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onComplete?.call();
+              },
+            ),
           ],
         );
 
@@ -507,6 +572,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
   @override
   Widget build(BuildContext context) {
     final theme = KAppX.globalProvider.read(KAppX.theme.current).themeBox;
+    final l10n = DashboardL10n.of(context);
     final bool isFromActionItems = widget.from.toLowerCase() == 'action items';
 
     final bool isShowButtons =
@@ -547,8 +613,8 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                           minLines: 1,
                           maxLines: 4,
                           decoration: InputDecoration(
-                            hintText:
-                                widget.commentHint ?? 'Add a comment...',
+                            hintText: widget.commentHint ??
+                                l10n.routingAddCommentHint,
                             border: InputBorder.none,
                           ),
                         ),
@@ -595,7 +661,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                 const Icon(Icons.info_outline, size: 18, color: Colors.blue),
                 SizedBox(width: 6),
                 Text(
-                  widget.needMoreInfoLabel ?? 'Need more info',
+                  widget.needMoreInfoLabel ?? l10n.needMoreInfo,
                   style: TextStyle(
                     color: Colors.blue,
                     fontWeight: FontWeight.w600,
@@ -613,7 +679,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
 
         10.toVerticalSizedBox,
 
-        if (isShowButtons) buildActionButtons(widget.actionType),
+        if (isShowButtons) buildActionButtons(context, widget.actionType),
       ],
     );
   }
@@ -632,6 +698,7 @@ class CommentsRoutingOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = KAppX.globalProvider.read(KAppX.theme.current).themeBox;
+    final l10n = DashboardL10n.of(context);
 
     return Card(
       color: theme.colors.onPrimary,
@@ -647,7 +714,7 @@ class CommentsRoutingOverview extends StatelessWidget {
                 Icon(Icons.history, color: Colors.black87, size: 18),
                 const SizedBox(width: 8),
                 Text(
-                  "Comments / Routing Overview",
+                  l10n.commentsRoutingOverviewTitle,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: theme.fontSizes.s16,

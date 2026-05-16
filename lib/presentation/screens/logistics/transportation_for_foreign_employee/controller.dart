@@ -645,14 +645,28 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.kpiData.data?.toJson(),
+        isSecurityThreat: true,
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.approvalKpiData.data?.toJson(),
+        isSecurityThreat: true,
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+          ? requestStatsList(titleForKey)
+          : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -814,7 +828,12 @@ class _VSController extends StateNotifier<_ViewState> {
     ]);
   }
 
+  void clearPassengerNames() {
+    state = state.copyWith(passengerNames: []);
+  }
+
   void openNewRequestForm() {
+    clearPassengerNames();
     KAppX.router.push(
       LogisticsPassengersVehicleRequestRoute(
         serviceId: service.id ?? 0,
@@ -828,160 +847,159 @@ class _VSController extends StateNotifier<_ViewState> {
   final foreignEmployeeInstance = TransportationForForeignEmployeeRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  List<DynamicField> get transportationRequestFields => [
-    /// ================= NO OF PASSENGERS =================
-
-    /// ================= CONTACT NUMBER =================
-
-    /// ================= PURPOSE =================
-    DynamicField(
-      name: 'purpose',
-      label: 'Purpose',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter purpose of travel',
-    ),
-
-    /// ================= REQUEST TYPE =================
-    DynamicField(
-      name: 'request_type',
-      label: 'Request Type',
-      type: FieldType.select,
-      required: true,
-      placeholder: 'Select',
-      options: const [
-        DropdownOption(value: 'New Request', label: 'New Request'),
-        DropdownOption(
-          value: 'Extension of Previous Request',
-          label: 'Extension of Previous Request',
+  List<DynamicField> buildTransportationRequestFields(DashboardL10n l10n) => [
+        DynamicField(
+          name: 'purpose',
+          label: l10n.transportPurpose,
+          type: FieldType.text,
+          required: true,
+          placeholder: l10n.transportPurposePlaceholder,
         ),
-      ],
-    ),
+        DynamicField(
+          name: 'request_type',
+          label: l10n.transportRequestType,
+          type: FieldType.select,
+          required: true,
+          placeholder: l10n.select,
+          options: [
+            DropdownOption(
+              value: 'New Request',
+              label: l10n.transportRequestTypeOption('New Request'),
+            ),
+            DropdownOption(
+              value: 'Extension of Previous Request',
+              label: l10n.transportRequestTypeOption(
+                'Extension of Previous Request',
+              ),
+            ),
+          ],
+        ),
+        DynamicField(
+          name: 'employee_passport_number',
+          label: l10n.transportEmployeePassport,
+          type: FieldType.text,
+          required: false,
+          placeholder: l10n.transportEnterId,
+        ),
+        DynamicField(
+          name: 'origin_city',
+          label: l10n.transportOriginCity,
+          type: FieldType.text,
+          required: false,
+          placeholder: l10n.transportEnterCity,
+        ),
+        DynamicField(
+          name: 'destination_city',
+          label: l10n.transportDestinationCity,
+          type: FieldType.text,
+          required: true,
+          placeholder: l10n.transportEnterDestination,
+        ),
+        DynamicField(
+          name: 'vehicle_required_location',
+          label: l10n.transportVehicleRequiredLocation,
+          type: FieldType.select,
+          required: true,
+          placeholder: l10n.select,
+          options: [
+            DropdownOption(
+              value: 'Inside Muscat',
+              label: l10n.transportInsideMuscat,
+            ),
+            DropdownOption(
+              value: 'Outside Muscat',
+              label: l10n.transportOutsideMuscat,
+            ),
+          ],
+        ),
+        DynamicField(
+          name: 'arrival_departure_date',
+          label: l10n.transportArrivalDepartureDate,
+          type: FieldType.date,
+          required: true,
+          placeholder: 'dd-mm-yyyy',
+        ),
+        DynamicField(
+          name: 'arrival_departure_time',
+          label: l10n.transportArrivalDepartureTime,
+          type: FieldType.time,
+          required: true,
+          placeholder: l10n.select,
+        ),
+        DynamicField(
+          name: 'special_instructions',
+          label: l10n.transportSpecialInstructions,
+          type: FieldType.text,
+          required: true,
+          placeholder: l10n.transportSpecialInstructionsPlaceholder,
+        ),
+        DynamicField(
+          name: 'travel_itinerary',
+          label: l10n.transportTravelItinerary,
+          type: FieldType.file,
+          required: false,
+        ),
+      ];
 
-    /// ================= EMPLOYEE ID / PASSPORT NUMBER =================
-    DynamicField(
-      name: 'employee_passport_number',
-      label: 'Employee ID / Passport Number',
-      type: FieldType.text,
-      required: false,
-      placeholder: 'Enter ID',
-    ),
+  List<DynamicField> buildTransportationRequestFields2(DashboardL10n l10n) => [
+        DynamicField(
+          name: 'no_of_passengers',
+          label: l10n.transportNoOfPassengers,
+          type: FieldType.select,
+          required: true,
+          placeholder: l10n.select,
+          options: const [
+            DropdownOption(value: '1', label: '1'),
+            DropdownOption(value: '2', label: '2'),
+            DropdownOption(value: '3', label: '3'),
+            DropdownOption(value: '4', label: '4'),
+            DropdownOption(value: '5', label: '5'),
+            DropdownOption(value: '6', label: '6'),
+            DropdownOption(value: '7', label: '7'),
+            DropdownOption(value: '8', label: '8'),
+            DropdownOption(value: '9', label: '9'),
+            DropdownOption(value: '10', label: '10'),
+          ],
+        ),
+        DynamicField(
+          name: 'contact_number',
+          label: l10n.transportContactNumber,
+          type: FieldType.number,
+          required: true,
+          placeholder: l10n.securityThreatFormContactPlaceholder,
+          validator: (value, values) {
+            final phone = value?.toString().trim() ?? '';
+            if (phone.isEmpty) return null;
+            if (phone.length != 8) {
+              return l10n.securityThreatPhoneDigitsHint;
+            }
+            return null;
+          },
+        ),
+        DynamicField(
+          name: 'passenger_names',
+          label: '',
+          type: FieldType.custom,
+          builder: (context, ref) {
+            final passengerCount = int.tryParse(
+                  ref.watch(
+                    dynamicFormProvider.select(
+                      (s) =>
+                          s.values['no_of_passengers']?.toString() ?? '0',
+                    ),
+                  ) ??
+                  '0',
+                ) ??
+                0;
 
-    /// ================= ORIGIN CITY =================
-    DynamicField(
-      name: 'origin_city',
-      label: 'Origin City',
-      type: FieldType.text,
-      required: false,
-      placeholder: 'Enter City',
-    ),
-
-    /// ================= DESTINATION CITY =================
-    DynamicField(
-      name: 'destination_city',
-      label: 'Destination City / Location',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter Destination',
-    ),
-
-    /// ================= VEHICLE REQUIRED LOCATION =================
-    DynamicField(
-      name: 'vehicle_required_location',
-      label: 'Vehicle Required Location',
-      type: FieldType.select,
-      required: true,
-      placeholder: 'Select',
-      options: const [
-        DropdownOption(value: 'Inside Muscat', label: 'Inside Muscat'),
-        DropdownOption(value: 'Outside Muscat', label: 'Outside Muscat'),
-      ],
-    ),
-
-    /// ================= ARRIVAL / DEPARTURE DATE =================
-    DynamicField(
-      name: 'arrival_departure_date',
-      label: 'Arrival / Departure Date',
-      type: FieldType.date,
-      required: true,
-      placeholder: 'dd-mm-yyyy',
-    ),
-
-    /// ================= ARRIVAL / DEPARTURE TIME =================
-    DynamicField(
-      name: 'arrival_departure_time',
-      label: 'Arrival / Departure Time',
-      type: FieldType.time,
-      required: true,
-      placeholder: 'Select',
-    ),
-
-    /// ================= SPECIAL INSTRUCTIONS =================
-    DynamicField(
-      name: 'special_instructions',
-      label: 'Special Instructions',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Write here (min 5, max 250 characters)',
-    ),
-
-    /// ================= ATTACHMENT =================
-    DynamicField(
-      name: 'travel_itinerary',
-      label: 'Travel Itinerary / Invitation',
-      type: FieldType.file,
-      required: false,
-    ),
-  ];
-
-  List<DynamicField> get transportationRequestFields2 => [
-    DynamicField(
-      name: 'no_of_passengers',
-      label: 'No of Passengers',
-      type: FieldType.select,
-      required: true,
-      placeholder: 'Select',
-      options: const [
-        DropdownOption(value: '1', label: '1'),
-        DropdownOption(value: '2', label: '2'),
-        DropdownOption(value: '3', label: '3'),
-        DropdownOption(value: '4', label: '4'),
-        DropdownOption(value: '5', label: '5'),
-        DropdownOption(value: '6', label: '6'),
-        DropdownOption(value: '7', label: '7'),
-        DropdownOption(value: '8', label: '8'),
-        DropdownOption(value: '9', label: '9'),
-        DropdownOption(value: '10', label: '10'),
-      ],
-    ),
-    DynamicField(
-      name: 'contact_number',
-      label: 'Contact Number',
-      type: FieldType.number,
-      required: true,
-      placeholder: 'Enter Number',
-    ),
-    DynamicField(
-      name: 'passenger_names',
-      label: '',
-      type: FieldType.custom,
-      builder: (context, ref) {
-        final formState = ref.watch(dynamicFormProvider);
-
-        final passengerCount =
-            int.tryParse(
-              formState.values['no_of_passengers']?.toString() ?? '0',
-            ) ??
-            0;
-
-        return PassengerNamesWidget(
-          passengerCount: passengerCount,
-          service: service,
-          subService: subService,
-        );
-      },
-    ),
-  ];
+            return PassengerNamesWidget(
+              passengerCount: passengerCount,
+              service: service,
+              subService: subService,
+            );
+          },
+        ),
+      ];
 
   void addPassenger() {
     final updated = [...state.passengerNames, ""];
@@ -1541,6 +1559,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void showApproveForm(BuildContext context, int approverId) {
+    final l10n = DashboardL10n.of(context);
+
     KAppX.extendedRouter.dialog.showKDialog(
       barrierDismissible: false,
       builder: (_) {
@@ -1568,10 +1588,10 @@ class _VSController extends StateNotifier<_ViewState> {
                   padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
                   child: Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Approve Vehicle Request',
-                          style: TextStyle(
+                          l10n.transportApproveVehicleRequestTitle,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                           ),
@@ -1617,6 +1637,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void showVehicleAllocateForm(BuildContext context, int approverId) {
+    final l10n = DashboardL10n.of(context);
+
     KAppX.extendedRouter.dialog.showKDialog(
       barrierDismissible: false,
       builder: (_) {
@@ -1644,10 +1666,10 @@ class _VSController extends StateNotifier<_ViewState> {
                   padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
                   child: Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Allocate Vehicle',
-                          style: TextStyle(
+                          l10n.transportAllocateVehicleTitle,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                           ),

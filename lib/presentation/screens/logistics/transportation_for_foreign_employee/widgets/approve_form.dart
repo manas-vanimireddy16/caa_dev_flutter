@@ -20,22 +20,15 @@ class ApproveRequestDialogWidget extends ConsumerStatefulWidget {
 class _ApproveRequestDialogWidgetState
     extends ConsumerState<ApproveRequestDialogWidget> {
   final _formKey = GlobalKey<FormState>();
-
   late _VSControllerParams _providerArgs;
 
   final TextEditingController returnDateController = TextEditingController();
-
   final TextEditingController returnTimeController = TextEditingController();
-
   final TextEditingController commentsController = TextEditingController();
-
   final TextEditingController reasonController = TextEditingController();
 
   String? vehicleCondition;
-
   bool isSubmitting = false;
-
-  final List<String> conditions = ['Yes', 'No'];
 
   @override
   void initState() {
@@ -77,7 +70,6 @@ class _ApproveRequestDialogWidgetState
 
     if (pickedTime != null) {
       final now = DateTime.now();
-
       final dateTime = DateTime(
         now.year,
         now.month,
@@ -85,7 +77,6 @@ class _ApproveRequestDialogWidgetState
         pickedTime.hour,
         pickedTime.minute,
       );
-
       returnTimeController.text = DateFormat('hh:mm a').format(dateTime);
     }
   }
@@ -104,10 +95,10 @@ class _ApproveRequestDialogWidgetState
     return RichText(
       text: TextSpan(
         text: text,
-        style: TextStyle(
-          color: Colors.grey.shade800,
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
         ),
         children: const [
           TextSpan(
@@ -121,16 +112,12 @@ class _ApproveRequestDialogWidgetState
 
   Future<void> onSubmit() async {
     if (!_formKey.currentState!.validate()) return;
-
     if (isSubmitting) return;
 
-    setState(() {
-      isSubmitting = true;
-    });
+    setState(() => isSubmitting = true);
 
     try {
       final controller = ref.read(_vsProvider(_providerArgs).notifier);
-
       final state = ref.read(_vsProvider(_providerArgs));
 
       final active = controller.getActiveApprovalLevel(
@@ -155,176 +142,207 @@ class _ApproveRequestDialogWidgetState
             : null,
       };
 
-      debugPrint("PAYLOAD => $payload");
-
-      /// API CALL
       await controller.onApprove(payload);
 
-      /// CLOSE FAST AFTER SUCCESS
       if (mounted) {
         Navigator.pop(context);
-
         widget.onSuccess?.call();
       }
     } catch (e) {
       debugPrint(e.toString());
     } finally {
       if (mounted) {
-        setState(() {
-          isSubmitting = false;
-        });
+        setState(() => isSubmitting = false);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = DashboardL10n.of(context);
     final state = ref.watch(_vsProvider(_providerArgs));
 
     final status = state.requestDetails.request?.status?.toLowerCase();
-
     final isClosed = status == 'closed';
 
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// RETURN DATE
             TextFormField(
               controller: returnDateController,
               readOnly: true,
               onTap: isSubmitting ? null : pickDate,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please select return date';
+                  return l10n.transportSelectReturnDate;
                 }
                 return null;
               },
               decoration: InputDecoration(
-                label: mandatoryLabel('Vehicle Return Date'),
+                label: mandatoryLabel(l10n.transportVehicleReturnDate),
                 suffixIcon: const Icon(Icons.calendar_today_outlined),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
-
             const SizedBox(height: 20),
-
-            /// RETURN TIME
             TextFormField(
               controller: returnTimeController,
               readOnly: true,
               onTap: isSubmitting ? null : pickTime,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please select return time';
+                  return l10n.transportSelectReturnTime;
                 }
                 return null;
               },
               decoration: InputDecoration(
-                label: mandatoryLabel('Vehicle Return Time'),
+                label: mandatoryLabel(l10n.transportVehicleReturnTime),
                 suffixIcon: const Icon(Icons.access_time_outlined),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
-
             const SizedBox(height: 20),
-
-            /// VEHICLE CONDITION
             DropdownButtonFormField<String>(
               value: vehicleCondition,
               decoration: InputDecoration(
-                label: mandatoryLabel('Vehicle Condition'),
+                label: mandatoryLabel(l10n.transportVehicleCondition),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-              items: conditions.map((e) {
-                return DropdownMenuItem(value: e, child: Text(e));
-              }).toList(),
+              items: [
+                DropdownMenuItem(
+                  value: 'Yes',
+                  child: Text(l10n.transportYes),
+                ),
+                DropdownMenuItem(
+                  value: 'No',
+                  child: Text(l10n.transportNo),
+                ),
+              ],
               onChanged: isSubmitting
                   ? null
                   : (value) {
-                      setState(() {
-                        vehicleCondition = value;
-                      });
+                      setState(() => vehicleCondition = value);
                     },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please select vehicle condition';
+                  return l10n.transportSelectVehicleCondition;
                 }
                 return null;
               },
             ),
-
-            if (vehicleCondition == "No") ...[
+            if (vehicleCondition == 'No') ...[
               const SizedBox(height: 20),
-
               TextFormField(
                 controller: reasonController,
                 maxLines: 4,
                 enabled: !isSubmitting,
                 validator: (value) {
-                  if (vehicleCondition == "No" &&
+                  if (vehicleCondition == 'No' &&
                       (value == null || value.trim().isEmpty)) {
-                    return 'Please enter reason';
+                    return l10n.transportReasonRequired;
                   }
                   return null;
                 },
                 decoration: InputDecoration(
-                  label: mandatoryLabel('Reason'),
-                  hintText: 'Enter reason',
+                  label: mandatoryLabel(l10n.transportReason),
+                  hintText: l10n.transportEnterReason,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
             ],
-
             const SizedBox(height: 20),
-
-            /// COMMENTS
             TextFormField(
               controller: commentsController,
               maxLines: 5,
               enabled: !isSubmitting,
-              decoration: const InputDecoration(
-                labelText: 'Comments (Optional)',
-                hintText: 'Add your comments',
+              decoration: InputDecoration(
+                labelText: l10n.transportCommentsOptional,
+                hintText: l10n.transportAddComments,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
-
             const SizedBox(height: 30),
-
-            /// BUTTONS
             if (!isClosed)
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  /// CANCEL
-                  OutlinedButton.icon(
-                    onPressed: isSubmitting
-                        ? null
-                        : () => Navigator.pop(context),
-                    icon: const Icon(Icons.close, size: 18),
-                    label: const Text('CANCEL'),
+                  SizedBox(
+                    height: 30,
+                    child: OutlinedButton(
+                      onPressed: isSubmitting
+                          ? null
+                          : () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: BorderSide(color: Colors.grey.shade300),
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.transportFormCancel,
+                        style: const TextStyle(
+                          color: Color(0xFF0D652D),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
-
-                  const SizedBox(width: 12),
-
-                  /// SUBMIT
-                  ElevatedButton(
-                    onPressed: isSubmitting ? null : onSubmit,
-                    child: isSubmitting
-                        ? const SizedBox(
-                            height: 18,
-                            width: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    height: 35,
+                    child: ElevatedButton(
+                      onPressed: isSubmitting ? null : onSubmit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0D652D),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      child: isSubmitting
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.check_circle_outline,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  l10n.transportFormSubmit,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                        : const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.check_circle_outline, size: 18),
-                              SizedBox(width: 8),
-                              Text('SUBMIT'),
-                            ],
-                          ),
+                    ),
                   ),
                 ],
               ),

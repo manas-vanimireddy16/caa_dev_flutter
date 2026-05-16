@@ -175,25 +175,7 @@ class ServicesScreen extends ConsumerStatefulWidget {
 }
 
 class _ServicesScreenState extends ConsumerState<ServicesScreen>
-    with
-        SingleTickerProviderStateMixin,
-        AutoRouteAwareStateMixin<ServicesScreen> {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _tabController = TabController(length: 4, vsync: this);
-
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        // Optional tab logic
-      }
-    });
-  }
-
-  // FIRST TIME TAB OPEN
+    with AutoRouteAwareStateMixin<ServicesScreen> {
   @override
   void didInitTabRoute(TabPageRoute? previousRoute) {
     super.didInitTabRoute(previousRoute);
@@ -201,7 +183,6 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
     _loadData();
   }
 
-  // WHEN USER RETURNS TO THIS TAB
   @override
   void didChangeTabRoute(TabPageRoute previousRoute) {
     super.didChangeTabRoute(previousRoute);
@@ -215,261 +196,127 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
 
     await Future.wait([
       controller.fetchUserRoles(user?.userId ?? 0),
-      controller.fetchBookmarks(),
+      // controller.fetchBookmarks(), // disabled while Bookmark tab is commented out
     ]);
   }
 
   @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final currentTheme = KAppX.globalProvider
-        .read(KAppX.theme.current)
-        .themeBox;
-
     final state = ref.watch(servicesProvider);
 
     final controller = ref.read(servicesProvider.notifier);
 
     final user = KAppX.globalProvider.read(userProvider);
 
-    return DefaultTabController(
-      length: 4,
-      child: KScaffold(
+    return KScaffold(
+      backgroundColor: Colors.white,
+
+      appBar: AppBar(
+        elevation: 0,
         backgroundColor: Colors.white,
-
-        appBar: AppBar(
-          title: const Text('Services'),
-
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'All Services'),
-              Tab(text: 'Bookmarked'),
-              Tab(text: 'Quick Links'),
-              Tab(text: 'Important Links'),
-            ],
+        foregroundColor: Colors.black87,
+        title: const Text(
+          'Services',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 22,
+            color: Colors.black87,
           ),
         ),
+        centerTitle: false,
+      ),
 
-        body: TabBarView(
-          controller: _tabController,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await controller.fetchUserRoles(user?.userId ?? 0);
+        },
 
-          children: [
-            // 🔹 TAB 1 – ALL SERVICES
-            Builder(
-              builder: (context) {
-                final services = state.services ?? [];
+        child: Builder(
+          builder: (context) {
+            final services = state.services ?? [];
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    await controller.fetchUserRoles(user?.userId ?? 0);
-                  },
+            return services.isEmpty
+                ? ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
 
-                  child: services.isEmpty
-                      ? ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
+                    children: const [
+                      SizedBox(height: 200),
 
-                          children: const [
-                            SizedBox(height: 200),
+                      Center(
+                        child: Text(
+                          'No services available',
 
-                            Center(
-                              child: Text(
-                                'No services available',
-
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                          ],
-                        )
-                      : ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-
-                          itemCount: services.length,
-
-                          itemBuilder: (context, index) {
-                            final data = services[index];
-
-                            return CustomInfoCard(
-                              title: data.name ?? 'No Name',
-
-                              subtitle: data.description ?? 'No Description',
-
-                              icon: Icons.miscellaneous_services,
-
-                              iconColor: Colors.blueAccent,
-
-                              subServices: data.subservices != null
-                                  ? data.subservices!
-                                        .map(
-                                          (s) => s.subServiceName ?? 'Unnamed',
-                                        )
-                                        .toList()
-                                  : [],
-
-                              isBookmarked: false,
-
-                              onBookmarkToggle: () {
-                                controller.updateBookmark(
-                                  userId: user?.userId ?? 0,
-
-                                  serviceId: data.id ?? 0,
-                                );
-                              },
-
-                              onCardTap: () {
-                                controller.navigateToRoute(
-                                  name: data.name ?? '',
-
-                                  service: data,
-                                );
-                              },
-
-                              onSubServiceTap: (subName) {
-                                final subService = data.subservices?.lastWhere(
-                                  (s) => s.subServiceName == subName,
-
-                                  orElse: () => SubService(),
-                                );
-
-                                if (subService != null) {
-                                  controller.navigateToRoute(
-                                    name: subService.code ?? '',
-
-                                    service: data,
-
-                                    subService: subService,
-                                  );
-                                }
-                              },
-                            );
-                          },
+                          style: TextStyle(color: Colors.grey),
                         ),
-                );
-              },
-            ),
+                      ),
+                    ],
+                  )
+                : ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
 
-            // 🔹 TAB 2 – BOOKMARKED
-            Builder(
-              builder: (context) {
-                final bookmarks = state.bookmarks ?? [];
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    await controller.fetchBookmarks();
-                  },
+                    itemCount: services.length,
 
-                  child: bookmarks.isEmpty
-                      ? ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      final data = services[index];
 
-                          children: const [
-                            SizedBox(height: 200),
+                      return CustomInfoCard(
+                        title: data.name ?? 'No Name',
 
-                            Center(
-                              child: Text(
-                                'No bookmarked services',
+                        subtitle: data.description ?? 'No Description',
 
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                          ],
-                        )
-                      : ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
+                        icon: Icons.miscellaneous_services,
 
-                          itemCount: bookmarks.length,
+                        iconColor: Colors.blueAccent,
 
-                          itemBuilder: (context, index) {
-                            final data = bookmarks[index];
+                        subServices: data.subservices != null
+                            ? data.subservices!
+                                  .map(
+                                    (s) => s.subServiceName ?? 'Unnamed',
+                                  )
+                                  .toList()
+                            : [],
 
-                            final serviceId = int.tryParse(
-                              data.serviceId ?? "",
+                        isBookmarked: false,
+
+                        onBookmarkToggle: () {
+                          controller.updateBookmark(
+                            userId: user?.userId ?? 0,
+
+                            serviceId: data.id ?? 0,
+                          );
+                        },
+
+                        onCardTap: () {
+                          controller.navigateToRoute(
+                            name: data.name ?? '',
+
+                            service: data,
+                          );
+                        },
+
+                        onSubServiceTap: (subName) {
+                          final subService = data.subservices?.lastWhere(
+                            (s) => s.subServiceName == subName,
+
+                            orElse: () => SubService(),
+                          );
+
+                          if (subService != null) {
+                            controller.navigateToRoute(
+                              name: subService.code ?? '',
+
+                              service: data,
+
+                              subService: subService,
                             );
-
-                            return CustomInfoCard(
-                              title: data.serviceName ?? 'No Name',
-
-                              subtitle:
-                                  data.serviceDescription ?? 'No Description',
-
-                              icon: Icons.miscellaneous_services,
-
-                              iconColor: Colors.blueAccent,
-
-                              subServices: data.subServices != null
-                                  ? data.subServices!
-                                        .map(
-                                          (s) => s.subServiceName ?? 'Unnamed',
-                                        )
-                                        .toList()
-                                  : [],
-
-                              isBookmarked: true,
-
-                              onBookmarkToggle: () {
-                                controller.updateBookmark(
-                                  userId: user?.userId ?? 0,
-
-                                  serviceId: serviceId ?? 0,
-                                );
-                              },
-                            );
-                          },
-                        ),
-                );
-              },
-            ),
-
-            // 🔹 TAB 3 – QUICK LINKS
-            RefreshIndicator(
-              onRefresh: () async {
-                await controller.fetchUserRoles(user?.userId ?? 0);
-              },
-
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-
-                children: const [
-                  SizedBox(height: 200),
-
-                  Center(
-                    child: Text(
-                      'Quick Links',
-
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // 🔹 TAB 4 – IMPORTANT LINKS
-            RefreshIndicator(
-              onRefresh: () async {
-                await controller.fetchUserRoles(user?.userId ?? 0);
-              },
-
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-
-                children: const [
-                  SizedBox(height: 200),
-
-                  Center(
-                    child: Text(
-                      'Important Links',
-
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+                          }
+                        },
+                      );
+                    },
+                  );
+          },
         ),
       ),
     );

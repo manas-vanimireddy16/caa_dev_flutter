@@ -52,6 +52,7 @@ import 'package:code_setup/repository/it_services/request_event_support/domain/d
 import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
 import 'package:code_setup/repository/logistics/transportation_for_foreign_employee/domain/domain.dart';
 import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
@@ -134,6 +135,7 @@ class _LogisticsForeignersRequestPortalScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -141,7 +143,11 @@ class _LogisticsForeignersRequestPortalScreenState
         padding: const EdgeInsets.all(12),
         children: [
           /// KPI
-          StatSummaryRow(stats: controller.currentStats),
+          StatSummaryRow(
+            stats: controller.currentStats(
+              (key) => l10n.statTitle(key, isSecurityThreat: true),
+            ),
+          ),
           20.toHorizontalSizedBox,
 
           /// Status Breakdown
@@ -149,8 +155,16 @@ class _LogisticsForeignersRequestPortalScreenState
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
-            onChanged: controller.onStatusFilterChanged,
+            title: l10n.requestsStatusBreakdown,
+            filterLabel: l10n.periodFilterLabels[0],
+            filterLabelList: l10n.periodFilterLabels,
+            centerMetricLabel: l10n.totalRequests,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
+            preserveFilterLabelOnChange: true,
+            onChanged: (value) => controller.onStatusFilterChanged(
+              value != null ? l10n.periodFilterValue(value) : null,
+            ),
             breakdown: state.statusBreakdown.data,
           ),
 
@@ -159,7 +173,8 @@ class _LogisticsForeignersRequestPortalScreenState
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
