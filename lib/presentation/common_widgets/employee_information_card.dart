@@ -92,41 +92,49 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final useTwoColumns = constraints.maxWidth > 520;
+
                   final fields = <_EmployeeField>[
                     _EmployeeField(
                       icon: Icons.badge_outlined,
                       label: _label('Request Id'),
                       value: _orNa(widget.requestId),
                     ),
+
                     _EmployeeField(
                       icon: Icons.perm_identity_outlined,
                       label: _label('Employee ID'),
                       value: _orNa(user?.employeeId ?? user?.civilEmployeeId),
                     ),
+
+                    /// NEW FIELD
+                    _EmployeeField(
+                      icon: Icons.person_outline,
+                      label: _label('Name'),
+                      value: _orNa(user?.employeeName),
+                    ),
+
                     _EmployeeField(
                       icon: Icons.work_outline,
                       label: _label('Job Title / Designation'),
                       value: jobTitle,
                     ),
+
                     _EmployeeField(
                       icon: Icons.email_outlined,
                       label: _label('Email Address'),
                       value: _orNa(user?.email),
                     ),
+
                     _EmployeeField(
                       icon: Icons.apartment_outlined,
                       label: _label('Department'),
                       value: department,
                     ),
+
                     _EmployeeField(
                       icon: Icons.phone_outlined,
                       label: _label('Contact Number'),
                       value: _orNa(user?.mobile ?? user?.officeNumber),
-                    ),
-                    _EmployeeField(
-                      icon: Icons.assignment_ind_outlined,
-                      label: _label('Assigned To'),
-                      value: _orNa(widget.assignedTo),
                     ),
                   ];
 
@@ -137,8 +145,12 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(child: _EmployeeFieldTile(field: fields[i])),
+                              Expanded(
+                                child: _EmployeeFieldTile(field: fields[i]),
+                              ),
+
                               const SizedBox(width: 16),
+
                               Expanded(
                                 child: i + 1 < fields.length
                                     ? _EmployeeFieldTile(field: fields[i + 1])
@@ -146,15 +158,9 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
                               ),
                             ],
                           ),
+
                           const SizedBox(height: 14),
                         ],
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: _StatusRow(
-                            label: _label('Status'),
-                            status: widget.status ?? 'N/A',
-                          ),
-                        ),
                       ],
                     );
                   }
@@ -166,10 +172,6 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
                           padding: const EdgeInsets.only(bottom: 14),
                           child: _EmployeeFieldTile(field: f),
                         ),
-                      ),
-                      _StatusRow(
-                        label: _label('Status'),
-                        status: widget.status ?? 'N/A',
                       ),
                     ],
                   );

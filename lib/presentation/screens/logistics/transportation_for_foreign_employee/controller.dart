@@ -1604,7 +1604,7 @@ class _VSController extends StateNotifier<_ViewState> {
                         child: Text(
                           l10n.transportApproveVehicleRequestTitle,
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -2180,7 +2180,7 @@ class _VSController extends StateNotifier<_ViewState> {
       if (response['status'] == 'success') {
         await Future.wait([
           _refreshDashboard(),
-          Future<void>.delayed(const Duration(milliseconds: 2500)),
+          Future<void>.delayed(const Duration(milliseconds: 1000)),
         ]);
         return true;
       }
