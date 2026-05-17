@@ -944,12 +944,8 @@ class _VSController extends StateNotifier<_ViewState> {
     String status = '',
   }) async {
     state = state.copyWith(isLoading: true);
-    try {
-      // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
 
+    try {
       final requests = await securityThreatInstance.getRequests(
         offset: 1,
         limit: 8,
@@ -959,10 +955,10 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceId: subService.id ?? 0,
       );
 
-      // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -975,24 +971,20 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(actionItems: [], isLoading: false);
-      }
-
       final items = await securityThreatInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
         status: status,
-
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
 
-      // No merging needed
       state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
@@ -1808,7 +1800,8 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (response['status'] == 'success') {
-        Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 1));
+
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1832,8 +1825,8 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchTrendBreakDown(currentYear),
       fetchApprovalTrendBreakDown(currentYear),
 
-      fetchRequests(),
-      fetchactionItems(),
+      fetchRequests(isRefresh: true),
+      fetchactionItems(isRefresh: true),
     ]);
   }
 
