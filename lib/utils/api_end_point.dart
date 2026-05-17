@@ -20,6 +20,9 @@ class ApiEndPoint {
   static const String sections = '/v1/user-service/master/sections/listing';
 
   static const String sectionsList = '/v1/user-service/admin/sections/';
+
+  static String download(String id) => '/v1/user-service/download/$id';
+
   static const String departmentsList =
       '/v1/user-service/master/departments/listing';
   static const String countryList = '/v1/user-service/country-master/list';
