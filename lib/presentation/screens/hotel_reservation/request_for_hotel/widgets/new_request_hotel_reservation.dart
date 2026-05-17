@@ -36,12 +36,11 @@ class _HotelReservationNewRequestScreenState
 
   @override
   Widget build(BuildContext context) {
-    /// Watch state only if needed
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      // appBar: KAppBar(title: Text('Mission Transfer Request')),
 
       /// ✅ DynamicForm MUST be root-level in a screen
       body: ProviderScope(
@@ -49,9 +48,9 @@ class _HotelReservationNewRequestScreenState
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: 'New Request',
+          title: l10n.newRequestHotelReservation,
           stepTitles: const [''],
-          steps: [controller.hotelReservationFields],
+          steps: [controller.buildHotelReservationFields(l10n)],
 
           onSubmit: (values) async {
             await controller.sendHotelReservationRequest(

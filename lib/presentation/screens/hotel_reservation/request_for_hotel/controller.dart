@@ -387,6 +387,20 @@ class _VSController extends StateNotifier<_ViewState> {
     return department ?? '-';
   }
 
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
+  }
+
   Future<void> openRequestDetails(
     int id, {
     bool fromActionItems = false,
@@ -428,155 +442,136 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   final hotelReservationinstance = HotelReservationRepoistory();
-  List<DynamicField> get hotelReservationFields => [
-    /// ================= ACCOMMODATION TYPE =================
+  List<DynamicField> buildHotelReservationFields(DashboardL10n l10n) => [
     DynamicField(
       name: 'accommodationType',
-      label: 'Accommodation Type',
+      label: l10n.accommodationType,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter',
+      placeholder: l10n.select,
     ),
-
-    /// ================= HOTEL NAME =================
     DynamicField(
       name: 'hotelName',
-      label: 'Hotel Name',
+      label: l10n.hotelName,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter Hotel Name (3-100 characters)',
+      placeholder: l10n.enterHotelName,
     ),
-
-    /// ================= HOTEL PRICE =================
     DynamicField(
       name: 'hotelPrice',
-      label: 'Hotel Price',
+      label: l10n.hotelPrice,
       type: FieldType.number,
       required: true,
-      placeholder: 'Enter price (e.g., 100)',
+      placeholder: l10n.enterPrice,
     ),
-
-    /// ================= MEALS =================
     DynamicField(
       name: 'meals',
-      label: 'Meals',
+      label: l10n.meals,
       type: FieldType.checkbox,
       required: false,
-      options: ['Breakfast', 'Lunch', 'Dinner'],
+      options: [
+        DropdownOption(value: 'Breakfast', label: l10n.breakfast),
+        DropdownOption(value: 'Lunch', label: l10n.lunch),
+        DropdownOption(value: 'Dinner', label: l10n.dinner),
+      ],
     ),
-
-    /// ================= SERVICES =================
     DynamicField(
       name: 'services',
-      label: 'Services',
+      label: l10n.servicesLabel,
       type: FieldType.checkbox,
       required: false,
-      options: ['Laundry', 'Telephone Service'],
+      options: [
+        DropdownOption(value: 'Laundry', label: l10n.laundry),
+        DropdownOption(
+          value: 'Telephone Service',
+          label: l10n.telephoneService,
+        ),
+      ],
     ),
-
-    /// ================= MEETING ROOM =================
     DynamicField(
       name: 'needMeetingRoom',
-      label: 'Need Meeting Room',
+      label: l10n.needMeetingRoom,
       type: FieldType.radio,
       required: true,
-      options: ['Yes', 'No'],
+      options: [
+        DropdownOption(value: 'Yes', label: l10n.yesNoYes),
+        DropdownOption(value: 'No', label: l10n.yesNoNo),
+      ],
     ),
-
-    /// ================= REQUEST DATE =================
     DynamicField(
       name: 'requestDate',
-      label: 'Date',
+      label: l10n.date,
       type: FieldType.date,
       required: true,
       initialValue: formatFormDate(DateTime.now().toString()),
       disabled: true,
     ),
-
-    /// ================= NUMBER OF GUESTS =================
     DynamicField(
       name: 'numberOfGuests',
-      label: 'Number of Guests',
+      label: l10n.numberOfGuests,
       type: FieldType.number,
       required: true,
-      placeholder: 'Enter number of guests (1-100)',
+      placeholder: l10n.enterNumberOfGuests,
     ),
-
-    /// ================= CHECK-IN DATE =================
     DynamicField(
       name: 'checkInDate',
-      label: 'Check-In Date',
+      label: l10n.checkInDate,
       type: FieldType.date,
       required: true,
-      placeholder: 'Select',
+      placeholder: l10n.select,
     ),
-
-    /// ================= CHECK-IN TIME =================
     DynamicField(
       name: 'checkInTime',
-      label: 'Check-In Time',
+      label: l10n.checkInTime,
       type: FieldType.time,
       required: true,
-      placeholder: 'Select',
+      placeholder: l10n.select,
     ),
-
-    /// ================= CHECK-OUT DATE =================
     DynamicField(
       name: 'checkOutDate',
-      label: 'Check-Out Date',
+      label: l10n.checkOutDate,
       type: FieldType.date,
       required: true,
-      placeholder: 'Select',
+      placeholder: l10n.select,
     ),
-
-    /// ================= CHECK-OUT TIME =================
     DynamicField(
       name: 'checkOutTime',
-      label: 'Check-Out Time',
+      label: l10n.checkOutTime,
       type: FieldType.time,
       required: true,
-      placeholder: 'Select',
+      placeholder: l10n.select,
     ),
-
-    /// ================= PURPOSE OF VISIT =================
     DynamicField(
       name: 'purposeOfVisit',
-      label: 'Purpose of Visit',
+      label: l10n.purposeOfVisit,
       type: FieldType.text,
       required: true,
-      placeholder:
-          'Enter purpose of visit (letters only, minimum 5 characters)',
+      placeholder: l10n.enterPurposeOfVisit,
     ),
-
-    /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
-      label: 'Description / Additional Notes',
+      label: l10n.descriptionAdditionalNotesOptional,
       type: FieldType.text,
       required: false,
-      placeholder: 'Write Here...',
+      placeholder: l10n.writeHereAr,
     ),
-
-    /// ================= FILE ATTACHMENT =================
     DynamicField(
       name: 'passportVisaAttachment',
-      label: 'Attach Passport & Visa Photo',
+      label: l10n.attachPassportVisaPhoto,
       type: FieldType.file,
       required: true,
       allowedExtensions: ['doc', 'docx', 'pdf', 'png', 'jpg', 'jpeg'],
       maxFileSizeInMB: 10,
     ),
-
-    /// ================= DECLARATION =================
     DynamicField(
       name: 'acknowledgement',
-      label: 'Declaration',
+      label: l10n.declaration,
       type: FieldType.acknowledgement,
       required: true,
       acknowledgements: [
         AcknowledgementItem(
           id: 'privacy_policy',
-          text: 'I have read and accepted the Security & Privacy Policy',
+          text: l10n.securityPrivacyPolicyAccepted,
           hasAction: true,
           onTap: (context) async {
             return await KAppX.extendedRouter.dialog.showKDialog<bool>(

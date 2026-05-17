@@ -1800,7 +1800,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (response['status'] == 'success') {
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 2));
 
         _refreshDashboard();
       }
