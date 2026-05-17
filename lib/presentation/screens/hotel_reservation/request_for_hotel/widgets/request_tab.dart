@@ -19,10 +19,12 @@ class RequestTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = DashboardL10n.of(context);
+
     return Row(
       children: [
         _tabItem(
-          title: "My Requests",
+          title: l10n.myRequests,
 
           isSelected: selectedIndex == 0,
 
@@ -30,7 +32,7 @@ class RequestTabs extends StatelessWidget {
         ),
 
         _tabItem(
-          title: "Action Items",
+          title: l10n.actionItems,
 
           count: actionItemCount,
 

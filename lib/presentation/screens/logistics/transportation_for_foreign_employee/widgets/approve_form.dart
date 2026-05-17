@@ -168,179 +168,282 @@ class _ApproveRequestDialogWidgetState
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              controller: returnDateController,
-              readOnly: true,
-              onTap: isSubmitting ? null : pickDate,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return l10n.transportSelectReturnDate;
-                }
-                return null;
-              },
-              decoration: InputDecoration(
-                label: mandatoryLabel(l10n.transportVehicleReturnDate),
-                suffixIcon: const Icon(Icons.calendar_today_outlined),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: returnTimeController,
-              readOnly: true,
-              onTap: isSubmitting ? null : pickTime,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return l10n.transportSelectReturnTime;
-                }
-                return null;
-              },
-              decoration: InputDecoration(
-                label: mandatoryLabel(l10n.transportVehicleReturnTime),
-                suffixIcon: const Icon(Icons.access_time_outlined),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              value: vehicleCondition,
-              decoration: InputDecoration(
-                label: mandatoryLabel(l10n.transportVehicleCondition),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              items: [
-                DropdownMenuItem(value: 'Yes', child: Text(l10n.transportYes)),
-                DropdownMenuItem(value: 'No', child: Text(l10n.transportNo)),
-              ],
-              onChanged: isSubmitting
-                  ? null
-                  : (value) {
-                      setState(() => vehicleCondition = value);
-                    },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return l10n.transportSelectVehicleCondition;
-                }
-                return null;
-              },
-            ),
-            if (vehicleCondition == 'No') ...[
-              const SizedBox(height: 20),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Return Date
+              mandatoryLabel(l10n.transportVehicleReturnDate),
+
+              const SizedBox(height: 8),
+
               TextFormField(
-                controller: reasonController,
-                maxLines: 4,
-                enabled: !isSubmitting,
+                controller: returnDateController,
+                readOnly: true,
+                onTap: isSubmitting ? null : pickDate,
                 validator: (value) {
-                  if (vehicleCondition == 'No' &&
-                      (value == null || value.trim().isEmpty)) {
-                    return l10n.transportReasonRequired;
+                  if (value == null || value.isEmpty) {
+                    return l10n.transportSelectReturnDate;
                   }
                   return null;
                 },
                 decoration: InputDecoration(
-                  label: mandatoryLabel(l10n.transportReason),
-                  hintText: l10n.transportEnterReason,
+                  hintText: 'dd-mm-yyyy',
+                  suffixIcon: const Icon(
+                    Icons.calendar_today_outlined,
+                    size: 20,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
-            ],
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: commentsController,
-              maxLines: 5,
-              enabled: !isSubmitting,
-              decoration: InputDecoration(
-                labelText: l10n.transportCommentsOptional,
-                hintText: l10n.transportAddComments,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+
+              const SizedBox(height: 20),
+
+              /// Return Time
+              mandatoryLabel(l10n.transportVehicleReturnTime),
+
+              const SizedBox(height: 8),
+
+              TextFormField(
+                controller: returnTimeController,
+                readOnly: true,
+                onTap: isSubmitting ? null : pickTime,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return l10n.transportSelectReturnTime;
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  hintText: 'hh:mm aa',
+                  suffixIcon: const Icon(Icons.access_time_outlined, size: 20),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 30),
-            if (!isClosed)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(
-                    height: 30,
-                    child: OutlinedButton(
-                      onPressed: isSubmitting
-                          ? null
-                          : () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: BorderSide(color: Colors.grey.shade300),
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
+
+              const SizedBox(height: 20),
+
+              /// Vehicle Condition
+              mandatoryLabel(l10n.transportVehicleCondition),
+
+              const SizedBox(height: 8),
+
+              FormField<String>(
+                validator: (value) {
+                  if (vehicleCondition == null || vehicleCondition!.isEmpty) {
+                    return l10n.transportSelectVehicleCondition;
+                  }
+                  return null;
+                },
+                builder: (FormFieldState<String> field) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 56,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: field.hasError
+                                ? Colors.red
+                                : Colors.grey.shade300,
+                          ),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: vehicleCondition,
+                            hint: Text(
+                              l10n.transportSelectVehicleCondition,
+                              style: const TextStyle(
+                                color: Color(0xFF9CA3AF),
+                                fontSize: 14,
+                              ),
+                            ),
+                            icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                            items: [
+                              DropdownMenuItem(
+                                value: 'Yes',
+                                child: Text(l10n.transportYes),
+                              ),
+                              DropdownMenuItem(
+                                value: 'No',
+                                child: Text(l10n.transportNo),
+                              ),
+                            ],
+                            onChanged: isSubmitting
+                                ? null
+                                : (value) {
+                                    setState(() {
+                                      vehicleCondition = value;
+                                    });
+
+                                    field.didChange(value);
+                                  },
+                          ),
                         ),
                       ),
-                      child: Text(
-                        l10n.transportFormCancel,
-                        style: const TextStyle(
-                          color: Color(0xFF0D652D),
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+
+                      if (field.hasError)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6, left: 12),
+                          child: Text(
+                            field.errorText ?? '',
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+
+              if (vehicleCondition == 'No') ...[
+                const SizedBox(height: 20),
+
+                mandatoryLabel(l10n.transportReason),
+
+                const SizedBox(height: 8),
+
+                TextFormField(
+                  controller: reasonController,
+                  maxLines: 4,
+                  enabled: !isSubmitting,
+                  validator: (value) {
+                    if (vehicleCondition == 'No' &&
+                        (value == null || value.trim().isEmpty)) {
+                      return l10n.transportReasonRequired;
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    hintText: l10n.transportEnterReason,
+                    contentPadding: const EdgeInsets.all(16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 20),
+
+              /// Comments
+              Text(
+                l10n.transportCommentsOptional,
+                style: const TextStyle(
+                  color: Color(0xFF4B5563),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              TextFormField(
+                controller: commentsController,
+                maxLines: 5,
+                enabled: !isSubmitting,
+                decoration: InputDecoration(
+                  hintText: l10n.transportAddComments,
+                  contentPadding: const EdgeInsets.all(16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              /// Buttons
+              if (!isClosed)
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 38,
+                        child: OutlinedButton(
+                          onPressed: isSubmitting
+                              ? null
+                              : () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            side: BorderSide(color: Colors.grey.shade300),
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          child: Text(
+                            l10n.transportFormCancel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    height: 35,
-                    child: ElevatedButton(
-                      onPressed: isSubmitting ? null : onSubmit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0D652D),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      child: isSubmitting
-                          ? const SizedBox(
-                              height: 18,
-                              width: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.check_circle_outline,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
+
+                    const SizedBox(width: 8),
+
+                    Expanded(
+                      child: SizedBox(
+                        height: 38,
+                        child: ElevatedButton(
+                          onPressed: isSubmitting ? null : onSubmit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0D652D),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          child: isSubmitting
+                              ? const SizedBox(
+                                  height: 18,
+                                  width: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
                                   l10n.transportFormSubmit,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ],
-                            ),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-          ],
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );

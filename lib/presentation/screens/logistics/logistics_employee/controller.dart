@@ -641,14 +641,24 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -940,6 +950,7 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: 'Auto calculated',
       type: FieldType.time,
       required: true,
+      disabled: true,
     ),
 
     /// ================= TRAVEL TIME =================
@@ -1180,12 +1191,8 @@ class _VSController extends StateNotifier<_ViewState> {
     String status = '',
   }) async {
     state = state.copyWith(isLoading: true);
-    try {
-      // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
 
+    try {
       final requests = await logisticsRequestVehicleInstanceInstance
           .getRequests(
             offset: 1,
@@ -1196,10 +1203,10 @@ class _VSController extends StateNotifier<_ViewState> {
             subServiceId: subService.id ?? 0,
           );
 
-      // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -1212,25 +1219,21 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(actionItems: [], isLoading: false);
-      }
-
       final items = await logisticsRequestVehicleInstanceInstance
           .getActionItems(
             offset: 1,
             limit: 8,
             searchText: searchText,
             status: status,
-
             serviceId: service.id ?? 0,
             subServiceId: subService.id ?? 0,
           );
 
-      // No merging needed
       state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
@@ -1425,22 +1428,17 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> onApprove(Map<String, dynamic> payload) async {
     try {
       state = state.copyWith(isLoading: true);
-
-      // 1️⃣ Upload files
-
-      // 2️⃣ Build payload
+      KAppX.router.pop();
 
       debugPrint("✅ Final Payload: $payload");
 
-      // 3️⃣ Send request
+      /// API CALL
       await logisticsRequestVehicleInstanceInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
-      KAppX.router.pop();
-      // if (decisionNo != null) {
-      KAppX.router.pop();
-      // }
-      await fetchactionItems();
-      await fetchRequests();
+
+      /// CLOSE DIALOG ONLY ONCE
+
+      /// OPTIONAL REFRESH
+      _refreshDashboard();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1518,6 +1516,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void showApproveForm(BuildContext context, int approverId) {
+    final l10n = DashboardL10n.of(context);
+
     KAppX.extendedRouter.dialog.showKDialog(
       barrierDismissible: false,
       builder: (_) {
@@ -1545,16 +1545,17 @@ class _VSController extends StateNotifier<_ViewState> {
                   padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
                   child: Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Approve Vehicle Request',
-                          style: TextStyle(
-                            fontSize: 20,
+                          l10n.transportApproveVehicleRequestTitle,
+                          style: const TextStyle(
+                            fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
 
+                      /// MANUAL CLOSE
                       InkWell(
                         borderRadius: BorderRadius.circular(30),
                         onTap: () => KAppX.router.pop(),
@@ -1581,6 +1582,8 @@ class _VSController extends StateNotifier<_ViewState> {
                     child: ApproveRequestDialogWidget(
                       service: service,
                       subService: subService,
+
+                      /// DON'T POP HERE AGAIN
                       onSuccess: () {},
                     ),
                   ),
@@ -1594,6 +1597,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void showVehicleAllocateForm(BuildContext context, int approverId) {
+    final l10n = DashboardL10n.of(context);
+
     KAppX.extendedRouter.dialog.showKDialog(
       barrierDismissible: false,
       builder: (_) {
@@ -1621,10 +1626,10 @@ class _VSController extends StateNotifier<_ViewState> {
                   padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
                   child: Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Allocate Vehicle',
-                          style: TextStyle(
+                          l10n.transportAllocateVehicleTitle,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                           ),
@@ -2103,6 +2108,8 @@ class _VSController extends StateNotifier<_ViewState> {
           .logisticsRequestVehicleCreateRequest(payload);
 
       if (response['status'] == 'success') {
+        await Future.delayed(const Duration(seconds: 1));
+
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -2119,8 +2126,8 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalStatusBreakdown('monthly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests();
-    fetchactionItems();
+    fetchRequests(isRefresh: true);
+    fetchactionItems(isRefresh: true);
   }
 
   @override

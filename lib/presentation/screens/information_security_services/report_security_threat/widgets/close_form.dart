@@ -213,12 +213,12 @@ class _ApproveRequestDialogWidgetState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// ================= ACTION TEXT =================
-              Text(
-                l10n.securityThreatCloseFormActionTitle,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-              ),
+              // Text(
+              //   l10n.securityThreatCloseFormActionTitle,
+              //   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+              // ),
 
-              const SizedBox(height: 20),
+              // const SizedBox(height: 20),
 
               /// ================= COMMENTS =================
               buildNormalLabel(l10n.securityThreatCloseFormCommentsLabel),
@@ -317,14 +317,14 @@ class _ApproveRequestDialogWidgetState
 
               /// ================= IDENTIFICATION =================
               buildMandatoryLabel(
-                l10n.securityThreatCloseFormOtherMitigationHint,
+                l10n.securityThreatCloseFormOtherMitigationLabel,
               ),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: identificationMeasuresController,
-                hint: l10n.securityThreatCloseFormIdentificationHint,
+                hint: l10n.otherDetailsPlaceholder,
                 requiredField: true,
                 l10n: l10n,
               ),
@@ -338,7 +338,7 @@ class _ApproveRequestDialogWidgetState
 
               buildTextField(
                 controller: evidenceCollectedController,
-                hint: l10n.securityThreatCloseFormEvidenceHint,
+                hint: l10n.otherDetailsPlaceholder,
                 requiredField: true,
                 l10n: l10n,
               ),
@@ -347,7 +347,7 @@ class _ApproveRequestDialogWidgetState
 
               /// ================= FILE UPLOAD =================
               FileUploadWidget(
-                maxFiles: 5,
+                maxFiles: 1,
                 maxFileSizeInMB: 10,
                 existingFiles: uploadedFiles,
                 allowedExtensions: const [
@@ -373,13 +373,15 @@ class _ApproveRequestDialogWidgetState
               const SizedBox(height: 20),
 
               /// ================= ERADICATION =================
-              buildMandatoryLabel(l10n.securityThreatCloseFormEradicationLabel),
+              buildMandatoryLabel(
+                '${l10n.securityThreatCloseFormEradicationLabel}:',
+              ),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: eradicationMeasuresController,
-                hint: l10n.securityThreatCloseFormEradicationHint,
+                hint: l10n.otherDetailsPlaceholder,
                 requiredField: true,
                 l10n: l10n,
               ),
@@ -387,29 +389,26 @@ class _ApproveRequestDialogWidgetState
               const SizedBox(height: 20),
 
               /// ================= RECOVERY =================
-              /// ================= RECOVERY =================
-              buildNormalLabel(l10n.securityThreatCloseFormRecoveryLabel),
+              buildNormalLabel('${l10n.securityThreatCloseFormRecoveryLabel}:'),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: recoveryMeasuresController,
-                hint: l10n.securityThreatCloseFormRecoveryHint,
+                hint: l10n.otherDetailsPlaceholder,
                 l10n: l10n,
               ),
 
               const SizedBox(height: 20),
 
               /// ================= OTHER =================
-              buildNormalLabel(
-                l10n.securityThreatCloseFormOtherMitigationLabel,
-              ),
+              buildNormalLabel('${l10n.securityThreatCloseMitigation}:'),
 
               const SizedBox(height: 6),
 
               buildTextField(
                 controller: otherMitigationMeasuresController,
-                hint: l10n.securityThreatCloseFormOtherMitigationHint,
+                hint: l10n.otherDetailsPlaceholder,
                 l10n: l10n,
               ),
 

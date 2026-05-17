@@ -32,8 +32,7 @@ class DashboardL10n {
 
   String get newRequest => _t('New Request', 'طلب جديد');
 
-  String get searchByIdOrName =>
-      _t('Search by ID or Name', 'البحث حسب المعرف أو الاسم');
+  String get searchByIdOrName => _t('Search by Request Id', 'البحث برقم الطلب');
 
   String get myRequests => _t('My Requests', 'طلباتي');
 
@@ -159,15 +158,16 @@ class DashboardL10n {
   String get transportFormStepTripDetails =>
       _t('Trip details', 'تفاصيل الرحلة');
 
-  String get transportNoOfPassengers => _t('No of Passengers', 'عدد الركاب');
+  String get transportNoOfPassengers =>
+      _t('Number of Passengers', 'عدد الركاب');
 
   String get transportPassengerNameSection =>
-      _t('Name of the Passenger', 'اسم الراكب');
+      _t('Name of the Passengers', 'أسماء الركاب');
 
-  String get transportAddPassenger => _t('Add Passenger', 'إضافة راكب');
+  String get transportAddPassenger => _t('Add Name', 'إضافة الاسم');
 
   String transportPassengerNameHint(int index) =>
-      _t('Enter passenger $index name', 'أدخل اسم الراكب $index');
+      _t('Enter name (characters only)', 'أدخل الاسم (حروف فقط)');
 
   String get transportPurpose => _t('Purpose', 'الغرض');
 
@@ -176,12 +176,15 @@ class DashboardL10n {
 
   String get transportRequestType => _t('Request Type', 'نوع الطلب');
 
-  String get transportEmployeePassport =>
-      _t('Employee ID / Passport Number', 'رقم الموظف / جواز السفر');
+  String get transportEmployeePassport => _t(
+    'Employee ID / Passport Number(Optional)',
+    'رقم هوية الموظف / رقم جواز السفر (اختياري)',
+  );
 
-  String get transportEnterId => _t('Enter ID', 'أدخل الرقم');
+  String get transportEnterId => _t('Enter ID', 'أدخل رقم الهوية');
 
-  String get transportOriginCity => _t('Origin City', 'مدينة المغادرة');
+  String get transportOriginCity =>
+      _t('Origin City (Optional)', 'مدينة الانطلاق (اختياري)');
 
   String get transportEnterCity => _t('Enter City', 'أدخل المدينة');
 
@@ -192,7 +195,7 @@ class DashboardL10n {
       _t('Enter Destination', 'أدخل الوجهة');
 
   String get transportVehicleRequiredLocation =>
-      _t('Vehicle Required Location', 'موقع الحاجة للمركبة');
+      _t('Vehicle Required Location', 'موقع المركبة المطلوبة');
 
   String get transportInsideMuscat => _t('Inside Muscat', 'داخل مسقط');
 
@@ -212,10 +215,12 @@ class DashboardL10n {
     'اكتب هنا (5 أحرف كحد أدنى، 250 كحد أقصى)',
   );
 
-  String get transportTravelItinerary =>
-      _t('Travel Itinerary / Invitation', 'خط سير الرحلة / الدعوة');
+  String get transportTravelItinerary => _t(
+    'Travel Itinerary / Invitation (Optional)',
+    'خط سير الرحلة / الدعوة (اختياري)',
+  );
 
-  String get transportContactNumber => _t('Contact Number', 'رقم الاتصال');
+  String get transportContactNumber => _t('Contact Number', ' رقم التواصل');
 
   String get transportPassengerNameMinLength => _t(
     'Passenger name must be more than 2 letters',
@@ -226,17 +231,18 @@ class DashboardL10n {
       _t('Allocate Vehicle', 'تخصيص مركبة');
 
   String get transportApproveVehicleRequestTitle =>
-      _t('Approve Vehicle Request', 'الموافقة على طلب المركبة');
+      _t('Approve Request', 'موافقة على الطلب');
 
   String get transportDriverName => _t('Driver Name', 'اسم السائق');
 
   String get transportDriverNameHint =>
       _t('Enter Driver Name', 'أدخل اسم السائق');
 
-  String get transportVehicleNumber => _t('Vehicle Number', 'رقم المركبة');
+  String get transportVehicleNumber =>
+      _t('Select Vehicle Number', 'اختر رقم المركبة');
 
   String get transportSelectVehicleNumber =>
-      _t('Please select vehicle number', 'يرجى اختيار رقم المركبة');
+      _t('Vehicle number is required', 'رقم المركبة مطلوب');
 
   String get transportFuelCard => _t('Fuel Card', 'بطاقة الوقود');
 
@@ -245,22 +251,21 @@ class DashboardL10n {
   String get transportNo => _t('No', 'لا');
 
   String get transportVehicleReturnDate =>
-      _t('Vehicle Return Date', 'تاريخ إرجاع المركبة');
+      _t('Vehicle Return Date', 'تاريخ إرجاع المركبة المتوقع');
 
   String get transportVehicleReturnTime =>
-      _t('Vehicle Return Time', 'وقت إرجاع المركبة');
+      _t('Vehicle Return Time', 'وقت إرجاع المركبة المتوقع');
 
   String get transportSelectReturnDate =>
       _t('Please select return date', 'يرجى اختيار تاريخ الإرجاع');
 
   String get transportSelectReturnTime =>
       _t('Please select return time', 'يرجى اختيار وقت الإرجاع');
-
   String get transportVehicleCondition =>
       _t('Vehicle Condition', 'حالة المركبة');
 
   String get transportSelectVehicleCondition =>
-      _t('Please select vehicle condition', 'يرجى اختيار حالة المركبة');
+      _t('Select Vehicle Condition', 'اختر حالة المركبة');
 
   String get transportReason => _t('Reason', 'السبب');
 
@@ -448,7 +453,7 @@ class DashboardL10n {
       _t('Select Department', 'اختر القسم');
 
   String get securityThreatFormContactPlaceholder =>
-      _t('Enter Contact Number', 'أدخل رقم الاتصال');
+      _t('Enter Contact Number', ' رقم التواصل');
 
   String get securityThreatFormTicketPlaceholder => _t(
     'Enter request title (min 5, max 250 characters)',
@@ -457,7 +462,11 @@ class DashboardL10n {
 
   String get securityThreatFormOtherDetailsPlaceholder => _t(
     'Enter Details (min 5, max 250 characters)',
-    'أدخل التفاصيل (5 أحرف كحد أدنى، 250 كحد أقصى)',
+    '(أدخل التفاصيل (5 كحد أدنى و250 حرفًا كحد أقصى',
+  );
+  String get otherDetailsPlaceholder => _t(
+    'Enter Details (min 5, max 250 characters)',
+    '(أدخل التفاصيل (5 كحد أدنى و250 حرفًا كحد أقصى',
   );
 
   String get securityThreatFormSelectTypeIncidentDetected =>
@@ -482,23 +491,25 @@ class DashboardL10n {
   String get securityThreatCloseFormCommentsLabel =>
       _t('Comments (Optional)', 'التعليقات (اختياري)');
 
-  String get securityThreatCloseFormCommentsHint =>
-      _t('Enter comments', 'أدخل التعليقات');
+  String get securityThreatCloseFormCommentsHint => _t(
+    'Add your comments (optional, min 5, max 250 if provided)',
+    'أضف تعليقاتك (اختياري، 5–250 حرفًا إن وُجد نص)',
+  );
 
   String get securityThreatCloseFormIncidentNotificationLabel =>
       _t('Incident Notification in CAA', 'إشعار الحادث في هيئة الطيران المدني');
 
   String get securityThreatCloseFormHeadInfoSec =>
-      _t('Head of Information Security', 'رئيس أمن المعلومات');
+      _t('Head of Information Security', 'رئيس قسم امن المعلومات');
 
   String get securityThreatCloseFormDirectorIt =>
-      _t('Director of Information Technology', 'مدير تقنية المعلومات');
+      _t('Director of Information Technology', 'مدير دائرة تقنية المعلومات');
 
   String get securityThreatCloseFormLegalDept =>
-      _t('Legal Department', 'الإدارة القانونية');
+      _t('Legal Department', 'الدائرة القانونية');
 
   String get securityThreatCloseFormHeadInfra =>
-      _t('Head of Infrastructure', 'رئيس البنية التحتية');
+      _t('Head of Infrastructure', 'رئيس قسم الشبكات');
   String get securyThreatAction => _t('Action', 'الإجراء');
 
   String get securityThreatCloseFormIdentificationLabel =>
@@ -524,6 +535,9 @@ class DashboardL10n {
 
   String get securityThreatCloseFormOtherMitigationHint =>
       _t('Enter other mitigation measures', 'أدخل تدابير التخفيف الأخرى');
+
+  String get securityThreatCloseMitigation =>
+      _t('Other Mitigation Measures', 'إجراءات التخفيف الأخرى:');
 
   String get securityThreatCloseFormFieldRequired =>
       _t('This field is required', 'هذا الحقل مطلوب');
@@ -826,13 +840,13 @@ class DashboardL10n {
         return _t('Approver Email', 'البريد الإلكتروني للمعتمد');
 
       case 'Contact Number':
-        return _t('Contact Number', 'رقم التواصل');
+        return _t('Contact Number', ' رقم التواصل');
 
       case 'Service Type':
         return _t('Service Type', 'نوع الخدمة');
 
       case 'Sub Service Type':
-        return _t('Sub Service Type', 'نوع الخدمة الفرعي');
+        return _t('Sub Services', 'الخدمات الفرعية');
 
       case 'Ticket Name':
         return _t('Ticket Name', 'اسم التذكرة');
@@ -850,16 +864,19 @@ class DashboardL10n {
         return _t('Extension Number', 'رقم المحول');
 
       case 'Purpose of Travel':
-        return _t('Purpose of Travel', 'الغرض من السفر');
+        return _t('Purpose of Travel', 'أدخل غرض السفر');
 
       case 'No of Passengers':
-        return _t('No of Passengers', 'عدد الركاب');
+        return _t('Number of Passengers', 'عدد الركاب');
 
       case 'Arrival/Departure Date & Time':
-        return _t('Arrival/Departure Date & Time', 'تاريخ الوصول / المغادرة');
+        return _t(
+          'Arrival/Departure Date & Time',
+          'تاريخ ووقت الوصول / المغادرة',
+        );
 
       case 'Vehicle Required Location':
-        return _t('Vehicle Required Location', 'المركبة مطلوبة');
+        return _t('Vehicle Required Location', 'موقع المركبة المطلوبة');
 
       case 'Vehicle Location':
         return _t('Vehicle Location', 'موقع المركبة');
@@ -872,9 +889,11 @@ class DashboardL10n {
 
       case 'Employee ID':
         return _t('Employee ID', 'رقم الموظف');
+      case 'Name':
+        return _t('Name', 'الاسم');
 
       case 'Job Title / Designation':
-        return _t('Job Title / Designation', 'المسمى الوظيفي / التعيين');
+        return _t('Job Title / Designation', 'المسمى الوظيفي / المنصب');
 
       case 'Email Address':
         return _t('Email Address', 'البريد الإلكتروني');

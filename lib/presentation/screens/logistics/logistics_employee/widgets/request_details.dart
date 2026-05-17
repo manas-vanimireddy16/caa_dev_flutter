@@ -47,10 +47,11 @@ class _LogisticsRequestDetailsTabScreenState
   @override
   Widget build(BuildContext context) {
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: const Text('Request Detail')),
+      appBar: KAppBar(title: Text(l10n.requestDetailScreenTitle)),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(
@@ -100,8 +101,13 @@ class _LogisticsRequestDetailsTabScreenState
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)
                   CommonRequestDetails(
+                    statusInformationTitle:
+                        l10n.requestDetailsLabel('Status Information'),
+                    requestInformationTitle:
+                        l10n.requestDetailsLabel('Request Information'),
+                    technicalInformationTitle: l10n.technicalDetailsSection,
+                    requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: controller.buildStatusInformation(),
-
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
                     // table: controller.mapAccommodationTableForDetails(),
@@ -115,6 +121,7 @@ class _LogisticsRequestDetailsTabScreenState
                     controller: controller.chatController,
                     buttonsDisabled: state.isButtonDisabled,
                     attachments: state.attachments,
+                    l10n: l10n,
                     onAttach: () async {
                       await controller.pickFile();
                     },
@@ -156,9 +163,15 @@ class _LogisticsRequestDetailsTabScreenState
                     },
                   )
                 else if (selectedTab == 2)
-                  CommonAttachmentsTabContent(attachments: attachments)
+                  CommonAttachmentsTabContent(
+                    attachments: attachments,
+                    l10n: l10n,
+                  )
                 else if (selectedTab == 3)
-                  RequestWorkflowTimeline(details: state.requestDetails),
+                  RequestWorkflowTimeline(
+                    details: state.requestDetails,
+                    l10n: l10n,
+                  ),
               ],
             ),
           );

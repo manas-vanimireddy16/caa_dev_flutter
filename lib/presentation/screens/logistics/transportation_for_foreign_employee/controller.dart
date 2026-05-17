@@ -1242,12 +1242,8 @@ class _VSController extends StateNotifier<_ViewState> {
     String status = '',
   }) async {
     state = state.copyWith(isLoading: true);
-    try {
-      // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
 
+    try {
       final requests = await foreignEmployeeInstance.getRequests(
         offset: 1,
         limit: 8,
@@ -1257,10 +1253,10 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceId: subService.id ?? 0,
       );
 
-      // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -1273,21 +1269,15 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(actionItems: [], isLoading: false);
-      }
-
       final items = await foreignEmployeeInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
         status: status,
-
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
 
-      // No merging needed
       state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -1604,7 +1594,7 @@ class _VSController extends StateNotifier<_ViewState> {
                         child: Text(
                           l10n.transportApproveVehicleRequestTitle,
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -2089,7 +2079,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {
-    return (values['attachments'] as List<FileUploadItem>? ?? [])
+    return (values['travel_itinerary'] as List<FileUploadItem>? ?? [])
         .map((file) => file.toJson())
         .toList();
   }
@@ -2178,10 +2168,9 @@ class _VSController extends StateNotifier<_ViewState> {
           .foreignEmployeeVehicleCreateRequest(payload);
 
       if (response['status'] == 'success') {
-        await Future.wait([
-          _refreshDashboard(),
-          Future<void>.delayed(const Duration(milliseconds: 2500)),
-        ]);
+        await Future.delayed(const Duration(seconds: 1));
+
+        _refreshDashboard();
         return true;
       }
       return false;
@@ -2207,8 +2196,8 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchTrendBreakDown(currentYear),
       fetchApprovalTrendBreakDown(currentYear),
 
-      fetchRequests(),
-      fetchactionItems(),
+      fetchRequests(isRefresh: true),
+      fetchactionItems(isRefresh: true),
     ]);
   }
 
