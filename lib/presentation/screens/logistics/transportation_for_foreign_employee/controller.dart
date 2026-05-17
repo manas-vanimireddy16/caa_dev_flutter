@@ -618,7 +618,7 @@ class _VSController extends StateNotifier<_ViewState> {
     searchController = TextEditingController();
     fetchKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
@@ -1281,6 +1281,8 @@ class _VSController extends StateNotifier<_ViewState> {
       state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
@@ -1454,9 +1456,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchactionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -2020,7 +2022,7 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       fetchactionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -2168,7 +2170,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .foreignEmployeeVehicleCreateRequest(payload);
 
       if (response['status'] == 'success') {
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(microseconds: 1500));
 
         _refreshDashboard();
         return true;

@@ -331,6 +331,38 @@ class DashboardL10n {
 
   String get dynamicFormSearchHint => _t('Search...', 'بحث...');
 
+  // Logistics Daily/Emergency
+  String get vehicleRequiredFor =>
+      _t('Vehicle Required For', 'المركبة المطلوبة لـ');
+
+  String get vehicleRequiredLocation =>
+      _t('Vehicle Required Location', 'موقع المركبة المطلوبة');
+
+  String get requestTitleLogistics => _t('Request Title', 'عنوان الطلب');
+
+  String get enterRequestTitleLogistics => _t(
+    'Enter request title (min 5, max 250 characters)',
+    'أدخل عنوان الطلب (5 أحرف كحد أدنى و250 كحد أقصى)',
+  );
+
+  String get typeOfRequest => _t('Type of Request', 'نوع الطلب');
+
+  String get purposeOfTravel => _t('Purpose of Travel', 'الغرض من السفر');
+
+  String get travelTime => _t('Travel Time', 'وقت السفر');
+
+  String get typeOfVehicleRequired =>
+      _t('Type of Vehicle Required', 'نوع المركبة المطلوبة');
+
+  String get attachFileOptional =>
+      _t('Attach File (Optional)', 'المرفقات (اختياري)');
+
+  String get autoCalculated => _t('Auto calculated', 'Auto calculated');
+
+  String get writeHereAr => _t('Write Here...', 'اكتب هنا...');
+
+  String get duration => _t('Duration', 'المدة الزمنية');
+
   String securityThreatIncidentType(String en) {
     switch (en) {
       case 'Denial of Service':
