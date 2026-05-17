@@ -832,156 +832,189 @@ class _VSController extends StateNotifier<_ViewState> {
 
   final logisticsRequestVehicleInstanceInstance = RequestAVehicleRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
-  List<DynamicField> get logisticsVehicleRequestFields => [
-    /// ================= REQUEST TYPE =================
+  List<DynamicField> buildLogisticsVehicleRequestFields(DashboardL10n l10n) => [
     DynamicField(
       name: 'request_type',
-      label: 'Request Type',
+      label: l10n.typeOfRequest,
       type: FieldType.radio,
       required: true,
       initialValue: 'Daily',
-      options: ['Daily', 'Emergency'],
+      options: [
+        DropdownOption(
+          value: 'Daily',
+          label: l10n.logisticsDailyEmergencyOption('Daily'),
+        ),
+        DropdownOption(
+          value: 'Emergency',
+          label: l10n.logisticsDailyEmergencyOption('Emergency'),
+        ),
+      ],
     ),
-
-    /// ================= VEHICLE REQUIRED FOR =================
     DynamicField(
       name: 'vehicle_required_for',
-      label: 'Vehicle Required For',
+      label: l10n.vehicleRequiredFor,
       type: FieldType.select,
       required: true,
-      placeholder: 'Select ',
-      options: const [
-        DropdownOption(value: 'Conferences', label: 'Conferences'),
+      placeholder: l10n.select,
+      options: [
+        DropdownOption(
+          value: 'Conferences',
+          label: l10n.logisticsVehicleRequiredForOption('Conferences'),
+        ),
         DropdownOption(
           value: 'Celebrations and Official Meetings',
-          label: 'Celebrations and Official Meetings',
+          label: l10n.logisticsVehicleRequiredForOption(
+            'Celebrations and Official Meetings',
+          ),
         ),
-        DropdownOption(value: 'others', label: 'Others'),
+        DropdownOption(
+          value: 'others',
+          label: l10n.logisticsVehicleRequiredForOption('others'),
+        ),
       ],
     ),
-
-    /// ================= VEHICLE REQUIRED LOCATION =================
     DynamicField(
       name: 'vehicle_required_location',
-      label: 'Vehicle Required Location',
+      label: l10n.vehicleRequiredLocation,
       type: FieldType.select,
-      placeholder: 'Select ',
+      placeholder: l10n.select,
       required: true,
-      options: const [
-        DropdownOption(value: 'Inside Muscat', label: 'Inside Muscat'),
-        DropdownOption(value: 'Outside Muscat', label: 'Outside Muscat'),
-      ],
-    ),
-
-    /// ================= REQUEST TITLE =================
-    DynamicField(
-      name: 'request_title',
-      label: 'Request Title',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter request title (min 5, max 250 characters)',
-    ),
-
-    /// ================= TYPE OF REQUEST =================
-    DynamicField(
-      name: 'type_of_request',
-      label: 'Type of Request',
-      type: FieldType.select,
-      required: true,
-      placeholder: 'Select ',
-      options: const [
-        DropdownOption(value: 'New Request', label: 'New Request'),
+      options: [
         DropdownOption(
-          value: 'Extension of Previous Request',
-          label: 'Extension of Previous Request',
+          value: 'Inside Muscat',
+          label: l10n.transportInsideMuscat,
+        ),
+        DropdownOption(
+          value: 'Outside Muscat',
+          label: l10n.transportOutsideMuscat,
         ),
       ],
     ),
-
-    /// ================= PURPOSE OF TRAVEL =================
+    DynamicField(
+      name: 'request_title',
+      label: l10n.requestTitleLogistics,
+      type: FieldType.text,
+      required: true,
+      placeholder: l10n.enterRequestTitleLogistics,
+    ),
+    DynamicField(
+      name: 'type_of_request',
+      label: l10n.typeOfRequest,
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.select,
+      options: [
+        DropdownOption(
+          value: 'New Request',
+          label: l10n.transportRequestTypeOption('New Request'),
+        ),
+        DropdownOption(
+          value: 'Extension of Previous Request',
+          label: l10n.transportRequestTypeOption(
+            'Extension of Previous Request',
+          ),
+        ),
+      ],
+    ),
     DynamicField(
       name: 'purpose_of_travel',
-      label: 'Purpose of Travel',
+      label: l10n.purposeOfTravel,
       type: FieldType.select,
       required: true,
-      placeholder: 'Select ',
-      options: const [
-        DropdownOption(value: 'Site Visit', label: 'Site Visit'),
-        DropdownOption(value: 'Airport Duty', label: 'Airport Duty'),
-        DropdownOption(value: 'Official Meeting', label: 'Official Meeting'),
-        DropdownOption(value: 'Other', label: 'Other'),
+      placeholder: l10n.select,
+      options: [
+        DropdownOption(
+          value: 'Site Visit',
+          label: l10n.logisticsPurposeOfTravelOption('Site Visit'),
+        ),
+        DropdownOption(
+          value: 'Airport Duty',
+          label: l10n.logisticsPurposeOfTravelOption('Airport Duty'),
+        ),
+        DropdownOption(
+          value: 'Official Meeting',
+          label: l10n.logisticsPurposeOfTravelOption('Official Meeting'),
+        ),
+        DropdownOption(
+          value: 'Other',
+          label: l10n.logisticsPurposeOfTravelOption('Other'),
+        ),
       ],
     ),
-
-    /// ================= TYPE OF VEHICLE REQUIRED =================
     DynamicField(
       name: 'type_of_vehicle_required',
-      label: 'Type of Vehicle Required',
+      label: l10n.typeOfVehicleRequired,
       type: FieldType.select,
-      placeholder: 'Select ',
+      placeholder: l10n.select,
       required: true,
-      options: const [
-        DropdownOption(value: 'Light vehicle', label: 'Light Vehicle'),
-        DropdownOption(value: 'Heavy vehicle', label: 'Heavy Vehicle'),
+      options: [
+        DropdownOption(
+          value: 'Light vehicle',
+          label: l10n.logisticsVehicleTypeOption('Light vehicle'),
+        ),
+        DropdownOption(
+          value: 'Heavy vehicle',
+          label: l10n.logisticsVehicleTypeOption('Heavy vehicle'),
+        ),
       ],
     ),
-
-    /// ================= TRAVEL DATE =================
     DynamicField(
       name: 'travel_date_from',
-      label: 'Travel Date From',
-      placeholder: 'Select',
+      label: l10n.travelDateFrom,
+      placeholder: l10n.select,
       type: FieldType.date,
       required: true,
     ),
-
-    /// ================= TRAVEL DATE TO =================
     DynamicField(
       name: 'travel_date_to',
-      label: 'Travel Date To',
-      placeholder: 'Select',
+      label: l10n.travelDateTo,
+      placeholder: l10n.select,
       type: FieldType.date,
       required: true,
     ),
-
     DynamicField(
       name: 'duration',
-      label: 'Duration',
-      placeholder: 'Auto calculated',
+      label: l10n.duration,
+      placeholder: l10n.autoCalculated,
       type: FieldType.time,
       required: true,
       disabled: true,
     ),
-
-    /// ================= TRAVEL TIME =================
     DynamicField(
       name: 'travel_time',
-      label: 'Travel Time',
-      placeholder: 'Select',
+      label: l10n.travelTime,
+      placeholder: l10n.select,
       type: FieldType.time,
       required: true,
     ),
-
-    /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
-      label: 'Description',
+      label: l10n.requestDetailsLabel('Description'),
       type: FieldType.text,
       required: false,
-      placeholder: 'Write Here...',
-      // hintText: 'Write Here...',
+      placeholder: l10n.writeHereAr,
     ),
-
-    /// ================= ATTACHMENT =================
     DynamicField(
       name: 'attachment',
-      label: 'Attach File',
+      label: l10n.attachFileOptional,
       type: FieldType.file,
       required: false,
     ),
-
-    /// ================= REQUEST FOR =================
   ];
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
+  }
 
   /// ========================= API CALLS =========================
 

@@ -20,13 +20,27 @@ class CheckboxFieldWidget extends ConsumerWidget {
       children: [
         Text(field.label),
         ...field.options!.map((opt) {
-          final checked = values.contains(opt);
+          final String value;
+          final String label;
+          if (opt is DropdownOption) {
+            value = opt.value.toString();
+            label = opt.label;
+          } else {
+            value = opt.toString();
+            label = opt.toString();
+          }
+
+          final checked = values.contains(value);
           return CheckboxListTile(
             value: checked,
-            title: Text(opt.toString()),
+            title: Text(label),
             onChanged: (val) {
               final updated = [...values];
-              val == true ? updated.add(opt) : updated.remove(opt);
+              if (val == true) {
+                updated.add(value);
+              } else {
+                updated.remove(value);
+              }
               notifier.updateValue(field.name, updated);
             },
           );

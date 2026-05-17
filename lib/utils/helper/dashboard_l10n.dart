@@ -357,7 +357,107 @@ class DashboardL10n {
   String get attachFileOptional =>
       _t('Attach File (Optional)', 'المرفقات (اختياري)');
 
-  String get autoCalculated => _t('Auto calculated', 'Auto calculated');
+  String get autoCalculated => _t('Auto calculated', 'يُحسب تلقائياً');
+
+  String get travelDateFrom => _t('Travel Date From', 'تاريخ السفر من');
+
+  String get travelDateTo => _t('Travel Date To', 'تاريخ السفر إلى');
+
+  String get attachFile => _t('Attach File', 'إرفاق ملف');
+
+  String get numberOfGuests => _t('Number of Guests', 'عدد الضيوف');
+
+  String get enterNumberOfGuests =>
+      _t('Enter number of guests (1-100)', 'أدخل عدد الضيوف (1-100)');
+
+  String get securityPrivacyPolicyAccepted => _t(
+    'I have read and accepted the Security & Privacy Policy',
+    'لقد قرأت وقبلت سياسة الأمان والخصوصية',
+  );
+
+  String get servicesLabel => _t('Services', 'الخدمات');
+
+  String get declaration => _t('Declaration', 'إقرار');
+
+  String get requestName => _t('Request Name', 'اسم الطلب');
+
+  String get category => _t('Category', 'الفئة');
+
+  String get requestSubmissionDate =>
+      _t('Request Submission Date', 'تاريخ تقديم الطلب');
+
+  String get meal => _t('Meal', 'الوجبات');
+
+  String get yesNoYes => _t('Yes', 'نعم');
+
+  String get yesNoNo => _t('No', 'لا');
+
+  String get downloadFailed =>
+      _t('Failed to download file', 'فشل تحميل الملف');
+
+  String get downloadSuccess =>
+      _t('File downloaded successfully', 'تم تحميل الملف بنجاح');
+
+  String get previewNotAvailable => _t(
+    'Preview is not available for this file type. Please download instead.',
+    'المعاينة غير متاحة لهذا النوع من الملفات. يرجى التحميل بدلاً من ذلك.',
+  );
+
+  String logisticsDailyEmergencyOption(String en) {
+    switch (en) {
+      case 'Daily':
+        return _t('Daily', 'يومي');
+      case 'Emergency':
+        return _t('Emergency', 'طارئ');
+      default:
+        return en;
+    }
+  }
+
+  String logisticsVehicleRequiredForOption(String en) {
+    switch (en) {
+      case 'Conferences':
+        return _t('Conferences', 'المؤتمرات');
+      case 'Celebrations and Official Meetings':
+        return _t(
+          'Celebrations and Official Meetings',
+          'الاحتفالات والاجتماعات الرسمية',
+        );
+      case 'others':
+      case 'Others':
+        return _t('Others', 'أخرى');
+      default:
+        return en;
+    }
+  }
+
+  String logisticsPurposeOfTravelOption(String en) {
+    switch (en) {
+      case 'Site Visit':
+        return _t('Site Visit', 'زيارة موقع');
+      case 'Airport Duty':
+        return _t('Airport Duty', 'مهمة مطار');
+      case 'Official Meeting':
+        return _t('Official Meeting', 'اجتماع رسمي');
+      case 'Other':
+        return _t('Other', 'أخرى');
+      default:
+        return en;
+    }
+  }
+
+  String logisticsVehicleTypeOption(String en) {
+    switch (en) {
+      case 'Light vehicle':
+      case 'Light Vehicle':
+        return _t('Light Vehicle', 'مركبة خفيفة');
+      case 'Heavy vehicle':
+      case 'Heavy Vehicle':
+        return _t('Heavy Vehicle', 'مركبة ثقيلة');
+      default:
+        return en;
+    }
+  }
 
   String get writeHereAr => _t('Write Here...', 'اكتب هنا...');
 
@@ -921,6 +1021,16 @@ class DashboardL10n {
         return _t('Approver', 'المُعتمد');
       case 'Vehicle Location':
         return _t('Vehicle Location', 'موقع المركبة');
+      case 'Request Name':
+        return requestName;
+      case 'Category':
+        return category;
+      case 'Hotel Name':
+        return hotelName;
+      case 'Check-In Date':
+        return checkInDate;
+      case 'Request Submission Date':
+        return requestSubmissionDate;
       default:
         return _formatKey(key);
     }
@@ -1103,6 +1213,60 @@ class DashboardL10n {
 
       case 'Other Mitigation Measures:':
         return _t('Other Mitigation Measures:', 'إجراءات التخفيف الأخرى:');
+
+      case 'Request For':
+        return vehicleRequiredFor;
+
+      case 'Travel Time':
+        return travelTime;
+
+      case 'Location':
+        return _t('Location', 'الموقع');
+
+      case 'Travel Date From':
+        return travelDateFrom;
+
+      case 'Travel Date To':
+        return travelDateTo;
+
+      case 'Hotel Name':
+        return hotelName;
+
+      case 'Accommodation Type':
+        return accommodationType;
+
+      case 'Number of Passengers':
+        return _t('Number of Passengers', 'عدد الركاب');
+
+      case 'Number of Guests':
+        return numberOfGuests;
+
+      case 'Check-Out Date':
+        return checkOutDate;
+
+      case 'Meal':
+        return meal;
+
+      case 'Hotel Price':
+        return hotelPrice;
+
+      case 'Request Name':
+        return requestName;
+
+      case 'Category':
+        return category;
+
+      case 'Type of Request':
+        return typeOfRequest;
+
+      case 'Type of Vehicle Required':
+        return typeOfVehicleRequired;
+
+      case 'Attach File':
+        return attachFile;
+
+      case 'Request Type':
+        return typeOfRequest;
 
       default:
         return _formatKey(key);
