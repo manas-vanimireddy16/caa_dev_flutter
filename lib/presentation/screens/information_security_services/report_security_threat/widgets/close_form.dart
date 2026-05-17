@@ -409,7 +409,7 @@ class _ApproveRequestDialogWidgetState
 
               buildTextField(
                 controller: otherMitigationMeasuresController,
-                hint: l10n.securityThreatCloseMitigation,
+                hint: l10n.securityThreatCloseFormOtherMitigationHint,
                 l10n: l10n,
               ),
 
