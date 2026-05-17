@@ -625,6 +625,153 @@ class DashboardL10n {
     'Evidence Collected (system logs, audit logs, Png, etc.):',
     'الأدلة المجمعة (سجلات النظام، سجلات التدقيق، PNG، إلخ):',
   );
+  // Hotel Reservation
+
+  String get accommodationType => _t('Accommodation Type', 'نوع الإقامة');
+
+  String get hotelName => _t('Hotel Name', 'اسم الفندق');
+
+  String get enterHotelName =>
+      _t('Enter Hotel Name (3-100 characters)', 'أدخل اسم الفندق (3-100 حرف)');
+
+  String get enterPrice =>
+      _t('Enter price (e.g., 100)', 'أدخل السعر (مثال: 100)');
+
+  String get telephoneService => _t('Telephone service', 'خدمة الهاتف');
+
+  String get meals => _t('Meals', 'الوجبات');
+
+  String get breakfast => _t('Breakfast', 'الإفطار');
+
+  String get lunch => _t('Lunch', 'الغداء');
+
+  String get dinner => _t('Dinner', 'العشاء');
+
+  String get laundry => _t('Laundry', 'غسيل الملابس');
+
+  String get needMeetingRoom =>
+      _t('Need Meeting Room', 'هل تحتاج إلى مركز للاجتماع؟');
+
+  String get date => _t('Date', 'التاريخ');
+
+  String get requestTimeoutTryAgain => _t(
+    'Request timeout. Please try again.',
+    'انتهت مهلة الطلب. يرجى المحاولة مرة أخرى.',
+  );
+
+  String get errorSubmittingRequest =>
+      _t('Error submitting request', 'خطأ في تقديم الطلب');
+
+  String get newRequestHotelReservation =>
+      _t('New Request for Hotel Reservation', 'طلب جديد لحجز فندق');
+
+  String get accommodationTypeRequested =>
+      _t('Accommodation Type Requested', 'نوع الإقامة المطلوبة');
+
+  String get accommodationTypeRequired =>
+      _t('Accommodation Type is required', 'نوع الإقامة مطلوب');
+
+  String get hotelPrice => _t('Hotel Price', 'سعر الفندق');
+
+  String get hotelPriceRequired =>
+      _t('Hotel Price is required', 'سعر الفندق مطلوب');
+
+  String get invalidPriceMax => _t(
+    'Invalid price (max 999,999.99)',
+    'سعر غير صالح (الحد الأقصى 999,999.99)',
+  );
+
+  String get numberOfGuestsRequired =>
+      _t('Number of Guests is required', 'عدد الضيوف مطلوب');
+
+  String get guestsMustBe1100 =>
+      _t('Guests must be between 1-100', 'يجب أن يكون عدد الضيوف بين 1-100');
+
+  String get dateRequired => _t('Date is required', 'التاريخ مطلوب');
+
+  String get hotelNameRequired =>
+      _t('Hotel Name is required', 'اسم الفندق مطلوب');
+
+  String get hotelNameValidation => _t(
+    'Hotel Name: 3-100 chars, alphanumeric only',
+    'اسم الفندق: 3-100 حرف، أرقام وحروف فقط',
+  );
+
+  String get checkInDateRequired =>
+      _t('Check In Date is required', 'تاريخ الوصول مطلوب');
+
+  String get checkInDateMin2Days => _t(
+    'Check In Date must be at least 2 days from today',
+    'يجب أن يكون تاريخ الوصول بعد يومين على الأقل من اليوم',
+  );
+
+  String get checkInTimeRequired =>
+      _t('Check In Time is required', 'وقت الوصول مطلوب');
+
+  String get checkOutDateRequired =>
+      _t('Check Out Date is required', 'تاريخ المغادرة مطلوب');
+
+  String get checkOutMustBeAfterCheckIn => _t(
+    'Check Out must be after Check In',
+    'يجب أن يكون تاريخ المغادرة بعد تاريخ الوصول',
+  );
+
+  String get checkOutTimeRequired =>
+      _t('Check Out Time is required', 'وقت المغادرة مطلوب');
+
+  String get purposeOfVisit => _t('Purpose of Visit', 'الغرض من الزيارة');
+
+  String get purposeOfVisitRequired =>
+      _t('Purpose of Visit is required', 'الغرض من الزيارة مطلوب');
+
+  String get purposeOfVisitCharactersOnly => _t(
+    'Purpose of Visit must contain only letters, spaces, hyphens, and apostrophes (minimum 3 characters)',
+    'يجب أن يحتوي الغرض من الزيارة على أحرف ومسافات وشرطات وعلامات اقتباس فقط (3 أحرف على الأقل)',
+  );
+
+  String get enterPurposeOfVisit => _t(
+    'Enter purpose of visit (letters only, minimum 5 characters)',
+    'أدخل الغرض من الزيارة (أحرف فقط، 3 أحرف على الأقل)',
+  );
+
+  String get atLeastOneServiceFacilityRequired => _t(
+    'At least one Service or Facility is required',
+    'يجب اختيار خدمة أو مرفق واحد على الأقل',
+  );
+
+  String get passportVisaPhotoRequired => _t(
+    'Passport & Visa Photo is required',
+    'صورة جواز السفر والتأشيرة مطلوبة',
+  );
+
+  String get descriptionMax500Characters =>
+      _t('Description max 500 characters', 'الوصف بحد أقصى 500 حرف');
+
+  String get mustAcknowledgeSecurityPolicies => _t(
+    'You must acknowledge the security policies',
+    'يجب عليك الموافقة على سياسات الأمان',
+  );
+
+  String get checkInDate => _t('Check-In Date', 'تاريخ الوصول');
+
+  String get checkOutDate => _t('Check-Out Date', 'تاريخ المغادرة');
+
+  String get checkInTime => _t('Check-In Time', 'وقت الوصول');
+
+  String get checkOutTime => _t('Check-Out Time', 'وقت المغادرة');
+
+  String get attachPassportVisaPhoto =>
+      _t('Attach Passport & Visa Photo', 'إرفاق صورة جواز السفر والتأشيرة');
+
+  String get descriptionAdditionalNotesOptional => _t(
+    'Description / Additional Notes (Optional)',
+    'الوصف / الملاحظات الإضافية (اختياري)',
+  );
+
+  String get policyPage => _t(
+    "I agree to comply with CAA's security policies.",
+    'أوافق على الالتزام بسياسات الأمان الخاصة بالهيئة',
+  );
 
   String securityNavTitle(int index) {
     switch (index) {
