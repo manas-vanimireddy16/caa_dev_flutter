@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
@@ -11,246 +12,661 @@ import 'package:code_setup/modules/domain/roles_repo.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/repository/authentication/domain.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/localization_provider/localization_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:msal_auth/msal_auth.dart';
 
 part 'controller.dart';
 
+// Design tokens — reference spec
+const _overlayTop = Color.fromRGBO(16, 20, 45, 0.82);
+const _overlayBottom = Color.fromRGBO(34, 24, 66, 0.72);
+const _cardBackground = Color(0xFFF5F5F5);
+const _buttonNavy = Color(0xFF23245B);
+const _languageText = Color(0xFF1D1D1D);
+const _featureSubtitleOpacity = 0.82;
+const _statLabelOpacity = 0.85;
+
 @RoutePage()
-// class MicrosoftLoginPage extends ConsumerWidget {
-//   const MicrosoftLoginPage({Key? key}) : super(key: key);
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final state = ref.watch(loginVsProvider);
-//     final controller = ref.read(loginVsProvider.notifier);
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Microsoft Login')),
-//       body: Padding(
-//         padding: const EdgeInsets.all(20.0),
-//         child: Center(
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               if (state.isLoading)
-//                 const CircularProgressIndicator()
-//               else ...[
-//                 ElevatedButton(
-//                   onPressed: () async {
-//                     await controller.signIn();
-//                     // ref.read(_vsProvider.notifier).loginWithJwtDirectly();
-//                   },
-//                   child: const Text('Sign in with Microsoft'),
-//                 ),
-//                 const SizedBox(height: 10),
-//                 ElevatedButton(
-//                   onPressed: controller.signOut,
-//                   child: const Text('Sign out'),
-//                 ),
-//               ],
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-class MicrosoftLoginPage extends ConsumerWidget {
-  const MicrosoftLoginPage({Key? key}) : super(key: key);
+class MicrosoftLoginPage extends ConsumerStatefulWidget {
+  const MicrosoftLoginPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MicrosoftLoginPage> createState() => _MicrosoftLoginPageState();
+}
+
+class _MicrosoftLoginPageState extends ConsumerState<MicrosoftLoginPage> {
+  final _jwtController = TextEditingController();
+  bool _showJwtSection = false;
+
+  @override
+  void dispose() {
+    _jwtController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(loginVsProvider);
     final controller = ref.read(loginVsProvider.notifier);
-
-    final TextEditingController jwtController = TextEditingController();
+    final l10n = DashboardL10n.of(context);
+    final locale = ref.watch(localeProvider);
+    final languageLabel = l10n.loginLanguageDisplayName(locale.languageCode);
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+      backgroundColor: const Color(0xFF10142D),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/images/login-bg.png',
+            fit: BoxFit.cover,
+            alignment: const Alignment(-0.2, 0.15),
+          ),
+          DecoratedBox(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [_overlayTop, _overlayBottom],
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  /// 🔷 LOGO / ICON
-                  Container(
-                    height: 90,
-                    width: 90,
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.lock_outline_rounded,
-                      size: 45,
-                      color: Colors.blue.shade700,
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  /// TITLE
-                  const Text(
-                    "CIVIL AVIATION AUTHORITY",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Text(
-                    "Login using Microsoft account or JWT token",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
-                  ),
-
-                  const SizedBox(height: 35),
-
-                  /// LOADER
-                  if (state.isLoading)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 30),
-                      child: CircularProgressIndicator(),
-                    )
-                  else ...[
-                    /// MICROSOFT LOGIN BUTTON
-                    SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          await controller.signIn();
-                        },
-                        icon: const Icon(Icons.login),
-                        label: const Text(
-                          "Sign in with Microsoft",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade700,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    /// SIGN OUT BUTTON
-
-                    /// DIVIDER
-                    Row(
+            ),
+          ),
+          ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 0.8, sigmaY: 0.8),
+              child: const SizedBox.expand(),
+            ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _LoginHeader(
+                  languageLabel: languageLabel,
+                  arabicSubtitle: l10n.loginAuthoritySubtitle,
+                  onLanguageSelected: (code) async {
+                    await Hive.box('language').put('lang', code);
+                    ref.read(localeProvider.notifier).state = Locale(code);
+                  },
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 200),
+                    child: Column(
                       children: [
-                        Expanded(child: Divider(color: Colors.grey.shade300)),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            "OR",
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        const Spacer(flex: 28),
+                      _LoginFeaturesColumn(
+                        items: [
+                          _LoginFeatureData(
+                            icon: Icons.verified_user_outlined,
+                            title: l10n.loginSafetyExcellenceTitle,
+                            subtitle: l10n.loginSafetyExcellenceSubtitle,
                           ),
-                        ),
-                        Expanded(child: Divider(color: Colors.grey.shade300)),
+                          _LoginFeatureData(
+                            icon: Icons.public_outlined,
+                            title: l10n.loginGlobalNetworkTitle,
+                            subtitle: l10n.loginGlobalNetworkSubtitle,
+                          ),
+                          _LoginFeatureData(
+                            icon: Icons.flight_outlined,
+                            title: l10n.loginInnovationHubTitle,
+                            subtitle: l10n.loginInnovationHubSubtitle,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 28),
+                      _LoginStatsRow(l10n: l10n),
+                        const Spacer(flex: 22),
                       ],
                     ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            left: 12,
+            right: 12,
+            bottom: 14 + bottomInset,
+            child: _LoginBottomCard(
+              l10n: l10n,
+              isLoading: state.isLoading,
+              showJwtSection: _showJwtSection,
+              jwtController: _jwtController,
+              onMicrosoftSignIn: controller.signIn,
+              onToggleJwt: () =>
+                  setState(() => _showJwtSection = !_showJwtSection),
+              onJwtLogin: () async {
+                final token = _jwtController.text.trim();
+                if (token.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.loginJwtRequired)),
+                  );
+                  return;
+                }
+                await controller.loginWithJwt(token);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-                    const SizedBox(height: 30),
+class _LoginFeatureData {
+  final IconData icon;
+  final String title;
+  final String subtitle;
 
-                    /// JWT FIELD
-                    TextField(
-                      controller: jwtController,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        hintText: "Paste your JWT token here...",
-                        labelText: "JWT Token",
-                        alignLabelWithHint: true,
-                        filled: true,
-                        fillColor: Colors.grey.shade100,
-                        contentPadding: const EdgeInsets.all(16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
-                            color: Colors.blue.shade700,
-                            width: 1.5,
-                          ),
-                        ),
+  const _LoginFeatureData({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+}
+
+class _LoginHeader extends StatelessWidget {
+  final String languageLabel;
+  final String arabicSubtitle;
+  final ValueChanged<String> onLanguageSelected;
+
+  const _LoginHeader({
+    required this.languageLabel,
+    required this.arabicSubtitle,
+    required this.onLanguageSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ColorFiltered(
+            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            child: Image.asset(
+              'assets/images/caa_logo.png',
+              height: 34,
+              fit: BoxFit.contain,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'CIVIL AVIATION AUTHORITY',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.3,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  arabicSubtitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w400,
+                    height: 1.2,
+                  ),
+                  textDirection: TextDirection.rtl,
+                ),
+              ],
+            ),
+          ),
+          PopupMenuButton<String>(
+            offset: const Offset(0, 42),
+            elevation: 6,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            onSelected: onLanguageSelected,
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: 'en', child: Text('English')),
+              const PopupMenuItem(value: 'ar', child: Text('العربية')),
+            ],
+            child: Container(
+              width: 95,
+              height: 38,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.95),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.language, size: 16, color: _languageText),
+                  Expanded(
+                    child: Text(
+                      languageLabel,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: _languageText,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-
-                    const SizedBox(height: 20),
-
-                    /// JWT LOGIN BUTTON
-                    SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final token = jwtController.text.trim();
-
-                          if (token.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Please enter JWT token"),
-                              ),
-                            );
-                            return;
-                          }
-
-                          await controller.loginWithJwt(token);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black87,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: const Text(
-                          "Login with JWT",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
+                  const Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 18,
+                    color: _languageText,
+                  ),
                 ],
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LoginFeaturesColumn extends StatelessWidget {
+  final List<_LoginFeatureData> items;
+
+  const _LoginFeaturesColumn({required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (int i = 0; i < items.length; i++) ...[
+          if (i > 0) const SizedBox(height: 24),
+          _LoginFeatureItem(data: items[i]),
+        ],
+      ],
+    );
+  }
+}
+
+class _LoginFeatureItem extends StatelessWidget {
+  final _LoginFeatureData data;
+
+  const _LoginFeatureItem({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.7),
+              width: 1,
+            ),
+            color: Colors.white.withValues(alpha: 0.06),
+          ),
+          child: Icon(data.icon, color: Colors.white, size: 17),
         ),
+        const SizedBox(height: 10),
+        Text(
+          data.title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            height: 1.2,
+          ),
+        ),
+        const SizedBox(height: 4),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 280),
+          child: Text(
+            data.subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: _featureSubtitleOpacity),
+              fontSize: 11,
+              fontWeight: FontWeight.w400,
+              height: 1.35,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LoginStatsRow extends StatelessWidget {
+  final DashboardL10n l10n;
+
+  const _LoginStatsRow({required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _LoginStatColumn(
+          line1: l10n.loginIcaoBold,
+          line2: l10n.loginCompliant,
+        ),
+        _LoginStatDivider(),
+        _LoginStatColumn(
+          line1: l10n.loginIsoBold,
+          line2: l10n.loginCertified,
+        ),
+        _LoginStatDivider(),
+        _LoginStatColumn(
+          line1: l10n.loginSupportBold,
+          line2: l10n.loginSupportLabel,
+        ),
+      ],
+    );
+  }
+}
+
+class _LoginStatColumn extends StatelessWidget {
+  final String line1;
+  final String line2;
+
+  const _LoginStatColumn({required this.line1, required this.line2});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            line1,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              height: 1.0,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            line2,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: _statLabelOpacity),
+              fontSize: 11,
+              fontWeight: FontWeight.w400,
+              height: 1.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LoginStatDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 32,
+      color: Colors.white.withValues(alpha: 0.35),
+    );
+  }
+}
+
+class _LoginBottomCard extends StatelessWidget {
+  final DashboardL10n l10n;
+  final bool isLoading;
+  final bool showJwtSection;
+  final TextEditingController jwtController;
+  final VoidCallback onMicrosoftSignIn;
+  final VoidCallback onToggleJwt;
+  final VoidCallback onJwtLogin;
+
+  const _LoginBottomCard({
+    required this.l10n,
+    required this.isLoading,
+    required this.showJwtSection,
+    required this.jwtController,
+    required this.onMicrosoftSignIn,
+    required this.onToggleJwt,
+    required this.onJwtLogin,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardBackground,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.04)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 18,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(18, 24, 18, 26),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/50years_image.png',
+                height: 52,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(width: 18),
+              Image.asset(
+                'assets/images/caa_logo.png',
+                height: 52,
+                fit: BoxFit.contain,
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          if (isLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(
+                  color: _buttonNavy,
+                  strokeWidth: 2.5,
+                ),
+              ),
+            )
+          else ...[
+            Center(
+              child: Material(
+                color: _buttonNavy,
+                elevation: 0,
+                borderRadius: BorderRadius.circular(4),
+                child: InkWell(
+                  onTap: onMicrosoftSignIn,
+                  borderRadius: BorderRadius.circular(4),
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.25),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Container(
+                      width: 190,
+                      height: 40,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Icon(
+                            Icons.lock_outline,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                          Flexible(
+                            child: Text(
+                              l10n.loginContinueWithMicrosoft,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const _MicrosoftLogo(size: 14),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: onToggleJwt,
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                showJwtSection ? l10n.loginHideJwt : l10n.loginWithJwt,
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            if (showJwtSection) ...[
+              const SizedBox(height: 8),
+              TextField(
+                controller: jwtController,
+                maxLines: 2,
+                style: const TextStyle(fontSize: 12),
+                decoration: InputDecoration(
+                  hintText: l10n.loginJwtHint,
+                  hintStyle: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade500,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.all(12),
+                  isDense: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: _buttonNavy, width: 1.2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 36,
+                child: TextButton(
+                  onPressed: onJwtLogin,
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.grey.shade800,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: Text(
+                    l10n.loginWithJwt,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _MicrosoftLogo extends StatelessWidget {
+  final double size;
+
+  const _MicrosoftLogo({this.size = 14});
+
+  @override
+  Widget build(BuildContext context) {
+    final half = size / 2;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: half,
+                height: half,
+                color: const Color(0xFFF25022),
+              ),
+              Container(
+                width: half,
+                height: half,
+                color: const Color(0xFF7FBA00),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Container(
+                width: half,
+                height: half,
+                color: const Color(0xFF00A4EF),
+              ),
+              Container(
+                width: half,
+                height: half,
+                color: const Color(0xFFFFB900),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

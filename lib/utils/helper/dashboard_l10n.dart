@@ -1271,4 +1271,78 @@ class DashboardL10n {
         return _formatKey(key);
     }
   }
+
+  // ── Login screen ──────────────────────────────────────────────────────────
+  String get loginAuthorityTitle =>
+      _t('CIVIL AVIATION AUTHORITY', 'الهيئة العامة للطيران المدني');
+
+  String get loginAuthoritySubtitle => _t(
+    'هيئة الطيران المدني العمانية',
+    'هيئة الطيران المدني العمانية',
+  );
+
+  String get loginIcaoBold => _t('ICAO', 'ICAO');
+
+  String get loginCompliant => _t('Compliant', 'متوافق');
+
+  String get loginIsoBold => _t('ISO', 'ISO');
+
+  String get loginCertified => _t('Certified', 'معتمد');
+
+  String get loginSupportBold => _t('24/7', '24/7');
+
+  String get loginSupportLabel => _t('Support', 'دعم');
+
+  String get loginSafetyExcellenceTitle =>
+      _t('Safety Excellence', 'التميز في السلامة');
+
+  String get loginSafetyExcellenceSubtitle => _t(
+    'International Safety Standards & regulations',
+    'معايير ولوائح السلامة الدولية',
+  );
+
+  String get loginGlobalNetworkTitle =>
+      _t('Global network', 'شبكة عالمية');
+
+  String get loginGlobalNetworkSubtitle =>
+      _t('Connecting Oman to the world', 'ربط عُمان بالعالم');
+
+  String get loginInnovationHubTitle =>
+      _t('Innovation Hub', 'مركز الابتكار');
+
+  String get loginInnovationHubSubtitle => _t(
+    'Future-ready aviation technology',
+    'تقنيات طيران مستقبلية',
+  );
+
+  String get loginIcaoCompliant => _t('ICAO Compliant', 'متوافق مع ICAO');
+
+  String get loginIsoCertified => _t('ISO Certified', 'معتمد ISO');
+
+  String get loginSupport247 => _t('24/7 Support', 'دعم على مدار الساعة');
+
+  String get loginContinueWithMicrosoft =>
+      _t('Continue with Microsoft', 'المتابعة مع Microsoft');
+
+  String get loginOrDivider => _t('OR', 'أو');
+
+  String get loginJwtHint => _t('Paste your JWT token here...', 'الصق رمز JWT هنا...');
+
+  String get loginJwtLabel => _t('JWT Token', 'رمز JWT');
+
+  String get loginWithJwt => _t('Login with JWT', 'تسجيل الدخول بـ JWT');
+
+  String get loginHideJwt => _t('Hide JWT login', 'إخفاء تسجيل JWT');
+
+  String get loginJwtRequired =>
+      _t('Please enter JWT token', 'يرجى إدخال رمز JWT');
+
+  String loginLanguageDisplayName(String code) {
+    switch (code) {
+      case 'ar':
+        return 'العربية';
+      default:
+        return 'English';
+    }
+  }
 }
