@@ -165,85 +165,13 @@ class _ITServicesHomeScreenState extends ConsumerState<ITServicesHomeScreen> {
 
     final stateController = ref.read(bottomNavigatorVsProvider.notifier);
 
-    /// ✅ WATCH ROLES
-    final rolesData = ref.watch(rolesControllerProvider);
-
-    /// 🔥 LOADING STATE (IMPORTANT)
-    if (rolesData == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    final roles = rolesData.services ?? [];
-
-    /// ✅ GET MAIN SERVICE
-    final service = roles.firstWhere(
-      (r) => (r.name ?? '').trim() == 'IT Services',
-      orElse: () => Service(),
-    );
-
-    final subServices = service.subservices ?? [];
-
-    /// ✅ MASTER CONFIG (FIXED CODES)
-    final routeConfig = [
-      {
-        "code": "HELP_DESK_SALALAH",
-        "name": "Help Desk Salalah",
-        "route": SalalahDashboard(service: Service(), subService: SubService()),
-      },
-      {
-        "code": "HELP_DESK_MUSCAT",
-        "name": "Help Desk Muscat",
-        "route": MuscatDashboard(service: Service(), subService: SubService()),
-      },
-      {
-        "code": "VPN_SERVICE", // ✅ FIXED
-        "name": "VPN Service",
-        "route": SalalahDashboard(service: Service(), subService: SubService()),
-      },
-      {
-        "code": "CAA059", // ✅ FIXED
-        "name": "Request Event Support",
-        "route": RequestEventSupportRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
-      },
-    ];
-
-    /// ✅ FILTER ROUTES BASED ON ROLE
-    final filteredRoutes = routeConfig.where((c) {
-      return subServices.any((s) {
-        final code = (s.code ?? '').toLowerCase().trim();
-        final name = (s.subServiceName ?? '').toLowerCase().trim();
-
-        return code == c["code"].toString().toLowerCase() ||
-            name == c["name"].toString().toLowerCase();
-      });
-    }).toList();
-
-    /// 🔥 EMPTY STATE (VERY IMPORTANT)
-    if (filteredRoutes.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: const Text("No Access")),
-        body: const Center(child: Text("No services available for your role")),
-      );
-    }
-
-    /// ✅ ROUTES
-    final routes = filteredRoutes
-        .map((e) => e["route"] as PageRouteInfo)
-        .toList();
-
     return AutoTabsRouter.builder(
-      routes: routes,
-
+      routes: [SalalahDashboard(service: Service(), subService: SubService())],
       builder: (tabsContext, children, tabsRouter) {
         final activeIndex = tabsRouter.activeIndex;
 
         return Scaffold(
           backgroundColor: currentTheme.colors.background,
-
-          /// ✅ APP BAR
           appBar: KAppBar(
             leading: Builder(
               builder: (ctx) => IconButton(
@@ -252,15 +180,13 @@ class _ITServicesHomeScreenState extends ConsumerState<ITServicesHomeScreen> {
               ),
             ),
             title: Text(
-              stateController.titleForIndex(activeIndex, filteredRoutes),
+              stateController.titleForIndex(activeIndex),
               style: TextStyle(
                 fontSize: currentTheme.fontSizes.s16,
                 fontWeight: currentTheme.fontWeights.wBold,
               ),
             ),
           ),
-
-          /// ✅ DRAWER
           drawer: KDrawer(
             child: _DrawerMenu(
               currentTheme: currentTheme,
@@ -277,8 +203,6 @@ class _ITServicesHomeScreenState extends ConsumerState<ITServicesHomeScreen> {
               },
             ),
           ),
-
-          /// ✅ BODY
           body: AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
             child: KeyedSubtree(
