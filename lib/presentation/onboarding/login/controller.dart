@@ -113,10 +113,20 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> signOut() async {
-    await msal.signOut();
-    await KAuthCred().deleteProfileData();
-    await KAuthCred().deleteUserInfoData();
+    await _signOutMsalIfNeeded();
+    await KAuthCred().clearSession();
     // KAppX.router.replace(MicrosoftLoginRoute());
+  }
+
+  Future<void> _signOutMsalIfNeeded() async {
+    try {
+      await msal.signOut();
+    } on MsalException catch (e) {
+      if (!e.message.toLowerCase().contains('no currently signed in account')) {
+        rethrow;
+      }
+      debugPrint('No MSAL account cached; clearing local session only.');
+    }
   }
 
   Future<void> onGettingSSOAccessTokenFetchAuthToken(String accessToken) async {
@@ -265,10 +275,7 @@ class _VSController extends StateNotifier<_ViewState> {
       final storage = KAuthCred();
 
       // 1️⃣ Clear all stored auth data
-      await storage.deleteProfileData();
-      await storage.deleteUserInfoData();
-      // await storage.deleteSelectedRole(); // if exists
-      // await storage.deleteRoleData(); // if you have this
+      await storage.clearSession();
 
       // 2️⃣ Clear in-memory token
       accessToken = '';
