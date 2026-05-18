@@ -1494,10 +1494,13 @@ class _VSController extends StateNotifier<_ViewState> {
       // 2️⃣ Build payload
       final payload = {
         "request_id": requestId,
+        "request_type": "domestic",
         "status": status,
         "comment": comment,
         "approval_id": approverId,
       };
+
+      {}
       if (decisionNo != null) {
         payload['decision_number'] = decisionNo;
       }

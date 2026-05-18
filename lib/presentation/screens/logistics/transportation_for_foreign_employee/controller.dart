@@ -1511,6 +1511,7 @@ class _VSController extends StateNotifier<_ViewState> {
         "request_id": requestId,
         "status": status,
         "comment": comment,
+        "request_type": "foreign",
         "approval_id": approverId,
       };
       if (decisionNo != null) {
