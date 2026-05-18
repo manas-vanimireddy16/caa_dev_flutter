@@ -53,7 +53,7 @@ class HotelReservationDashboardRepoistoryImple
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {'time_period': period};
+        final queryParams = {'timePeriod': period};
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
           ApiEndPoint.hotelReservationStatusBreakdown,
@@ -292,7 +292,7 @@ class HotelReservationDashboardRepoistoryImple
     String type,
   ) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.salalahChatsById(id);
+    final String url = ApiEndPoint.salalahSendChat(id);
 
     try {
       if (client != null) {

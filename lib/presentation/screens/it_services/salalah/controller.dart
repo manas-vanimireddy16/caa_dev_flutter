@@ -32,7 +32,7 @@ class _ViewState {
   final List<ServiceData> serviceDropDown;
   final List<SalalahRequestModel> requestData;
   final RequestDetailData requestDetails;
-  final StatusBreakdownModel statusBreakdownCard;
+  final StatusBreakdownModel statusBreakdown;
   final TrendBreakdownModel trendData;
   final int requestDetailTab;
   final List<UserItem> itTechnician;
@@ -53,8 +53,6 @@ class _ViewState {
   final int tabIndex;
 
   final KPIResponse approvalKpiData;
-
-  final StatusBreakdownModel statusBreakdown;
 
   final RequestDetailModel requestDataById;
   final int selectedTab;
@@ -92,7 +90,7 @@ class _ViewState {
     required this.serviceTypeId,
     required this.requestDetails,
     required this.kpiData,
-    required this.statusBreakdownCard,
+    required this.statusBreakdown,
     required this.trendData,
     required this.requestDetailTab,
     required this.itTechnician,
@@ -107,7 +105,6 @@ class _ViewState {
     required this.actionItems,
     required this.tabIndex,
     required this.approvalKpiData,
-    required this.statusBreakdown,
     required this.requestDataById,
     required this.selectedTab,
     required this.approvalStatusBreakdown,
@@ -129,7 +126,7 @@ class _ViewState {
         serviceTypeId: 0,
         requestDetails: RequestDetailData(),
         kpiData: KPIResponse(),
-        statusBreakdownCard: StatusBreakdownModel(),
+        statusBreakdown: StatusBreakdownModel(),
         trendData: TrendBreakdownModel(),
         requestDetailTab: 0,
         itTechnician: [],
@@ -144,7 +141,6 @@ class _ViewState {
         actionItems: [],
         tabIndex: 0,
         approvalKpiData: KPIResponse(),
-        statusBreakdown: StatusBreakdownModel(),
         requestDataById: RequestDetailModel(),
         selectedTab: 0,
         approvalStatusBreakdown: StatusBreakdownModel(),
@@ -166,7 +162,7 @@ class _ViewState {
     final int? itTechnicianId,
     RequestDetailData? requestDetails,
     KPIResponse? kpiData,
-    StatusBreakdownModel? statusBreakdownCard,
+    StatusBreakdownModel? statusBreakdown,
     TrendBreakdownModel? trendData,
     int? requestDetailTab,
     List<UserItem>? itTechnician,
@@ -180,7 +176,6 @@ class _ViewState {
     final List<SalalahRequestModel>? actionItems,
     final int? tabIndex,
     final KPIResponse? approvalKpiData,
-    final StatusBreakdownModel? statusBreakdown,
     final RequestDetailModel? requestDataById,
     final int? selectedTab,
     final StatusBreakdownModel? approvalStatusBreakdown,
@@ -200,7 +195,7 @@ class _ViewState {
       serviceTypeId: serviceTypeId ?? this.serviceTypeId,
       requestDetails: requestDetails ?? this.requestDetails,
       kpiData: kpiData ?? this.kpiData,
-      statusBreakdownCard: statusBreakdownCard ?? this.statusBreakdownCard,
+      statusBreakdown: statusBreakdown ?? this.statusBreakdown,
       trendData: trendData ?? this.trendData,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
       itTechnician: itTechnician ?? this.itTechnician,
@@ -215,7 +210,6 @@ class _ViewState {
       actionItems: actionItems ?? this.actionItems,
       tabIndex: tabIndex ?? this.tabIndex,
       approvalKpiData: approvalKpiData ?? this.approvalKpiData,
-      statusBreakdown: statusBreakdown ?? this.statusBreakdown,
       requestDataById: requestDataById ?? this.requestDataById,
       selectedTab: selectedTab ?? this.selectedTab,
       approvalStatusBreakdown:
@@ -1149,6 +1143,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> fetchStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
     try {
       final statusBreakdown = await dashboardinstance.getStatusBreakdownData(
         period: period,
@@ -1156,12 +1151,16 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceId: subService.id ?? 0,
       );
       if (statusBreakdown != null) {
-        state = state.copyWith(statusBreakdownCard: statusBreakdown);
+        state = state.copyWith(
+          statusBreakdown: statusBreakdown,
+          isLoading: false,
+        );
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       // optionally handle other errors
+      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
   }

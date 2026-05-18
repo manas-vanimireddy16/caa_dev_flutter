@@ -465,14 +465,14 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      // case 'CAA003':
-      //   KAppX.router.push(
-      //     SalalahDashboard(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
+      case 'CAA003':
+        KAppX.router.push(
+          SalalahDashboard(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       // case 'Request for Hospitality Use in Muscat':
       //   KAppX.router.push(
       //     RequestForAccommodationInMuscatGovernorateRoute(

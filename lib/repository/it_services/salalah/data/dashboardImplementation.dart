@@ -172,7 +172,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
           'sub_service_id': subServiceId,
         };
         final response = await client.get(
-          ApiEndPoint.salalahTrendBreakdown,
+          ApiEndPoint.salalahTrendBreakdown(period),
           queryParameters: queryParams,
         );
         if (response.statusCode == 200 && response.data != null) {
@@ -659,7 +659,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.salalahSendChatById(id);
+    final String url = ApiEndPoint.salalahSendChat(id);
 
     try {
       if (client != null) {
@@ -692,7 +692,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
   @override
   Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.salalahSendAttachmentById(id);
+    final String url = ApiEndPoint.salalahUploadAttachment(id);
 
     try {
       if (client != null) {
@@ -728,7 +728,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.salalahChatsById(id);
+        final url = ApiEndPoint.salalahGetChats(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -752,7 +752,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
     try {
       if (client != null) {
-        final url = ApiEndPoint.salalahAttachmentsById(id);
+        final url = ApiEndPoint.salalahGetAttachments(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {

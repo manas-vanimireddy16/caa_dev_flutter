@@ -1445,9 +1445,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchactionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {

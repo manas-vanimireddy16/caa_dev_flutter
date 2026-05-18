@@ -28,63 +28,79 @@ class ApiEndPoint {
   static const String countryList = '/v1/user-service/country-master/list';
 
   ///Salalah
+  /// Salalah Helpdesk APIs
+
+  /// CREATE REQUEST
   static const String sendSalalahRequest =
       '/v1/it-service/helpdesk/salalah/request';
+
+  /// DROPDOWNS
   static const String servicesDropdown =
       '/v1/it-service/helpdesk/service/types?service_id=1&sub_service_id=1';
+
+  /// USER REQUESTS LIST
   static const String salalahRequests = '/v1/it-service/helpdesk/user/requests';
-  static const String salalahRequestById = '/v1/it-service/helpdesk/request';
+
+  /// REQUEST BY ID
+  static String salalahRequestById(int requestId) =>
+      '/v1/it-service/helpdesk/request/$requestId';
+
+  /// REQUEST ATTACHMENT APIs
+  static String salalahUploadAttachment(int requestId) =>
+      '/v1/it-service/helpdesk/request/$requestId/attachment';
+
+  static String salalahGetAttachments(int requestId) =>
+      '/v1/it-service/helpdesk/request/$requestId/attachments';
+
+  /// REQUEST CHAT APIs
+  static String salalahSendChat(int requestId) =>
+      '/v1/it-service/helpdesk/request/$requestId/chat';
+
+  static String salalahGetChats(int requestId) =>
+      '/v1/it-service/helpdesk/request/$requestId/chats';
+
+  /// KPI APIs
   static const String salalahKpiCard = '/v1/it-service/helpdesk/analytics/kpi';
+
   static const String salalahApprovalKpiCard =
       '/v1/it-service/helpdesk/analytics/approvals/kpi-cards';
+
+  /// STATUS BREAKDOWN
   static String salalahStatusBreakdown(String period) =>
-      '/v1/it-service/helpdesk/analytics/status-breakdown';
-  static const String salalahTrendBreakdown =
-      '/v1/it-service/helpdesk/analytics/trends';
+      '/v1/it-service/helpdesk/analytics/status-breakdown?period=$period';
 
+  /// TREND BREAKDOWN
+  static String salalahTrendBreakdown(String period) =>
+      '/v1/it-service/helpdesk/analytics/trends?period=$period';
+
+  /// APPROVAL STATUS BREAKDOWN
   static String salalahApprovalStatusBreakdown(String period) =>
-      '/v1/it-service/helpdesk/analytics/approvals/status-breakdown';
-  static String salalahApprovalTrendBreakdown(String period) =>
-      '/v1/it-service/helpdesk/analytics/approvals/trend-breakdown';
+      '/v1/it-service/helpdesk/analytics/approvals/status-breakdown?period=$period';
 
+  /// APPROVAL TREND BREAKDOWN
+  static String salalahApprovalTrendBreakdown(String period) =>
+      '/v1/it-service/helpdesk/analytics/approvals/trend-breakdown?period=$period';
+
+  /// TECHNICIANS
   static const String salalahITTechnician =
       '/v1/it-service/helpdesk/Technicians?role_name=IT%20Technician';
 
+  /// ACTION ITEMS
   static const String getActionItems =
       '/v1/it-service/helpdesk/approval/requests';
+
+  static const String salalahActionItems =
+      '/v1/it-service/helpdesk/approval/requests';
+
+  /// SECTION DETAILS
   static String salalahSection(int id) => '/v1/user-service/admin/sections/$id';
-  static const salalahActionItems = '/v1/it-service/helpdesk/approval/requests';
+
+  /// ASSIGN TO ME
   static const String assignToMe =
       '/v1/it-service/helpdesk/salalah/external/assign-to-me';
+
+  /// APPROVE / CLOSE REQUEST
   static const String onClose = '/v1/it-service/helpdesk/salalah/approve';
-
-  /// ===================== ATTACHMENT APIs =====================
-
-  /// Add attachment
-  static String salalahSendAttachmentById(int requestId) =>
-      '/v1/it-service/helpdesk/request/$requestId/attachment';
-
-  /// Get attachments
-  static String salalahAttachmentsById(int requestId) =>
-      '/v1/it-service/helpdesk/request/$requestId/attachments';
-
-  /// Update attachment
-  static String salalahUpdateAttachment(int attachmentId) =>
-      '/v1/it-service/helpdesk/attachments/$attachmentId';
-
-  /// Delete attachment
-  static String salalahDeleteAttachment(int attachmentId) =>
-      '/v1/it-service/helpdesk/attachments/$attachmentId';
-
-  /// ===================== CHAT APIs =====================
-
-  /// Send chat
-  static String salalahSendChatById(int requestId) =>
-      '/v1/it-service/helpdesk/request/$requestId/chat';
-
-  /// Get chats
-  static String salalahChatsById(int requestId) =>
-      '/v1/it-service/helpdesk/request/$requestId/chats';
 
   ///Muscat
 
