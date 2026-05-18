@@ -60,11 +60,25 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  String titleForIndex(int index, List filteredItems) {
-    if (index < filteredItems.length) {
-      return filteredItems[index]["name"];
+  String titleForIndex(int index) {
+    switch (index) {
+      // case 0:
+      //   return 'Dashboard';
+      case 0:
+        return 'Salalah';
+      // case 2:
+      //   return 'Request to Organize Security Awareness';
+      // case 3:
+      //   return 'Request for Project Approval';
+      // case 4:
+      //   return 'Request for VAPT and Infrastructure Review';
+      // case 5:
+      //   return 'Request for Internal Audit (Cyber Security Audit) ';
+      // case 6:
+      //   return 'Cyber Security Risk Management';
+      default:
+        return '  Home';
     }
-    return "Home";
   }
 }
 
