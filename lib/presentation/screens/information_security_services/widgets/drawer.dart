@@ -25,44 +25,44 @@ class _DrawerMenu extends ConsumerWidget {
 
     /// ✅ DRAWER ITEMS
     final items = [
+      // DrawerItemData(
+      //   index: 0,
+      //   icon: KImageProvider(image: KIcons.dashboard),
+      //   label: 'Dashboard',
+      // ),
       DrawerItemData(
         index: 0,
-        icon: KImageProvider(image: KIcons.dashboard),
-        label: 'Dashboard',
-      ),
-      DrawerItemData(
-        index: 1,
         icon: KImageProvider(
           image: KIcons.playlistAddCheck,
           tintColor: Colors.black,
         ),
-        label: 'Request for Security Threat',
+        label: 'Request Security Threat',
       ),
-      DrawerItemData(
-        index: 2,
-        icon: KImageProvider(image: KIcons.eventNote),
-        label: 'Request to Organize Security Awareness',
-      ),
-      DrawerItemData(
-        index: 3,
-        icon: KImageProvider(image: KIcons.eventNote),
-        label: 'Request for Project Approval',
-      ),
-      DrawerItemData(
-        index: 4,
-        icon: KImageProvider(image: KIcons.security),
-        label: 'Request for VAPT and Infrastructure Review',
-      ),
-      DrawerItemData(
-        index: 5,
-        icon: KImageProvider(image: KIcons.security),
-        label: 'Request for Internal Audit (Cyber Security Audit) ',
-      ),
-      DrawerItemData(
-        index: 6,
-        icon: KImageProvider(image: KIcons.security),
-        label: 'Cyber Security Risk Management',
-      ),
+      // DrawerItemData(
+      //   index: 2,
+      //   icon: KImageProvider(image: KIcons.eventNote),
+      //   label: 'Request to Organize Security Awareness',
+      // ),
+      // DrawerItemData(
+      //   index: 3,
+      //   icon: KImageProvider(image: KIcons.eventNote),
+      //   label: 'Request for Project Approval',
+      // ),
+      // DrawerItemData(
+      //   index: 4,
+      //   icon: KImageProvider(image: KIcons.security),
+      //   label: 'Request for VAPT and Infrastructure Review',
+      // ),
+      // DrawerItemData(
+      //   index: 5,
+      //   icon: KImageProvider(image: KIcons.security),
+      //   label: 'Request for Internal Audit (Cyber Security Audit) ',
+      // ),
+      // DrawerItemData(
+      //   index: 6,
+      //   icon: KImageProvider(image: KIcons.security),
+      //   label: 'Cyber Security Risk Management',
+      // ),
     ];
 
     return Column(

@@ -392,8 +392,7 @@ class DashboardL10n {
 
   String get yesNoNo => _t('No', 'لا');
 
-  String get downloadFailed =>
-      _t('Failed to download file', 'فشل تحميل الملف');
+  String get downloadFailed => _t('Failed to download file', 'فشل تحميل الملف');
 
   String get downloadSuccess =>
       _t('File downloaded successfully', 'تم تحميل الملف بنجاح');
@@ -876,7 +875,7 @@ class DashboardL10n {
   String securityNavTitle(int index) {
     switch (index) {
       case 0:
-        return _t('Dashboard', 'لوحة القيادة');
+        return _t('Report Security Threat', 'الإبلاغ عن تهديد أمني');
       case 1:
         return reportSecurityThreat;
       case 2:

@@ -673,7 +673,8 @@ class _VSController extends StateNotifier<_ViewState> {
     /// 2️⃣ Approver user rule
     if (approval.approverUserId != null && approval.approverUserId != userId) {
       debugPrint(
-        '❌ Denied: Approver User ID mismatch (${approval.approverUserId} != $userId)',
+        '❌ Denied: Approver User ID mismatch '
+        '(${approval.approverUserId} != $userId)',
       );
       return false;
     }
@@ -682,7 +683,8 @@ class _VSController extends StateNotifier<_ViewState> {
     if (approval.approverRoleId != null &&
         approval.approverRoleId != selectedRole?.roleId) {
       debugPrint(
-        '❌ Denied: Role mismatch (${approval.approverRoleId} != ${selectedRole?.roleId})',
+        '❌ Denied: Role mismatch '
+        '(${approval.approverRoleId} != ${selectedRole?.roleId})',
       );
       return false;
     }
@@ -691,7 +693,8 @@ class _VSController extends StateNotifier<_ViewState> {
     if (approval.departmentId != null &&
         approval.departmentId != selectedRole?.departmentId) {
       debugPrint(
-        '❌ Denied: Department mismatch (${approval.departmentId} != ${selectedRole?.departmentId})',
+        '❌ Denied: Department mismatch '
+        '(${approval.departmentId} != ${selectedRole?.departmentId})',
       );
       return false;
     }
@@ -700,7 +703,8 @@ class _VSController extends StateNotifier<_ViewState> {
     if (approval.sectionId != null &&
         approval.sectionId != selectedRole?.sectionId) {
       debugPrint(
-        '❌ Denied: Section mismatch (${approval.sectionId} != ${selectedRole?.sectionId})',
+        '❌ Denied: Section mismatch '
+        '(${approval.sectionId} != ${selectedRole?.sectionId})',
       );
       return false;
     }
@@ -711,19 +715,21 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
-    // 1️⃣ Prefer IN PROGRESS approval
+    /// 1️⃣ Prefer pending / in progress
     for (final a in list) {
-      if (a.approvalStatus?.toLowerCase() == 'in progress') {
+      final status = a.approvalStatus?.toLowerCase();
+
+      if (status == 'pending' || status == 'in progress') {
         return a;
       }
     }
 
-    // 2️⃣ Fallback → highest approved / assigned level
+    /// 2️⃣ Fallback
     return getActiveApprovalLevel(list);
   }
 
   ApprovalDetailModel? getActiveApprovalLevel(List<ApprovalDetailModel> list) {
-    ApprovalDetailModel? highestLevelCandidate;
+    ApprovalDetailModel? candidate;
 
     for (final approval in list) {
       if (!canUserActOnLevel(approval: approval)) continue;
@@ -731,21 +737,20 @@ class _VSController extends StateNotifier<_ViewState> {
       final status = approval.approvalStatus?.toLowerCase();
       final level = approval.level ?? -1;
 
-      // 1️⃣ IN PROGRESS always wins
-      if (status == 'in progress') {
+      /// Pending / In Progress always priority
+      if (status == 'pending' || status == 'in progress') {
         return approval;
       }
 
-      // 2️⃣ ONLY approved / assigned participate in comparison
+      /// fallback approved/assigned
       if (status == 'approved' || status == 'assigned') {
-        if (highestLevelCandidate == null ||
-            level > (highestLevelCandidate.level ?? -1)) {
-          highestLevelCandidate = approval;
+        if (candidate == null || level > (candidate.level ?? -1)) {
+          candidate = approval;
         }
       }
     }
 
-    return highestLevelCandidate;
+    return candidate;
   }
 
   ActionButtonsType getActionButtonsType(
@@ -753,37 +758,60 @@ class _VSController extends StateNotifier<_ViewState> {
     List<ApprovalDetailModel> approvals,
   ) {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
-    final user = KAppX.globalProvider.read(userInfoProvider);
-    print(user?.data?.section?.id);
 
-    if (selectedRole == null) return ActionButtonsType.none;
-
-    final int userId = int.parse(user?.data?.id ?? "0");
-
-    // Get active approval level
-    final level = getActiveApprovalLevel(approvals);
-
-    if (level == null) return ActionButtonsType.none;
-
-    // Check user permission
-    final canAct = canUserActOnLevel(approval: level);
-
-    if (!canAct) return ActionButtonsType.none;
-
-    if (!state.isButtonDisabled && !canUserActOnLevel(approval: level)) {
+    if (selectedRole == null) {
       return ActionButtonsType.none;
     }
 
-    final bool? isManager = level.isManager;
-    final bool? isPresident = level.isPresident;
-    final int approvalLevel = level.level ?? 0;
-    final bool ishasReplace = level.isReplace ?? false;
+    /// Active approval level
+    final level = getActiveApprovalLevel(approvals);
 
-    if (isManager == true) {
-      debugPrint('this user can only approve');
+    if (level == null) {
+      return ActionButtonsType.none;
+    }
+
+    /// Permission check
+    final canAct = canUserActOnLevel(approval: level);
+
+    if (!canAct) {
+      return ActionButtonsType.none;
+    }
+
+    final status = level.approvalStatus?.toLowerCase();
+
+    debugPrint('Current Status => $status');
+    debugPrint('Approver User Id => ${level.approverUserId}');
+
+    /// =========================================================
+    /// CASE 1
+    /// pending + approver_user_id == null
+    /// SHOW ASSIGN BUTTON
+    /// =========================================================
+    if (status == 'pending' && level.approverUserId == null) {
+      debugPrint('✅ SHOW ASSIGN BUTTON');
+
       return ActionButtonsType.assignReject;
-    } else if (level != null) {
-      debugPrint('this user can approve and reject');
+    }
+
+    /// =========================================================
+    /// CASE 2
+    /// pending + approver_user_id exists
+    /// SHOW CLOSE + REJECT
+    /// =========================================================
+    if (status == 'pending' && level.approverUserId != null) {
+      debugPrint('✅ SHOW CLOSE + REJECT');
+
+      return ActionButtonsType.closeReject;
+    }
+
+    /// =========================================================
+    /// CASE 3
+    /// in progress
+    /// SHOW APPROVE + REJECT
+    /// =========================================================
+    if (status == 'in progress') {
+      debugPrint('✅ SHOW APPROVE + REJECT');
+
       return ActionButtonsType.approveReject;
     }
 
@@ -793,13 +821,13 @@ class _VSController extends StateNotifier<_ViewState> {
   void updateButtonDisabledFromApprovals(List<ApprovalDetailModel> approvals) {
     final active = getActiveApprovalLevel(approvals);
 
-    // No active approval → disable
+    /// No active approval
     if (active == null) {
       state = state.copyWith(isButtonDisabled: true);
       return;
     }
 
-    // If active approval is NOT allowed → disable
+    /// Permission denied
     if (active.isAllowed != null && active.isAllowed != true) {
       state = state.copyWith(isButtonDisabled: true);
       return;
@@ -807,15 +835,17 @@ class _VSController extends StateNotifier<_ViewState> {
 
     final status = active.approvalStatus?.toLowerCase();
 
-    // ✅ Disable ONLY if ACTIVE is approved or assigned
-    final shouldDisable = status == 'approved' || status == 'assigned';
+    /// Disable only when completed
+    final shouldDisable =
+        status == 'approved' || status == 'completed' || status == 'rejected';
 
     state = state.copyWith(isButtonDisabled: shouldDisable);
   }
 
   bool _isPendingOrInProgress(String? status) {
     final s = status?.toLowerCase();
-    return s == 'in progress';
+
+    return s == 'pending' || s == 'in progress';
   }
 
   bool _isCompleted(String? status) {
@@ -836,17 +866,18 @@ class _VSController extends StateNotifier<_ViewState> {
       return {};
     }
 
-    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    /// 1️⃣ NEXT PENDING / IN PROGRESS
     final pendingList = approvals
         .where((a) => _isPendingOrInProgress(a.approvalStatus))
         .toList();
 
     if (pendingList.isNotEmpty) {
       pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
+
       final next = pendingList.first;
 
-      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
-      if (next.approverRoleId != null) {
+      /// approver exists
+      if (next.approverUserId != null) {
         final name = next.approverUser?.employeeName;
         final email = next.approverUser?.email;
         final roleName = next.approverRole?.name;
@@ -860,7 +891,7 @@ class _VSController extends StateNotifier<_ViewState> {
         }
       }
 
-      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
+      /// approver not assigned yet
       final department = next.department?.departmentName;
       final section = next.section?.sectionName;
 
@@ -874,7 +905,7 @@ class _VSController extends StateNotifier<_ViewState> {
       return {};
     }
 
-    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
+    /// 2️⃣ COMPLETED FLOW
     final completedList = approvals
         .where((a) => _isCompleted(a.approvalStatus))
         .toList();
@@ -885,7 +916,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
     completedList.sort((a, b) {
       final levelCompare = (a.level ?? 0).compareTo(b.level ?? 0);
-      if (levelCompare != 0) return levelCompare;
+
+      if (levelCompare != 0) {
+        return levelCompare;
+      }
+
       return _parseDate(a.updatedAt).compareTo(_parseDate(b.updatedAt));
     });
 

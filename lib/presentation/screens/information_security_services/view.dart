@@ -55,31 +55,31 @@ class SecuritySelfHomePage extends ConsumerWidget {
 
     return AutoTabsRouter.builder(
       routes: [
-        SecuritySelfDashboardRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
+        // SecuritySelfDashboardRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
         SecurityThreatRoute(service: Service(), subService: SubService()),
-        OrganizeSecurityAwarenessRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
-        RequestForProjectApprovalRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
-        RequestForVAPTAndInfrastructureReviewRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
-        RequestForInternalAuditRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
-        CyberSecurityRiskManagementRoute(
-          service: Service(),
-          subService: SubService(),
-        ),
+        // OrganizeSecurityAwarenessRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // RequestForProjectApprovalRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // RequestForVAPTAndInfrastructureReviewRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // RequestForInternalAuditRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+        // CyberSecurityRiskManagementRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {
