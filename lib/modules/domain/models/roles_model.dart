@@ -148,6 +148,8 @@ class Service {
   final String? code;
   final String? name;
   final String? description;
+  final String? arabicName;
+  final String? arabicDescription;
   final String? logoUrl;
   final List<SubService>? subservices;
 
@@ -158,6 +160,8 @@ class Service {
     this.description,
     this.logoUrl,
     this.subservices,
+    this.arabicName,
+    this.arabicDescription,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) => Service(
@@ -169,6 +173,8 @@ class Service {
     subservices: (json['subservices'] as List?)
         ?.map((e) => SubService.fromJson(e))
         .toList(),
+    arabicName: json['arabic_name'],
+    arabicDescription: json['arabic_description'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -178,6 +184,8 @@ class Service {
     'description': description,
     'logo_url': logoUrl,
     'subservices': subservices?.map((e) => e.toJson()).toList(),
+    'arabic_name': arabicName,
+    'arabic_description': arabicDescription,
   };
 }
 
@@ -185,6 +193,8 @@ class SubService {
   final int? id;
   final String? code;
   final String? subServiceName;
+  final String? arabicsubServiceName;
+  final String? arabicSubServiceDescription;
   final String? description;
   final String? logoUrl;
 
@@ -194,6 +204,8 @@ class SubService {
     this.subServiceName,
     this.description,
     this.logoUrl,
+    this.arabicsubServiceName,
+    this.arabicSubServiceDescription,
   });
 
   factory SubService.fromJson(Map<String, dynamic> json) => SubService(
@@ -202,6 +214,8 @@ class SubService {
     subServiceName: json['sub_service_name'],
     description: json['description'],
     logoUrl: json['logo_url'],
+    arabicsubServiceName: json['arabic_name'],
+    arabicSubServiceDescription: json['arabic_description'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -210,5 +224,7 @@ class SubService {
     'sub_service_name': subServiceName,
     'description': description,
     'logo_url': logoUrl,
+    'arabic_sub_service_name': arabicsubServiceName,
+    'arabic_sub_service_description': arabicSubServiceDescription,
   };
 }
