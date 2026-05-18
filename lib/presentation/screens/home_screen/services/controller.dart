@@ -256,14 +256,14 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      case 'CAA046':
-        KAppX.router.push(
-          HotelReservationRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
+      // case 'CAA046':
+      //   KAppX.router.push(
+      //     HotelReservationRoute(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
       case 'CAA006':
         KAppX.router.push(
           SecurityThreatRoute(
@@ -271,7 +271,7 @@ class _VSController extends StateNotifier<_ViewState> {
             subService: subService ?? SubService(),
           ),
         );
-      //   break;
+        break;
 
       // case 'Request to Organize Security Awareness':
       //   KAppX.router.push(
@@ -465,14 +465,14 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      case 'CAA003':
-        KAppX.router.push(
-          SalalahDashboard(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
+      // case 'CAA003':
+      //   KAppX.router.push(
+      //     SalalahDashboard(
+      //       service: service ?? Service(),
+      //       subService: subService ?? SubService(),
+      //     ),
+      //   );
+      //   break;
       // case 'Request for Hospitality Use in Muscat':
       //   KAppX.router.push(
       //     RequestForAccommodationInMuscatGovernorateRoute(

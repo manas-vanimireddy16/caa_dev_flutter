@@ -1486,7 +1486,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // if (decisionNo != null) {
       // KAppX.router.pop();
       // }
-      // _refreshDashboard();
+      _refreshDashboard();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1553,8 +1553,9 @@ class _VSController extends StateNotifier<_ViewState> {
       KAppX.router.pop();
       // if (decisionNo != null) {
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      // await fetchactionItems();
+      // await fetchRequests();
+      _refreshDashboard();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {

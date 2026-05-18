@@ -34,7 +34,7 @@ class DashboardL10n {
 
   String get searchByIdOrName => _t('Search by Request Id', 'البحث برقم الطلب');
 
-  String get myRequests => _t('My Requests', 'طلباتي');
+  String get myRequests => _t('My Requests', 'التذاكر الخاصة بي');
 
   String get actionItems => _t('Action Items', 'عناصر الإجراءات');
 
@@ -684,7 +684,7 @@ class DashboardL10n {
   String get findTheProfileDetails =>
       _t('Find the Profile Details', 'البحث عن تفاصيل الملف الشخصي');
 
-  String get announcements => _t('Announcements', 'الإعلانات');
+  String get announcements => _t('Home', 'الرئيسية');
 
   String get announcementsSubtext =>
       _t('Stay informed with latest updates', 'ابقَ على اطلاع بآخر التحديثات');
@@ -1276,10 +1276,8 @@ class DashboardL10n {
   String get loginAuthorityTitle =>
       _t('CIVIL AVIATION AUTHORITY', 'الهيئة العامة للطيران المدني');
 
-  String get loginAuthoritySubtitle => _t(
-    'هيئة الطيران المدني العمانية',
-    'هيئة الطيران المدني العمانية',
-  );
+  String get loginAuthoritySubtitle =>
+      _t('هيئة الطيران المدني العمانية', 'هيئة الطيران المدني العمانية');
 
   String get loginIcaoBold => _t('ICAO', 'ICAO');
 
@@ -1301,19 +1299,15 @@ class DashboardL10n {
     'معايير ولوائح السلامة الدولية',
   );
 
-  String get loginGlobalNetworkTitle =>
-      _t('Global network', 'شبكة عالمية');
+  String get loginGlobalNetworkTitle => _t('Global network', 'شبكة عالمية');
 
   String get loginGlobalNetworkSubtitle =>
       _t('Connecting Oman to the world', 'ربط عُمان بالعالم');
 
-  String get loginInnovationHubTitle =>
-      _t('Innovation Hub', 'مركز الابتكار');
+  String get loginInnovationHubTitle => _t('Innovation Hub', 'مركز الابتكار');
 
-  String get loginInnovationHubSubtitle => _t(
-    'Future-ready aviation technology',
-    'تقنيات طيران مستقبلية',
-  );
+  String get loginInnovationHubSubtitle =>
+      _t('Future-ready aviation technology', 'تقنيات طيران مستقبلية');
 
   String get loginIcaoCompliant => _t('ICAO Compliant', 'متوافق مع ICAO');
 
@@ -1326,7 +1320,8 @@ class DashboardL10n {
 
   String get loginOrDivider => _t('OR', 'أو');
 
-  String get loginJwtHint => _t('Paste your JWT token here...', 'الصق رمز JWT هنا...');
+  String get loginJwtHint =>
+      _t('Paste your JWT token here...', 'الصق رمز JWT هنا...');
 
   String get loginJwtLabel => _t('JWT Token', 'رمز JWT');
 

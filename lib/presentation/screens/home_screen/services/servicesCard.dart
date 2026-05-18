@@ -89,20 +89,20 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
                         ),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: widget.onBookmarkToggle,
-                      behavior: HitTestBehavior.opaque,
-                      child: Padding(
-                        padding: EdgeInsets.all(4.toAutoScaledWidth),
-                        child: Icon(
-                          widget.isBookmarked
-                              ? Icons.bookmark
-                              : Icons.bookmark_border,
-                          color: Colors.black87,
-                          size: 22.toAutoScaledWidth,
-                        ),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: widget.onBookmarkToggle,
+                    //   behavior: HitTestBehavior.opaque,
+                    //   child: Padding(
+                    //     padding: EdgeInsets.all(4.toAutoScaledWidth),
+                    //     child: Icon(
+                    //       widget.isBookmarked
+                    //           ? Icons.bookmark
+                    //           : Icons.bookmark_border,
+                    //       color: Colors.black87,
+                    //       size: 22.toAutoScaledWidth,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
                 SizedBox(height: 10.toAutoScaledHeight),
