@@ -9,6 +9,7 @@ import 'package:code_setup/presentation/screens/home_screen/dashboard/models/boo
 import 'package:code_setup/presentation/screens/home_screen/services/servicesCard.dart';
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -207,6 +208,8 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
     final controller = ref.read(servicesProvider.notifier);
 
     final user = KAppX.globalProvider.read(userProvider);
+    final l10n = DashboardL10n.of(context);
+    final isArabic = l10n.isArabic;
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -215,9 +218,9 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
-        title: const Text(
-          'Services',
-          style: TextStyle(
+        title: Text(
+          l10n.services,
+          style: const TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 22,
             color: Colors.black87,
@@ -261,55 +264,69 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
                     itemBuilder: (context, index) {
                       final data = services[index];
 
+                      final title = isArabic
+                          ? (data.arabicName?.trim().isNotEmpty == true
+                                ? data.arabicName!
+                                : data.name ?? 'No Name')
+                          : (data.name ?? 'No Name');
+
+                      final subtitle = isArabic
+                          ? (data.arabicDescription?.trim().isNotEmpty == true
+                                ? data.arabicDescription!
+                                : data.description ?? 'No Description')
+                          : (data.description ?? 'No Description');
+
+                      final subServiceLabels = data.subservices
+                              ?.map((s) {
+                                if (isArabic) {
+                                  return s.arabicsubServiceName
+                                              ?.trim()
+                                              .isNotEmpty ==
+                                          true
+                                      ? s.arabicsubServiceName!
+                                      : s.subServiceName ?? 'Unnamed';
+                                }
+                                return s.subServiceName ?? 'Unnamed';
+                              })
+                              .toList() ??
+                          [];
+
                       return CustomInfoCard(
-                        title: data.name ?? 'No Name',
-
-                        subtitle: data.description ?? 'No Description',
-
-                        icon: Icons.miscellaneous_services,
-
-                        iconColor: Colors.blueAccent,
-
-                        subServices: data.subservices != null
-                            ? data.subservices!
-                                  .map(
-                                    (s) => s.subServiceName ?? 'Unnamed',
-                                  )
-                                  .toList()
-                            : [],
-
+                        title: title,
+                        subtitle: subtitle,
+                        iconBackgroundColor: serviceCardIconColorForIndex(
+                          index,
+                        ),
+                        subServices: subServiceLabels,
                         isBookmarked: false,
-
                         onBookmarkToggle: () {
                           controller.updateBookmark(
                             userId: user?.userId ?? 0,
-
                             serviceId: data.id ?? 0,
                           );
                         },
-
                         onCardTap: () {
                           controller.navigateToRoute(
                             name: data.name ?? '',
-
                             service: data,
                           );
                         },
-
                         onSubServiceTap: (subName) {
-                          final subService = data.subservices?.lastWhere(
-                            (s) => s.subServiceName == subName,
+                          SubService? matched;
+                          for (final s in data.subservices ?? <SubService>[]) {
+                            final en = s.subServiceName ?? '';
+                            final ar = s.arabicsubServiceName ?? '';
+                            if (en == subName || ar == subName) {
+                              matched = s;
+                              break;
+                            }
+                          }
 
-                            orElse: () => SubService(),
-                          );
-
-                          if (subService != null) {
+                          if (matched != null) {
                             controller.navigateToRoute(
-                              name: subService.code ?? '',
-
+                              name: matched.code ?? '',
                               service: data,
-
-                              subService: subService,
+                              subService: matched,
                             );
                           }
                         },

@@ -1337,6 +1337,10 @@ class DashboardL10n {
   String get loginJwtRequired =>
       _t('Please enter JWT token', 'يرجى إدخال رمز JWT');
 
+  String get servicesMoreInfo => _t('More Info', 'مزيد من المعلومات');
+
+  String get servicesLessInfo => _t('Less Info', 'معلومات أقل');
+
   String loginLanguageDisplayName(String code) {
     switch (code) {
       case 'ar':
