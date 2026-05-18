@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:code_setup/modules/domain/core/storage/persistent_storage/persistent_storage.dart';
-import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/models/user_model.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
@@ -235,11 +234,17 @@ class KAuthCred {
 
   Future<void> deleteUserInfoData() async {
     try {
-      await _persistentStorage.delete(key: roleKey);
+      await _persistentStorage.delete(key: userInfokey);
       KAppX.globalProvider.read(userInfoProvider.notifier).state = null;
-      log('Successfully deleted role data from persistent storage.');
+      log('Successfully deleted user info data from persistent storage.');
     } catch (e, st) {
-      log('Error deleting role data from persistent storage: $e\n$st');
+      log('Error deleting user info data from persistent storage: $e\n$st');
     }
+  }
+
+  Future<void> clearSession() async {
+    await deleteProfileData();
+    await deleteUserInfoData();
+    await deleteRoleData();
   }
 }

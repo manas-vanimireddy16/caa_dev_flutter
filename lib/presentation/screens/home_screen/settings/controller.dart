@@ -94,11 +94,20 @@ class SettingsController extends StateNotifier<SettingsState> {
   }
 
   Future<void> signOut() async {
-    await msal.signOut();
-    await KAuthCred().deleteProfileData();
-    await KAuthCred().deleteUserInfoData();
-    await KAuthCred().deleteRoleData();
+    await _signOutMsalIfNeeded();
+    await KAuthCred().clearSession();
     KAppX.router.replace(MicrosoftLoginRoute());
+  }
+
+  Future<void> _signOutMsalIfNeeded() async {
+    try {
+      await msal.signOut();
+    } on MsalException catch (e) {
+      if (!e.message.toLowerCase().contains('no currently signed in account')) {
+        rethrow;
+      }
+      debugPrint('No MSAL account cached; clearing local session only.');
+    }
   }
 
   Future<void> logoutJwt() async {
@@ -108,10 +117,7 @@ class SettingsController extends StateNotifier<SettingsState> {
       final storage = KAuthCred();
 
       // 1️⃣ Clear all stored auth data
-      await storage.deleteProfileData();
-      await storage.deleteUserInfoData();
-      // await storage.deleteSelectedRole(); // if exists
-      // await storage.deleteRoleData(); // if you have this
+      await storage.clearSession();
 
       // 2️⃣ Clear in-memory token
       // accessToken = '';
@@ -145,8 +151,8 @@ class SettingsController extends StateNotifier<SettingsState> {
   Future<void> onLogoutPressed(BuildContext context) async {
     state = state.copyWith(isLoggingOut: true);
     // final loginProvider = KAppX.globalProvider.read(loginVsProvider.notifier);
-    signOut();
     try {
+      await signOut();
       // TODO: Clear auth credentials here
       // await AuthCred.clear();
 
