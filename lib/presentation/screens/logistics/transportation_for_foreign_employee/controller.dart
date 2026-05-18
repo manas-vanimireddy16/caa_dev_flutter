@@ -2170,7 +2170,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .foreignEmployeeVehicleCreateRequest(payload);
 
       if (response['status'] == 'success') {
-        await Future.delayed(const Duration(microseconds: 2000));
+        await Future.delayed(const Duration(seconds: 3));
 
         _refreshDashboard();
         return true;
