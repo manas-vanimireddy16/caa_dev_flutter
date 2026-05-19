@@ -24,7 +24,7 @@ class RequestStatusBreakdownCard extends StatelessWidget {
     super.key,
     required this.data,
     this.title = 'Requests Status Breakdown',
-    this.filterLabel = 'Monthly',
+    this.filterLabel = 'Weekly',
     this.icon = Icons.pie_chart_outline,
     this.onFilterTap,
     required this.breakdown,

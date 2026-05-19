@@ -13,7 +13,7 @@ enum ActionButtonsType {
   approveRejectAllocateVehicle,
 }
 
-enum ApprovalDialogType { approve, reject }
+enum ApprovalDialogType { approve, reject, close }
 
 enum FileCategory { image, video, audio, pdf, document, unknown }
 

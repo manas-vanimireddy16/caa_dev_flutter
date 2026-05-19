@@ -68,7 +68,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchUserRoles(
       userData?.userId ?? 0,
     ); //0); //(40);(1017);(userData?.userId ?? 0);
-    fetchBookmarks();
+    // fetchBookmarks();
   }
 
   final dashboardinstance = DashboardRepository();
@@ -168,14 +168,14 @@ class _VSController extends StateNotifier<_ViewState> {
     print("🎯 Selected Role: ${selected.services}");
   }
 
-  Future<void> fetchBookmarks() async {
-    state = state.copyWith(isLoading: true);
-    final Bookmarksmodel = await dashboardinstance.getBookmarks();
-    final bookmarks = Bookmarksmodel;
-    print(bookmarks);
-    state = state.copyWith(isLoading: false, bookmarks: bookmarks);
-    print(bookmarks);
-  }
+  // Future<void> fetchBookmarks() async {
+  //   state = state.copyWith(isLoading: true);
+  //   final Bookmarksmodel = await dashboardinstance.getBookmarks();
+  //   final bookmarks = Bookmarksmodel;
+  //   print(bookmarks);
+  //   state = state.copyWith(isLoading: false, bookmarks: bookmarks);
+  //   print(bookmarks);
+  // }
 
   // Future<void> fetchUser() async {
   //   final userData = KAppX.globalProvider.read(userProvider);
@@ -199,7 +199,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // Optional: refresh services/bookmarks
-      fetchBookmarks();
+      // fetchBookmarks();
 
       state = state.copyWith(isLoading: false);
     } catch (e) {
@@ -465,14 +465,14 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      // case 'CAA003':
-      //   KAppX.router.push(
-      //     SalalahDashboard(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
+      case 'CAA003':
+        KAppX.router.push(
+          SalalahDashboard(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       // case 'Request for Hospitality Use in Muscat':
       //   KAppX.router.push(
       //     RequestForAccommodationInMuscatGovernorateRoute(

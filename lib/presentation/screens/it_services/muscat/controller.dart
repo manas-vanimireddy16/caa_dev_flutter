@@ -285,7 +285,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchDepartments();
-    fetchitTechnician();
+    // fetchitTechnician();
     fetchRequests();
     fetchActionItems();
   }
@@ -486,6 +486,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void openNewRequestForm() {
+    fetchitTechnician();
     KAppX.router.push(
       PromotionsNewRequestRoute(
         serviceId: service.id ?? 0,
