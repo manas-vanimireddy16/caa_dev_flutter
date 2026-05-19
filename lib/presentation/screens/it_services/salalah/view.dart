@@ -10,6 +10,7 @@ import 'package:code_setup/presentation/common_widgets/chat.dart';
 import 'package:code_setup/presentation/common_widgets/comment.dart';
 import 'package:code_setup/presentation/common_widgets/comment_box.dart';
 import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
+import 'package:code_setup/presentation/common_widgets/employee_information_card.dart';
 import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
 import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
 import 'package:code_setup/presentation/common_widgets/profile_card.dart';
@@ -54,6 +55,7 @@ import 'package:code_setup/presentation/screens/it_services/widgets/workflow.dar
 import 'package:code_setup/repository/it_services/salalah/domain/dashboard.dart'
     show DashboardRepository;
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';

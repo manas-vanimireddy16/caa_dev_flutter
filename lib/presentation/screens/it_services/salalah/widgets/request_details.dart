@@ -47,10 +47,11 @@ class _SalalahRequestDetailsTabScreenState
   @override
   Widget build(BuildContext context) {
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: const Text('Request Detail')),
+      appBar: KAppBar(title: Text(l10n.requestDetailScreenTitle)),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(
@@ -61,10 +62,9 @@ class _SalalahRequestDetailsTabScreenState
             return const Center(child: CircularProgressIndicator());
           }
 
-          // final request = state.requestDetails.request == null
-          //     ? null
-          //     : state.requestDetails;
           final request = state.requestDetails.request;
+          final createdByUser =
+              request?.createdByUser ?? state.requestDetails.createdByUser;
           final requestId = request?.id;
           final List<AttachmentModel> attachments = state.attachmentsById;
           final chats = state.chatById;
@@ -78,17 +78,12 @@ class _SalalahRequestDetailsTabScreenState
             state.requestDetails,
             approvals,
           );
-          final nextApprover = controller.resolveApproverMap(approvals);
 
           final approverId = active?.id;
-
-          // controller.onSelectedApprovalId(approverRoleId ?? 0);
-          // final canApprove = controller.shouldShowApprovalButtons(approvals);
 
           return SingleChildScrollView(
             child: Column(
               children: [
-                /// ----------- Profile Section --------------
                 5.toHorizontalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
@@ -99,24 +94,37 @@ class _SalalahRequestDetailsTabScreenState
                 const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
-                if (selectedTab == 0)
+                if (selectedTab == 0) ...[
+                  EmployeeInformationCard(
+                    l10n: l10n,
+                    requestId: requestId?.toString(),
+                    status: request?.status,
+                    assignedTo: controller.buildAssignedToLabel(approvals),
+                    user: createdByUser,
+                    labelBuilder: l10n.requestDetailsLabel,
+                  ),
                   CommonRequestDetails(
+                    statusInformationTitle:
+                        l10n.requestDetailsLabel('Status Information'),
+                    requestInformationTitle:
+                        l10n.requestDetailsLabel('Request Information'),
+                    technicalInformationTitle: l10n.technicalDetailsSection,
+                    requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: controller.buildStatusInformation(),
-
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
-                    // table: controller.mapAccommodationTableForDetails(),
-                  )
+                  ),
+                ]
                 else if (selectedTab == 1)
                   CommentsCard(
                     from: widget.from,
                     showButtons: actionType != ActionButtonsType.none,
-                    actionType: actionType, // ✅ FIX HERE
+                    actionType: actionType,
                     entries: chats,
                     controller: controller.chatController,
                     buttonsDisabled: state.isButtonDisabled,
                     attachments: state.attachments,
-                    // l10n: l10n,
+                    l10n: l10n,
                     onAttach: () async {
                       await controller.pickFile();
                     },
@@ -137,11 +145,6 @@ class _SalalahRequestDetailsTabScreenState
                         approverId: approverId ?? 0,
                         requestId: requestId ?? 0,
                       );
-                      // controller.onApprove(
-                      //   approverId ?? 0,
-                      //   requestId ?? 0,
-                      //   'Approved',
-                      // );
                     },
                     onReject: () async {
                       controller.showApprovalCommentDialog(
@@ -152,7 +155,10 @@ class _SalalahRequestDetailsTabScreenState
                     },
                   )
                 else if (selectedTab == 2)
-                  CommonAttachmentsTabContent(attachments: attachments)
+                  CommonAttachmentsTabContent(
+                    attachments: attachments,
+                    l10n: l10n,
+                  )
                 else if (selectedTab == 3)
                   ITServicesRequestWorkflowTimeline(
                     details: state.requestDetails,

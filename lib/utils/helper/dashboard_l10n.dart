@@ -288,7 +288,7 @@ class DashboardL10n {
 
   String get fileListTitle => _t('File List', 'قائمة الملفات');
 
-  String get documentNameLabel => _t('Document Name', 'اسم المستند');
+  String get documentNameLabel => _t('Document Name', 'نوع المستند');
 
   String get fileTypeLabel => _t('File type', 'نوع الملف');
 
@@ -363,8 +363,6 @@ class DashboardL10n {
 
   String get travelDateTo => _t('Travel Date To', 'تاريخ السفر إلى');
 
-  String get attachFile => _t('Attach File', 'إرفاق ملف');
-
   String get numberOfGuests => _t('Number of Guests', 'عدد الضيوف');
 
   String get enterNumberOfGuests =>
@@ -383,9 +381,6 @@ class DashboardL10n {
 
   String get category => _t('Category', 'الفئة');
 
-  String get requestSubmissionDate =>
-      _t('Request Submission Date', 'تاريخ تقديم الطلب');
-
   String get meal => _t('Meal', 'الوجبات');
 
   String get yesNoYes => _t('Yes', 'نعم');
@@ -400,6 +395,30 @@ class DashboardL10n {
   String get previewNotAvailable => _t(
     'Preview is not available for this file type. Please download instead.',
     'المعاينة غير متاحة لهذا النوع من الملفات. يرجى التحميل بدلاً من ذلك.',
+  );
+
+  // reuqest fpr vehicle maintenance
+  String get vehicleNumberId =>
+      _t('Vehicle Number / ID', 'رقم المركبة / المعرف');
+
+  String get typeOfMaintenanceRequired =>
+      _t('Type of Maintenance Required', 'نوع الصيانة المطلوبة');
+
+  String get preventive => _t('Preventive', 'صيانة وقائية');
+
+  String get corrective => _t('Corrective', 'صيانة تصحيحية');
+
+  String get preferredMaintenanceDate =>
+      _t('Preferred Maintenance Date', 'تاريخ الصيانة المرغوب');
+
+  String get requestSubmissionDate =>
+      _t('Request Submission Date', 'تاريخ تقديم الطلب');
+
+  String get issueDescription => _t('Issue Description', 'وصف المشكلة');
+
+  String get writeHere => _t(
+    'Write Here... (min 10 characters, max 255 characters)',
+    'اكتب هنا... (الحد الأدنى 10 أحرف، الحد الأقصى 255 حرف)',
   );
 
   /// IT Services
@@ -426,6 +445,8 @@ class DashboardL10n {
 
   String get problem => _t('Problem', 'المشكلة');
 
+  String get problemStatement => _t('Problem Statement', 'بيان المشكلة');
+
   String get enterPersonalEmail =>
       _t('Enter Personal Email', 'أدخل البريد الإلكتروني الشخصي');
 
@@ -445,6 +466,30 @@ class DashboardL10n {
   String get assignedTo => _t('Assigned To', 'معين الى');
 
   String get selectAssignedTo => _t('Select Assigned To', 'اختيار المخصص');
+
+  // Request for support event
+  String get eventTitle =>
+      _t('Event Title', 'التدريب على الأمن السيبراني إجباري');
+
+  String get dateOfEvent => _t('Date of Event', 'تاريخ الفعالية');
+
+  String get locationOfEvent => _t('Location of Event', 'موقع الفعالية');
+
+  String get typeOfEvent => _t('Type of Event', 'نوع الفعالية');
+
+  String get phoneNumber => _t('Phone Number', 'رقم الهاتف');
+
+  String get requestFor => _t('Request For', 'نوع الطلب');
+
+  String get attachFile => _t('Attach File', 'إرفاق ملفات');
+
+  String get eventSupportSubmitNotePoint1 =>
+      _t('Submit your request at least 3 days before the event date.', '');
+
+  String get eventSupportSubmitNotePoint2 => _t(
+    'In case of urgent requirements, contact the IT Help Desk directly for consideration.',
+    '',
+  );
 
   String logisticsDailyEmergencyOption(String en) {
     switch (en) {
@@ -1258,7 +1303,22 @@ class DashboardL10n {
         return _t('Other Mitigation Measures:', 'إجراءات التخفيف الأخرى:');
 
       case 'Request For':
-        return vehicleRequiredFor;
+        return requestFor;
+
+      case 'Vehicle Number':
+        return vehicleNumberId;
+
+      case 'Maintenance Type':
+        return typeOfMaintenanceRequired;
+
+      case 'Preferred Maintenance Date':
+        return preferredMaintenanceDate;
+
+      case 'Issue Description':
+        return issueDescription;
+
+      case 'Problem Statement':
+        return problemStatement;
 
       case 'Travel Time':
         return travelTime;

@@ -7,6 +7,7 @@ import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/common_widgets/approval_comment_dialog.dart';
 import 'package:code_setup/presentation/common_widgets/chat.dart';
 import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
+import 'package:code_setup/presentation/common_widgets/employee_information_card.dart';
 import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
 import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
 import 'package:code_setup/presentation/common_widgets/requestCard.dart';
@@ -52,6 +53,7 @@ import 'package:code_setup/repository/it_services/request_event_support/domain/d
 import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
 import 'package:code_setup/repository/logistics/vehicle_maintenance/domain/domain.dart';
 import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';

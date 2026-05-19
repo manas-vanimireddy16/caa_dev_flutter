@@ -21,11 +21,12 @@ class RequestDetailsTabs extends ConsumerWidget {
     final state = ref.watch(_vsProvider(providerArgs));
     final controller = ref.read(_vsProvider(providerArgs).notifier);
 
+    final l10n = DashboardL10n.of(context);
     final labels = [
-      "Request Details",
-      "Request History",
-      "Attachments",
-      "Work Flow",
+      l10n.requestDetailsTabLabel,
+      l10n.routingHistoryTabLabel,
+      l10n.attachmentsTabLabel,
+      l10n.workFlowTabLabel,
     ];
 
     return SingleChildScrollView(

@@ -7,6 +7,7 @@ import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/common_widgets/approval_comment_dialog.dart';
 import 'package:code_setup/presentation/common_widgets/chat.dart';
 import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
+import 'package:code_setup/presentation/common_widgets/employee_information_card.dart';
 import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
 import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
 import 'package:code_setup/presentation/common_widgets/requestCard.dart';
@@ -48,6 +49,7 @@ import 'package:code_setup/presentation/screens/training_and_development/models/
 import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
 import 'package:code_setup/repository/it_services/request_event_support/domain/domain.dart';
 import 'package:code_setup/repository/legal_consultation_services/legal_consultation_and_review_of_administrative_decisions/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
