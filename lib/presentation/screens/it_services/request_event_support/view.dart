@@ -127,6 +127,7 @@ class _RequestEventSupportScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -134,7 +135,11 @@ class _RequestEventSupportScreenState
         padding: const EdgeInsets.all(12),
         children: [
           /// KPI
-          StatSummaryRow(stats: controller.currentStats),
+          StatSummaryRow(
+            stats: controller.currentStats(
+              (key) => l10n.statTitle(key, isSecurityThreat: true),
+            ),
+          ),
           20.toHorizontalSizedBox,
 
           /// Status Breakdown
@@ -142,8 +147,16 @@ class _RequestEventSupportScreenState
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
-            onChanged: controller.onStatusFilterChanged,
+            title: l10n.requestsStatusBreakdown,
+            filterLabel: l10n.periodFilterLabels[0],
+            filterLabelList: l10n.periodFilterLabels,
+            centerMetricLabel: l10n.totalTickets,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
+            preserveFilterLabelOnChange: true,
+            onChanged: (value) => controller.onStatusFilterChanged(
+              value != null ? l10n.periodFilterValue(value) : null,
+            ),
             breakdown: state.statusBreakdown.data,
           ),
 
@@ -152,7 +165,8 @@ class _RequestEventSupportScreenState
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalTickets,
             selectedYear: controller.currentYear.toString(),
             barColor: const Color(0xFF283593),
             filterLabelList: controller.filterLabelList,

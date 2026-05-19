@@ -291,14 +291,28 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.kpiData.data?.toJson(),
+        isSecurityThreat: true,
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.approvalKpiData.data?.toJson(),
+        isSecurityThreat: true,
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+          ? requestStatsList(titleForKey)
+          : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -513,15 +527,18 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  List<DynamicField> get salalahFields => [
+  List<DynamicField> buildSalalahFields(DashboardL10n l10n) => [
     /// ================= REQUEST FOR =================
     DynamicField(
       name: 'request_for',
-      label: 'Request For',
+      label: l10n.requestFor,
       type: FieldType.radio,
       required: true,
       initialValue: 'Self',
-      options: ['Self', 'Behalf of'],
+      options: [
+        DropdownOption(value: 'Self', label: l10n.self),
+        DropdownOption(value: 'Behalf of', label: l10n.behalfOf),
+      ],
 
       onChanged: (value, ref) {
         final notifier = ref.read(dynamicFormProvider.notifier);
@@ -552,7 +569,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // / ================= PERSON NAME =================
     DynamicField(
       name: 'person_name',
-      label: 'Person Name',
+      label: l10n.personName,
       type: FieldType.text,
       required: true,
       initialValue: userInfo?.data?.employeeName ?? '',
@@ -562,17 +579,16 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= CONTACT NUMBER =================
     DynamicField(
       name: 'contact_number',
-      label: 'Contact Number',
+      label: l10n.phoneNumber,
       type: FieldType.number,
       required: true,
       initialValue: userInfo?.data?.mobile ?? '',
-      // disabled: ,
       disabledWhen: (values) => (values['request_for'] ?? 'Self') == 'Self',
     ),
 
     DynamicField(
       name: 'department',
-      label: 'Department',
+      label: l10n.requestDetailsLabel('Department'),
       type: FieldType.select,
       required: true,
       initialValue: userInfo?.data?.department?.id?.toString(),
@@ -601,7 +617,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // /// ================= SECTION =================
     DynamicField(
       name: 'section',
-      label: 'Section',
+      label: l10n.section,
       type: FieldType.select,
       required: true,
       initialValue: userInfo?.data?.section?.id?.toString(), // ✅ FIX
@@ -619,7 +635,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= SERVICE TYPE =================
     DynamicField(
       name: 'service_type',
-      label: 'Service Type',
+      label: l10n.serviceType,
       type: FieldType.select,
       required: true,
       options: (state.serviceDropDown ?? [])
@@ -635,23 +651,23 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PROBLEM =================
     DynamicField(
       name: 'problem',
-      label: 'Problem',
+      label: l10n.problem,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter Problem',
+      placeholder: l10n.enterProblem,
     ),
 
     /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
-      label: 'Description',
+      label: l10n.requestDetailsLabel('Description'),
       type: FieldType.textarea,
       required: false,
-      placeholder: 'Describe the issue...',
+      placeholder: l10n.describeIssuePlaceholder,
     ),
     DynamicField(
       name: 'assigned_to',
-      label: 'Assigned To',
+      label: l10n.assignedTo,
       type: FieldType.select,
 
       visibleWhen: (values) => userRoleInfo?.roleId == 4,
@@ -670,27 +686,27 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= EXTENSION NUMBER =================
     DynamicField(
       name: 'extension_number',
-      label: 'Extension Number',
+      label: l10n.extensionNumber,
       type: FieldType.number,
       required: true,
-      placeholder: '1234',
+      placeholder: l10n.enterExtensionNumber,
     ),
 
     /// ================= EMAIL =================
     DynamicField(
       name: 'email',
-      label: 'Email',
+      label: l10n.email,
       type: FieldType.email,
       required: true,
       visibleWhen: (values) => values['request_for'] == 'Behalf of',
       requiredWhen: (values) => values['request_for'] == 'Behalf of',
-      placeholder: 'example@gmail.com',
+      placeholder: l10n.enterEmail,
     ),
 
     /// ================= ATTACHMENT =================
     DynamicField(
       name: 'attachment',
-      label: 'Attach File',
+      label: l10n.attachFile,
       type: FieldType.file,
       required: false,
       maxFiles: 3,

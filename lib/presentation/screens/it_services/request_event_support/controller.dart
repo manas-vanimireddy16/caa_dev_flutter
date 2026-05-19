@@ -260,14 +260,28 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.kpiData.data?.toJson(),
+        isSecurityThreat: true,
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.approvalKpiData.data?.toJson(),
+        isSecurityThreat: true,
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+          ? requestStatsList(titleForKey)
+          : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -447,11 +461,11 @@ class _VSController extends StateNotifier<_ViewState> {
   final requestEventSupportInstance = RequestEventSupportRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  List<DynamicField> get eventSupportFormFields => [
+  List<DynamicField> buildEventSupportFormFields(DashboardL10n l10n) => [
     /// ================= EVENT TITLE =================
     DynamicField(
       name: 'event_title',
-      label: 'Event Title',
+      label: l10n.eventTitle,
       type: FieldType.text,
       required: true,
     ),
@@ -459,7 +473,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DATE OF EVENT =================
     DynamicField(
       name: 'event_date',
-      label: 'Date of Event',
+      label: l10n.dateOfEvent,
       type: FieldType.date,
       required: true,
     ),
@@ -467,7 +481,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= LOCATION =================
     DynamicField(
       name: 'location',
-      label: 'Location of Event',
+      label: l10n.locationOfEvent,
       type: FieldType.text,
       required: true,
     ),
@@ -475,7 +489,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= TYPE OF EVENT =================
     DynamicField(
       name: 'event_type',
-      label: 'Type of Event',
+      label: l10n.typeOfEvent,
       type: FieldType.text,
       required: false,
     ),
@@ -483,15 +497,15 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PHONE NUMBER =================
     DynamicField(
       name: 'phone_number',
-      label: 'Phone Number',
-      type: FieldType.text, // (or FieldType.phone if you have)
+      label: l10n.phoneNumber,
+      type: FieldType.text,
       required: true,
     ),
 
     /// ================= REQUEST FOR =================
     DynamicField(
       name: 'request_for',
-      label: 'Request For',
+      label: l10n.requestFor,
       type: FieldType.text,
       required: true,
     ),
@@ -499,7 +513,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= REASON =================
     DynamicField(
       name: 'reason',
-      label: 'Reason for Request',
+      label: l10n.reasonForRequest,
       type: FieldType.text,
       required: true,
     ),
@@ -507,7 +521,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= ATTACHMENT =================
     DynamicField(
       name: 'attachments',
-      label: 'Attach File',
+      label: l10n.attachFile,
       type: FieldType.file,
       required: false,
     ),

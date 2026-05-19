@@ -45,13 +45,11 @@ class _SalalahNewRequestScreenState
 
   @override
   Widget build(BuildContext context) {
-    /// Watch state only if needed
-    final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      // appBar: KAppBar(title: Text('Mission Transfer Request')),
 
       /// ✅ DynamicForm MUST be root-level in a screen
       body: ProviderScope(
@@ -59,9 +57,9 @@ class _SalalahNewRequestScreenState
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: 'Performance Management',
+          title: l10n.salalahNewRequest,
           stepTitles: const [''],
-          steps: [controller.salalahFields],
+          steps: [controller.buildSalalahFields(l10n)],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

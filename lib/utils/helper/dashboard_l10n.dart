@@ -152,6 +152,21 @@ class DashboardL10n {
   String get transportForeignEmployeeNewRequest =>
       _t('Transportation for Foreign Employee', 'نقل الموظفين الأجانب');
 
+  String get vehicleMaintenanceNewRequest =>
+      _t('Request for Vehicle Maintenance', 'طلب صيانة المركبة');
+
+  String get salalahNewRequest => _t('New Salalah Request', 'طلب صلالة جديد');
+
+  String get eventSupportNewRequest =>
+      _t('Request for Event Support', 'طلب دعم الفعالية');
+
+  String get reasonForRequest => _t('Reason for Request', 'سبب الطلب');
+
+  String get describeIssuePlaceholder => _t(
+    'Describe the issue...',
+    'صف المشكلة...',
+  );
+
   String get transportFormStepPassengers =>
       _t('Passenger details', 'تفاصيل الركاب');
 
@@ -1119,6 +1134,20 @@ class DashboardL10n {
         return checkInDate;
       case 'Request Submission Date':
         return requestSubmissionDate;
+      case 'Problem':
+        return problem;
+      case 'Created By':
+        return _t('Created By', 'أنشئ بواسطة');
+      case 'Comment':
+        return _t('Comment', 'تعليق');
+      case 'Level':
+        return _t('Level', 'المستوى');
+      case 'Vehicle Number':
+        return vehicleNumberId;
+      case 'Maintenance Type':
+        return typeOfMaintenanceRequired;
+      case 'Preferred Maintenance Date':
+        return preferredMaintenanceDate;
       default:
         return _formatKey(key);
     }
@@ -1319,6 +1348,9 @@ class DashboardL10n {
 
       case 'Problem Statement':
         return problemStatement;
+
+      case 'Reason for Request':
+        return reasonForRequest;
 
       case 'Travel Time':
         return travelTime;

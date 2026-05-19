@@ -641,14 +641,28 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.kpiData.data?.toJson(),
+        isSecurityThreat: true,
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.approvalKpiData.data?.toJson(),
+        isSecurityThreat: true,
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+          ? requestStatsList(titleForKey)
+          : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -832,14 +846,14 @@ class _VSController extends StateNotifier<_ViewState> {
 
   final vehicleMaintenanceInstance = VehicleMaintenanceRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
-  List<DynamicField> get vehicleMaintenanceFields => [
+  List<DynamicField> buildVehicleMaintenanceFields(DashboardL10n l10n) => [
     /// VEHICLE NUMBER
     DynamicField(
       name: 'vehicle_number',
-      label: 'Vehicle Number / ID',
+      label: l10n.vehicleNumberId,
       type: FieldType.select,
       required: true,
-      placeholder: 'Select Vehicle',
+      placeholder: l10n.transportSelectVehicleNumber,
       options: state.vehicles.map((vehicle) {
         return DropdownOption(
           value: vehicle['vehicleNumber'].toString(),
@@ -869,16 +883,23 @@ class _VSController extends StateNotifier<_ViewState> {
     /// TYPE OF MAINTENANCE
     DynamicField(
       name: 'maintenance_type',
-      label: 'Type of Maintenance Required',
+      label: l10n.typeOfMaintenanceRequired,
       type: FieldType.radio,
       required: true,
-      options: ['Preventive', 'Corrective', 'Emergency'],
+      options: [
+        DropdownOption(value: 'Preventive', label: l10n.preventive),
+        DropdownOption(value: 'Corrective', label: l10n.corrective),
+        DropdownOption(
+          value: 'Emergency',
+          label: l10n.logisticsDailyEmergencyOption('Emergency'),
+        ),
+      ],
     ),
 
     /// PREFERRED MAINTENANCE DATE
     DynamicField(
       name: 'preferred_maintenance_date',
-      label: 'Preferred Maintenance Date',
+      label: l10n.preferredMaintenanceDate,
       type: FieldType.date,
       required: true,
     ),
@@ -886,7 +907,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// REQUEST SUBMISSION DATE
     DynamicField(
       name: 'request_submission_date',
-      label: 'Request Submission Date',
+      label: l10n.requestSubmissionDate,
       initialValue: DateTime.now().toString().split(' ').first,
       type: FieldType.date,
       required: true,
@@ -896,16 +917,16 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ISSUE DESCRIPTION
     DynamicField(
       name: 'issue_description',
-      label: 'Issue Description',
+      label: l10n.issueDescription,
       type: FieldType.text,
       required: true,
-      placeholder: 'Write Here... (min 10 characters, max 255 characters)',
+      placeholder: l10n.writeHere,
     ),
 
     /// ATTACH FILE
     DynamicField(
       name: 'attachments',
-      label: 'Attach File',
+      label: l10n.attachFile,
       type: FieldType.file,
       required: false,
     ),
