@@ -296,7 +296,7 @@ class DashboardL10n {
 
   String get viewButtonLabel => _t('View', 'عرض');
 
-  String get downloadButtonLabel => _t('Download', 'تحميل');
+  String get downloadButtonLabel => _t('Download', 'تنزيل');
 
   String get submittingRequest =>
       _t('Submitting request…', 'جاري إرسال الطلب…');
@@ -401,6 +401,50 @@ class DashboardL10n {
     'Preview is not available for this file type. Please download instead.',
     'المعاينة غير متاحة لهذا النوع من الملفات. يرجى التحميل بدلاً من ذلك.',
   );
+
+  /// IT Services
+  /// Salalah
+  String get personName => _t('Person Name', 'اسم الشخص');
+
+  String get enterPersonName => _t('Enter Person Name', 'أدخل اسم الشخص');
+
+  String get behalfOf => _t('Behalf Of', 'نيابةً عن');
+
+  String get self => _t('Self', 'شخصي');
+
+  String get section => _t('Section', 'القسم');
+
+  String get sections => _t('Sections', 'الأقسام');
+
+  String get serviceType => _t('Service Type', 'نوع الخدمة');
+
+  String get selectServiceType => _t('Select Service Type', 'اختر نوع الخدمة');
+
+  String get selectDepartment => _t('Select Department', 'اختر الدائرة');
+
+  String get selectSection => _t('Select Section', 'اختر القسم');
+
+  String get problem => _t('Problem', 'المشكلة');
+
+  String get enterPersonalEmail =>
+      _t('Enter Personal Email', 'أدخل البريد الإلكتروني الشخصي');
+
+  String get enterProblem => _t('Enter Problem', 'أدخل المشكلة');
+
+  String get enterDescription => _t('Enter Description', 'أدخل الوصف');
+
+  String get extensionNumber => _t('Extension Number', 'رقم المحول');
+
+  String get enterExtensionNumber =>
+      _t('Enter Extension Number', 'أدخل رقم التحويلة');
+
+  String get email => _t('Email', 'البريد الإلكتروني');
+
+  String get enterEmail => _t('Enter Email', 'أدخل البريد الإلكتروني');
+
+  String get assignedTo => _t('Assigned To', 'معين الى');
+
+  String get selectAssignedTo => _t('Select Assigned To', 'اختيار المخصص');
 
   String logisticsDailyEmergencyOption(String en) {
     switch (en) {

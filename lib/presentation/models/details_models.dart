@@ -1081,6 +1081,7 @@ class RequestModel {
   final String? requestDate;
   final int? serviceTypeId;
   final String? requestType;
+  final String? workflowInstanceId;
 
   // ─────────────────────────────
   // LOGISTICS FIELDS
@@ -1510,7 +1511,7 @@ class RequestModel {
     this.userId,
     this.reqUserDepartmentId,
     this.reqUserSectionId,
-
+    this.workflowInstanceId,
     this.contactNum,
     this.extnNum,
     this.email,
@@ -1969,6 +1970,7 @@ class RequestModel {
       employeeId: json["employee_id"],
       currentJobPosition: json["current_job_position"],
       assignedJobPosition: json["assigned_job_position"],
+      workflowInstanceId: json["workflow_execution_id"],
 
       startDate: json["start_date"],
       endDate: json["end_date"],

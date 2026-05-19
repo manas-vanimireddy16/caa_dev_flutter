@@ -83,7 +83,7 @@ class ApiEndPoint {
 
   /// TECHNICIANS
   static const String salalahITTechnician =
-      '/v1/it-service/helpdesk/Technicians?role_name=IT%20Technician';
+      '/v1/it-service/helpdesk/Technicians';
 
   /// ACTION ITEMS
   static const String getActionItems =

@@ -14,6 +14,7 @@ import 'package:code_setup/presentation/screens/it_services/salalah/models/it_te
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestData.dart'
     hide Department;
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart';
+import 'package:code_setup/presentation/screens/it_services/salalah/models/salalah_action_items_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/salalah_data_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/service_dropdown_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/status_break_down.dart';
@@ -273,9 +274,11 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<ITTechnicianListModel> getItTechnicianDetails() async {
+  Future<ITTechnicianListModel> getItTechnicianDetails({
+    required int departmentId,
+    required int sectionId,
+  }) async {
     final client = await KAppX.network.secureClient();
-    final userInfo = KAppX.globalProvider.read(userProvider);
 
     try {
       if (client != null) {
@@ -283,8 +286,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
         /// Build query parameters dynamically
         final queryParams = {
-          "department_id": userInfo?.department?.toString(),
-          "section_id": userInfo?.section?.toString(),
+          "role_name": "IT Technician",
+          "department_id": 104, //departmentId.toString(),
+          "section_id": 272, //sectionId.toString(),
         };
 
         /// Remove null values
@@ -339,10 +343,10 @@ class DashboardRepositoryImpl implements DashboardRepository {
     try {
       if (client != null) {
         final queryParams = {
-          // 'offset': offset.toString(),
+          'offset': "0",
           // 'limit': limit.toString(),
-          // 'order_by': 'created_at',
-          // 'sort_order': 'DESC',
+          'order_by': 'created_at',
+          'sort_order': 'DESC',
           'service_id': serviceId.toString(),
           'sub_service_id': subServiceId.toString(),
         };
@@ -370,7 +374,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<List<SalalahRequestModel>> getActionItems({
+  Future<List<ApprovalData>> getActionItems({
     required int offset,
     required int limit,
     String status = '',
@@ -382,7 +386,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
       final client = await KAppX.network.secureClient();
       if (client != null) {
         final queryParams = {
-          'offset': offset.toString(),
+          'offset': "0",
           'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
@@ -411,8 +415,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
           /// Parse each Action Item
           final actionItems = list
               .map(
-                (item) =>
-                    SalalahRequestModel.fromJson(item as Map<String, dynamic>),
+                (item) => ApprovalData.fromJson(item as Map<String, dynamic>),
               )
               .toList();
 
@@ -476,7 +479,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
     try {
       if (client != null) {
-        final url = '${ApiEndPoint.salalahRequestById}/$id';
+        final url = ApiEndPoint.salalahRequestById(id);
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -583,7 +586,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
       final client = await KAppX.network.secureClient();
       if (client != null) {
         final queryParams = {
-          'timePeriod': period,
+          'time_period': period,
           'service_id': serviceId,
           'sub_service_id': subServiceId,
         };

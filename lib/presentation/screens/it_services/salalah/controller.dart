@@ -39,7 +39,7 @@ class _ViewState {
   final List<DepartmentModel> departments;
   final List<SectionModel> sections;
   final int itTechnicianId;
-  final List<SalalahRequestModel> actionItems;
+  final List<ApprovalData> actionItems;
 
   final KPIResponse kpiData; //KpiModel kpiData;
   final int serviceId;
@@ -173,7 +173,7 @@ class _ViewState {
     final bool? isPhoneValid,
     final bool? isExtensionValid,
     final bool? isEmailValid,
-    final List<SalalahRequestModel>? actionItems,
+    final List<ApprovalData>? actionItems,
     final int? tabIndex,
     final KPIResponse? approvalKpiData,
     final RequestDetailModel? requestDataById,
@@ -263,13 +263,14 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchDepartments();
-    fetchitTechnician();
+    // fetchitTechnician();
     fetchRequests();
     fetchActionItems();
   }
 
   int _searchVersion = 0;
   final userInfo = KAppX.globalProvider.read(userInfoProvider);
+  final userRoleInfo = KAppX.globalProvider.read(rolesProvider);
 
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
@@ -366,6 +367,26 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
+  Map<String, String> buildActionItemCardData(ApprovalData item) {
+    final request = item.request;
+
+    return {
+      'Request Id': request?.id?.toString() ?? '-',
+
+      'status': item.approvalStatus ?? '-',
+
+      'Request By': request?.createdByUser?.employeeName ?? '-',
+
+      'Problem': request?.problem ?? '-',
+
+      'Comment': item.comment ?? '-',
+
+      'Level': item.level?.toString() ?? '-',
+
+      'Date': item.createdAt?.toString().split('T').first ?? '-',
+    };
+  }
+
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails.request;
     return {
@@ -381,12 +402,16 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildStatusInformation() {
-    final request = state.requestDetails;
-    final approvals = request.approvalDetails;
+    final request = state.requestDetails.request;
+    final approvals = state.requestDetails.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
     return {
       "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt) ?? 'N/A',
+      "Assigned To": approvals?[0].approverRole?.name ?? 'N/A',
+      if (approvals?[0].approverUser?.email?.isNotEmpty == true) ...{
+        'Approver': approvals?[0].approverUser?.email ?? 'N/A',
+      },
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))
@@ -403,7 +428,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Map<String, String> buildTechnicalInformation() {
     final request = state.requestDetails.request;
-    return {'Extension Number': request?.extensionNumber.toString() ?? '0'};
+    return {'Extension Number': request?.extnNum.toString() ?? '0'};
   }
 
   String _buildDepartmentSection(Map<String, String> approverMap) {
@@ -443,10 +468,12 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
+      fetchApprovalKpi(),
     ]);
   }
 
   void openNewRequestForm() {
+    fetchitTechnician();
     KAppX.router.push(
       SalalahNewRequestRoute(
         serviceId: service.id ?? 0,
@@ -467,7 +494,7 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       fetchActionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -480,7 +507,7 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.radio,
       required: true,
       initialValue: 'Self',
-      options: ['Self', 'On Behalf'],
+      options: ['Self', 'Behalf of'],
 
       onChanged: (value, ref) {
         final notifier = ref.read(dynamicFormProvider.notifier);
@@ -608,13 +635,30 @@ class _VSController extends StateNotifier<_ViewState> {
       required: false,
       placeholder: 'Describe the issue...',
     ),
+    DynamicField(
+      name: 'assigned_to',
+      label: 'Assigned To',
+      type: FieldType.select,
+
+      visibleWhen: (values) => userRoleInfo?.roleId == 4,
+
+      requiredWhen: (values) => userRoleInfo?.roleId == 4,
+      options: (state.itTechnician ?? [])
+          .map(
+            (user) => DropdownOption(
+              value: user.userId.toString(), // ✅ FIX
+              label: user.employeeName ?? '',
+            ),
+          )
+          .toList(),
+    ),
 
     /// ================= EXTENSION NUMBER =================
     DynamicField(
       name: 'extension_number',
       label: 'Extension Number',
       type: FieldType.number,
-      required: false,
+      required: true,
       placeholder: '1234',
     ),
 
@@ -623,8 +667,9 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'email',
       label: 'Email',
       type: FieldType.email,
-      visibleWhen: (values) => values['request_for'] == 'On Behalf',
-      requiredWhen: (values) => values['request_for'] == 'On Behalf',
+      required: true,
+      visibleWhen: (values) => values['request_for'] == 'Behalf of',
+      requiredWhen: (values) => values['request_for'] == 'Behalf of',
       placeholder: 'example@gmail.com',
     ),
 
@@ -639,6 +684,35 @@ class _VSController extends StateNotifier<_ViewState> {
       allowedExtensions: ['pdf', 'jpg', 'png'],
     ),
   ];
+
+  void showApprovalCommentDialog({
+    required ApprovalDialogType type,
+    required int approverId,
+    required int requestId,
+  }) {
+    // final showDecionNumber = lastApprover(
+    //   state.requestDetails.approvalDetails ?? [],
+    // );
+    KAppX.extendedRouter.dialog.showKDialog(
+      builder: (_) => ApprovalCommentDialog(
+        type: type,
+        // showDecisionNumber: showDecionNumber,
+        onSubmit: (comment, decisionNo) async {
+          final status = type == ApprovalDialogType.close
+              ? ApprovalStatus.approved
+              : ApprovalStatus.rejected;
+
+          await onClose(
+            approverId,
+            requestId,
+            comment.trim(), // always safe
+            status.apiValue,
+            // decisionNo, // ✅ backend-safe string
+          );
+        },
+      ),
+    );
+  }
 
   bool canUserActOnLevel({required ApprovalDetailModel approval}) {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
@@ -784,7 +858,7 @@ class _VSController extends StateNotifier<_ViewState> {
     if (status == 'pending' && level.approverUserId == null) {
       debugPrint('✅ SHOW ASSIGN BUTTON');
 
-      return ActionButtonsType.assignReject;
+      return ActionButtonsType.assign;
     }
 
     /// =========================================================
@@ -1008,7 +1082,7 @@ class _VSController extends StateNotifier<_ViewState> {
       }
 
       final items = await dashboardinstance.getActionItems(
-        offset: 1,
+        offset: 0,
         limit: 8,
         searchText: searchText,
         status: status,
@@ -1059,7 +1133,14 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchitTechnician() async {
     try {
-      final itTechnician = await dashboardinstance.getItTechnicianDetails();
+      final userInfo = KAppX.globalProvider.read(userInfoProvider);
+      final departmentId =
+          int.tryParse(userInfo?.data?.department?.id ?? '') ?? 0;
+      final sectionId = int.tryParse(userInfo?.data?.section?.id ?? '') ?? 0;
+      final itTechnician = await dashboardinstance.getItTechnicianDetails(
+        departmentId: departmentId,
+        sectionId: sectionId,
+      );
 
       if (itTechnician != null) {
         state = state.copyWith(itTechnician: itTechnician.data);
@@ -1132,6 +1213,8 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       final requests = await dashboardinstance.getRequestsById(id);
       if (requests != null) {
+        fetchChatById(id);
+        fetchAttachmentsById(id);
         state = state.copyWith(requestDetails: requests);
       }
     } on ApiException catch (apiError) {
@@ -1309,7 +1392,12 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> onClose(int approverId, int requestId, String status) async {
+  Future<void> onClose(
+    int approverId,
+    int requestId,
+    String comment,
+    String status,
+  ) async {
     try {
       state = state.copyWith(isLoading: true);
 
@@ -1329,8 +1417,40 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // 3️⃣ Send request
       await dashboardinstance.onClose(payload);
+      KAppX.router.pop();
+      KAppX.router.pop();
       await fetchActionItems();
       await fetchRequests();
+    } catch (e) {
+      debugPrint('❌ Error submitting request: $e');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> onAssign(int approverId, int requestId) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      // 1️⃣ Upload files
+
+      final userData = KAppX.globalProvider.read(userInfoProvider);
+
+      // 2️⃣ Build payload
+      final payload = {
+        "request_id": requestId,
+        "user_id": userData?.data?.id,
+        "workflowInstanceId": state.requestDetails.request?.workflowInstanceId,
+      };
+
+      debugPrint("✅ Final Payload: $payload");
+
+      // 3️⃣ Send request
+      await dashboardinstance.selfAssign(payload);
+      // // KAppX.router.pop();
+      // await fetchActionItems();
+      // await fetchRequests();
+      fetchRequestDetailsById(requestId);
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1478,10 +1598,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
     final roleId = roleInfo?.roleId;
 
-    return {
+    final payload = {
       /// ⭐ ROLE + REQUEST TYPE
       "role_id": roleId,
-      "request_type": roleId == 2 ? "external" : "internal",
+      "request_type": roleId == 4 ? "internal" : "external",
 
       /// ⭐ USER INFO
       "department_id": userInfo?.data?.department?.id,
@@ -1501,9 +1621,16 @@ class _VSController extends StateNotifier<_ViewState> {
       "contact_num": values['contact_number'],
       "extn_num": values['extension_number'] ?? "",
 
-      /// ⭐ ATTACHMENTS (if needed)
+      /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
     };
+
+    /// ✅ ADD ONLY FOR ROLE 4
+    if (roleId == 4) {
+      payload["approval_user_id"] = state.itTechnicianId;
+    }
+
+    return payload;
   }
 
   Future<void> sumbitSalalahRequest(
@@ -1526,6 +1653,7 @@ class _VSController extends StateNotifier<_ViewState> {
       final response = await dashboardinstance.sendRequest(payload);
 
       if (response['status'] == 'success') {
+        await Future.delayed(const Duration(milliseconds: 1500));
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1537,9 +1665,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void _refreshDashboard() {
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests();

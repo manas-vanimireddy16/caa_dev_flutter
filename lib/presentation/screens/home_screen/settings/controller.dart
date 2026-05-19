@@ -88,7 +88,7 @@ class SettingsController extends StateNotifier<SettingsState> {
     final user = KAppX.globalProvider.read(userProvider);
     final servicesNotifier = ref.read(servicesProvider.notifier);
     await servicesNotifier.fetchUserRoles(user?.userId ?? 0);
-    await servicesNotifier.fetchBookmarks();
+    // await servicesNotifier.fetchBookmarks();
 
     debugPrint("🔵 Role changed to: ${role.role?.name}");
   }

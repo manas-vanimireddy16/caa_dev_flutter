@@ -29,9 +29,18 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
 
   bool _isSubmitting = false;
 
+  /// =====================================================
+  /// TYPES
+  /// =====================================================
+
   bool get _isReject => widget.type == ApprovalDialogType.reject;
 
+  bool get _isClose => widget.type == ApprovalDialogType.close;
+
   bool get _isApprove => widget.type == ApprovalDialogType.approve;
+
+  /// COMMENT REQUIRED
+  bool get _isCommentRequired => _isReject || _isClose;
 
   @override
   void dispose() {
@@ -45,18 +54,19 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
     return Padding(
       padding: const EdgeInsets.all(16),
 
-      /// Listen to BOTH controllers
       child: AnimatedBuilder(
         animation: Listenable.merge([_commentController, _decisionController]),
+
         builder: (_, __) {
           final comment = _commentController.text.trim();
+
           final decision = _decisionController.text.trim();
 
-          /// ✅ VALIDATION RULES
-          /// Reject -> comment required
-          /// Approve + decision enabled -> decision required
-          /// Approve + decision disabled -> no restriction
-          final bool canSubmit = _isReject
+          /// =================================================
+          /// VALIDATION
+          /// =================================================
+
+          final bool canSubmit = _isCommentRequired
               ? comment.isNotEmpty
               : widget.showDecisionNumber
               ? decision.isNotEmpty
@@ -65,20 +75,31 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
+
             children: [
+              /// =============================================
               /// HEADER
+              /// =============================================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                 children: [
                   Text(
-                    _isReject ? "Reject Request" : "Approve Request",
+                    _isReject
+                        ? "Reject Request"
+                        : _isClose
+                        ? "Close Request"
+                        : "Approve Request",
+
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+
                   IconButton(
                     icon: const Icon(Icons.close),
+
                     onPressed: () => KAppX.router.pop(),
                   ),
                 ],
@@ -86,38 +107,82 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
 
               const SizedBox(height: 12),
 
+              /// =============================================
               /// COMMENT LABEL
+              /// =============================================
               Text(
-                _isReject ? "Reason for Rejection *" : "Comments (Optional)",
-                style: const TextStyle(
+                _isCommentRequired ? "Comments" : "Comments (Optional)",
+
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
+
+                  color: _isCommentRequired ? Colors.red : null,
                 ),
               ),
 
               const SizedBox(height: 8),
 
+              /// =============================================
               /// COMMENT FIELD
+              /// =============================================
               TextField(
                 controller: _commentController,
+
                 minLines: 3,
                 maxLines: 5,
+
                 decoration: InputDecoration(
-                  hintText: _isReject
-                      ? "Please provide a reason for rejecting this request..."
-                      : "Add your comments",
+                  hintText: "Add your comments",
+
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: _isCommentRequired && comment.isEmpty
+                          ? Colors.red
+                          : Colors.grey,
+                    ),
+
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: _isCommentRequired && comment.isEmpty
+                          ? Colors.red
+                          : Colors.green,
+                    ),
+
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
 
-              /// DECISION NUMBER (ONLY FOR APPROVE)
+              /// =============================================
+              /// ERROR TEXT
+              /// =============================================
+              if (_isCommentRequired && comment.isEmpty) ...[
+                const SizedBox(height: 4),
+
+                const Text(
+                  "Comments required",
+
+                  style: TextStyle(color: Colors.red, fontSize: 11),
+                ),
+              ],
+
+              /// =============================================
+              /// DECISION NUMBER
+              /// =============================================
               if (_isApprove && widget.showDecisionNumber) ...[
                 const SizedBox(height: 16),
 
                 const Text(
                   "Decision Number *",
+
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                 ),
 
@@ -125,8 +190,10 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
 
                 TextField(
                   controller: _decisionController,
+
                   decoration: InputDecoration(
                     hintText: "Enter Decision Number",
+
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -136,23 +203,32 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
 
               const SizedBox(height: 20),
 
+              /// =============================================
               /// ACTION BUTTONS
+              /// =============================================
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
+
                 children: [
                   TextButton(
                     onPressed: _isSubmitting ? null : () => KAppX.router.pop(),
-                    child: const Text("CANCEL"),
+
+                    child: const Text("Cancel"),
                   ),
+
                   const SizedBox(width: 12),
+
                   ElevatedButton(
                     onPressed: !canSubmit || _isSubmitting
                         ? null
                         : () async {
-                            setState(() => _isSubmitting = true);
+                            setState(() {
+                              _isSubmitting = true;
+                            });
 
                             await widget.onSubmit(
                               comment,
+
                               decision.isEmpty ? null : decision,
                             );
 
@@ -160,19 +236,22 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
                               KAppX.router.pop();
                             }
                           },
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _isReject ? Colors.red : Colors.green,
                     ),
+
                     child: _isSubmitting
                         ? const SizedBox(
                             height: 18,
                             width: 18,
+
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               color: Colors.white,
                             ),
                           )
-                        : const Text("SUBMIT"),
+                        : const Text("Submit"),
                   ),
                 ],
               ),

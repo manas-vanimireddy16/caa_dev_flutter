@@ -9,6 +9,7 @@ import 'package:code_setup/presentation/screens/it_services/salalah/models/it_te
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestData.dart'
     hide Department;
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart';
+import 'package:code_setup/presentation/screens/it_services/salalah/models/salalah_action_items_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/salalah_data_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/service_dropdown_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/status_break_down.dart';
@@ -36,7 +37,7 @@ abstract class DashboardRepository {
     required int serviceId,
     required int subServiceId,
   });
-  Future<List<SalalahRequestModel>> getActionItems({
+  Future<List<ApprovalData>> getActionItems({
     required int offset,
     required int limit,
     // String sortBy = 'created_at',
@@ -70,7 +71,10 @@ abstract class DashboardRepository {
     required int serviceId,
     required int subServiceId,
   });
-  Future<ITTechnicianListModel> getItTechnicianDetails();
+  Future<ITTechnicianListModel> getItTechnicianDetails({
+    required int departmentId,
+    required int sectionId,
+  });
   Future<List<SectionModel>> getSections(int id);
   Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
     required String period,

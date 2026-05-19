@@ -89,24 +89,6 @@ class _SalalahRequestDetailsTabScreenState
             child: Column(
               children: [
                 /// ----------- Profile Section --------------
-                ProfileCard(
-                  title: "Profile",
-                  subtitle: "User Info",
-                  name: request?.createdByUser?.employeeName ?? '',
-                  avatarUrl: "https://i.pravatar.cc/150?img=3",
-                  isOnline: true,
-                  info: {
-                    "Request ID": (request?.id ?? 0).toString(),
-                    "Customer ID": (request?.userId ?? 0).toString(),
-                    "Job Title/Designation":
-                        request?.createdByUser?.directorate ?? 'N/A',
-                    "Department": request?.createdByUser?.category ?? 'N/A',
-                    "Email": request?.createdByUser?.email ?? 'N/A',
-                    "Phone": request?.createdByUser?.mobile ?? 'N/A',
-                    // "Request Type": request?.requestFor ?? 'N/A',
-                  },
-                ),
-
                 5.toHorizontalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
@@ -127,23 +109,45 @@ class _SalalahRequestDetailsTabScreenState
                   )
                 else if (selectedTab == 1)
                   CommentsCard(
+                    from: widget.from,
+                    showButtons: actionType != ActionButtonsType.none,
+                    actionType: actionType, // ✅ FIX HERE
                     entries: chats,
                     controller: controller.chatController,
-                    onSend: () async {},
-                    attachments: [],
-                    onApprove: () async {
-                      controller.onClose(
-                        approverId ?? 0,
-                        requestId ?? 0,
-                        "Approved",
+                    buttonsDisabled: state.isButtonDisabled,
+                    attachments: state.attachments,
+                    // l10n: l10n,
+                    onAttach: () async {
+                      await controller.pickFile();
+                    },
+
+                    onSend: () async {
+                      await controller.sendChatMessage(
+                        serviceId: widget.serviceId,
+                        subServiceId: widget.subServiceId,
                       );
                     },
-                    actionType: ActionButtonsType.none,
+                    onAssign: () async {
+                      controller.onAssign(approverId ?? 0, requestId ?? 0);
+                    },
+
+                    onClose: () async {
+                      controller.showApprovalCommentDialog(
+                        type: ApprovalDialogType.close,
+                        approverId: approverId ?? 0,
+                        requestId: requestId ?? 0,
+                      );
+                      // controller.onApprove(
+                      //   approverId ?? 0,
+                      //   requestId ?? 0,
+                      //   'Approved',
+                      // );
+                    },
                     onReject: () async {
-                      controller.onClose(
-                        approverId ?? 0,
-                        requestId ?? 0,
-                        "Rejected",
+                      controller.showApprovalCommentDialog(
+                        type: ApprovalDialogType.reject,
+                        approverId: approverId ?? 0,
+                        requestId: requestId ?? 0,
                       );
                     },
                   )
