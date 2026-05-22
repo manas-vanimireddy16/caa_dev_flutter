@@ -240,22 +240,22 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      // case 'CAA033':
-      //   KAppX.router.push(
-      //     RequestForVehicleMaintenanceRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Request for Access Card':
-      //   KAppX.router.push(
-      //     AccessCardRequestRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
+      case 'CAA033':
+        KAppX.router.push(
+          RequestForVehicleMaintenanceRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'CAA021':
+        KAppX.router.push(
+          AccessCardRequestRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       // case 'CAA046':
       //   KAppX.router.push(
       //     HotelReservationRoute(
@@ -457,14 +457,22 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      // case 'Help Desk Muscat':
-      //   KAppX.router.push(
-      //     MuscatDashboard(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
+      case 'CAA004':
+        KAppX.router.push(
+          MuscatDashboard(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'CAA005':
+        KAppX.router.push(
+          VpnDashboard(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       case 'CAA003':
         KAppX.router.push(
           SalalahDashboard(

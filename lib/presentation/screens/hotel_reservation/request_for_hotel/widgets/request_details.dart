@@ -130,10 +130,12 @@ class _HotelReservationRequestDetailsTabScreenState
                     labelBuilder: l10n.requestDetailsLabel,
                   ),
                   CommonRequestDetails(
-                    statusInformationTitle:
-                        l10n.requestDetailsLabel('Status Information'),
-                    requestInformationTitle:
-                        l10n.requestDetailsLabel('Request Information'),
+                    statusInformationTitle: l10n.requestDetailsLabel(
+                      'Status Information',
+                    ),
+                    requestInformationTitle: l10n.requestDetailsLabel(
+                      'Request Information',
+                    ),
                     technicalInformationTitle: l10n.technicalDetailsSection,
                     requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: controller.buildStatusInformation(),
@@ -170,11 +172,6 @@ class _HotelReservationRequestDetailsTabScreenState
                         approverId: approverId ?? 0,
                         requestId: requestId ?? 0,
                       );
-                      // controller.onApprove(
-                      //   approverId ?? 0,
-                      //   requestId ?? 0,
-                      //   'Approved',
-                      // );
                     },
                     onReject: () async {
                       controller.showApprovalCommentDialog(
@@ -182,11 +179,6 @@ class _HotelReservationRequestDetailsTabScreenState
                         approverId: approverId ?? 0,
                         requestId: requestId ?? 0,
                       );
-                      // controller.onReject(
-                      //   approverId ?? 0,
-                      //   requestId ?? 0,
-                      //   'Rejected',
-                      // );
                     },
                   )
                 else if (selectedTab == 2)

@@ -1,6 +1,10 @@
 class KIcons {
   KIcons._();
 
+  static const deleteForver = 'assets/icons/delete_forever_red.svg';
+  static const checkCircleGreen = 'assets/icons/check_circle_outline_green.svg';
+  static const cancelGrey = 'assets/icons/cancel_24.svg';
+  //// not used check once while deleing
   static const workflowCompleted = 'assets/icons/work_flow_completed.svg';
   static const workflowPending = 'assets/icons/work_flow_pending.svg';
   static const security = 'assets/icons/security.svg';

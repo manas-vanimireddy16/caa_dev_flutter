@@ -49,7 +49,7 @@ class _DialogRoute {
               insetAnimationCurve: insetAnimationCurve,
               insetPadding:
                   insetPadding ??
-                  EdgeInsets.symmetric(horizontal: 40.toAutoScaledWidth),
+                  EdgeInsets.symmetric(horizontal: 16.toAutoScaledWidth),
               clipBehavior: clipBehavior,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.toAutoScaledWidth),

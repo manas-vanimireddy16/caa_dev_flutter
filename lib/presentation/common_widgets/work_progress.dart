@@ -1,4 +1,3 @@
-import 'package:code_setup/presentation/screens/it_services/vpn/models/vpn_request_by_id.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
@@ -48,12 +47,6 @@ class TimelineItem<T> extends StatelessWidget {
       content = w.content;
       createdBy = w.createdBy.toString();
       idText = w.id?.toString();
-    } else if (task is VPNWorkflowDetail) {
-      final w = task as VPNWorkflowDetail;
-      status = w.status;
-      content = w.content;
-      createdBy = w.createdBy.toString();
-      idText = w.id.toString();
     } else {
       // fallback: try toString
       content = task?.toString();

@@ -54,6 +54,7 @@ class TicketRequestsCard extends ConsumerWidget {
             /// Tabs
             RequestTabs(
               selectedIndex: state.tabIndex,
+              actionItemCount: state.approvalKpiData?.data?.pending ?? 0,
               onTabChanged: (index) {
                 focusNode.unfocus();
                 controller.searchController.clear();

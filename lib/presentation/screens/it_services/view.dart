@@ -157,6 +157,64 @@ class _ITServicesHomeScreenState extends ConsumerState<ITServicesHomeScreen> {
     });
   }
 
+  //   @override
+  //   Widget build(BuildContext context) {
+  //     final currentTheme = KAppX.globalProvider
+  //         .read(KAppX.theme.current)
+  //         .themeBox;
+
+  //     final stateController = ref.read(bottomNavigatorVsProvider.notifier);
+
+  //     return AutoTabsRouter.builder(
+  //       routes: [SalalahDashboard(service: Service(), subService: SubService())],
+  //       builder: (tabsContext, children, tabsRouter) {
+  //         final activeIndex = tabsRouter.activeIndex;
+
+  //         return Scaffold(
+  //           backgroundColor: currentTheme.colors.background,
+  //           appBar: KAppBar(
+  //             leading: Builder(
+  //               builder: (ctx) => IconButton(
+  //                 icon: const Icon(Icons.menu),
+  //                 onPressed: () => Scaffold.of(ctx).openDrawer(),
+  //               ),
+  //             ),
+  //             title: Text(
+  //               stateController.titleForIndex(activeIndex),
+  //               style: TextStyle(
+  //                 fontSize: currentTheme.fontSizes.s16,
+  //                 fontWeight: currentTheme.fontWeights.wBold,
+  //               ),
+  //             ),
+  //           ),
+  //           drawer: KDrawer(
+  //             child: _DrawerMenu(
+  //               currentTheme: currentTheme,
+  //               activeIndex: activeIndex,
+  //               onItemTap: (index) {
+  //                 if (index == activeIndex) {
+  //                   KAppX.router.pop();
+  //                   return;
+  //                 }
+
+  //                 tabsRouter.setActiveIndex(index);
+  //                 stateController.onTabChanged(index);
+  //                 KAppX.router.pop();
+  //               },
+  //             ),
+  //           ),
+  //           body: AnimatedSwitcher(
+  //             duration: const Duration(milliseconds: 250),
+  //             child: KeyedSubtree(
+  //               key: ValueKey(activeIndex),
+  //               child: children[activeIndex],
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //     );
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     final currentTheme = KAppX.globalProvider
@@ -166,7 +224,17 @@ class _ITServicesHomeScreenState extends ConsumerState<ITServicesHomeScreen> {
     final stateController = ref.read(bottomNavigatorVsProvider.notifier);
 
     return AutoTabsRouter.builder(
-      routes: [SalalahDashboard(service: Service(), subService: SubService())],
+      routes: [
+        // AssignmentDecisionDashboardRoute(),
+        SalalahDashboard(service: Service(), subService: SubService()),
+        MuscatDashboard(service: Service(), subService: SubService()),
+        VpnDashboard(service: Service(), subService: SubService()),
+        // LegalConsultationandReviewofAdministrativeDecisionsRoute(
+        //   service: Service(),
+        //   subService: SubService(),
+        // ),
+      ],
+      // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {
         final activeIndex = tabsRouter.activeIndex;
 
@@ -179,6 +247,7 @@ class _ITServicesHomeScreenState extends ConsumerState<ITServicesHomeScreen> {
                 onPressed: () => Scaffold.of(ctx).openDrawer(),
               ),
             ),
+
             title: Text(
               stateController.titleForIndex(activeIndex),
               style: TextStyle(
@@ -193,16 +262,17 @@ class _ITServicesHomeScreenState extends ConsumerState<ITServicesHomeScreen> {
               activeIndex: activeIndex,
               onItemTap: (index) {
                 if (index == activeIndex) {
-                  KAppX.router.pop();
+                  KAppX.router.pop(); // just close drawer
                   return;
                 }
 
                 tabsRouter.setActiveIndex(index);
                 stateController.onTabChanged(index);
-                KAppX.router.pop();
+                KAppX.router.pop(); // close drawer after nav
               },
             ),
           ),
+          // Nice, smooth transition between tabs
           body: AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
             child: KeyedSubtree(

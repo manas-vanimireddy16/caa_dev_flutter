@@ -1,14 +1,19 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
+import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/it_services/vpn/models/technician.dart';
-import 'package:code_setup/presentation/screens/it_services/vpn/models/vpn_request.dart';
-import 'package:code_setup/presentation/screens/it_services/vpn/models/vpn_request_by_id.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/vpn_request_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/vehicle_maintenance_model.dart';
+import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/repository/it_services/vpn/domain/domain.dart';
+import 'package:code_setup/repository/logistics/vehicle_maintenance/domain/domain.dart';
+import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
 import 'package:code_setup/utils/api_end_point.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
@@ -16,252 +21,75 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 
-class VPNRepoistoryImple implements VPNRepository {
+class VpnRepositoryImpl implements VpnRepository {
   @override
-  Future<List<VpnRequestData>> getVpnRequests({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
-  }) async {
+  Future<List<EmployeeList>> getUsers(int departmentId) async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw Exception("HTTP client not initialized");
+    }
+
     try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {
-          'offset': offset.toString(),
-          'limit': '20',
-          // 'sort_by': sortBy,
-          // 'sort_order': sortOrder,
-        };
+      final response = await client.get(
+        ApiEndPoint.assignTaskToEmployeeUsersList(departmentId),
+      );
 
-        // ✅ Convert list to comma-separated string only if not empty
-        if (status.isNotEmpty) {
-          queryParams['status'] = status;
-        }
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
 
-        if (searchText.isNotEmpty) {
-          queryParams['search_text'] = searchText;
-        }
-        final response = await client.get(
-          ApiEndPoint.vpnRequests,
-          // queryParameters: queryParams,
-        );
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-          // Construct AttendanceData from JSON
-          final requestData = data['data']
-              .map<VpnRequestData>(
-                (item) => VpnRequestData.fromJson(item as Map<String, dynamic>),
-              )
-              .toList();
-          return requestData;
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
+        // 🔴 IMPORTANT: data['data'] is [ List<Employee>, totalCount ]
+        final List<dynamic> rawData = data['data'] as List<dynamic>? ?? [];
+
+        // rawData[0] contains the actual employee list
+        final List<dynamic> employeeList =
+            rawData.isNotEmpty && rawData[0] is List
+            ? rawData[0] as List<dynamic>
+            : [];
+
+        return employeeList
+            .map((e) => EmployeeList.fromJson(e as Map<String, dynamic>))
+            .toList();
       }
-      return [];
-    } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
+
+      throw Exception(
+        'Failed to fetch positions request for coverage: ${response.statusCode}',
+      );
+    } catch (e, st) {
+      debugPrint('getUsers error: $e');
+      debugPrintStack(stackTrace: st);
+      throw Exception("Error fetching positions request for coverage");
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> vpnCreateRequest(
+    Map<String, dynamic> payload,
+  ) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.vpnSendRequest;
+
+    try {
+      if (client == null) {
+        throw ApiException('Client is null — cannot send Study Leave request');
+      }
+
+      final response = await client.post(url, data: payload);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ShowFlutterToast().showFlutterToastSuccess(
+          response.data['message'] ?? 'Request sent successfully',
+        );
+        return response.data as Map<String, dynamic>; // ✅ RETURN HERE
+      } else {
+        ShowFlutterToast().showFlutterToastFailure(
+          response.data['message'] ?? 'Failed to send request',
+        );
+        return response.data as Map<String, dynamic>; // ✅ RETURN HERE
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data['message'] ?? e.message;
       throw ApiException(message);
     } catch (e) {
-      log('error getAllRequestData $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<List<VpnRequestData>> getVpnActionItems({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
-  }) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {
-          'offset': offset.toString(),
-          'limit': "20",
-          // 'sort_by': sortBy,
-          // 'sort_order': sortOrder,
-        };
-
-        // ✅ Convert list to comma-separated string only if not empty
-        if (status.isNotEmpty) {
-          queryParams['status'] = status;
-        }
-
-        if (searchText.isNotEmpty) {
-          queryParams['search_text'] = searchText;
-        }
-        final response = await client.get(
-          ApiEndPoint.vpnActionItems,
-          queryParameters: queryParams,
-        );
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-          // Construct AttendanceData from JSON
-          final requestData = data['data']
-              .map<VpnRequestData>(
-                (item) => VpnRequestData.fromJson(item as Map<String, dynamic>),
-              )
-              .toList();
-          return requestData;
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      return [];
-    } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error getAllRequestData $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<VpnRequestByIdModel> getVpnRequestById({required int id}) async {
-    try {
-      final client = await KAppX.network.secureClient();
-
-      if (client != null) {
-        // final queryParams = {
-        //   'offset': offset.toString(),
-        //   'limit': limit.toString(),
-        //   'sort_by': sortBy,
-        //   'sort_order': sortOrder,
-        // };
-
-        // if (status.isNotEmpty) {
-        //   queryParams['status'] = status;
-        // }
-
-        // if (searchText.isNotEmpty) {
-        //   queryParams['search_text'] = searchText;
-        // }
-
-        final response = await client.get(
-          ApiEndPoint.vpnRequestbyId(id),
-          // queryParameters: queryParams,
-        );
-
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-
-          // ✅ Correctly parse the expected model
-          final vpnRequest = VpnRequestByIdModel.fromJson(data);
-
-          return vpnRequest;
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-
-      // If client is null, handle gracefully
-      throw ApiException('Network client not initialized');
-    } on DioException catch (error) {
-      log('caught Dio error: $error');
-      final message = error.response?.data?['message'] ?? error.message;
-      throw ApiException(message ?? 'Unknown network error');
-    } catch (e) {
-      log('error getVpnRequestById: $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<KPIResponse> getKpiData() async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final response = await client.get(ApiEndPoint.vpnKpicard);
-        if (response.statusCode == 200) {
-          final data = Map<String, dynamic>.from(response.data);
-          final vpnKpicard = KPIResponse.fromJson(data);
-          return vpnKpicard;
-        } else {
-          final errorMessage =
-              response.data['message'] ?? 'unexcepted error at vpn KPI ';
-          throw ApiException(errorMessage);
-        }
-      }
-      throw ApiException('Network Client not initialized');
-    } on DioException catch (error) {
-      log('caught Dio error: $error');
-      final message = error.response?.data?['message'] ?? error.message;
-      throw ApiException(message ?? 'Unknown network error');
-    } catch (e) {
-      log('error getVpnRequestById: $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final response = await client.get(
-          ApiEndPoint.vpnTrendBreakdown(period),
-        );
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-          return TrendBreakdownModel.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      throw ApiException('Client is null');
-    } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching trend breakdown $e');
-      throw ApiException(e.toString());
-    }
-  }
-
-  @override
-  Future<StatusBreakdownModel> getStatusBreakdownData(String period) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final response = await client.get(
-          ApiEndPoint.vpnStatusBreakdown(period),
-        );
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
-          return StatusBreakdownModel.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      throw ApiException('Client is null');
-    } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching status breakdown $e');
       throw ApiException(e.toString());
     }
   }
@@ -336,11 +164,11 @@ class VPNRepoistoryImple implements VPNRepository {
             final fileData = files.first;
 
             // ✅ Extract clean document ID (no /download/)
-            final documentId = fileData['documentId'];
+            // final documentId = fileData['documentId'];
 
             uploadedResults.add({
               'file_name': fileData['originalName'] ?? fileName,
-              'file_url': documentId, // only documentId
+              'file_url': fileData['downloadUrl'],
               'file_type': extension,
               'file_size': fileData['size'] ?? fileSize,
             });
@@ -362,51 +190,97 @@ class VPNRepoistoryImple implements VPNRepository {
   }
 
   @override
-  Future<void> sendVPNTicket(Map<String, dynamic> payload) async {
+  Future<KPIResponse?> getKpiData(int serviceId, int subServiceId) async {
+    String url = ApiEndPoint.vpnKpiCards;
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.vpnNewTicket;
+
     try {
       if (client != null) {
-        final response = await client.post(url, data: payload);
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final response = await client.get(url, queryParameters: queryParams);
 
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ New VPN ticket sent successfully');
-          ShowFlutterToast().showFlutterToastSuccess(
-            response.data['message'] ?? 'Request sent successfully',
-          );
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return KPIResponse.fromJson(data);
         } else {
-          ShowFlutterToast().showFlutterToastFailure(
-            response.data['message'] ?? 'Failed to send VPN request',
-          );
-          debugPrint(
-            '⚠️ Failed to send vehicle request: ${response.statusCode}',
-          );
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
         }
-      } else {
-        debugPrint('❌ Client is null — cannot send vehicle request');
       }
-    } on DioException catch (e) {
-      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
-      throw e;
+      return null;
+    } on DioException catch (error) {
+      log('caught dio error');
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
     } catch (e) {
-      debugPrint('❌ Unexpected error: $e');
-      throw e;
+      log('error fetching KPI data $e');
+      throw ApiException(e.toString());
     }
   }
 
-  Future<TechniciansResponse> getTechnicianData({
-    required int id,
-    required int sectionId,
+  @override
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    String url = ApiEndPoint.vpnApprovalKpiCards;
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return KPIResponse.fromJson(data);
+        } else {
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
+        }
+      }
+      return null;
+    } on DioException catch (error) {
+      log('caught dio error');
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      log('error fetching KPI data $e');
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<StatusBreakdownModel> getApprovalStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
   }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.vpnTechnicians(id, sectionId),
+          ApiEndPoint.vpnApprovalStatusBreakdown,
+          queryParameters: queryParams,
         );
+
         if (response.statusCode == 200 && response.data != null) {
           final data = Map<String, dynamic>.from(response.data);
-          return TechniciansResponse.fromJson(data);
+          return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
               response.data?['message'] ?? 'Unexpected error occurred';
@@ -419,90 +293,275 @@ class VPNRepoistoryImple implements VPNRepository {
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error getTechnicianDatan $e');
+      log('error fetching status breakdown $e');
       throw ApiException(e.toString());
     }
   }
 
   @override
-  Future<void> sendAssign(Map<String, dynamic> payload) async {
-    final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.vpnAssign;
+  Future<TrendBreakdownModel> getApprovalTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
+      final client = await KAppX.network.secureClient();
       if (client != null) {
-        final response = await client.put(url, data: payload);
+        final queryParams = {
+          "year": period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
 
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ New VPN assign sent successfully');
-          ShowFlutterToast().showFlutterToastSuccess(
-            response.data['message'] ?? 'assign sent successfully',
-          );
+        /// Remove null values
+        queryParams.removeWhere((key, value) => value == null);
+
+        final response = await client.get(
+          ApiEndPoint.vpnApprovalTrendBreakdown,
+          queryParameters: queryParams,
+        );
+
+        if (response.statusCode == 200 && response.data != null) {
+          final data = Map<String, dynamic>.from(response.data);
+          return TrendBreakdownModel.fromJson(data);
         } else {
-          ShowFlutterToast().showFlutterToastFailure(
-            response.data['message'] ?? 'Failed to send VPN assign',
-          );
-          debugPrint('⚠️ Failed to send assign : ${response.statusCode}');
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
         }
-      } else {
-        debugPrint('❌ Client is null — cannot send assign ');
       }
-    } on DioException catch (e) {
-      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
-      throw e;
+      throw ApiException('Client is null');
+    } on DioException catch (error) {
+      log('caught error');
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
     } catch (e) {
-      debugPrint('❌ Unexpected error: $e');
-      throw e;
+      log('error fetching trend breakdown $e');
+      throw ApiException(e.toString());
     }
   }
 
   @override
-  Future<void> approveorReject(Map<String, dynamic> payload) async {
+  Future<StatusBreakdownModel> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    try {
+      final client = await KAppX.network.secureClient();
+      if (client != null) {
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        queryParams.removeWhere((key, value) => value == null);
+        final response = await client.get(
+          ApiEndPoint.vpnStatusBreakdown,
+          queryParameters: queryParams,
+        );
+
+        if (response.statusCode == 200 && response.data != null) {
+          final data = Map<String, dynamic>.from(response.data);
+          return StatusBreakdownModel.fromJson(data);
+        } else {
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
+        }
+      }
+      throw ApiException('Client is null');
+    } on DioException catch (error) {
+      log('caught error');
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      log('error fetching status breakdown $e');
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    try {
+      final client = await KAppX.network.secureClient();
+      if (client != null) {
+        final queryParams = {
+          "year": period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+
+        /// Remove null values
+        queryParams.removeWhere((key, value) => value == null);
+
+        final response = await client.get(
+          ApiEndPoint.vpnTrendBreakdown,
+          queryParameters: queryParams,
+        );
+
+        if (response.statusCode == 200 && response.data != null) {
+          final data = Map<String, dynamic>.from(response.data);
+          return TrendBreakdownModel.fromJson(data);
+        } else {
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
+        }
+      }
+      throw ApiException('Client is null');
+    } on DioException catch (error) {
+      log('caught error');
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      log('error fetching trend breakdown $e');
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<AccessRequestModel>> getRequests({
+    required int offset,
+    required int limit,
+    required int serviceId,
+    required int subServiceId,
+    // String sortBy = 'created_at',
+    // String sortOrder = 'DESC',
+    String status = '', // 👈 changed to List
+    String searchText = '',
+  }) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.vpnApproveorReject;
+
     try {
       if (client != null) {
-        final response = await client.put(url, data: payload);
+        final Map<String, dynamic> queryParams = {
+          'offset': offset,
+          'limit': limit,
+          // 'service_id': serviceId,
+          // 'sub_service_id': subServiceId,
+        };
 
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ New Approvre or Reject sent successfully');
-          ShowFlutterToast().showFlutterToastSuccess(
-            response.data['message'] ?? 'Approvre or Reject successfully',
-          );
+        if (searchText.isNotEmpty) {
+          queryParams['search_text'] = searchText;
+        }
+
+        if (status.isNotEmpty) {
+          queryParams['status'] = status;
+        }
+        final url = ApiEndPoint.vpnGetRequests;
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          final List<dynamic> list = data['data'];
+
+          return list
+              .map(
+                (e) => AccessRequestModel.fromJson(e as Map<String, dynamic>),
+              )
+              .toList();
         } else {
-          ShowFlutterToast().showFlutterToastFailure(
-            response.data['message'] ?? 'Failed to send Approvre or Reject',
-          );
-          debugPrint(
-            '⚠️ Failed to Approvre or Reject : ${response.statusCode}',
+          throw Exception(
+            'Failed to fetch Accommodation Muscat request: ${response.statusCode}',
           );
         }
       } else {
-        debugPrint('❌ Client is null — Approvre or Reject ');
+        return [];
       }
-    } on DioException catch (e) {
-      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
-      throw e;
     } catch (e) {
-      debugPrint('❌ Unexpected error: $e');
-      throw e;
+      throw Exception("Error fetching Accommodation Muscat request: $e");
+    }
+  }
+
+  @override
+  Future<List<AccessRequestModel>> getActionItems({
+    required int offset,
+    required int limit,
+    required int serviceId,
+    required int subServiceId,
+    String status = '',
+    String searchText = '',
+  }) async {
+    try {
+      final client = await KAppX.network.secureClient();
+      if (client != null) {
+        final queryParams = {
+          'offset': offset.toString(),
+          'limit': limit.toString(),
+          'order_by': 'created_at',
+          'sort_order': 'DESC',
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+
+        if (status.isNotEmpty) {
+          queryParams['status'] = status;
+        }
+
+        if (searchText.isNotEmpty) {
+          queryParams['search_text'] = searchText;
+        }
+
+        final response = await client.get(
+          ApiEndPoint.vpnGetActionItems,
+          queryParameters: queryParams,
+        );
+
+        if (response.statusCode == 200 && response.data != null) {
+          final data = Map<String, dynamic>.from(response.data);
+
+          final List<dynamic> list = data['data'] ?? [];
+
+          /// Parse each Action Item
+          final actionItems = list
+              .map(
+                (item) =>
+                    AccessRequestModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList();
+
+          return actionItems;
+        } else {
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
+        }
+      }
+
+      /// If client is null
+      return [];
+    } on DioException catch (error) {
+      final message =
+          '${error.response?.data['message']} Accommodation Muscat request';
+      throw ApiException(message);
+    } catch (e) {
+      throw ApiException('${e.toString()} Accommodation Muscat request');
     }
   }
 
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.vpnChat(id);
+    final String url = ApiEndPoint.vpnSendChatById(id);
 
     try {
       if (client != null) {
         final response = await client.post(url, data: payload);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ chat sent successfully');
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('✅ Message sent successfully');
 
           return response.data["message"] ?? "Success";
         } else {
-          debugPrint('⚠️ Failed to chat: ${response.statusCode}');
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
           return response.data["message"] ?? "Something went wrong";
         }
       } else {
@@ -521,24 +580,256 @@ class VPNRepoistoryImple implements VPNRepository {
   @override
   Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-
-    final String url = ApiEndPoint.vpnAttachment(id);
+    final String url = ApiEndPoint.vpnSendAttachmentById(id);
 
     try {
       if (client != null) {
         final response = await client.post(url, data: payload);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ chat sent successfully');
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('✅ Message sent successfully');
 
           return response.data["message"] ?? "Success";
         } else {
-          debugPrint('⚠️ Failed to chat: ${response.statusCode}');
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
           return response.data["message"] ?? "Something went wrong";
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
         return "Something went wrong";
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  @override
+  Future<void> onApprove(Map<String, dynamic> payload) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.muscatApprove;
+
+    try {
+      if (client != null) {
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            '${response.data['message']}',
+          );
+          debugPrint('✅ Request sent successfully');
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          ShowFlutterToast().showFlutterToastFailure(
+            '${response.statusMessage}',
+          );
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  // @override
+  // Future<List<ChatMessageModel>> getchatById({
+  //   required int id,
+  //   required int serviceId,
+  //   required int subServiceId,
+  // }) async {
+  //   final client = await KAppX.network.secureClient();
+
+  //   try {
+  //     if (client != null) {
+  //       final queryParams = {
+  //         'service_id': serviceId,
+  //         'sub_service_id': subServiceId,
+  //       };
+  //       final url = ApiEndPoint.vpnChatsById(id);
+  //       final response = await client.get(url, queryParameters: queryParams);
+
+  //       if (response.statusCode == 200) {
+  //         final Map<String, dynamic> json = response.data;
+
+  //         /// Convert JSON → Model
+  //         final result = ChatByIdResponseModel.fromJson(json);
+
+  //         /// Return only `data` (so UI can access sub-objects)
+  //         return result.data;
+  //       } else {
+  //         throw Exception('Failed: ${response.statusCode}');
+  //       }
+  //     } else {
+  //       return [];
+  //     }
+  //   } catch (e) {
+  //     throw Exception("Error fetching chatById details: $e");
+  //   }
+  // }
+
+  // @override
+  // Future<List<AttachmentModel>> getAttachmentsById({
+  //   required int id,
+  //   required int serviceId,
+  //   required int subServiceId,
+  // }) async {
+  //   final client = await KAppX.network.secureClient();
+
+  //   try {
+  //     if (client != null) {
+  //       final url = ApiEndPoint.vpnAttachmentsById(id);
+  //       final response = await client.get(url);
+
+  //       if (response.statusCode == 200) {
+  //         final Map<String, dynamic> json = response.data;
+
+  //         /// Convert JSON → Model
+  //         final result = AttachmentByIdResponseModel.fromJson(json);
+
+  //         /// Return only `data` (so UI can access sub-objects)
+  //         return result.data;
+  //       } else {
+  //         throw Exception('Failed: ${response.statusCode}');
+  //       }
+  //     } else {
+  //       return [];
+  //     }
+  //   } catch (e) {
+  //     throw Exception("Error fetching attachmentById details: $e");
+  //   }
+  // }
+
+  @override
+  Future<RequestDetailData?> getRequestsById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+        final url = ApiEndPoint.vpnRequestById(id);
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = RequestDetailModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception("Error fetching request details: $e");
+    }
+  }
+
+  @override
+  Future<List<DepartmentModel>> getDepartments() async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.departmentsList;
+        final queryParams = {'offset': 1, 'limit': 1000};
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return (data['data'] as List)
+              .map((e) => DepartmentModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception('Failed with status code: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception('Error in getActionItems: $e');
+    }
+  }
+
+  @override
+  Future<List<SectionModel>> getSections({
+    required String? userDepartmentId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'offset': 1,
+          'limit': 1000,
+          'department_id': userDepartmentId,
+        };
+        final url = ApiEndPoint.sections;
+
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return (data['data'] as List)
+              .map((e) => SectionModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception('Failed with status code: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception('Error in getActionItems: $e');
+    }
+  }
+
+  @override
+  Future<void> onAllocateVehicle(
+    Map<String, dynamic> payload,
+    int requestId,
+  ) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.vehicleAllocate(requestId);
+
+    try {
+      if (client != null) {
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            '${response.data['message']}',
+          );
+          debugPrint('✅ Request sent successfully');
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          ShowFlutterToast().showFlutterToastFailure(
+            '${response.statusMessage}',
+          );
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
       }
     } on DioException catch (e) {
       debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');

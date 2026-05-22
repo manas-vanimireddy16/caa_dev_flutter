@@ -138,6 +138,7 @@ class SelectFieldWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(dynamicFormProvider);
+
     final notifier = ref.read(dynamicFormProvider.notifier);
 
     final values = state.values;
@@ -155,6 +156,7 @@ class SelectFieldWidget extends ConsumerWidget {
 
     /// ✅ INITIAL VALUE
     dynamic initial = field.initialValue;
+
     if (initial is DropdownOption) {
       initial = initial.value;
     }
@@ -169,12 +171,21 @@ class SelectFieldWidget extends ConsumerWidget {
       });
     }
 
+    /// ✅ DYNAMIC OPTIONS SUPPORT
+    final options = field.optionsBuilder != null
+        ? field.optionsBuilder!(ref)
+        : (field.options ?? []);
+
     /// ✅ BUILD ITEMS
-    final items = (field.options ?? [])
+    final items = options
         .map(
           (option) => KDropdownItem<dynamic>(
             value: option.value,
-            child: Text(option.label),
+            child: Text(
+              option.label,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
         )
         .toList();
@@ -189,6 +200,7 @@ class SelectFieldWidget extends ConsumerWidget {
       child: Opacity(
         opacity: isDisabled ? 0.6 : 1,
         child: KDropdownField<dynamic>(
+          isExpanded: true,
           isRequired: field.required,
           fieldHeadingText: field.label,
           value: safeValue,

@@ -103,7 +103,7 @@ import 'package:code_setup/presentation/screens/it_services/muscat/view.dart'
 import 'package:code_setup/presentation/screens/it_services/request_event_support/view.dart'
     as _i49;
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart'
-    as _i89;
+    as _i88;
 import 'package:code_setup/presentation/screens/it_services/salalah/view.dart'
     as _i71;
 import 'package:code_setup/presentation/screens/it_services/view.dart' as _i23;
@@ -172,7 +172,6 @@ import 'package:code_setup/presentation/screens/training_and_development/request
     as _i63;
 import 'package:code_setup/presentation/screens/training_and_development/view.dart'
     as _i80;
-import 'package:flutter/cupertino.dart' as _i88;
 import 'package:flutter/foundation.dart' as _i87;
 import 'package:flutter/material.dart' as _i85;
 
@@ -4003,7 +4002,7 @@ class MicrosoftLoginRoute extends _i84.PageRouteInfo<void> {
 /// [_i35.MuscatDashboard]
 class MuscatDashboard extends _i84.PageRouteInfo<MuscatDashboardArgs> {
   MuscatDashboard({
-    _i88.Key? key,
+    _i85.Key? key,
     required _i86.Service service,
     required _i86.SubService subService,
     List<_i84.PageRouteInfo>? children,
@@ -4039,7 +4038,7 @@ class MuscatDashboardArgs {
     required this.subService,
   });
 
-  final _i88.Key? key;
+  final _i85.Key? key;
 
   final _i86.Service service;
 
@@ -4068,9 +4067,11 @@ class MuscatDashboardArgs {
 class MuscatEmployeeNewRequestRoute
     extends _i84.PageRouteInfo<MuscatEmployeeNewRequestRouteArgs> {
   MuscatEmployeeNewRequestRoute({
-    _i88.Key? key,
+    _i85.Key? key,
     required _i86.Service service,
     required _i86.SubService subService,
+    required int serviceId,
+    required int subServiceId,
     List<_i84.PageRouteInfo>? children,
   }) : super(
          MuscatEmployeeNewRequestRoute.name,
@@ -4078,6 +4079,8 @@ class MuscatEmployeeNewRequestRoute
            key: key,
            service: service,
            subService: subService,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
          ),
          initialChildren: children,
        );
@@ -4092,6 +4095,8 @@ class MuscatEmployeeNewRequestRoute
         key: args.key,
         service: args.service,
         subService: args.subService,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
       );
     },
   );
@@ -4102,9 +4107,87 @@ class MuscatEmployeeNewRequestRouteArgs {
     this.key,
     required this.service,
     required this.subService,
+    required this.serviceId,
+    required this.subServiceId,
   });
 
-  final _i88.Key? key;
+  final _i85.Key? key;
+
+  final _i86.Service service;
+
+  final _i86.SubService subService;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  @override
+  String toString() {
+    return 'MuscatEmployeeNewRequestRouteArgs{key: $key, service: $service, subService: $subService, serviceId: $serviceId, subServiceId: $subServiceId}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! MuscatEmployeeNewRequestRouteArgs) return false;
+    return key == other.key &&
+        service == other.service &&
+        subService == other.subService &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode;
+}
+
+/// generated route for
+/// [_i35.MuscatHOSNewRequestScreen]
+class MuscatHOSNewRequestRoute
+    extends _i84.PageRouteInfo<MuscatHOSNewRequestRouteArgs> {
+  MuscatHOSNewRequestRoute({
+    _i85.Key? key,
+    required _i86.Service service,
+    required _i86.SubService subService,
+    List<_i84.PageRouteInfo>? children,
+  }) : super(
+         MuscatHOSNewRequestRoute.name,
+         args: MuscatHOSNewRequestRouteArgs(
+           key: key,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'MuscatHOSNewRequestRoute';
+
+  static _i84.PageInfo page = _i84.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<MuscatHOSNewRequestRouteArgs>();
+      return _i35.MuscatHOSNewRequestScreen(
+        key: args.key,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class MuscatHOSNewRequestRouteArgs {
+  const MuscatHOSNewRequestRouteArgs({
+    this.key,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i85.Key? key;
 
   final _i86.Service service;
 
@@ -4112,13 +4195,13 @@ class MuscatEmployeeNewRequestRouteArgs {
 
   @override
   String toString() {
-    return 'MuscatEmployeeNewRequestRouteArgs{key: $key, service: $service, subService: $subService}';
+    return 'MuscatHOSNewRequestRouteArgs{key: $key, service: $service, subService: $subService}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other is! MuscatEmployeeNewRequestRouteArgs) return false;
+    if (other is! MuscatHOSNewRequestRouteArgs) return false;
     return key == other.key &&
         service == other.service &&
         subService == other.subService;
@@ -4133,18 +4216,24 @@ class MuscatEmployeeNewRequestRouteArgs {
 class MuscatRequestDetailsTabRoute
     extends _i84.PageRouteInfo<MuscatRequestDetailsTabRouteArgs> {
   MuscatRequestDetailsTabRoute({
-    _i88.Key? key,
+    _i85.Key? key,
     required int id,
+    String from = '',
     required _i86.Service service,
     required _i86.SubService subService,
+    required int serviceId,
+    required int subServiceId,
     List<_i84.PageRouteInfo>? children,
   }) : super(
          MuscatRequestDetailsTabRoute.name,
          args: MuscatRequestDetailsTabRouteArgs(
            key: key,
            id: id,
+           from: from,
            service: service,
            subService: subService,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
          ),
          initialChildren: children,
        );
@@ -4158,8 +4247,11 @@ class MuscatRequestDetailsTabRoute
       return _i35.MuscatRequestDetailsTabScreen(
         key: args.key,
         id: args.id,
+        from: args.from,
         service: args.service,
         subService: args.subService,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
       );
     },
   );
@@ -4169,21 +4261,30 @@ class MuscatRequestDetailsTabRouteArgs {
   const MuscatRequestDetailsTabRouteArgs({
     this.key,
     required this.id,
+    this.from = '',
     required this.service,
     required this.subService,
+    required this.serviceId,
+    required this.subServiceId,
   });
 
-  final _i88.Key? key;
+  final _i85.Key? key;
 
   final int id;
+
+  final String from;
 
   final _i86.Service service;
 
   final _i86.SubService subService;
 
+  final int serviceId;
+
+  final int subServiceId;
+
   @override
   String toString() {
-    return 'MuscatRequestDetailsTabRouteArgs{key: $key, id: $id, service: $service, subService: $subService}';
+    return 'MuscatRequestDetailsTabRouteArgs{key: $key, id: $id, from: $from, service: $service, subService: $subService, serviceId: $serviceId, subServiceId: $subServiceId}';
   }
 
   @override
@@ -4192,78 +4293,22 @@ class MuscatRequestDetailsTabRouteArgs {
     if (other is! MuscatRequestDetailsTabRouteArgs) return false;
     return key == other.key &&
         id == other.id &&
+        from == other.from &&
         service == other.service &&
-        subService == other.subService;
+        subService == other.subService &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId;
   }
 
   @override
   int get hashCode =>
-      key.hashCode ^ id.hashCode ^ service.hashCode ^ subService.hashCode;
-}
-
-/// generated route for
-/// [_i35.MuscutHOSNewRequestScreen]
-class MuscutHOSNewRequestRoute
-    extends _i84.PageRouteInfo<MuscutHOSNewRequestRouteArgs> {
-  MuscutHOSNewRequestRoute({
-    _i88.Key? key,
-    required _i86.Service service,
-    required _i86.SubService subService,
-    List<_i84.PageRouteInfo>? children,
-  }) : super(
-         MuscutHOSNewRequestRoute.name,
-         args: MuscutHOSNewRequestRouteArgs(
-           key: key,
-           service: service,
-           subService: subService,
-         ),
-         initialChildren: children,
-       );
-
-  static const String name = 'MuscutHOSNewRequestRoute';
-
-  static _i84.PageInfo page = _i84.PageInfo(
-    name,
-    builder: (data) {
-      final args = data.argsAs<MuscutHOSNewRequestRouteArgs>();
-      return _i35.MuscutHOSNewRequestScreen(
-        key: args.key,
-        service: args.service,
-        subService: args.subService,
-      );
-    },
-  );
-}
-
-class MuscutHOSNewRequestRouteArgs {
-  const MuscutHOSNewRequestRouteArgs({
-    this.key,
-    required this.service,
-    required this.subService,
-  });
-
-  final _i88.Key? key;
-
-  final _i86.Service service;
-
-  final _i86.SubService subService;
-
-  @override
-  String toString() {
-    return 'MuscutHOSNewRequestRouteArgs{key: $key, service: $service, subService: $subService}';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! MuscutHOSNewRequestRouteArgs) return false;
-    return key == other.key &&
-        service == other.service &&
-        subService == other.subService;
-  }
-
-  @override
-  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+      key.hashCode ^
+      id.hashCode ^
+      from.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode;
 }
 
 /// generated route for
@@ -6528,7 +6573,7 @@ class RequestDetailsTabRoute
     extends _i84.PageRouteInfo<RequestDetailsTabRouteArgs> {
   RequestDetailsTabRoute({
     _i85.Key? key,
-    required _i89.SalalahRequestDetailData data,
+    required _i88.SalalahRequestDetailData data,
     required int id,
     List<_i84.PageRouteInfo>? children,
   }) : super(
@@ -6561,7 +6606,7 @@ class RequestDetailsTabRouteArgs {
 
   final _i85.Key? key;
 
-  final _i89.SalalahRequestDetailData data;
+  final _i88.SalalahRequestDetailData data;
 
   final int id;
 
@@ -13911,12 +13956,24 @@ class VPNRequestDetailsTabRoute
     extends _i84.PageRouteInfo<VPNRequestDetailsTabRouteArgs> {
   VPNRequestDetailsTabRoute({
     _i85.Key? key,
-    String from = '',
     required int id,
+    required int serviceId,
+    required int subServiceId,
+    required _i86.Service service,
+    required _i86.SubService subService,
+    String from = '',
     List<_i84.PageRouteInfo>? children,
   }) : super(
          VPNRequestDetailsTabRoute.name,
-         args: VPNRequestDetailsTabRouteArgs(key: key, from: from, id: id),
+         args: VPNRequestDetailsTabRouteArgs(
+           key: key,
+           id: id,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+           from: from,
+         ),
          initialChildren: children,
        );
 
@@ -13928,8 +13985,12 @@ class VPNRequestDetailsTabRoute
       final args = data.argsAs<VPNRequestDetailsTabRouteArgs>();
       return _i83.VPNRequestDetailsTabScreen(
         key: args.key,
-        from: args.from,
         id: args.id,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+        from: args.from,
       );
     },
   );
@@ -13938,60 +13999,200 @@ class VPNRequestDetailsTabRoute
 class VPNRequestDetailsTabRouteArgs {
   const VPNRequestDetailsTabRouteArgs({
     this.key,
-    this.from = '',
     required this.id,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+    this.from = '',
   });
 
   final _i85.Key? key;
 
-  final String from;
-
   final int id;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i86.Service service;
+
+  final _i86.SubService subService;
+
+  final String from;
 
   @override
   String toString() {
-    return 'VPNRequestDetailsTabRouteArgs{key: $key, from: $from, id: $id}';
+    return 'VPNRequestDetailsTabRouteArgs{key: $key, id: $id, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, from: $from}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! VPNRequestDetailsTabRouteArgs) return false;
-    return key == other.key && from == other.from && id == other.id;
+    return key == other.key &&
+        id == other.id &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService &&
+        from == other.from;
   }
 
   @override
-  int get hashCode => key.hashCode ^ from.hashCode ^ id.hashCode;
+  int get hashCode =>
+      key.hashCode ^
+      id.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode ^
+      from.hashCode;
 }
 
 /// generated route for
 /// [_i83.VpnDashboard]
-class VpnDashboard extends _i84.PageRouteInfo<void> {
-  const VpnDashboard({List<_i84.PageRouteInfo>? children})
-    : super(VpnDashboard.name, initialChildren: children);
+class VpnDashboard extends _i84.PageRouteInfo<VpnDashboardArgs> {
+  VpnDashboard({
+    _i85.Key? key,
+    required _i86.Service service,
+    required _i86.SubService subService,
+    List<_i84.PageRouteInfo>? children,
+  }) : super(
+         VpnDashboard.name,
+         args: VpnDashboardArgs(
+           key: key,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'VpnDashboard';
 
   static _i84.PageInfo page = _i84.PageInfo(
     name,
     builder: (data) {
-      return const _i83.VpnDashboard();
+      final args = data.argsAs<VpnDashboardArgs>();
+      return _i83.VpnDashboard(
+        key: args.key,
+        service: args.service,
+        subService: args.subService,
+      );
     },
   );
 }
 
+class VpnDashboardArgs {
+  const VpnDashboardArgs({
+    this.key,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i85.Key? key;
+
+  final _i86.Service service;
+
+  final _i86.SubService subService;
+
+  @override
+  String toString() {
+    return 'VpnDashboardArgs{key: $key, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! VpnDashboardArgs) return false;
+    return key == other.key &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+}
+
 /// generated route for
 /// [_i83.VpnNewRequestScreen]
-class VpnNewRequestRoute extends _i84.PageRouteInfo<void> {
-  const VpnNewRequestRoute({List<_i84.PageRouteInfo>? children})
-    : super(VpnNewRequestRoute.name, initialChildren: children);
+class VpnNewRequestRoute extends _i84.PageRouteInfo<VpnNewRequestRouteArgs> {
+  VpnNewRequestRoute({
+    _i85.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i86.Service service,
+    required _i86.SubService subService,
+    List<_i84.PageRouteInfo>? children,
+  }) : super(
+         VpnNewRequestRoute.name,
+         args: VpnNewRequestRouteArgs(
+           key: key,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'VpnNewRequestRoute';
 
   static _i84.PageInfo page = _i84.PageInfo(
     name,
     builder: (data) {
-      return const _i83.VpnNewRequestScreen();
+      final args = data.argsAs<VpnNewRequestRouteArgs>();
+      return _i83.VpnNewRequestScreen(
+        key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+      );
     },
   );
+}
+
+class VpnNewRequestRouteArgs {
+  const VpnNewRequestRouteArgs({
+    this.key,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i85.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i86.Service service;
+
+  final _i86.SubService subService;
+
+  @override
+  String toString() {
+    return 'VpnNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! VpnNewRequestRouteArgs) return false;
+    return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
 }

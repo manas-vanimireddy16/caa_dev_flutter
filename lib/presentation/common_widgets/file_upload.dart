@@ -22,6 +22,7 @@ class FileUploadWidget extends StatefulWidget {
   /// Section heading above the upload box (e.g. dynamic form field label).
   /// When null, defaults to "Attachments".
   final String? title;
+  final bool isRequired;
 
   const FileUploadWidget({
     Key? key,
@@ -32,6 +33,7 @@ class FileUploadWidget extends StatefulWidget {
     this.existingFiles = const [],
     this.allowedExtensions = const ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],
     this.title,
+    this.isRequired = false,
   }) : super(key: key);
 
   @override
@@ -154,17 +156,26 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
         /// TITLE
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
-          child: Text(
-            widget.title?.trim().isNotEmpty == true
-                ? widget.title!.trim()
-                : 'Attachments',
-            style: TextStyle(
-              fontWeight: currentTheme.fontWeights.wBold,
-              fontSize: currentTheme.fontSizes.s12,
+          child: RichText(
+            text: TextSpan(
+              text: widget.title?.trim().isNotEmpty == true
+                  ? widget.title!.trim()
+                  : 'Attachments',
+              style: TextStyle(
+                fontWeight: currentTheme.fontWeights.wBold,
+                fontSize: currentTheme.fontSizes.s12,
+                color: Colors.black,
+              ),
+              children: [
+                if (widget.isRequired)
+                  const TextSpan(
+                    text: ' *',
+                    style: TextStyle(color: Colors.red),
+                  ),
+              ],
             ),
           ),
         ),
-
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(24),

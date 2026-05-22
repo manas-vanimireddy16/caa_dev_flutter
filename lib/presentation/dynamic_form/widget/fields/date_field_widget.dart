@@ -166,9 +166,9 @@ class _DateFieldWidgetState extends ConsumerState<DateFieldWidget> {
 
                   final pickedDate = await KAppX.extendedRouter.showKDatePicker(
                     context: KAppX.currentContext,
-                    initialDate: initialDate,
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2100),
+                    initialDate: widget.field.initialDate ?? initialDate,
+                    firstDate: widget.field.firstDate ?? DateTime(1900),
+                    lastDate: widget.field.lastDate ?? DateTime(2100),
                   );
 
                   if (pickedDate != null) {

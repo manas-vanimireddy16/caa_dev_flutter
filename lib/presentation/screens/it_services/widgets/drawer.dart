@@ -30,6 +30,11 @@ class _DrawerMenu extends ConsumerWidget {
         icon: KImageProvider(image: KIcons.dashboard),
         label: 'Salalah',
       ),
+      DrawerItemData(
+        index: 1,
+        icon: KImageProvider(image: KIcons.dashboard),
+        label: 'Muscat',
+      ),
     ];
 
     return Column(

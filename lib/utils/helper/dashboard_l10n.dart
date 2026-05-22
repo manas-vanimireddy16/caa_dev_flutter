@@ -138,7 +138,7 @@ class DashboardL10n {
   String get commentButtonAllocateVehicle =>
       _t('Allocate Vehicle', 'تخصيص مركبة');
 
-  String get commentButtonReassign => _t('Reassign', 'إعادة تعيين');
+  String get commentButtonReassign => _t('Re-assign', 'إعادة تعيين');
 
   String get commentButtonClose => _t('Close', 'إغلاق');
 
@@ -161,14 +161,6 @@ class DashboardL10n {
       _t('Request for Event Support', 'طلب دعم الفعالية');
 
   String get reasonForRequest => _t('Reason for Request', 'سبب الطلب');
-
-  String get describeIssuePlaceholder => _t(
-    'Describe the issue...',
-    'صف المشكلة...',
-  );
-
-  String get transportFormStepPassengers =>
-      _t('Passenger details', 'تفاصيل الركاب');
 
   String get transportFormStepTripDetails =>
       _t('Trip details', 'تفاصيل الرحلة');
@@ -394,8 +386,6 @@ class DashboardL10n {
 
   String get requestName => _t('Request Name', 'اسم الطلب');
 
-  String get category => _t('Category', 'الفئة');
-
   String get meal => _t('Meal', 'الوجبات');
 
   String get yesNoYes => _t('Yes', 'نعم');
@@ -438,7 +428,6 @@ class DashboardL10n {
 
   /// IT Services
   /// Salalah
-  String get personName => _t('Person Name', 'اسم الشخص');
 
   String get enterPersonName => _t('Enter Person Name', 'أدخل اسم الشخص');
 
@@ -474,8 +463,6 @@ class DashboardL10n {
   String get enterExtensionNumber =>
       _t('Enter Extension Number', 'أدخل رقم التحويلة');
 
-  String get email => _t('Email', 'البريد الإلكتروني');
-
   String get enterEmail => _t('Enter Email', 'أدخل البريد الإلكتروني');
 
   String get assignedTo => _t('Assigned To', 'معين الى');
@@ -504,6 +491,114 @@ class DashboardL10n {
   String get eventSupportSubmitNotePoint2 => _t(
     'In case of urgent requirements, contact the IT Help Desk directly for consideration.',
     '',
+  );
+
+  /// VPN
+  String get country => _t('Country', 'الدولة');
+
+  String get employeeId => _t('Employee ID', 'رقم الموظف');
+
+  String get contractor => _t('Contractor', 'المتعاقد');
+
+  String get caaStaff => _t('CAA Staff', 'موظفو الهيئة');
+
+  String get jobTitle => _t('Job Title', 'المسمى الوظيفي');
+
+  String get thirdPartyVendorAccess =>
+      _t('Third Party/Vendor Access', 'وصول طرف ثالث / مورد');
+
+  String get remoteWork => _t('Remote Work', 'العمل عن بُعد');
+
+  String get accessToInternalSystemApplications => _t(
+    'Access to Internal System/Applications',
+    'الوصول إلى الأنظمة / التطبيقات الداخلية',
+  );
+
+  String get projectSpecificRequirement =>
+      _t('Project-specific Requirement', 'متطلبات خاصة بالمشروع');
+
+  String get permanent => _t('Permanent', 'دائم');
+
+  String get oneTime => _t('One Time', 'لمرة واحدة');
+
+  String get other => _t('Other', 'أخرى');
+
+  String get erp => _t('ERP', 'نظام تخطيط موارد الهيئة');
+
+  String get ufuq => _t('UFUQ', 'اُفق');
+
+  String get sharedServers => _t('Shared Servers', 'الخوادم المشتركة');
+
+  String get fileServers => _t('File Servers', 'خوادم الملفات');
+
+  String get internalDataBase =>
+      _t('Internal data Bases', 'قواعد البيانات الداخلية');
+
+  String get sysAppToAccess => _t(
+    'Systems / Application to Access',
+    'الأنظمة / التطبيقات التي يمكن الوصول إليها',
+  );
+
+  String get requestForTimePeriod => _t('Request for Time Period', 'مدة الطلب');
+
+  String get endDate => _t('End Date', 'إلى تاريخ');
+
+  String get startDate => _t('Start Date', 'تاريخ البداية');
+
+  String get mobileDevice => _t('Mobile Device', 'جهاز الهاتف النقال');
+
+  String get personalDeviceCompliesWithSecurityPolicies => _t(
+    'Personal Device Complies With Security Policies',
+    'جهاز شخصي يلتزم بسياسات الأمان',
+  );
+
+  String get caaLaptop => _t('CAA Laptop', 'حاسوب محمول للهيئة');
+
+  String get policyPage => _t(
+    "I agree to comply with CAA's security policies.",
+    'أوافق على الالتزام بسياسات الأمان الخاصة بالهيئة',
+  );
+
+  String get misuseMayResultDisciplinaryAction => _t(
+    'I understand misuse may result in disciplinary action.',
+    'أدرك أن سوء الاستخدام قد يؤدي إلى اتخاذ إجراءات تأديبية.',
+  );
+
+  String get describeIssuePlaceholder =>
+      _t('Describe the issue...', 'صف المشكلة...');
+
+  String get transportFormStepPassengers =>
+      _t('Passenger details', 'تفاصيل الركاب');
+
+  // security access - request for access card
+  String get enterName =>
+      _t('Enter name (characters only)', 'أدخل الاسم (حروف فقط)');
+
+  String get personName => _t('Person Name', 'اسم الشخص');
+
+  String get enterPhoneNumber => _t('Enter Phone Number', 'أدخل رقم الهاتف');
+
+  String get type => _t('Type', 'النوع');
+
+  String get email => _t('Email', 'البريد الإلكتروني');
+
+  String get category => _t('Category', 'الفئة');
+
+  String get idNumber => _t('ID Number', 'رقم الهوية');
+
+  String get enterPassportNumber =>
+      _t('Enter Passport Number', 'أدخل رقم جواز السفر');
+
+  String get dateOptional => _t('Date (Optional)', 'التاريخ (اختياري)');
+
+  String get enterUniversityOrganization =>
+      _t('Enter University / Organization', 'أدخل الجامعة / المنظمة');
+
+  String get reason => _t('Reason', 'سبب الطلب');
+
+  String get attachPassportSizePhotoWhiteBackground => _t(
+    'Attach passport size photo (White background)',
+    'إرفاق صورة بحجم جواز السفر (خلفية بيضاء)',
   );
 
   String logisticsDailyEmergencyOption(String en) {
@@ -969,11 +1064,6 @@ class DashboardL10n {
   String get descriptionAdditionalNotesOptional => _t(
     'Description / Additional Notes (Optional)',
     'الوصف / الملاحظات الإضافية (اختياري)',
-  );
-
-  String get policyPage => _t(
-    "I agree to comply with CAA's security policies.",
-    'أوافق على الالتزام بسياسات الأمان الخاصة بالهيئة',
   );
 
   String securityNavTitle(int index) {

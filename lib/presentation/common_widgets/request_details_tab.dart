@@ -1,7 +1,6 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/common_widgets/cardInfo.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart';
-import 'package:code_setup/presentation/screens/it_services/vpn/models/vpn_request_by_id.dart';
 import 'package:code_setup/presentation/screens/logistics/models/logistics_detail_model.dart';
 import 'package:flutter/material.dart';
 
@@ -24,8 +23,6 @@ class RequestDetailsTabContent<T> extends StatelessWidget {
     // 👇 Render UI based on the model type
     if (request is LogisticsRequestDetailData) {
       return _buildLogisticsUI(request as LogisticsRequestDetailData);
-    } else if (request is VpnRequestByIdData) {
-      return _buildVPNUI(request as VpnRequestByIdData);
     } else if (request is SalalahRequestDetailData) {
       return _buildSalalahUI(request as SalalahRequestDetailData);
     } else {
@@ -109,33 +106,6 @@ class RequestDetailsTabContent<T> extends StatelessWidget {
             info: {"Extension Number": data.request?.extnNum ?? 'N/A'},
           ),
         ],
-      ],
-    );
-  }
-
-  /// 🧱 UI for VPNRequestDetailData
-  Widget _buildVPNUI(VpnRequestByIdData data) {
-    return Column(
-      children: [
-        CardInfo(
-          title: "Status Information",
-          info: {
-            "Request Date": data.request?.requestFor ?? 'N/A',
-            "Service Type": data.request?.service?.name ?? "N/A",
-            "Approver": data.request?.employeeEmail ?? "N/A",
-            "Requested Date": data.request?.startDate.toString() ?? 'N/A',
-          },
-        ),
-        5.toVerticalSizedBox,
-        CardInfo(
-          title: "VPN Details",
-          info: {
-            "Extension Number":
-                data.request?.createdByUser?.extensionNumber.toString() ??
-                'N/A',
-            "Systems to Access": data.request?.reasonForRequest?[0] ?? 'N/A',
-          },
-        ),
       ],
     );
   }

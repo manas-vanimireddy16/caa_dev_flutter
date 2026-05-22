@@ -1,526 +1,1650 @@
 part of 'view.dart';
 
-// Updated monthly dataset for 2025
+final selectedrequesteventTabProvider = StateProvider<int>((ref) => 0);
 
-final List<String> monthLabels = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+// Stores search text
+final searchQueryProvider = StateProvider<String>((ref) => "");
 
-// final requestDeatilsTabSelectedProvider = StateProvider.autoDispose<int>(
-//   (ref) => 0,
-// );
+final requestDeatilsTabSelectedProvider = StateProvider.autoDispose<int>(
+  (ref) => 0,
+);
 
-final _vsProvider =
-    StateNotifierProvider.autoDispose<_VSController, _ViewState>((ref) {
-      final stateController = _VSController();
-      stateController.initState();
-      return stateController;
+class _VSControllerParams extends Equatable {
+  final Service service;
+  final SubService subService;
+
+  const _VSControllerParams({required this.service, required this.subService});
+
+  @override
+  List<Object?> get props => [service, subService];
+}
+
+final _vsProvider = StateNotifierProvider.autoDispose
+    .family<_VSController, _ViewState, _VSControllerParams>((ref, params) {
+      final controller = _VSController(
+        service: params.service,
+        subService: params.subService,
+      );
+      controller.initState();
+      return controller;
     });
 
 class _ViewState {
   final bool isLoading;
+
+  final List<FileUploadItem> selectedFileUrl;
   final List<Map<String, dynamic>> attachments;
+
   final KPIResponse kpiData;
-  final List<VpnRequestData> myRequests;
-  final List<VpnRequestData> myActionItems;
-  final VpnRequestByIdModel requestById;
+  final KPIResponse approvalKpiData;
+
   final StatusBreakdownModel statusBreakdown;
   final TrendBreakdownModel trendData;
-  final String searchText;
-  final String status;
-  final List<String> reasonForRequest;
-  final List<String> acknowledgement;
-  final String requestFor;
-  final List<String> systemsToAccess;
-  final String startDate;
-  final String endDate;
-  final List<String> systemsOrApplications;
-  final List<String> devices;
-  final String timePeriod;
-  final TechniciansResponse technicianDetails;
-  final int selectedRequestTab;
-  final int selectedVpnTab;
+  final RequestDetailModel requestDataById;
+
+  final int tabIndex;
+  final int selectedTab;
+
+  final StatusBreakdownModel approvalStatusBreakdown;
+  final TrendBreakdownModel approvalTrendData;
+  final List<AccessRequestModel> requestData;
+  final List<AccessRequestModel> actionItems;
+  final RequestDetailData requestDetails;
+  final int requestDetailTab;
+  final int approvalId;
+
+  final bool isButtonDisabled;
+  final List<ChatMessageModel> chatById;
+  final List<AttachmentModel> attachmentsById;
+
+  final List<String> months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  final List<Map<String, dynamic>> vehicles = [
+    {
+      "chassisNumber": "MHFKU8FS8R0198168",
+      "engineNumber": "1GRH393291",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "43/88",
+      "no": 1,
+    },
+    {
+      "chassisNumber": "MHFKU8FSXR0197944",
+      "engineNumber": "1GRH394412",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "47/88",
+      "no": 2,
+    },
+    {
+      "chassisNumber": "MHFKU8FS4R0198183",
+      "engineNumber": "1GRH393738",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "42/88",
+      "no": 3,
+    },
+    {
+      "chassisNumber": "MHFKU8FS1R0197895",
+      "engineNumber": "1GRH3932364",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "45/88",
+      "no": 4,
+    },
+    {
+      "chassisNumber": "MHFKU8FS8R0197893",
+      "engineNumber": "1GRH392372",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "46/88",
+      "no": 5,
+    },
+    {
+      "chassisNumber": "MHFKU8FS3R0198191",
+      "engineNumber": "1GRH393620",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "48/88",
+      "no": 6,
+    },
+    {
+      "chassisNumber": "MHFKU8FS2R0197906",
+      "engineNumber": "1GRH394369",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "37/88",
+      "no": 7,
+    },
+    {
+      "chassisNumber": "MHFKU8FS7R0197920",
+      "engineNumber": "1GRH393135",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "36/88",
+      "no": 8,
+    },
+    {
+      "chassisNumber": "MHFKU8FS3R0198224",
+      "engineNumber": "1GRH393976",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "44/88",
+      "no": 9,
+    },
+    {
+      "chassisNumber": "MHFKU8FS7R0198226",
+      "engineNumber": "1GRH393932",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Fortuner 4x4",
+      "vehicleNumber": "49/88",
+      "no": 10,
+    },
+    {
+      "chassisNumber": "JTNB19HK8R3246981",
+      "engineNumber": "A250D74665",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "98/88",
+      "no": 11,
+    },
+    {
+      "chassisNumber": "JTNB19HK2R3249147",
+      "engineNumber": "A250D80919",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "59/88",
+      "no": 12,
+    },
+    {
+      "chassisNumber": "JTNB19HK7R3247409",
+      "engineNumber": "A250D76198",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "57/88",
+      "no": 13,
+    },
+    {
+      "chassisNumber": "JTNB19HK7R3248771",
+      "engineNumber": "A250D79786",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "56/88",
+      "no": 14,
+    },
+    {
+      "chassisNumber": "JTNB19HK2R3248273",
+      "engineNumber": "A250D78346",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "54/88",
+      "no": 15,
+    },
+    {
+      "chassisNumber": "JTNB19HK4R3245794",
+      "engineNumber": "A250D71332",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "24/88",
+      "no": 16,
+    },
+    {
+      "chassisNumber": "JTNB19HK1R3245610",
+      "engineNumber": "A250D70920",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "97/88",
+      "no": 17,
+    },
+    {
+      "chassisNumber": "JTNB19HKxR3245394",
+      "engineNumber": "A250D70280",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "96/88",
+      "no": 18,
+    },
+    {
+      "chassisNumber": "JTNB19HK0R3244965",
+      "engineNumber": "A250D69119",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "76/88",
+      "no": 19,
+    },
+    {
+      "chassisNumber": "JTNB19HK1R3248796",
+      "engineNumber": "A250D79746",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "58/88",
+      "no": 20,
+    },
+    {
+      "chassisNumber": "JTNB19HK1R3245560",
+      "engineNumber": "A250D70818",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "95/88",
+      "no": 21,
+    },
+    {
+      "chassisNumber": "JTNB19HK0R3246909",
+      "engineNumber": "A250D74461",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Camry Sedan",
+      "vehicleNumber": "79/88",
+      "no": 22,
+    },
+    {
+      "chassisNumber": "JTEBU9FJ0PK239298",
+      "engineNumber": "1GRC726969",
+      "color": "Pearl White",
+      "model": "2023",
+      "vehicleType": "Toyota Prado 4x4",
+      "vehicleNumber": "55/88",
+      "no": 23,
+    },
+    {
+      "chassisNumber": "JTEBU9FJ8PK247214",
+      "engineNumber": "1GRC792827",
+      "color": "Pearl White",
+      "model": "2023",
+      "vehicleType": "Toyota Prado 4x4",
+      "vehicleNumber": "4./88",
+      "no": 24,
+    },
+    {
+      "chassisNumber": "JTEBU9FJ6PK246675",
+      "engineNumber": "1GRC788110",
+      "color": "Pearl White",
+      "model": "2023",
+      "vehicleType": "Toyota Prado 4x4",
+      "vehicleNumber": "5./88",
+      "no": 25,
+    },
+    {
+      "chassisNumber": "JTEJU9FJ3B5013808",
+      "engineNumber": "A237596",
+      "color": "White",
+      "model": "2011",
+      "vehicleType": "Toyota Prado 4x4",
+      "vehicleNumber": "8./88",
+      "no": 26,
+    },
+    {
+      "chassisNumber": "JTEJU9FJ8B5016574",
+      "engineNumber": "A272362",
+      "color": "White",
+      "model": "2011",
+      "vehicleType": "Toyota Prado 4x4",
+      "vehicleNumber": "9./88",
+      "no": 27,
+    },
+    {
+      "chassisNumber": "5N1AN0N69CN801970",
+      "engineNumber": "930446A",
+      "color": "Silver",
+      "model": "2011",
+      "vehicleType": "Nissan Pathfinder 4x4",
+      "vehicleNumber": "23/88",
+      "no": 28,
+    },
+    {
+      "chassisNumber": "5N1AR1N80BC600156",
+      "engineNumber": "904776A",
+      "color": "Silver",
+      "model": "2011",
+      "vehicleType": "Nissan Pathfinder 4x4",
+      "vehicleNumber": "21/88",
+      "no": 29,
+    },
+    {
+      "chassisNumber": "5N1AN0N69CN801970",
+      "engineNumber": "174185B",
+      "color": "White",
+      "model": "2012",
+      "vehicleType": "Nissan X-Terra 4x4",
+      "vehicleNumber": "10./88",
+      "no": 30,
+    },
+    {
+      "chassisNumber": "JMYLYV97WDJ703723",
+      "engineNumber": "6G758E9XS3556",
+      "color": "White",
+      "model": "2013",
+      "vehicleType": "Toyota Pajero 4x4",
+      "vehicleNumber": "6./88",
+      "no": 31,
+    },
+    {
+      "chassisNumber": "1GKS27KD6PR329789",
+      "engineNumber": "L84APR329789",
+      "color": "Brown",
+      "model": "2023",
+      "vehicleType": "GMC Yukon 4x4",
+      "vehicleNumber": "111/88",
+      "no": 32,
+    },
+    {
+      "chassisNumber": "MR0DX9CD0R2649011",
+      "engineNumber": "2TRB145770",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Hilux Pickup",
+      "vehicleNumber": "108/88",
+      "no": 33,
+    },
+    {
+      "chassisNumber": "MR0DX9CD3R2649021",
+      "engineNumber": "2TRB146621",
+      "color": "Pearl White",
+      "model": "2024",
+      "vehicleType": "Toyota Hilux Pickup",
+      "vehicleNumber": "109/88",
+      "no": 34,
+    },
+    {
+      "chassisNumber": "MR0EW12G8D3020457",
+      "engineNumber": "7433363",
+      "color": "White",
+      "model": "2013",
+      "vehicleType": "Toyota Hilux Pickup",
+      "vehicleNumber": "26/88",
+      "no": 35,
+    },
+    {
+      "chassisNumber": "MNTDD22S9C6003117",
+      "engineNumber": "917712Z",
+      "color": "White",
+      "model": "2012",
+      "vehicleType": "Nissan Pickup",
+      "vehicleNumber": "18/88",
+      "no": 36,
+    },
+    {
+      "chassisNumber": "MMBJNKA50BD023348",
+      "engineNumber": "4G64UCAJ3745",
+      "color": "White",
+      "model": "2011",
+      "vehicleType": "Mitsubishi Pickup",
+      "vehicleNumber": "30/88",
+      "no": 37,
+    },
+    {
+      "chassisNumber": "JL6BCE6J9DK008760",
+      "engineNumber": "6D16A23924",
+      "color": "White",
+      "model": "2009",
+      "vehicleType": "Mitsubishi Truck with Crane",
+      "vehicleNumber": "40/88",
+      "no": 38,
+    },
+    {
+      "chassisNumber": "4P3SRDJ1ABE802237",
+      "engineNumber": "4G69PD4331",
+      "color": "White",
+      "model": "2011",
+      "vehicleType": "Mitsubishi Galant Sedan",
+      "vehicleNumber": "29/88",
+      "no": 39,
+    },
+    {
+      "chassisNumber": "JL6BCE6J9DK008760",
+      "engineNumber": "4D34N38913",
+      "color": "White",
+      "model": "2013",
+      "vehicleType": "Mitsubishi Truck with Crane",
+      "vehicleNumber": "27/88",
+      "no": 40,
+    },
+    {
+      "chassisNumber": "JTMHU09J0B5051720",
+      "engineNumber": "A318476",
+      "color": "White",
+      "model": "2011",
+      "vehicleType": "Toyota Land Cruiser 4x4",
+      "vehicleNumber": "1./88",
+      "no": 41,
+    },
+    {
+      "chassisNumber": "JN8AY25Y0C9027176",
+      "engineNumber": "038827A",
+      "color": "Green",
+      "model": "2012",
+      "vehicleType": "Nissan Patrol 4x4",
+      "vehicleNumber": "2./88",
+      "no": 42,
+    },
+  ];
+
+  /// FORM KEY
+  final formKey = GlobalKey<FormState>();
 
   _ViewState({
     required this.isLoading,
+    required this.selectedFileUrl,
     required this.attachments,
     required this.kpiData,
-    required this.myRequests,
-    required this.myActionItems,
-    required this.requestById,
+    required this.approvalKpiData,
     required this.statusBreakdown,
     required this.trendData,
-    required this.searchText,
-    required this.status,
-    required this.reasonForRequest,
-    required this.acknowledgement,
-    required this.requestFor,
-    required this.systemsToAccess,
-    required this.endDate,
-    required this.startDate,
-    required this.systemsOrApplications,
-    required this.devices,
-    required this.timePeriod,
-    required this.technicianDetails,
-    required this.selectedRequestTab,
-    required this.selectedVpnTab,
+    required this.requestDataById,
+    required this.tabIndex,
+    required this.selectedTab,
+    required this.approvalStatusBreakdown,
+    required this.approvalTrendData,
+    required this.requestData,
+    required this.actionItems,
+    required this.requestDetails,
+    required this.requestDetailTab,
+    required this.approvalId,
+    required this.isButtonDisabled,
+    required this.chatById,
+    required this.attachmentsById,
   });
 
-  /// ✅ Initial State
   _ViewState.init()
     : this(
         isLoading: false,
+        selectedFileUrl: [],
         attachments: [],
         kpiData: KPIResponse(),
-        myRequests: [],
-        myActionItems: [],
-        requestById: VpnRequestByIdModel(),
+        approvalKpiData: KPIResponse(),
         statusBreakdown: StatusBreakdownModel(),
         trendData: TrendBreakdownModel(),
-        searchText: '',
-        status: '',
-        reasonForRequest: [],
-        acknowledgement: [],
-        requestFor: '',
-        systemsToAccess: [],
-        startDate: '',
-        endDate: '',
-        systemsOrApplications: [],
-        timePeriod: '',
-        devices: [],
-        technicianDetails: TechniciansResponse(),
-        selectedRequestTab: 0,
-        selectedVpnTab: 0,
+        requestDataById: RequestDetailModel(),
+        tabIndex: 0,
+        selectedTab: 0,
+        approvalStatusBreakdown: StatusBreakdownModel(),
+        approvalTrendData: TrendBreakdownModel(),
+        requestData: [],
+        actionItems: [],
+        requestDetails: RequestDetailData(),
+        requestDetailTab: 0,
+        approvalId: 0,
+        isButtonDisabled: false,
+        chatById: [],
+
+        attachmentsById: [],
       );
 
-  /// ✅ CopyWith method for immutability
   _ViewState copyWith({
     bool? isLoading,
+    int? threatType,
+    String? selectedPriority,
+    String? visitorChecks,
+    List<String>? servicePreference,
+    List<FileUploadItem>? selectedFileUrl,
     List<Map<String, dynamic>>? attachments,
     KPIResponse? kpiData,
-    List<VpnRequestData>? myRequests,
-    List<VpnRequestData>? myActionItems,
-    VpnRequestByIdModel? requestById,
+    KPIResponse? approvalKpiData,
+    List<ActivitiesFeedData>? activityFeed,
     StatusBreakdownModel? statusBreakdown,
     TrendBreakdownModel? trendData,
-    String? searchText,
-    String? status,
-    List<String>? reasonForRequest,
+    RequestDetailModel? requestDataById,
+    StatusBreakdownModel? approvalStatusBreakdown,
+    TrendBreakdownModel? approvalTrendData,
+    int? tabIndex,
+    int? selectedTab,
+    List<AccessRequestModel>? requestData,
+    List<AccessRequestModel>? actionItems,
+    RequestDetailData? requestDetails,
+    int? requestDetailTab,
+    String? permitCategory,
+    String? departmentName,
+    List<PendingApprovalUser>? engineersList,
+    int? approvalId,
+    String? mediaCoverageRequired,
+    String? location,
+    String? permitType,
+    List<String>? selectedpermissionAreas,
     List<String>? acknowledgement,
-    String? requestFor,
-    List<String>? systemsOrApplications,
-    List<String>? systemsToAccess,
-    String? startDate,
-    String? endDate,
-    List<String>? devices,
-    String? timePeriod,
-    TechniciansResponse? technicianDetails,
-    int? selectedRequestTab,
-    int? selectedVpnTab,
+    String? threatOption,
+    bool? isFormValid,
+    bool? isButtonDisabled,
+    List<ChatMessageModel>? chatById,
+    List<Position>? positionsList,
+    String? selectedPositionName,
+    int? selectedUserId,
+    List<EmployeeList>? usersList,
+    String? selectedUserName,
+    EmployeeList? selectedUser,
+    List<EmployeeSummary>? employeeList,
+    bool? isStartDateSelected,
+    String? selectedSalaryDetails,
+    String? selectedRequestType,
+    List<AllowanceEmployee>? allowanceEmployees,
+    List<DepartmentModel>? departments,
+    List<LocationModel>? locations,
+    List<AttachmentModel>? attachmentsById,
+    List<MasterRolesModel>? rolesList,
+    List<SelectionDialogItem>? selectionItems,
+    List<Grade>? gradeList,
+    List<GoalModel>? byCycleGoalsData,
+    List<GoalListModel>? goalWeightList,
+    List<HrTask>? hrTasks,
+    String? hrTaskInput,
+    String? hrResponsibilityInput,
+    String? hrFrequencyInput,
+    String? hrDurationInput,
+    ValueGetter<int?>? hrEditingIndex,
+    List<EmployeeList>? selectedUsersList,
+    List<ResidentalUnitRentalLocationModel>? unitLocations,
+    List<SectionModel>? sections,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
-      myRequests: myRequests ?? this.myRequests,
-      requestById: requestById ?? this.requestById,
+      approvalKpiData: approvalKpiData ?? this.approvalKpiData,
       statusBreakdown: statusBreakdown ?? this.statusBreakdown,
       trendData: trendData ?? this.trendData,
-      searchText: searchText ?? this.searchText,
-      status: status ?? this.status,
-      endDate: endDate ?? this.endDate,
-      systemsOrApplications:
-          systemsOrApplications ?? this.systemsOrApplications,
-      reasonForRequest: reasonForRequest ?? this.reasonForRequest,
-      acknowledgement: acknowledgement ?? this.acknowledgement,
-      requestFor: requestFor ?? this.requestFor,
-      systemsToAccess: systemsToAccess ?? this.systemsToAccess,
-      startDate: startDate ?? this.startDate,
-      devices: devices ?? this.devices,
-      timePeriod: timePeriod ?? this.timePeriod,
-      myActionItems: myActionItems ?? this.myActionItems,
-      technicianDetails: technicianDetails ?? this.technicianDetails,
-      selectedRequestTab: selectedRequestTab ?? this.selectedRequestTab,
-      selectedVpnTab: selectedVpnTab ?? this.selectedVpnTab,
+      requestDataById: requestDataById ?? this.requestDataById,
+      tabIndex: tabIndex ?? this.tabIndex,
+      selectedTab: selectedTab ?? this.selectedTab,
+      approvalStatusBreakdown:
+          approvalStatusBreakdown ?? this.approvalStatusBreakdown,
+      approvalTrendData: approvalTrendData ?? this.approvalTrendData,
+      requestData: requestData ?? this.requestData,
+      actionItems: actionItems ?? this.actionItems,
+      requestDetails: requestDetails ?? this.requestDetails,
+      requestDetailTab: requestDetailTab ?? this.requestDetailTab,
+      approvalId: approvalId ?? this.approvalId,
+      isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
+      chatById: chatById ?? this.chatById,
+      attachmentsById: attachmentsById ?? this.attachmentsById,
     );
   }
 }
 
 class _VSController extends StateNotifier<_ViewState> {
-  _VSController() : super(_ViewState.init());
+  final Service service;
+  final SubService subService;
+  late final _VSControllerParams params;
+  _VSController({required this.service, required this.subService})
+    : super(_ViewState.init()) {
+    params = _VSControllerParams(service: service, subService: subService);
+  }
 
-  late TextEditingController searchController;
-  late TextEditingController personNameController;
-  late TextEditingController departmentController;
-  late TextEditingController contactNumberController;
-  late TextEditingController reasonController;
-  late TextEditingController descriptionController;
-  late TextEditingController employeeIdController;
-  late TextEditingController emailController;
-  late TextEditingController jobTitleController;
+  Timer? _searchDebounce;
+
   late TextEditingController chatController;
-  late TextEditingController countryController;
-  late TextEditingController startDate;
-  late TextEditingController endDate;
+  late TextEditingController titleController;
+  late TextEditingController searchController;
 
-  void initState() async {
-    startDate = TextEditingController();
-    endDate = TextEditingController();
-    personNameController = TextEditingController();
-    searchController = TextEditingController();
-    departmentController = TextEditingController();
-    contactNumberController = TextEditingController();
-    reasonController = TextEditingController();
-    employeeIdController = TextEditingController();
-    descriptionController = TextEditingController();
+  void initState() {
     chatController = TextEditingController();
-    jobTitleController = TextEditingController();
-    emailController = TextEditingController();
-    countryController = TextEditingController();
-    chatController.addListener(() {});
-
-    fetchKpiData();
-    fetchStatusBreakDown('weekly');
-    fetchTrendBreakDown('2025');
-    await fetchMyRequests();
-    fetchMyActionItems();
+    titleController = TextEditingController();
+    searchController = TextEditingController();
+    fetchKpi();
+    fetchRequests();
+    fetchStatusBreakdown('monthly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+    // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
-  final vpninstance = VPNRepository();
+  int _searchVersion = 0;
 
-  Future<void> fetchMyRequests({
-    bool isRefresh = false,
-    String searchText = '',
-    String status = '',
-  }) async {
-    try {
-      // Clear list only on refresh or search
-      if (isRefresh || searchText.isNotEmpty) {
-        state = state.copyWith(myRequests: []);
-      }
+  void onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    final int currentVersion = ++_searchVersion;
 
-      final response = await vpninstance.getVpnRequests(
-        offset: 1,
-        limit: 10,
-        // sortBy: 'created_at',
-        // sortOrder: 'DESC',
-        status: status,
-        searchText: searchText,
-      );
-
-      if (response.isNotEmpty) {
-        // final updatedList = (isRefresh || searchText.isNotEmpty)
-        //     ? response
-        //     : [...state.myRequests, ...response];
-
-        // Remove duplicates by ID (if any)
-        // final uniqueList = {
-        //   for (var item in updatedList) item.id: item,
-        // }.values.toList();
-
-        state = state.copyWith(myRequests: response);
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
+      if (state.tabIndex == 0) {
+        await fetchRequests(isRefresh: true, searchText: value);
       } else {
-        if (isRefresh || searchText.isNotEmpty) {
-          state = state.copyWith(myRequests: []);
-        }
+        await fetchactionItems(isRefresh: true, searchText: value);
       }
-    } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
+
+      if (currentVersion != _searchVersion) return; // ignore old response
+    });
+  }
+
+  int get currentYear => DateTime.now().year;
+
+  List<String> get filterLabelList =>
+      List.generate(6, (index) => (currentYear - index).toString());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
+
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
+
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
+  void onStatusFilterChanged(String? value) {
+    if (state.tabIndex == 0) {
+      fetchStatusBreakdown(value ?? '');
+    } else {
+      fetchApprovalStatusBreakdown(value ?? '');
     }
   }
 
-  Future<void> fetchMyActionItems({
-    bool isRefresh = false,
-    String searchText = '',
-    String status = '',
-  }) async {
-    try {
-      // Clear list only on refresh or search
-      if (isRefresh || searchText.isNotEmpty) {
-        state = state.copyWith(myActionItems: []);
-      }
+  void onTrendFilterChanged(String? value) {
+    if (value == null) return;
 
-      final response = await vpninstance.getVpnActionItems(
-        offset: 1,
-        limit: 10,
-        // sortBy: 'created_at',
-        // sortOrder: 'DESC',
-        status: status,
-        searchText: searchText,
-      );
-
-      if (response.isNotEmpty) {
-        // final updatedList = (isRefresh || searchText.isNotEmpty)
-        //     ? response
-        //     : [...state.myActionItems, ...response];
-
-        // // Remove duplicates by ID (if any)
-        // final uniqueList = {
-        //   for (var item in updatedList) item.id: item,
-        // }.values.toList();
-
-        state = state.copyWith(myActionItems: response);
-      } else {
-        if (isRefresh || searchText.isNotEmpty) {
-          state = state.copyWith(myActionItems: []);
-        }
-      }
-    } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
+    if (state.tabIndex == 0) {
+      fetchTrendBreakDown(value);
+    } else {
+      fetchApprovalTrendBreakDown(value);
     }
   }
 
-  Future<void> fetchRequestById(int id) async {
-    try {
-      state = state.copyWith(isLoading: true);
-      final data = await vpninstance.getVpnRequestById(id: id);
-
-      if (data != null) {
-        state = state.copyWith(requestById: data);
-        state = state.copyWith(isLoading: false);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchKpiData() async {
-    try {
-      state = state.copyWith(isLoading: true);
-      final data = await vpninstance.getKpiData();
-
-      if (data != null) {
-        state = state.copyWith(kpiData: data);
-        state = state.copyWith(isLoading: false);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchStatusBreakDown(String period) async {
-    try {
-      final data = await vpninstance.getStatusBreakdownData(period);
-
-      if (data != null) {
-        state = state.copyWith(statusBreakdown: data);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchTrendBreakDown(String period) async {
-    try {
-      final data = await vpninstance.getTrendBreakdownData(period);
-
-      if (data != null) {
-        state = state.copyWith(trendData: data);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchTechnicianDetails(int id, int sectionId) async {
-    try {
-      final data = await vpninstance.getTechnicianData(
-        id: id,
-        sectionId: sectionId,
-      );
-
-      if (data != null) {
-        state = state.copyWith(technicianDetails: data);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  void onSelectedRequestFor(String value) =>
-      state = state.copyWith(requestFor: value);
-
-  void onSelectedStartDate(String value) =>
-      state = state.copyWith(startDate: value);
-
-  void onSelectedEndDate(String value) =>
-      state = state.copyWith(endDate: value);
-
-  void onSelectedReasonForRequest(List<String> value) =>
-      state = state.copyWith(reasonForRequest: value);
-
-  void onSelectedTimePeriod(String value) =>
-      state = state.copyWith(timePeriod: value);
-
-  void onSelectedDevice(List<String> value) =>
-      state = state.copyWith(devices: value);
-
-  void onSelectedAcknowledgements(List<String> value) =>
-      state = state.copyWith(acknowledgement: value);
-  void onSelectedSystem(List<String> value) =>
-      state = state.copyWith(systemsToAccess: value);
-
-  void updateRequestTab(int index) {
-    state = state.copyWith(selectedRequestTab: index);
-  }
-
-  void updateVpnTab(int index) {
-    state = state.copyWith(selectedVpnTab: index);
-  }
-
-  // 🧩 Shared helpers for Start and End Dates
-
-  /// Handles manual date input for both start and end fields.
-  void handleManualDateInput({
-    required String input,
-    required bool isStartDate,
-  }) {
-    try {
-      // Expect MM/DD/YYYY format
-      final parts = input.split('/');
-      if (parts.length == 3) {
-        final month = int.parse(parts[0]);
-        final day = int.parse(parts[1]);
-        final year = int.parse(parts[2]);
-        final parsedDate = DateTime(year, month, day);
-
-        // ✅ Update respective controller text (for UI)
-        if (isStartDate) {
-          startDate.text = _formatDateForDisplay(parsedDate);
-        } else {
-          endDate.text = _formatDateForDisplay(parsedDate);
-        }
-
-        // ✅ Save in API format (YYYY-MM-DD)
-        final formattedForApi = _formatDateForApi(parsedDate);
-        state = state.copyWith(
-          startDate: isStartDate ? formattedForApi : state.startDate,
-          endDate: !isStartDate ? formattedForApi : state.endDate,
-        );
-      }
-    } catch (e) {
-      debugPrint(
-        "❌ Invalid manual ${isStartDate ? 'start' : 'end'} date input: $e",
-      );
-    }
-  }
-
-  Map<String, int> getDeptAndSectionIfHeadOfSection(
-    SelectedUserRole? roleData,
-    String targetRoleName,
-  ) {
-    if (roleData == null) {
-      return {'departmentId': 0, 'sectionId': 0};
+  List<int> get trendCounts {
+    final data = state.trendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
     }
 
-    final roleName = roleData.roleName.toLowerCase();
-    final target = targetRoleName.toLowerCase();
+    return data.map((e) => e.count ?? 0).toList();
+  }
 
-    // Check if this selected role matches "Head of Section"
-    final isMatch = roleName == target || roleName.contains(target);
-
-    if (!isMatch) {
-      return {'departmentId': 0, 'sectionId': 0};
+  List<int> get approvalTrendCounts {
+    final data = state.approvalTrendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
     }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<ChartData> get statusBreakdownList {
+    return state.statusBreakdown.data?.breakdown ?? [];
+  }
+
+  List<ChartData> get approvalStatusBreakdownList {
+    return state.approvalStatusBreakdown.data?.breakdown ?? [];
+  }
+
+  Map<String, String> buildRequestCardData(AccessRequestModel item) {
+    final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
-      'departmentId': roleData.departmentId,
-      'sectionId': roleData.sectionId,
+      'Request Id': item.base?.id?.toString() ?? '-',
+      'status': item.base?.status ?? '-',
+      'Request By': item.base?.createdByUser?.employeeName ?? '-',
+      // 'Vehicle Number': item.vehicleNumber ?? 'N/A',
+      // 'Maintenance Type': item.typeOfMaintenanceRequired ?? 'N/A',
+      // 'Preferred Maintenance Date': formatDate(
+      //   item.preferredMaintenanceDate ?? 'N/A',
+      // ),
+
+      /// ================= EMPLOYEE INFO =================
+
+      /// 👇 APPROVER (SINGLE LINE)
+      if (approverMap.containsKey('role')) ...{
+        'Approver': approverMap['role'] ?? '-',
+      } else if (approverMap.containsKey('department')) ...{
+        'Approver': _buildDepartmentSection(approverMap),
+      },
     };
   }
 
-  /// Handles date picker selection for both start and end fields.
-  Future<void> pickDate({required bool isStartDate}) async {
-    final picked = await KAppX.extendedRouter.showKDatePicker(
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
+  Map<String, String> buildRequestInformationData() {
+    final request = state.requestDetails.request;
+    return {
+      /// ───── RIGHT COLUMN ─────
+      "Service Type": request?.service?.name ?? 'N/A',
+
+      /// ───── LEFT COLUMN ─────
+      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
+      'Vehicle Number': request?.vehicleNumber ?? 'N/A',
+      'Maintenance Type': request?.typeOfMaintenanceRequired ?? 'N/A',
+      'Preferred Maintenance Date': formatDate(
+        request?.preferredMaintenanceDate ?? 'N/A',
+      ),
+      'Issue Description': request?.issueDescription ?? 'N/A',
+    };
+  }
+
+  Map<String, String> buildStatusInformation() {
+    final request = state.requestDetails.request;
+    final approvals = state.requestDetails.approvalDetails;
+    final nextApprover = resolveApproverMap(approvals);
+    return {
+      "Approval Status": request?.status ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt ?? 'N/A'),
+      // "Last Updated":
+      //     request?.updatedAt?.split('T').first ?? 'N/A',
+      if (nextApprover.containsKey('department'))
+        'Department': nextApprover['department']!,
+      if (nextApprover.containsKey('section'))
+        'Section': nextApprover['section']!,
+
+      if (nextApprover.containsKey('name'))
+        'Approver Name': nextApprover['name']!,
+      if (nextApprover.containsKey('email'))
+        'Approver Email': nextApprover['email']!,
+    };
+  }
+
+  Map<String, String> buildTechnicalInformation() {
+    final request = state.requestDetails.request;
+    return {
+      'Extension Number':
+          request?.createdByUser?.extensionNumber.toString() ?? '0',
+    };
+  }
+
+  String _buildDepartmentSection(Map<String, String> approverMap) {
+    final department = approverMap['department'];
+    final section = approverMap['section'];
+
+    if ((department ?? '').isNotEmpty && (section ?? '').isNotEmpty) {
+      return '$department - $section';
+    }
+
+    return department ?? '-';
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
+  }
+
+  Future<void> openRequestDetails(
+    int id, {
+    bool fromActionItems = false,
+  }) async {
+    updateRequestTab(0);
+
+    await KAppX.router.push(
+      VPNRequestDetailsTabRoute(
+        id: id,
+        from: fromActionItems ? 'action items' : '',
+        service: service,
+        subService: subService,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      ),
     );
 
-    if (picked != null) {
-      final formattedDisplay = _formatDateForDisplay(picked);
-      final formattedApi = _formatDateForApi(picked);
+    await refreshAfterReturn();
+  }
 
-      if (isStartDate) {
-        startDate.text = formattedDisplay;
-        state = state.copyWith(startDate: formattedApi);
-      } else {
-        endDate.text = formattedDisplay;
-        state = state.copyWith(endDate: formattedApi);
+  Future<void> refreshAfterReturn() async {
+    await Future.wait([
+      fetchRequests(),
+      fetchKpi(),
+      fetchStatusBreakdown('weekly'),
+      fetchTrendBreakDown(DateTime.now().year.toString()),
+    ]);
+  }
+
+  void openNewRequestForm() {
+    KAppX.router.push(
+      VpnNewRequestRoute(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+        service: service,
+        subService: subService,
+      ),
+    );
+  }
+
+  final userInfo = KAppX.globalProvider.read(userInfoProvider);
+
+  final vpnInstance = VpnRepository();
+  final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
+  List<DynamicField> buildVpnFields(DashboardL10n l10n) => [
+    /// ================= JOB TITLE =================
+    DynamicField(
+      name: 'job_title',
+      label: 'Job Title',
+      type: FieldType.text,
+      required: true,
+      initialValue: userInfo?.data?.category ?? '',
+      disabled: true,
+    ),
+
+    /// ================= DEPARTMENT =================
+    DynamicField(
+      name: 'department',
+      label: 'Department',
+      type: FieldType.text,
+      required: true,
+      initialValue: userInfo?.data?.department?.departmentName ?? '',
+      disabled: true,
+    ),
+
+    /// ================= REQUEST FOR =================
+    DynamicField(
+      name: 'request_for',
+      label: 'Request For',
+      type: FieldType.radio,
+      required: true,
+      initialValue: 'CAA Staff',
+
+      options: [
+        DropdownOption(value: 'CAA_STAFF', label: 'CAA Staff'),
+        DropdownOption(value: 'CONTRACTOR', label: 'Contractor'),
+      ],
+
+      onChanged: (value, ref) {
+        final notifier = ref.read(dynamicFormProvider.notifier);
+
+        /// ✅ STAFF
+        if (value == 'CAA_STAFF') {
+          notifier.autoPopulate({
+            'person_name': userInfo?.data?.employeeName ?? '',
+            'contact_number': userInfo?.data?.mobile ?? '',
+            'emp_id': userInfo?.data?.employeeId ?? '',
+            'email': userInfo?.data?.email ?? '',
+            'country': 'Oman',
+          });
+        }
+        /// ✅ CONTRACTOR
+        else {
+          notifier.autoPopulate({
+            'person_name': '',
+            'contact_number': '',
+            'emp_id': '',
+            'email': '',
+            'country': '',
+          });
+        }
+      },
+    ),
+
+    /// ================= PERSON NAME =================
+    DynamicField(
+      name: 'person_name',
+      label: 'Person Name',
+      type: FieldType.text,
+      required: true,
+      initialValue: userInfo?.data?.employeeName ?? '',
+
+      disabledWhen: (values) =>
+          (values['request_for'] ?? 'CAA_STAFF') == 'CAA_STAFF',
+
+      placeholder: 'Enter Person Name',
+    ),
+
+    /// ================= CONTACT NUMBER =================
+    DynamicField(
+      name: 'contact_number',
+      label: 'Contact Number',
+      type: FieldType.number,
+      required: true,
+      initialValue: userInfo?.data?.mobile ?? '',
+
+      disabledWhen: (values) =>
+          (values['request_for'] ?? 'CAA_STAFF') == 'CAA_STAFF',
+
+      placeholder: 'Enter Contact Number',
+
+      validator: (value, values) {
+        final phone = value?.toString().trim() ?? '';
+
+        if (phone.isEmpty) {
+          return 'Contact number is required';
+        }
+
+        if (phone.length != 8) {
+          return 'Contact number must be 8 digits';
+        }
+
+        return null;
+      },
+    ),
+
+    /// ================= EMPLOYEE ID =================
+    DynamicField(
+      name: 'emp_id',
+      label: 'Employee ID',
+      type: FieldType.text,
+      required: true,
+      initialValue: userInfo?.data?.employeeId ?? '',
+
+      disabledWhen: (values) =>
+          (values['request_for'] ?? 'CAA_STAFF') == 'CAA_STAFF',
+
+      placeholder: 'Enter Employee ID',
+    ),
+
+    /// ================= EMAIL =================
+    DynamicField(
+      name: 'email',
+      label: 'Employee Mail',
+      type: FieldType.email,
+      required: true,
+      initialValue: userInfo?.data?.email ?? '',
+
+      disabledWhen: (values) =>
+          (values['request_for'] ?? 'CAA_STAFF') == 'CAA_STAFF',
+
+      placeholder: 'Enter Email',
+    ),
+
+    /// ================= COUNTRY =================
+    DynamicField(
+      name: 'country',
+      label: 'Country',
+      type: FieldType.text,
+      required: true,
+      initialValue: 'Oman',
+
+      disabled: true,
+
+      placeholder: 'Enter Country',
+    ),
+
+    /// ================= REASONS FOR REQUEST =================
+    DynamicField(
+      name: 'reasons_for_request',
+      label: 'Reasons For Request',
+      type: FieldType.checkbox,
+      required: true,
+
+      options: [
+        DropdownOption(value: 'Remote Work', label: 'Remote Work'),
+        DropdownOption(
+          value: 'Third Party/Vendor Access',
+          label: 'Third Party/Vendor Access',
+        ),
+        DropdownOption(
+          value: 'Access to Internal System/Applications',
+          label: 'Access to Internal System/Applications',
+        ),
+        DropdownOption(
+          value: 'Project-specific Requirement',
+          label: 'Project-specific Requirement',
+        ),
+      ],
+    ),
+
+    /// ================= SYSTEMS / APPLICATIONS =================
+    DynamicField(
+      name: 'systems_access',
+      label: 'Systems / Applications to Access',
+      type: FieldType.checkbox,
+      required: true,
+
+      options: [
+        DropdownOption(
+          value: 'Internal Databases',
+          label: 'Internal Databases',
+        ),
+        DropdownOption(value: 'File Servers', label: 'File Servers'),
+        DropdownOption(value: 'Shared Servers', label: 'Shared Servers'),
+        DropdownOption(value: 'UFUQ', label: 'UFUQ'),
+        DropdownOption(value: 'ERP', label: 'ERP'),
+        DropdownOption(value: 'Other', label: 'Other'),
+      ],
+    ),
+
+    /// ================= REQUEST TIME PERIOD =================
+    DynamicField(
+      name: 'request_time_period',
+      label: 'Request for Time Period',
+      type: FieldType.radio,
+      required: true,
+
+      options: [
+        DropdownOption(value: 'ONE_TIME', label: 'One Time'),
+        DropdownOption(value: 'Permanent', label: 'Permanent'),
+      ],
+    ),
+
+    /// ================= START DATE =================
+    DynamicField(
+      name: 'start_date',
+      label: 'Start Date',
+      type: FieldType.date,
+      required: true,
+      disabledWhen: (values) => values['request_time_period'] == 'Permanent',
+    ),
+
+    /// ================= END DATE =================
+    DynamicField(
+      name: 'end_date',
+      label: 'End Date',
+      type: FieldType.date,
+      required: false,
+
+      disabledWhen: (values) => values['request_time_period'] == 'Permanent',
+    ),
+
+    /// ================= DEVICE TYPE =================
+    DynamicField(
+      name: 'device_type',
+      label: 'Device Type',
+      type: FieldType.checkbox,
+      required: true,
+
+      options: [
+        DropdownOption(value: 'CAA_LAPTOP', label: 'CAA Laptop'),
+        DropdownOption(
+          value: 'PERSONAL_DEVICE_COMPLIES_WITH_SECURITY_POLICIES',
+          label: 'Personal Device Complies With Security Policies',
+        ),
+        DropdownOption(value: 'MOBILE_DEVICE', label: 'Mobile Device'),
+      ],
+    ),
+
+    /// ================= DESCRIPTION =================
+    DynamicField(
+      name: 'description',
+      label: 'Description',
+      type: FieldType.textarea,
+      required: false,
+      placeholder: 'Enter Description',
+    ),
+
+    /// ================= ACKNOWLEDGEMENT 1 =================
+    DynamicField(
+      name: 'acknowledgement',
+      label: l10n.declaration,
+      type: FieldType.acknowledgement,
+      required: true,
+      acknowledgements: [
+        AcknowledgementItem(
+          id: 'privacy_policy',
+          text: l10n.securityPrivacyPolicyAccepted,
+          hasAction: true,
+          onTap: (context) async {
+            return await KAppX.extendedRouter.dialog.showKDialog<bool>(
+              context: context,
+              builder: (_) => const CommonPolicyDialog(
+                title: 'Security Policies',
+                content: '''
+
+
+1. Purpose
+This policy establishes the requirements for Virtual Private Network (VPN) access to CAA's internal systems and resources. All users must comply with these security guidelines to ensure the protection of organizational data and infrastructure.
+
+2. Acceptable Use
+VPN access is granted solely for legitimate business purposes. Users must:
+• Use VPN connections only for authorized work-related activities
+• Not share VPN credentials with any other person
+• Not use VPN access to bypass security controls
+• Immediately report any suspected security incidents or unauthorized access
+
+3. Device Security Requirements
+All devices connecting via VPN must:
+• Have up-to-date antivirus and anti-malware software installed
+• Be protected with strong passwords or biometric authentication
+• Have automatic screen lock enabled after 5 minutes of inactivity
+• Have the latest operating system and security patches installed
+• Not be jailbroken or rooted
+
+4. Data Protection
+Users must:
+• Encrypt all sensitive data transmitted over VPN connections
+• Not store organizational data on personal devices without authorization
+• Use secure file transfer protocols when moving data
+• Comply with data classification and handling policies
+
+5. Access Control
+• VPN access will be granted based on the principle of least privilege
+• Access rights will be reviewed periodically and revoked when no longer needed
+• Multi-factor authentication (MFA) is required for all VPN connections
+• Session timeouts will be enforced after 30 minutes of inactivity
+
+6. Monitoring and Logging
+CAA reserves the right to:
+• Monitor VPN connections for security and compliance purposes
+• Log all VPN access attempts and activities
+• Investigate any suspicious or unauthorized activities
+• Audit VPN usage as part of security assessments
+
+7. Consequences of Non-Compliance
+Violation of this policy may result in:
+• Immediate suspension or termination of VPN access
+• Disciplinary action up to and including termination of employment
+• Legal action in cases of data breach or malicious activity
+• Reporting to relevant authorities as required by law
+            ''',
+                acceptText: 'Accept',
+                cancelText: 'Close',
+              ),
+            );
+          },
+        ),
+      ],
+    ),
+
+    /// ================= ACKNOWLEDGEMENT 2 =================
+    DynamicField(
+      name: 'acknowledgement2',
+      label: 'Declaration',
+      type: FieldType.acknowledgement,
+      required: true,
+      acknowledgements: [
+        AcknowledgementItem(
+          id: 'Declaration Acknowledged',
+          text: 'I understand misuse may result in disciplinary action.',
+        ),
+      ],
+    ),
+  ];
+
+  /// ========================= API CALLS =========================
+
+  Future<void> fetchRequestDetailsById(int id) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final requests = await vpnInstance.getRequestsById(
+        id: id,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (requests != null) {
+        state = state.copyWith(requestDetails: requests, isLoading: false);
+        // fetchAssignEmployeesList();
+
+        // fetchChatById(id);
+        // fetchAttachmentsById(id);
+        updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
+
+        /// ✅ CHECK ACTION TYPE HERE
+        final actionType = getActionButtonsType(
+          requests,
+          requests.approvalDetails ?? [],
+        );
+        if (actionType == ActionButtonsType.assignReject) {
+          // fetchAssignEmployeesList();
+          debugPrint('this user can only approve');
+        }
       }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
     }
   }
 
-  /// Helper: display format MM/DD/YYYY
-  String _formatDateForDisplay(DateTime date) {
-    return "${date.month.toString().padLeft(2, '0')}/"
-        "${date.day.toString().padLeft(2, '0')}/"
-        "${date.year}";
+  // Future<void> fetchChatById(int id) async {
+  //   try {
+  //     final requests = await vpnInstance.getchatById(
+  //       id: id,
+  //       serviceId: service.id ?? 0,
+  //       subServiceId: subService.id ?? 0,
+  //     );
+  //     if (requests != null) {
+  //       final chats = requests.reversed.toList();
+  //       state = state.copyWith(chatById: chats);
+  //     }
+  //   } on ApiException catch (apiError) {
+  //     Fluttertoast.showToast(msg: apiError.message);
+  //   } catch (e) {
+  //     // optionally handle other errors
+  //     debugPrint(e.toString());
+  //   }
+  // }
+
+  // Future<void> fetchAttachmentsById(int id) async {
+  //   try {
+  //     final attachments = await vpnInstance.getAttachmentsById(
+  //       id: id,
+  //       serviceId: service.id ?? 0,
+  //       subServiceId: subService.id ?? 0,
+  //     );
+  //     if (attachments != null) {
+  //       state = state.copyWith(attachmentsById: attachments);
+  //     }
+  //   } on ApiException catch (apiError) {
+  //     Fluttertoast.showToast(msg: apiError.message);
+  //   } catch (e) {
+  //     // optionally handle other errors
+  //     debugPrint(e.toString());
+  //   }
+  // }
+
+  Future<void> fetchKpi() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final kpis = await vpnInstance.getKpiData(
+        service.id ?? 0,
+        subService.id ?? 0,
+      );
+
+      if (kpis != null) {
+        state = state.copyWith(kpiData: kpis, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
-  /// Helper: API format YYYY-MM-DD
-  String _formatDateForApi(DateTime date) {
-    return "${date.year}-"
-        "${date.month.toString().padLeft(2, '0')}-"
-        "${date.day.toString().padLeft(2, '0')}";
+  Future<void> fetchApprovalTrendBreakDown(String period) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final data = await vpnInstance.getApprovalTrendBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (data != null) {
+        state = state.copyWith(approvalTrendData: data, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
-  Future<void> sendAttachment(int id, int requestId) async {
+  Future<void> fetchApprovalStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final statusBreakdown = await vpnInstance.getApprovalStatusBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+      if (statusBreakdown != null) {
+        state = state.copyWith(
+          approvalStatusBreakdown: statusBreakdown,
+          isLoading: false,
+        );
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      // optionally handle other errors
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final statusBreakdown = await vpnInstance.getStatusBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+      if (statusBreakdown != null) {
+        state = state.copyWith(
+          statusBreakdown: statusBreakdown,
+          isLoading: false,
+        );
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      // optionally handle other errors
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchTrendBreakDown(String period) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final data = await vpnInstance.getTrendBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (data != null) {
+        state = state.copyWith(trendData: data, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchApprovalKpi() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final kpis = await vpnInstance.getApprovalKpiData(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (kpis != null) {
+        state = state.copyWith(approvalKpiData: kpis, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchRequests({
+    bool isRefresh = false,
+    String searchText = '',
+    String status = '',
+  }) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      // Clear list only if explicitly refreshing or searching
+      if (isRefresh || status.isNotEmpty) {
+        state = state.copyWith(requestData: [], isLoading: false);
+      }
+
+      final requests = await vpnInstance.getRequests(
+        offset: 1,
+        limit: 8,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      // No merging needed
+      state = state.copyWith(requestData: requests);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  Future<void> fetchactionItems({
+    bool isRefresh = false,
+    String searchText = '',
+    String status = '',
+  }) async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      if (isRefresh || status.isNotEmpty) {
+        state = state.copyWith(actionItems: [], isLoading: false);
+      }
+
+      final items = await vpnInstance.getActionItems(
+        offset: 1,
+        limit: 8,
+        searchText: searchText,
+        status: status,
+
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      // No merging needed
+      state = state.copyWith(actionItems: items, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  bool lastApprover(List<ApprovalDetailModel> approvals) {
+    if (approvals.isEmpty) return false;
+
+    if (approvals.any(
+      (status) =>
+          status.approvalStatus?.toLowerCase() == 'pending' ||
+          status.approvalStatus?.toLowerCase() == 'rejected',
+    )) {
+      return false;
+    }
+
+    if (approvals
+            .where(
+              (status) => status.approvalStatus?.toLowerCase() == 'in progress',
+            )
+            .length ==
+        1) {
+      return true;
+    }
+
+    return false;
+  }
+
+  void showApprovalCommentDialog({
+    required ApprovalDialogType type,
+    required int approverId,
+    required int requestId,
+  }) {
+    // final showDecionNumber = lastApprover(
+    //   state.requestDetails.approvalDetails ?? [],
+    // );
+    KAppX.extendedRouter.dialog.showKDialog(
+      builder: (_) => ApprovalCommentDialog(
+        type: type,
+        // showDecisionNumber: showDecionNumber,
+        onSubmit: (comment, decisionNo) async {
+          final status = type == ApprovalDialogType.approve
+              ? ApprovalStatus.approved
+              : ApprovalStatus.rejected;
+
+          await onApproveReject(
+            approverId,
+            requestId,
+            comment.trim(), // always safe
+            status.apiValue,
+            decisionNo, // ✅ backend-safe string
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> sendChatMessage({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    try {
+      final requestId = state.requestDetails.request?.id;
+      if (requestId == null) {
+        throw Exception("Request ID missing");
+      }
+
+      final hasMessage = chatController.text.trim().isNotEmpty;
+      final hasAttachment = state.attachments.isNotEmpty;
+
+      String messageType = 'text';
+
+      String? fileUrl;
+      String? fileName;
+      String? fileType;
+      String? fileSize;
+
+      /// 1️⃣ Upload attachment if exists
+      if (hasAttachment) {
+        final localFile = state.attachments.first;
+
+        final category = getFileTypeFromPath(localFile['file_name']);
+        messageType = mapCategoryToMessageType(category); // image | file
+
+        final uploadedFiles = await vpnInstance.uploadAttachments(
+          state.attachments,
+        );
+
+        if (uploadedFiles.isEmpty) {
+          throw Exception("File upload failed");
+        }
+
+        final uploaded = uploadedFiles.first;
+
+        fileUrl = uploaded['file_url'];
+        fileName = uploaded['file_name'];
+        fileType = messageType;
+        fileSize = uploaded['file_size']?.toString();
+      }
+
+      /// ------------------------------------------------------------
+      /// CASE 1️⃣ : ONLY ATTACHMENT (NO MESSAGE)
+      /// ------------------------------------------------------------
+      if (!hasMessage && hasAttachment) {
+        final payload = {
+          "request_id": requestId,
+          "service_id": serviceId,
+          "sub_service_id": subServiceId,
+          "file_url": fileUrl,
+          "file_name": fileName,
+          "file_type": fileType,
+          "file_size": fileSize,
+        };
+
+        debugPrint('📎 Attachment-only payload: $payload');
+
+        await vpnInstance.sendAttachment(payload, requestId);
+      }
+
+      /// ------------------------------------------------------------
+      /// CASE 2️⃣ : CHAT (with OR without attachment)
+      /// ------------------------------------------------------------
+      if (hasMessage) {
+        final payload = {
+          "request_id": requestId,
+          "service_id": serviceId,
+          "sub_service_id": subServiceId,
+          "message": chatController.text.trim(),
+          "messageType": hasAttachment ? messageType : 'text',
+          "file_url": hasAttachment ? fileUrl : null,
+          "file_name": hasAttachment ? fileName : null,
+          "file_type": hasAttachment ? fileType : null,
+          "file_size": hasAttachment ? fileSize : null,
+        };
+
+        debugPrint('💬 Chat payload: $payload');
+
+        await vpnInstance.sendChat(payload, requestId);
+      }
+      fetchRequestDetailsById(requestId);
+
+      /// 3️⃣ Clear UI state
+      // chatController.clear();
+      state.attachments.clear();
+    } catch (e, st) {
+      debugPrint('❌ Failed to send chat: $e');
+      debugPrintStack(stackTrace: st);
+      rethrow;
+    }
+  }
+
+  Future<void> onComplete(int approverId, int requestId) async {
     try {
       state = state.copyWith(isLoading: true);
 
-      final uploadedFiles = await vpninstance.uploadAttachments(
-        state.attachments,
-      );
-      // final uploadedFileType = (uploadedFiles.first["file_type"] ?? '')
-      //     .toLowerCase();
-      // if (uploadedFileType.contains('png') ||
-      //     uploadedFileType.contains('jpg') ||
-      //     uploadedFileType.contains('jpeg') ||
-      //     uploadedFileType.contains('gif') ||
-      //     uploadedFileType.contains('bmp') ||
-      //     uploadedFileType.contains('webp') ||
-      //     uploadedFileType.contains('tiff')) {
-      //   type = 'image';
-      // } else {
-      //   type = uploadedFileType;
-      // }
-
-      // ✅ Safety check: ensure upload success
-      if (uploadedFiles.isEmpty || uploadedFiles[0]["file_url"] == null) {
-        throw Exception('File upload failed or returned empty response.');
-      }
+      // 1️⃣ Upload files
 
       // 2️⃣ Build payload
       final payload = {
         "request_id": requestId,
-        "file_url": uploadedFiles.first["file_url"],
-        "file_name": uploadedFiles.first["file_name"],
-        "file_type": uploadedFiles.first["file_type"],
-        "file_size": uploadedFiles.first["file_size"],
+        "status": "Completed",
+        "comment": '',
+        "approval_id": approverId,
       };
 
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      final resMessage = await vpninstance.sendAttachment(payload, id);
-      state = state.copyWith(attachments: []);
-
+      await vpnInstance.onApprove(payload);
+      await Future.delayed(Duration(seconds: 3));
+      KAppX.router.pop();
+      fetchactionItems();
+      fetchRequests();
+      fetchApprovalKpi();
+      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+      fetchStatusBreakdown('monthly');
+      fetchTrendBreakDown(DateTime.now().year.toString());
+      fetchKpi();
+    } catch (e) {
+      debugPrint('❌ Error submitting request: $e');
+    } finally {
       state = state.copyWith(isLoading: false);
+    }
+    return;
+  }
 
-      await fetchRequestById(id);
-      // return resMessage;
+  Future<void> onApproveReject(
+    int approverId,
+    int requestId,
+    String comment,
+    String status,
+    String? decisionNo,
+  ) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      // 1️⃣ Upload files
+
+      // 2️⃣ Build payload
+      final payload = {
+        "request_id": requestId,
+        "status": status,
+        "comment": comment,
+        "approval_id": approverId,
+      };
+      if (decisionNo != null) {
+        payload['decision_number'] = decisionNo;
+      }
+
+      debugPrint("✅ Final Payload: $payload");
+
+      // 3️⃣ Send request
+      await vpnInstance.onApprove(payload);
+      await Future.delayed(Duration(seconds: 3));
+      KAppX.router.pop();
+      // if (decisionNo != null) {
+      KAppX.router.pop();
+      // }
+      await fetchactionItems();
+      await fetchRequests();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -528,224 +1652,388 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> sendChat(int id, int requestId) async {
+  Future<void> onVehicleAllocate(Map<String, dynamic> payload) async {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 🧩 3️⃣ Build payload safely
-      final payload = {
-        "request_id": requestId,
-        "message": chatController.text,
-        "messageType": "text",
-        "is_internal": false,
-      };
+      // 1️⃣ Upload files
+
+      // 2️⃣ Build payload
 
       debugPrint("✅ Final Payload: $payload");
 
-      // 🧩 4️⃣ Send request
-      final resMessage = await vpninstance.sendChat(payload, id);
-      state = state.copyWith(isLoading: false);
-
-      // 🧩 5️⃣ Refresh UI state
-      await fetchRequestById(id);
-
-      chatController.clear();
-
-      state = state.copyWith(attachments: []);
-      // 🧩 6️⃣ Close chat modal or pop page
-      // KAppX.router.pop();
-    } catch (e, stack) {
-      debugPrint('❌ Error submitting chat: $e');
-      debugPrint('Stacktrace: $stack');
+      // 3️⃣ Send request
+      await vpnInstance.onAllocateVehicle(
+        payload,
+        state.requestDetails.request?.id ?? 0,
+      );
+      await Future.delayed(Duration(seconds: 3));
+      KAppX.router.pop();
+      // if (decisionNo != null) {
+      // }
+      await fetchactionItems();
+      await fetchRequests();
+    } catch (e) {
+      debugPrint('❌ Error submitting request: $e');
     } finally {
       state = state.copyWith(isLoading: false);
     }
   }
 
-  Future<void> sendVPNRequest() async {
+  Future<void> onSendInProgress(int approverId, int requestId) async {
     try {
       state = state.copyWith(isLoading: true);
 
       // 1️⃣ Upload files
-      // final uploadedFiles = await vpninstance.uploadAttachments(
-      //   state.attachments,
-      // );
 
-      final userData = KAppX.globalProvider.read(userProvider);
+      // 2️⃣ Build payload
+      final payload = {"request_id": requestId, "status": "In Progress"};
 
-      // 2️⃣ Build payload (updated according to new VPN request schema)
-      final payload = {
-        "service_id": 1,
-        "sub_service_id": 3,
-        "request_for": state.requestFor,
-        "employee_identifier": employeeIdController.text,
-        "employee_email": emailController.text,
-        "job_title": jobTitleController.text,
-        "phone_number": contactNumberController.text,
-        "reason_for_request": state.reasonForRequest, // e.g. "REMOTE_WORK"
-        "systems_to_access":
-            state.systemsToAccess, // e.g. ["INTERNAL_DATABASES"]
-        "country": countryController.text,
-        "start_date": state.startDate, // e.g. "2025-01-01"
-        "end_date": state.endDate, // e.g. "2025-01-07"
-        "access_type": state.timePeriod, // e.g. "ONE_TIME"
-        "device_type": state.devices, // e.g. "CAA_LAPTOP"
-        "acknowledgement": state.acknowledgement.length == 2 ? true : false,
-        "description": descriptionController.text,
-        "attachments": [],
-        "chats": [],
-      };
-
-      debugPrint("✅ Final VPN Payload: $payload");
+      debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await vpninstance.sendVPNTicket(payload);
-
-      // 4️⃣ Reset attachments and close the screen
-      state = state.copyWith(attachments: []);
-      await fetchKpiData();
-      await fetchMyRequests();
-      await fetchStatusBreakDown('weekly');
-      await fetchTrendBreakDown('2025');
-      refreshUI();
-      state = state.copyWith(isLoading: false);
+      // await vpnInstance.onSendInProgress(payload);
+      await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
+      await fetchactionItems();
+      await fetchRequests();
     } catch (e) {
-      debugPrint('❌ Error submitting VPN request: $e');
+      debugPrint('❌ Error submitting request: $e');
     } finally {
       state = state.copyWith(isLoading: false);
     }
   }
 
-  Future<void> assignVPNRequest(int approvalId, techcianId) async {
+  bool canUserActOnLevel({required ApprovalDetailModel approval}) {
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
+    final user = KAppX.globalProvider.read(userInfoProvider);
+
+    final int userId = int.parse(user!.data!.id!);
+
+    debugPrint('---------------- APPROVAL CHECK ----------------');
+    debugPrint('Logged User ID: $userId');
+    debugPrint('Delegate User ID: ${approval.delegateUserId}');
+    debugPrint('Approver User ID: ${approval.approverUserId}');
+    debugPrint('Approver Role ID: ${approval.approverRoleId}');
+    debugPrint('Selected Role ID: ${selectedRole?.roleId}');
+    debugPrint('Approval Department ID: ${approval.departmentId}');
+    debugPrint('User Department ID: ${selectedRole?.departmentId}');
+    debugPrint('Approval Section ID: ${approval.sectionId}');
+    debugPrint('User Section ID: ${selectedRole?.sectionId}');
+    debugPrint('------------------------------------------------');
+
+    /// 1️⃣ Delegate always allowed
+    if (approval.delegateUserId == userId) {
+      debugPrint('✅ Allowed: User is delegate approver');
+      return true;
+    }
+
+    /// 2️⃣ Approver user rule
+    if (approval.approverUserId != null && approval.approverUserId != userId) {
+      debugPrint(
+        '❌ Denied: Approver User ID mismatch (${approval.approverUserId} != $userId)',
+      );
+      return false;
+    }
+
+    /// 3️⃣ Role must match
+    if (approval.approverRoleId != null &&
+        approval.approverRoleId != selectedRole?.roleId) {
+      debugPrint(
+        '❌ Denied: Role mismatch (${approval.approverRoleId} != ${selectedRole?.roleId})',
+      );
+      return false;
+    }
+
+    /// 4️⃣ Department must match
+    if (approval.departmentId != null &&
+        approval.departmentId != selectedRole?.departmentId) {
+      debugPrint(
+        '❌ Denied: Department mismatch (${approval.departmentId} != ${selectedRole?.departmentId})',
+      );
+      return false;
+    }
+
+    /// 5️⃣ Section must match
+    if (approval.sectionId != null &&
+        approval.sectionId != selectedRole?.sectionId) {
+      debugPrint(
+        '❌ Denied: Section mismatch (${approval.sectionId} != ${selectedRole?.sectionId})',
+      );
+      return false;
+    }
+
+    debugPrint('✅ Allowed: User can act on this approval level');
+
+    return true;
+  }
+
+  ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
+    // 1️⃣ Prefer IN PROGRESS approval
+    for (final a in list) {
+      if (a.approvalStatus?.toLowerCase() == 'in progress') {
+        return a;
+      }
+    }
+
+    // 2️⃣ Fallback → highest approved / assigned level
+    return getActiveApprovalLevel(list);
+  }
+
+  ApprovalDetailModel? getActiveApprovalLevel(List<ApprovalDetailModel> list) {
+    ApprovalDetailModel? highestLevelCandidate;
+
+    for (final approval in list) {
+      if (!canUserActOnLevel(approval: approval)) continue;
+
+      final status = approval.approvalStatus?.toLowerCase();
+      final level = approval.level ?? -1;
+
+      // 1️⃣ IN PROGRESS always wins
+      if (status == 'in progress') {
+        return approval;
+      }
+
+      // 2️⃣ ONLY approved / assigned participate in comparison
+      if (status == 'approved' || status == 'assigned') {
+        if (highestLevelCandidate == null ||
+            level > (highestLevelCandidate.level ?? -1)) {
+          highestLevelCandidate = approval;
+        }
+      }
+    }
+
+    return highestLevelCandidate;
+  }
+
+  ActionButtonsType getActionButtonsType(
+    RequestDetailData? request,
+    List<ApprovalDetailModel> approvals,
+  ) {
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
+    final user = KAppX.globalProvider.read(userInfoProvider);
+    print(user?.data?.section?.id);
+
+    if (selectedRole == null) return ActionButtonsType.none;
+
+    final int userId = int.parse(user?.data?.id ?? "0");
+
+    // Get active approval level
+    final level = getActiveApprovalLevel(approvals);
+
+    if (level == null) return ActionButtonsType.none;
+
+    // Check user permission
+    final canAct = canUserActOnLevel(approval: level);
+
+    if (!canAct) return ActionButtonsType.none;
+
+    if (!state.isButtonDisabled && !canUserActOnLevel(approval: level)) {
+      return ActionButtonsType.none;
+    }
+
+    final bool? isManager = level.isManager;
+    final bool? isPresident = level.isPresident;
+    final int approvalLevel = level.level ?? 0;
+    final bool ishasReplace = level.isReplace ?? false;
+
+    if (isManager == true) {
+      debugPrint('this user can only approve');
+      return ActionButtonsType.assignReject;
+    } else if (level != null) {
+      debugPrint('this user can approve and reject');
+      return ActionButtonsType.approveReject;
+    }
+
+    return ActionButtonsType.none;
+  }
+
+  void updateButtonDisabledFromApprovals(List<ApprovalDetailModel> approvals) {
+    final active = getActiveApprovalLevel(approvals);
+
+    // No active approval → disable
+    if (active == null) {
+      state = state.copyWith(isButtonDisabled: true);
+      return;
+    }
+
+    // If active approval is NOT allowed → disable
+    if (active.isAllowed != null && active.isAllowed != true) {
+      state = state.copyWith(isButtonDisabled: true);
+      return;
+    }
+
+    final status = active.approvalStatus?.toLowerCase();
+
+    // ✅ Disable ONLY if ACTIVE is approved or assigned
+    final shouldDisable = status == 'approved' || status == 'assigned';
+
+    state = state.copyWith(isButtonDisabled: shouldDisable);
+  }
+
+  bool _isPendingOrInProgress(String? status) {
+    final s = status?.toLowerCase();
+    return s == 'in progress';
+  }
+
+  bool _isCompleted(String? status) {
+    return status?.toLowerCase() == 'completed' ||
+        status?.toLowerCase() == 'approved';
+  }
+
+  DateTime _parseDate(String? value) {
     try {
-      state = state.copyWith(isLoading: true);
-
-      // 1️⃣ Upload files
-      // final uploadedFiles = await vpninstance.uploadAttachments(
-      //   state.attachments,
-      // );
-
-      final userData = KAppX.globalProvider.read(userProvider);
-
-      // 2️⃣ Build payload (updated according to new VPN request schema)
-      final payload = {
-        "approval_id": approvalId,
-        "technician_user_id": techcianId,
-        "comment": chatController.text,
-      };
-
-      debugPrint("✅ Final Assign VPN Payload: $payload");
-
-      // 3️⃣ Send request
-      await vpninstance.sendAssign(payload);
-
-      // 4️⃣ Reset attachments and close the screen
-      state = state.copyWith(attachments: []);
-      state = state.copyWith(isLoading: false);
-      fetchKpiData();
-
-      fetchMyRequests();
-      fetchMyActionItems();
-
-      fetchStatusBreakDown('weekly');
-      fetchTrendBreakDown('2025');
-      refreshUI();
-      KAppX.router.pop();
-    } catch (e) {
-      debugPrint('❌ Error submitting VPN request: $e');
-    } finally {
-      state = state.copyWith(isLoading: false);
+      return DateTime.parse(value ?? '');
+    } catch (_) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
     }
   }
 
-  Future<void> assignorApproveReject(
-    int approvalId,
-    int requestId,
-    String status,
-  ) async {
-    try {
-      state = state.copyWith(isLoading: true);
+  Map<String, String> resolveApproverMap(List<ApprovalDetailModel>? approvals) {
+    if (approvals == null || approvals.isEmpty) {
+      return {};
+    }
 
-      // 1️⃣ Upload files
-      // final uploadedFiles = await vpninstance.uploadAttachments(
-      //   state.attachments,
-      // );
+    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    final pendingList = approvals
+        .where((a) => _isPendingOrInProgress(a.approvalStatus))
+        .toList();
 
-      final userData = KAppX.globalProvider.read(userProvider);
+    if (pendingList.isNotEmpty) {
+      pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
+      final next = pendingList.first;
 
-      // 2️⃣ Build payload (updated according to new VPN request schema)
-      final payload = {
-        "approval_id": approvalId,
-        "request_id": requestId,
-        "status": status,
-        "comment": chatController.text,
-      };
+      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
+      if (next.approverRoleId != null) {
+        final name = next.approverUser?.employeeName;
+        final email = next.approverUser?.email;
+        final roleName = next.approverRole?.name;
 
-      debugPrint("✅ Final Assign VPN Payload: $payload");
+        if ((name ?? '').isNotEmpty) {
+          return {
+            'name': name!,
+            if ((email ?? '').isNotEmpty) 'email': email!,
+            if ((roleName ?? '').isNotEmpty) 'role': roleName!,
+          };
+        }
+      }
 
-      // 3️⃣ Send request
-      await vpninstance.approveorReject(payload);
-      state = state.copyWith(isLoading: false);
+      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
+      final department = next.department?.departmentName;
+      final section = next.section?.sectionName;
 
-      // 4️⃣ Reset attachments and close the screen
-      state = state.copyWith(attachments: []);
+      if ((department ?? '').isNotEmpty) {
+        return {
+          'department': department!,
+          if ((section ?? '').isNotEmpty) 'section': section!,
+        };
+      }
 
-      fetchKpiData();
+      return {};
+    }
 
-      fetchMyRequests();
-      fetchMyActionItems();
+    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
+    final completedList = approvals
+        .where((a) => _isCompleted(a.approvalStatus))
+        .toList();
 
-      fetchStatusBreakDown('weekly');
-      fetchTrendBreakDown('2025');
-      refreshUI();
-      KAppX.router.pop();
-    } catch (e) {
-      debugPrint('❌ Error submitting VPN request: $e');
-    } finally {
-      state = state.copyWith(isLoading: false);
+    if (completedList.isEmpty) {
+      return {};
+    }
+
+    completedList.sort((a, b) {
+      final levelCompare = (a.level ?? 0).compareTo(b.level ?? 0);
+      if (levelCompare != 0) return levelCompare;
+      return _parseDate(a.updatedAt).compareTo(_parseDate(b.updatedAt));
+    });
+
+    final last = completedList.last;
+
+    final name =
+        last.approvedByUser?.employeeName ?? last.approverUser?.employeeName;
+
+    final email = last.approverUser?.email;
+
+    if ((name ?? '').isNotEmpty) {
+      return {'name': name!, if ((email ?? '').isNotEmpty) 'email': email!};
+    }
+
+    return {};
+  }
+
+  void onUploadFileSuccess(FileUploadItem url) {
+    final urls = List<FileUploadItem>.from(state.selectedFileUrl);
+    urls.add(url);
+    state = state.copyWith(selectedFileUrl: urls);
+  }
+
+  void onSelectedApprovalId(int value) =>
+      state = state.copyWith(approvalId: value);
+
+  void updateRequestTab(int index) {
+    state = state.copyWith(requestDetailTab: index);
+  }
+
+  void updateTabIndex(int index) {
+    state = state.copyWith(tabIndex: index);
+    if (index == 0) {
+      fetchRequests();
+      fetchKpi();
+      fetchStatusBreakdown('weekly');
+      fetchTrendBreakDown('2026');
+    } else {
+      fetchactionItems();
+      fetchApprovalKpi();
+      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalTrendBreakDown('2026');
     }
   }
 
-  // await fetchKpi();
-  // await fetchKpiEmployee();
-  // await fetchKpiForeigner();
-  // await fetchActivityFeed();
-  // await fetchAllMyRequests();
-  // await fetchStatusBreakDown('weekly');
-  // await fetchTrendBreakDown('2025');
-  // Future<void> employeeUpdatedFetch() async {
-  //   await Future.wait([
-  //     // fetchAllMyRequests(),
-  //     fetchDashboardMyRequests(),
-  //     fetchRequestsById(id)
-  //     // fetchKpiEmployee(),
-  //     // fetchStatusBreakDown('weekly'),
-  //     // fetchTrendBreakDown('2025'),
-  //   ]);
-  // }
+  void onRemoveFile(int index) {
+    final urls = List<FileUploadItem>.from(state.selectedFileUrl);
+    urls.removeAt(index);
+    state = state.copyWith(selectedFileUrl: urls);
+  }
+
+  void refreshUI() {
+    // triggers rebuild in UI
+    state = state.copyWith(isLoading: false);
+  }
 
   Future<void> pickFile() async {
+    const int maxFileSizeInBytes = 10 * 1024 * 1024; // 5 MB
+
     final result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
+      allowMultiple: false,
       type: FileType.custom,
       allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'],
     );
 
-    if (result != null) {
-      final newFiles = result.files.map((file) {
-        return {
-          "file_name": file.name,
-          "file_type": file.extension,
-          "file_size": file.size,
-          "path": file.path,
-          "file_url": file.path, // local file location added here
-          "description": '', // optional, can be updated later
-        };
-      }).toList();
+    if (result == null || result.files.isEmpty) return;
 
-      state = state.copyWith(attachments: [...state.attachments, ...newFiles]);
+    final file = result.files.first;
+
+    /// ❌ SIZE CHECK
+    if (file.size > maxFileSizeInBytes) {
+      Fluttertoast.showToast(msg: "File size must be less than 10 MB");
+      return;
     }
+
+    final attachment = {
+      "file_name": file.name,
+      "file_type": file.extension,
+      "file_size": file.size,
+      "path": file.path,
+      "file_url": file.path,
+      "description": '',
+    };
+
+    /// ✅ ONLY ONE ATTACHMENT
+    state = state.copyWith(attachments: [attachment]);
+  }
+
+  void removeAttachment() {
+    state = state.copyWith(attachments: []);
   }
 
   void removeFile(Map<String, dynamic> file) {
@@ -754,27 +2042,125 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(attachments: updated);
   }
 
-  void refreshUI() {
-    // triggers rebuild in UI
-    state = state.copyWith();
+  List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {
+    return (values['attachments'] as List<FileUploadItem>? ?? [])
+        .map((file) => file.toJson())
+        .toList();
+  }
+
+  Map<String, dynamic> _buildPayload(
+    int serviceId,
+    int subServiceId,
+    Map<String, dynamic> values,
+  ) {
+    final userInfo = KAppX.globalProvider.read(userInfoProvider);
+    final ack1 = (values['acknowledgement'] as List?)?.isNotEmpty ?? false;
+
+    final ack2 = (values['acknowledgement2'] as List?)?.isNotEmpty ?? false;
+
+    return {
+      /// ⭐ USER INFO
+      "service_id": serviceId,
+      "sub_service_id": subServiceId,
+
+      /// REQUEST FOR
+      "request_for": values['request_for'],
+
+      /// STAFF / CONTRACTOR
+      "employee_identifier": values['emp_id'],
+      "employee_email": values['email'],
+
+      "contractor_user_id": values['request_for'] == 'CONTRACTOR'
+          ? values['contractor_user_id']
+          : null,
+
+      "contractor_email": values['request_for'] == 'CONTRACTOR'
+          ? values['email']
+          : null,
+
+      /// BASIC DETAILS
+      "job_title": values['job_title'],
+      "phone_number": values['contact_number'],
+
+      /// MULTI SELECT
+      "reason_for_request": List<String>.from(
+        values['reasons_for_request'] ?? [],
+      ),
+
+      "systems_to_access": List<String>.from(values['systems_access'] ?? []),
+
+      /// COUNTRY
+      "country": values['country'],
+
+      /// DATES
+      "start_date": values['start_date'],
+
+      "end_date": values['request_time_period'] == 'Permanent'
+          ? null
+          : values['end_date'],
+
+      /// ACCESS TYPE
+      "access_type": values['request_time_period'],
+
+      /// DEVICE TYPE
+      "device_type": List<String>.from(values['device_type'] ?? []),
+
+      /// ACKNOWLEDGEMENT
+      "acknowledgement": ack1 && ack2,
+
+      /// DESCRIPTION
+      "description": values['description'] ?? '',
+
+      /// FILES
+      "attachments": [],
+
+      /// CHATS
+      "chats": [],
+    };
+  }
+
+  Future<void> submitVpnRequest(
+    int serviceId,
+    int subServiceId,
+    Map<String, dynamic> values,
+  ) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      final payload = _buildPayload(
+        serviceId,
+        subServiceId,
+        values,
+        // state.hrTasks,
+      );
+
+      debugPrint("✅ Final Payload: $payload");
+
+      final response = await vpnInstance.vpnCreateRequest(payload);
+
+      if (response['status'] == 'success') {
+        _refreshDashboard();
+      }
+    } catch (e, st) {
+      debugPrint('❌ Error submitting request: $e\n$st');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  void _refreshDashboard() {
+    fetchKpi();
+    fetchStatusBreakdown('monthly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalKpi();
+    fetchRequests();
+    fetchactionItems();
   }
 
   @override
   void dispose() {
-    // searchController.dispose();
-    personNameController.dispose();
-    departmentController.dispose();
-    contactNumberController.dispose();
-    reasonController.dispose();
-    descriptionController.dispose();
-    employeeIdController.dispose();
-    emailController.dispose();
-    jobTitleController.dispose();
-    chatController.dispose();
-    countryController.dispose();
-    startDate.dispose();
-    endDate.dispose();
-
     super.dispose();
   }
 }

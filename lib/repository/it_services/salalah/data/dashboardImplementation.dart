@@ -8,6 +8,8 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_roles_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_user_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/action_item_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/chat.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/it_technician.dart';
@@ -247,13 +249,21 @@ class DashboardRepositoryImpl implements DashboardRepository {
   }
 
   @override
-  Future<List<ServiceData>> getServices() async {
+  Future<List<ServiceData>> getServices({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
         final url = ApiEndPoint.servicesDropdown;
-        final response = await client.get(url);
+
+        final quaryParams = {
+          'service_id': serviceId.toString(),
+          'sub_service_id': subServiceId.toString(),
+        };
+        final response = await client.get(url, queryParameters: quaryParams);
 
         if (response.statusCode == 200) {
           final data = response.data as Map<String, dynamic>;
@@ -287,8 +297,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
         /// Build query parameters dynamically
         final queryParams = {
           "role_name": "IT Technician",
-          "department_id": 104, //departmentId.toString(),
-          "section_id": 272, //sectionId.toString(),
+          "department_id": departmentId.toString(),
+          "section_id": sectionId.toString(),
         };
 
         /// Remove null values
@@ -770,6 +780,106 @@ class DashboardRepositoryImpl implements DashboardRepository {
       }
     } catch (e) {
       throw Exception("Error fetching attachmentById details: $e");
+    }
+  }
+
+  @override
+  Future<RolesResponseModel?> getRoles({
+    required int departmentId,
+    required int sectionId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'department_id': departmentId.toString(),
+          'section_id': sectionId.toString(),
+        };
+
+        final url = ApiEndPoint.userRolesMuscat;
+
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+
+          return RolesResponseModel.fromJson(data);
+        } else {
+          throw Exception('Failed to fetch roles: ${response.statusCode}');
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception("Error fetching roles: $e");
+    }
+  }
+
+  @override
+  Future<UsersResponseModel?> getUsers({
+    required int departmentId,
+    required int sectionId,
+    required int roleId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'department_id': departmentId.toString(),
+          'section_id': sectionId.toString(),
+          'role_id': roleId.toString(),
+        };
+
+        final url = ApiEndPoint.usersInfoMuscat;
+
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+
+          return UsersResponseModel.fromJson(data);
+        } else {
+          throw Exception('Failed to fetch users: ${response.statusCode}');
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception("Error fetching users: $e");
+    }
+  }
+
+  @override
+  Future<void> muscatAssign(Map<String, dynamic> payload) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.muscatApprove;
+
+    try {
+      if (client != null) {
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            '${response.data['message']}',
+          );
+          debugPrint('✅ Request sent successfully');
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          ShowFlutterToast().showFlutterToastFailure(
+            '${response.statusMessage}',
+          );
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
     }
   }
 }

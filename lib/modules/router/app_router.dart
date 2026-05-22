@@ -165,10 +165,10 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.muscatRequestDetailsTabScreen,
     ),
 
-    AutoRoute(
-      page: MuscutHOSNewRequestRoute.page,
-      path: RouteNames.muscatHosRequestScreen,
-    ),
+    // AutoRoute(
+    //   page: MuscutHOSNewRequestRoute.page,
+    //   path: RouteNames.muscatHosRequestScreen,
+    // ),
     AutoRoute(
       page: RequestEventSupportDetailsRoute.page,
       path: RouteNames.requestEventSupportDetails,

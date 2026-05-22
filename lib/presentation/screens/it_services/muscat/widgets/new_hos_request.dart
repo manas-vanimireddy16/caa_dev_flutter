@@ -1,41 +1,35 @@
 part of '../view.dart';
 
-final _hosFormKey = GlobalKey<FormState>(); // ⬅ ADD
+final _hosFormKey = GlobalKey<FormState>(); // ⬅ ADD THIS
 
 @RoutePage()
-class MuscutHOSNewRequestScreen extends ConsumerStatefulWidget {
+class MuscatHOSNewRequestScreen extends ConsumerStatefulWidget {
   final Service service;
   final SubService subService;
-
-  const MuscutHOSNewRequestScreen({
+  const MuscatHOSNewRequestScreen({
     super.key,
     required this.service,
     required this.subService,
   });
 
   @override
-  ConsumerState<MuscutHOSNewRequestScreen> createState() =>
-      _MuscutHOSNewRequestScreenState();
+  ConsumerState<MuscatHOSNewRequestScreen> createState() =>
+      _MuscatHOSNewRequestScreenState();
 }
 
-class _MuscutHOSNewRequestScreenState
-    extends ConsumerState<MuscutHOSNewRequestScreen> {
-  late _VSControllerParams _providerArgs;
-  late PageController _pageController;
-
+class _MuscatHOSNewRequestScreenState
+    extends ConsumerState<MuscatHOSNewRequestScreen> {
   @override
+  late _VSControllerParams _providerArgs;
+
   void initState() {
     super.initState();
-
-    _pageController = PageController();
-
     _providerArgs = _VSControllerParams(
       service: widget.service,
       subService: widget.subService,
     );
   }
 
-  @override
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);

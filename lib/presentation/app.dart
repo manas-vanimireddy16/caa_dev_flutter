@@ -7,7 +7,7 @@ import 'package:code_setup/presentation/screens/home_screen/dashboard/dashboard.
 import 'package:code_setup/presentation/screens/it_services/salalah/view.dart';
 import 'package:code_setup/presentation/screens/home_screen/services/view.dart';
 import 'package:code_setup/presentation/screens/it_services/vpn/view.dart';
-import 'package:code_setup/presentation/screens/it_services/muscat/view.dart';
+// import 'package:code_setup/presentation/screens/it_services/muscat/view.dart';
 import 'package:code_setup/utils/localization_provider/localization_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

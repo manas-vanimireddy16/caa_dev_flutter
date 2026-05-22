@@ -29,6 +29,10 @@ class DynamicField {
   final bool Function(Map<String, dynamic> values)? disabledWhen;
   final List<String>? disabledOptions;
   final FieldValidator? validator;
+  final List<dynamic> Function(WidgetRef ref)? optionsBuilder;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
+  final DateTime? initialDate;
 
   const DynamicField({
     required this.name,
@@ -50,6 +54,10 @@ class DynamicField {
     this.disabledWhen,
     this.disabledOptions,
     this.validator,
+    this.optionsBuilder,
+    this.firstDate,
+    this.lastDate,
+    this.initialDate,
   });
 }
 

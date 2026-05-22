@@ -36,6 +36,7 @@ class _SalalahNewRequestScreenState
 
       ref.read(_vsProvider(_providerArgs).notifier).fetchDepartments();
       ref.read(_vsProvider(_providerArgs).notifier).fetchServices();
+      // ref.read(_vsProvider(_providerArgs).notifier).fetchitTechnician();
 
       final deptId = int.tryParse(userInfo?.data?.department?.id ?? '') ?? 0;
 

@@ -1,5 +1,4 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import 'package:code_setup/presentation/screens/it_services/vpn/models/vpn_request_by_id.dart';
 import 'package:flutter/material.dart';
 
 // Assuming you already have these types somewhere in your project
@@ -19,8 +18,6 @@ class AttachmentsTabContent<T> extends StatelessWidget {
     // ✅ Detect type once (not per item)
     if (attachments.first is AttachmentDetail) {
       return _buildLogisticsAttachments();
-    } else if (attachments.first is VPNAttachment) {
-      return _buildVPNAttachments();
     } else {
       return const Center(child: Text("Unsupported attachment type"));
     }
@@ -41,18 +38,6 @@ class AttachmentsTabContent<T> extends StatelessWidget {
   }
 
   // 🟩 VPN Attachment Builder
-  Widget _buildVPNAttachments() {
-    final vpnAttachments = attachments.cast<VPNAttachment>();
-
-    return _buildAttachmentCard(
-      list: vpnAttachments.map((a) {
-        return _buildAttachmentTile(
-          name: a.fileName ?? "Unknown File",
-          url: a.fileUrl ?? "",
-        );
-      }).toList(),
-    );
-  }
 
   // ♻️ Shared reusable UI card
   Widget _buildAttachmentCard({required List<Widget> list}) {

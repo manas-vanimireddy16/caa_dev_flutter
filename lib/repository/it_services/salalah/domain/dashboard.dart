@@ -3,6 +3,8 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/models.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_roles_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_user_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/action_item_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/chat.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/it_technician.dart';
@@ -24,7 +26,10 @@ abstract class DashboardRepository {
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,
   );
-  Future<List<ServiceData>> getServices();
+  Future<List<ServiceData>> getServices({
+    required int serviceId,
+    required int subServiceId,
+  });
   Future<List<DepartmentModel>> getDepartments();
   Future<List<SalalahRequestModel>> getRequests({
     required int offset,
@@ -86,4 +91,14 @@ abstract class DashboardRepository {
     required int serviceId,
     required int subServiceId,
   });
+  Future<UsersResponseModel?> getUsers({
+    required int departmentId,
+    required int sectionId,
+    required int roleId,
+  });
+  Future<RolesResponseModel?> getRoles({
+    required int departmentId,
+    required int sectionId,
+  });
+  Future<void> muscatAssign(Map<String, dynamic> payload);
 }

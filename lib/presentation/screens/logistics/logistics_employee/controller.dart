@@ -641,6 +641,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
+
   List<StatSummaryData> requestStatsList(
     String Function(String key) titleForKey,
   ) => StatSummaryHelper.buildStatList(
@@ -659,6 +660,7 @@ class _VSController extends StateNotifier<_ViewState> {
       state.tabIndex == 0
       ? requestStatsList(titleForKey)
       : approverStatsList(titleForKey);
+
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');

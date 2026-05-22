@@ -28,7 +28,7 @@ class CustomRadioGroup extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: currentTheme.fontSizes.s14,
-            fontWeight: currentTheme.fontWeights.wBolder,
+            fontWeight: FontWeight.w500,
             color: Colors.grey,
           ),
         ),
@@ -59,7 +59,7 @@ class CustomRadioGroup extends StatelessWidget {
                     ),
                   ),
                 ),
-                12.toVerticalSizedBox, // spacing between options
+                16.toHorizontalSizedBox, // spacing between options
               ],
             );
           }).toList(),

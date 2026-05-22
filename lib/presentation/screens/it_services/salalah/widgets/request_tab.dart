@@ -7,7 +7,7 @@ class RequestTabs extends StatelessWidget {
 
   const RequestTabs({
     super.key,
-    required this.selectedIndex,
+    this.selectedIndex = 0,
     required this.actionItemCount,
     required this.onTabChanged,
   });

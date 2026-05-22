@@ -1,5 +1,4 @@
 import 'package:code_setup/presentation/common_widgets/work_progress.dart';
-import 'package:code_setup/presentation/screens/it_services/vpn/models/vpn_request_by_id.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/screens/logistics/models/logistics_detail_model.dart';
@@ -18,8 +17,6 @@ class WorkflowTabContent<T> extends StatelessWidget {
     // ✅ Detect the type once — not inside the builder
     if (workflows.first is Workflow) {
       return _buildLogisticsWorkflow();
-    } else if (workflows.first is VPNWorkflowDetail) {
-      return _buildVpnWorkflow();
     } else {
       return const Center(child: Text("Unsupported workflow type"));
     }
@@ -40,18 +37,6 @@ class WorkflowTabContent<T> extends StatelessWidget {
   }
 
   // 🟩 2. VPN workflow
-  Widget _buildVpnWorkflow() {
-    final vpnWorkflows = workflows.cast<VPNWorkflowDetail>();
-    return _buildWorkflowCard(
-      children: List.generate(vpnWorkflows.length, (index) {
-        final workflow = vpnWorkflows[index];
-        return TimelineItem(
-          task: workflow,
-          isLast: index == vpnWorkflows.length - 1,
-        );
-      }),
-    );
-  }
 
   // ♻️ Shared UI builder
   Widget _buildWorkflowCard({required List<Widget> children}) {

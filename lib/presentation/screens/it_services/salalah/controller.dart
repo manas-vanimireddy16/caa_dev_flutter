@@ -258,6 +258,7 @@ class _VSController extends StateNotifier<_ViewState> {
     searchController = TextEditingController();
     chatController = TextEditingController();
     fetchServices();
+    fetchApprovalKpi();
 
     fetchKpi();
     fetchStatusBreakdown('weekly');
@@ -265,7 +266,6 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchDepartments();
     // fetchitTechnician();
     fetchRequests();
-    fetchActionItems();
   }
 
   int _searchVersion = 0;
@@ -293,26 +293,24 @@ class _VSController extends StateNotifier<_ViewState> {
       List.generate(6, (index) => (currentYear - index).toString());
   List<StatSummaryData> requestStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.kpiData.data?.toJson(),
-        isSecurityThreat: true,
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    // isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> approverStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.approvalKpiData.data?.toJson(),
-        isSecurityThreat: true,
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    // isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
       state.tabIndex == 0
-          ? requestStatsList(titleForKey)
-          : approverStatsList(titleForKey);
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -394,8 +392,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Problem': request?.problem ?? '-',
 
       'Comment': item.comment ?? '-',
-
-      'Level': item.level?.toString() ?? '-',
+      'Service Type': request?.serviceType?.name ?? '-',
 
       'Date': item.createdAt?.toString().split('T').first ?? '-',
     };
@@ -500,8 +497,8 @@ class _VSController extends StateNotifier<_ViewState> {
     ]);
   }
 
-  void openNewRequestForm() {
-    fetchitTechnician();
+  Future<void> openNewRequestForm() async {
+    await fetchitTechnician();
     KAppX.router.push(
       SalalahNewRequestRoute(
         serviceId: service.id ?? 0,
@@ -544,6 +541,14 @@ class _VSController extends StateNotifier<_ViewState> {
         final notifier = ref.read(dynamicFormProvider.notifier);
 
         if (value == 'Self') {
+          final selfDepartmentId =
+              int.tryParse(userInfo?.data?.department?.id ?? '') ?? 0;
+
+          /// ✅ FETCH SELF SECTIONS
+          ref
+              .read(_vsProvider(params).notifier)
+              .fetchSections(selfDepartmentId);
+
           /// ✅ RESET TO USER INFO
           notifier.autoPopulate({
             'person_name': userInfo?.data?.employeeName ?? '',
@@ -602,16 +607,18 @@ class _VSController extends StateNotifier<_ViewState> {
           )
           .toList(),
 
-      onChanged: (value, ref) {
+      onChanged: (value, ref) async {
         final notifier = ref.read(dynamicFormProvider.notifier);
 
-        /// ✅ RESET SECTION FIELD (CORRECT WAY)
+        /// ✅ RESET SELECTED SECTION
         notifier.updateValue('section', '');
 
-        /// ✅ CALL API
         final departmentId = int.tryParse(value.toString()) ?? 0;
 
-        ref.read(_vsProvider(params).notifier).fetchSections(departmentId);
+        /// ✅ FETCH NEW SECTIONS
+        await ref
+            .read(_vsProvider(params).notifier)
+            .fetchSections(departmentId);
       },
     ),
     // /// ================= SECTION =================
@@ -620,16 +627,23 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.section,
       type: FieldType.select,
       required: true,
-      initialValue: userInfo?.data?.section?.id?.toString(), // ✅ FIX
+
+      initialValue: userInfo?.data?.section?.id?.toString(),
+
       disabledWhen: (values) => (values['request_for'] ?? 'Self') == 'Self',
-      options: (state.sections ?? [])
-          .map(
-            (s) => DropdownOption(
-              value: s.id.toString(), // ✅ FIX
-              label: s.sectionName ?? '',
-            ),
-          )
-          .toList(),
+
+      optionsBuilder: (ref) {
+        final state = ref.watch(_vsProvider(params));
+
+        return (state.sections ?? [])
+            .map(
+              (s) => DropdownOption(
+                value: s.id.toString(),
+                label: s.sectionName ?? '',
+              ),
+            )
+            .toList();
+      },
     ),
 
     /// ================= SERVICE TYPE =================
@@ -669,15 +683,16 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'assigned_to',
       label: l10n.assignedTo,
       type: FieldType.select,
+      required: true,
 
       visibleWhen: (values) => userRoleInfo?.roleId == 4,
 
       requiredWhen: (values) => userRoleInfo?.roleId == 4,
-      options: (state.itTechnician ?? [])
+      optionsBuilder: (ref) => (state.itTechnician ?? [])
           .map(
             (user) => DropdownOption(
               value: user.userId.toString(), // ✅ FIX
-              label: user.employeeName ?? '',
+              label: '\u200E${user.employeeName ?? ''}',
             ),
           )
           .toList(),
@@ -1038,7 +1053,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchServices() async {
     try {
-      final services = await dashboardinstance.getServices();
+      final services = await dashboardinstance.getServices(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       if (services != null) {
         state = state.copyWith(serviceDropDown: services);
@@ -1062,12 +1080,18 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchSections(int id) async {
     try {
+      /// ✅ CLEAR OLD SECTIONS FIRST
+      state = state.copyWith(sections: []);
+
       final sections = await dashboardinstance.getSections(id);
 
+      /// ✅ UPDATE NEW SECTIONS
       state = state.copyWith(sections: sections);
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   Future<void> fetchRequests({
@@ -1078,9 +1102,9 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
+      // if (isRefresh || status.isNotEmpty) {
+      //   state = state.copyWith(requestData: [], isLoading: false);
+      // }
 
       final requests = await dashboardinstance.getRequests(
         offset: 1,
@@ -1092,7 +1116,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: e.toString());
@@ -1107,9 +1131,9 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(actionItems: [], isLoading: false);
-      }
+      // if (isRefresh || status.isNotEmpty) {
+      //   state = state.copyWith(actionItems: [], isLoading: false);
+      // }
 
       final items = await dashboardinstance.getActionItems(
         offset: 0,
@@ -1174,6 +1198,12 @@ class _VSController extends StateNotifier<_ViewState> {
 
       if (itTechnician != null) {
         state = state.copyWith(itTechnician: itTechnician.data);
+        for (var user in state.itTechnician ?? []) {
+          print(
+            "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",
+          );
+          print('${user.employeeName} , ${user.userId}');
+        }
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
@@ -1243,6 +1273,8 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       final requests = await dashboardinstance.getRequestsById(id);
       if (requests != null) {
+        updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
+
         fetchChatById(id);
         fetchAttachmentsById(id);
         state = state.copyWith(requestDetails: requests);
@@ -1683,7 +1715,7 @@ class _VSController extends StateNotifier<_ViewState> {
       final response = await dashboardinstance.sendRequest(payload);
 
       if (response['status'] == 'success') {
-        await Future.delayed(const Duration(milliseconds: 1500));
+        await Future.delayed(const Duration(milliseconds: 1200));
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1700,7 +1732,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests();
+    fetchRequests(isRefresh: true);
     // fetchactionItems();
   }
 

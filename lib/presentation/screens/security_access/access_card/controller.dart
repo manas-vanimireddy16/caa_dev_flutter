@@ -246,6 +246,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchRequests();
     fetchStatusBreakdown('monthly');
     fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalKpi();
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
@@ -359,7 +360,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// 🙋 REQUEST FOR
       'Request For': request?.requestFor ?? '-',
-      'Request Type': request?.requestType ?? '-',
+      'Category': request?.category ?? '-',
+      'Request Date': formatDate(request?.createdAt ?? '-'),
+      'Reason For Request': request?.reasonForRequest ?? '-',
+      // 'ID Number': request?. ?? '-',
     };
   }
 
@@ -456,10 +460,10 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Request For',
       type: FieldType.radio,
       initialValue: 'Self',
-      options: ['Self', 'On Behalf'],
+      options: ['Self', 'Behalf Of'],
 
-      /// 🔥 Disable "On Behalf" when roleId == 2
-      disabledOptions: roleId == 2 ? ['On Behalf'] : [],
+      /// 🔥 Disable "Behalf Of" when roleId == 2
+      disabledOptions: roleId == 2 ? ['Behalf Of'] : [],
 
       onChanged: (value, ref) {
         final notifier = ref.read(dynamicFormProvider.notifier);
@@ -498,6 +502,12 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: 'Enter name',
       initialValue: userInfo?.data?.employeeName ?? '',
       disabledWhen: (v) => (v['request_for'] ?? 'Self') == 'Self',
+      validator: (value, values) {
+        final name = value?.toString().trim() ?? '';
+        if (name.isEmpty) return 'Name is required';
+
+        return null;
+      },
     ),
 
     /// ================= PHONE =================
@@ -509,6 +519,14 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: 'Enter Phone Number (8-10 digits)',
       initialValue: userInfo?.data?.mobile ?? '',
       disabledWhen: (v) => (v['request_for'] ?? 'Self') == 'Self',
+      validator: (value, values) {
+        final phone = value?.toString().trim() ?? '';
+        if (phone.isEmpty) return null;
+        if (phone.length < 8) {
+          return 'Min should be 8 digits';
+        }
+        return null;
+      },
     ),
 
     /// ================= DEPARTMENT =================
@@ -549,7 +567,7 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       // initialValue: 'worker',
       options: [
-        DropdownOption(value: 'worker', label: 'Workers'),
+        DropdownOption(value: 'workers', label: 'Workers'),
         DropdownOption(value: 'contractor', label: 'Contractors'),
         DropdownOption(value: 'trainee', label: 'Trainee'),
       ],
@@ -567,14 +585,23 @@ class _VSController extends StateNotifier<_ViewState> {
     ),
 
     /// ================= EMAIL =================
+    /// ================= EMAIL (SELF) =================
     DynamicField(
       name: 'email',
       label: 'Email',
       type: FieldType.email,
       initialValue: userInfo?.data?.email ?? '',
-      requiredWhen: (v) => v['request_for'] == 'On Behalf',
-      // visibleWhen: (v) => v['request_for'] == 'On Behalf',
-      disabledWhen: (values) => (values['request_for'] ?? 'Self') == 'Self',
+      visibleWhen: (v) => (v['request_for'] ?? 'Self') == 'Self',
+      disabledWhen: (v) => true,
+    ),
+
+    /// ================= EMAIL (Behalf Of) =================
+    DynamicField(
+      name: 'email1',
+      label: 'Email',
+      type: FieldType.email,
+      requiredWhen: (v) => v['request_for'] == 'Behalf Of',
+      visibleWhen: (v) => v['request_for'] == 'Behalf Of',
       placeholder: 'Enter Email',
     ),
 
@@ -585,6 +612,11 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: true,
       placeholder: 'Enter Civil ID / Passport Number',
+      validator: (value, values) {
+        final phone = value?.toString().trim() ?? '';
+        if (phone.isEmpty) return 'ID Number or Passport Number is required';
+        return null;
+      },
     ),
 
     /// ================= DATE =================
@@ -592,7 +624,20 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'date',
       label: 'Date',
       type: FieldType.date,
+      firstDate: DateTime.now(),
+      initialDate: DateTime.now(),
       required: false,
+      placeholder: 'Select',
+    ),
+
+    DynamicField(
+      name: 'access_card_no',
+      label: 'Access Card Number (Optional)',
+      type: FieldType.text,
+      // requiredWhen: (v) => v['request_for'] == 'Behalf Of',
+      visibleWhen: (v) =>
+          (v['request_for'] == 'Behalf Of' && v['type'] == 'Renewal'),
+      placeholder: 'Enter Access Card Number',
     ),
 
     /// ================= ORGANIZATION =================
@@ -600,9 +645,15 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'organization',
       label: 'University / Organization',
       type: FieldType.text,
-      requiredWhen: (v) => v['request_for'] == 'On Behalf',
-      visibleWhen: (v) => v['request_for'] == 'On Behalf',
+      requiredWhen: (v) => v['request_for'] == 'Behalf Of',
+      visibleWhen: (v) => v['request_for'] == 'Behalf Of',
       placeholder: 'Enter Organization',
+      validator: (value, values) {
+        final phone = value?.toString().trim() ?? '';
+        if (phone.isEmpty) return 'University / Organization is required';
+
+        return null;
+      },
     ),
 
     /// ================= REASON =================
@@ -612,12 +663,18 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.textarea,
       required: true,
       placeholder: 'Write here (min 5, max 250 characters)',
+      validator: (value, values) {
+        final phone = value?.toString().trim() ?? '';
+        if (phone.isEmpty) return 'Must be at least 5 characters';
+
+        return null;
+      },
     ),
 
     /// ================= ATTACHMENT =================
     DynamicField(
       name: 'attachment',
-      label: 'Attachment',
+      label: 'Attachment (Passport Size Photo (White Background))',
       type: FieldType.file,
       required: true,
       maxFiles: 1,
@@ -833,9 +890,9 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
+      // if (isRefresh || status.isNotEmpty) {
+      //   state = state.copyWith(requestData: [], isLoading: false);
+      // }
 
       final requests = await securityAccessInstance.getRequests(
         offset: 1,
@@ -847,7 +904,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: e.toString());
@@ -1515,11 +1572,13 @@ class _VSController extends StateNotifier<_ViewState> {
       "sub_service_id": subServiceId,
 
       /// ⭐ FORM DATA
-      "request_for": values['request_for'] ?? "",
+      "request_for": values['request_for'] == 'Behalf Of' ? 'Behalf' : 'Self',
       "name": values['person_name'] ?? "",
       "id_number": values['id_number'] ?? "",
       "phone_number": values['contact_number'] ?? "",
-      "email_id": values['email'] ?? "",
+      "email_id": values['request_for'] == 'Behalf Of'
+          ? values['email1']
+          : values['email'],
       "request_type": values['type'] ?? "",
       "category": values['category1'] ?? values['category'],
       "organization": values['organization'] ?? "",
@@ -1529,7 +1588,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ✅ NEW FIELD
       "approval_route":
-          (values['category'] == 'worker' || values['category'] == 'trainee')
+          (values['category'] == 'workers' || values['category'] == 'trainee')
           ? 'CUSTOMER_SERVICE'
           : (values['category'] == 'contractor')
           ? 'CONTRACTOR'
@@ -1561,6 +1620,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .securityAccessCardCreateRequest(payload);
 
       if (response['status'] == 'success') {
+        await Future.delayed(Duration(seconds: 2));
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1577,7 +1637,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalStatusBreakdown('monthly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests();
+    fetchRequests(isRefresh: true);
     fetchactionItems();
   }
 

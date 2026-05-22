@@ -222,6 +222,10 @@ class _TextFieldWidgetState extends ConsumerState<TextFieldWidget> {
         widget.field.disabled ||
         (widget.field.disabledWhen?.call(values) ?? false);
 
+    final isRequired =
+        widget.field.required ||
+        (widget.field.requiredWhen?.call(values) ?? false);
+
     final value = values[widget.field.name]?.toString() ?? '';
 
     /// ✅ PREVENT CURSOR JUMP
@@ -241,7 +245,7 @@ class _TextFieldWidgetState extends ConsumerState<TextFieldWidget> {
         hintText: widget.field.placeholder,
         fieldHeadingText: widget.field.label,
         errorText: state.errors[widget.field.name],
-        isRequired: widget.field.required,
+        isRequired: isRequired,
         onChanged: isDisabled
             ? null
             : (val) => notifier.updateValue(widget.field.name, val),

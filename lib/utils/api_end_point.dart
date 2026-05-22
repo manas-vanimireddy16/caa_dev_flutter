@@ -36,7 +36,7 @@ class ApiEndPoint {
 
   /// DROPDOWNS
   static const String servicesDropdown =
-      '/v1/it-service/helpdesk/service/types?service_id=1&sub_service_id=1';
+      '/v1/it-service/helpdesk/service/types';
 
   /// USER REQUESTS LIST
   static const String salalahRequests = '/v1/it-service/helpdesk/user/requests';
@@ -132,6 +132,13 @@ class ApiEndPoint {
       '/v1/it-service/helpdesk/salalah/external/assign-to-me';
   static const String onCloseMuscat = '/v1/it-service/helpdesk/salalah/approve';
 
+  static const String userRolesMuscat =
+      '/v1/it-service/helpdesk/muscat/roles-users';
+  static const String usersInfoMuscat =
+      '/v1/it-service/helpdesk/muscat/roles-users';
+  static const String muscatApprove =
+      '/v1/it-service/helpdesk/muscat/external/approve';
+
   /// Logistics
   static String sendVehicleRequest = '/v1/it-service/logistics/vehicle-request';
 
@@ -170,23 +177,67 @@ class ApiEndPoint {
   static String userRoles(int id) => '/v1/user-service/user/$id/roles-services';
   static String userInfo(int id) => '/v1/user-service/user/$id';
 
-  /// VPN
-  static const String vpnRequests = '/v1/it-service/vpn/requests';
-  static String vpnRequestbyId(int id) => '/v1/it-service/vpn/request/$id';
-  static const String vpnKpicard = '/v1/it-service/vpn/analytics/kpi-cards';
-  static String vpnStatusBreakdown(String period) =>
-      '/v1/it-service/vpn/analytics/status-breakdown?time_period=$period';
-  static String vpnTrendBreakdown(String period) =>
-      '/v1/it-service/vpn/analytics/trend-breakdown?year=$period';
-  static String vpnNewTicket = '/v1/it-service/vpn/request';
-  static String vpnActionItems = '/v1/it-service/vpn/requests/for-approval';
-  static String vpnTechnicians(int id, int sectionId) =>
-      '/v1/it-service/vpn/technicians?department_id=$id&section_id=$sectionId';
-  static String vpnAssign = '/v1/it-service/vpn/request/assign';
-  static const String vpnApproveorReject = '/v1/it-service/vpn/approve';
-  static String vpnChat(int id) => '/v1/it-service/vpn/request/$id/chat';
-  static String vpnAttachment(int id) =>
-      '/v1/it-service/vpn/request/$id/attachment';
+  /// ===================== VPN APIs =====================
+
+  /// Send Request (Create Request)
+  static const String vpnSendRequest = '/v1/it-service/vpn/request';
+
+  /// Get my requests
+  static const String vpnGetRequests = '/v1/it-service/vpn/requests';
+
+  /// Get approval list (For approvers)
+  static const String vpnGetActionItems =
+      '/v1/it-service/vpn/requests/for-approval';
+
+  /// Get request by ID
+  static String vpnRequestById(int requestId) =>
+      '/v1/it-service/vpn/request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  static String vpnUpdateRequest(int requestId) =>
+      '/v1/it-service/vpn/request/$requestId';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send chat
+  static String vpnSendChatById(int requestId) =>
+      '/v1/it-service/vpn/request/$requestId/chat';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String vpnSendAttachmentById(int requestId) =>
+      '/v1/it-service/vpn/request/$requestId/attachment';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String vpnKpiCards = '/v1/it-service/vpn/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String vpnApprovalKpiCards =
+      '/v1/it-service/vpn/analytics/approval-kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String vpnStatusBreakdown =
+      '/v1/it-service/vpn/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String vpnApprovalStatusBreakdown =
+      '/v1/it-service/vpn/analytics/approval-status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String vpnTrendBreakdown =
+      '/v1/it-service/vpn/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String vpnApprovalTrendBreakdown =
+      '/v1/it-service/vpn/analytics/approval-trend-breakdown';
 
   /// secuirty access
   static const String securityAccessPostRequest =

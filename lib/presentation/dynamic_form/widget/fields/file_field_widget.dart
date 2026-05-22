@@ -14,6 +14,7 @@ class FileFieldWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(dynamicFormProvider);
     final notifier = ref.read(dynamicFormProvider.notifier);
+    final values = state.values;
 
     // final uploadedFiles = List<FileUploadItem>.from(
     //   state.values[field.name] ?? [],
@@ -23,6 +24,8 @@ class FileFieldWidget extends ConsumerWidget {
         : <FileUploadItem>[];
 
     final errorText = state.errors[field.name];
+    final isRequired =
+        field.required || (field.requiredWhen?.call(values) ?? false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +34,7 @@ class FileFieldWidget extends ConsumerWidget {
           title: field.label.trim().isNotEmpty ? field.label.trim() : null,
           maxFiles: field.maxFiles ?? 1,
           maxFileSizeInMB: field.maxFileSizeInMB ?? 10,
-
+          isRequired: isRequired,
           existingFiles: uploadedFiles,
           allowedExtensions:
               field.allowedExtensions ??

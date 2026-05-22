@@ -99,20 +99,24 @@ class CommentEntry extends StatelessWidget {
       child: Column(
         children: [
           /// -------- ROW 1 --------
-          Row(children: [
-            _item(l10n?.routingTileDateTime ?? 'Date / Time', dateTime),
-            _item(l10n?.routingTileRole ?? 'Role', role),
-          ]),
+          Row(
+            children: [
+              _item(l10n?.routingTileDateTime ?? 'Date / Time', dateTime),
+              _item(l10n?.routingTileRole ?? 'Role', role),
+            ],
+          ),
 
           const SizedBox(height: 12),
           Divider(color: Colors.grey.shade300, height: 1),
           const SizedBox(height: 12),
 
           /// -------- ROW 2 --------
-          Row(children: [
-            _item(l10n?.routingTileAction ?? 'Action', action),
-            _item(l10n?.routingTileStatus ?? 'Status', status),
-          ]),
+          Row(
+            children: [
+              _item(l10n?.routingTileAction ?? 'Action', action),
+              _item(l10n?.routingTileStatus ?? 'Status', status),
+            ],
+          ),
         ],
       ),
     );
@@ -440,7 +444,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           children: [
             _actionButton(
               l10n.commentButtonReassign,
-              Colors.orange,
+              const Color(0xFF0D652D),
               () async {
                 await widget.onReassign?.call();
               },
@@ -613,7 +617,8 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                           minLines: 1,
                           maxLines: 4,
                           decoration: InputDecoration(
-                            hintText: widget.commentHint ??
+                            hintText:
+                                widget.commentHint ??
                                 l10n.routingAddCommentHint,
                             border: InputBorder.none,
                           ),
