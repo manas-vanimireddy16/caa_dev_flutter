@@ -3,11 +3,13 @@ part of '../view.dart';
 class RequestTabs extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onTabChanged;
+  final DashboardL10n l10n;
 
   const RequestTabs({
     super.key,
     required this.selectedIndex,
     required this.onTabChanged,
+    required this.l10n,
   });
 
   @override
@@ -15,12 +17,12 @@ class RequestTabs extends StatelessWidget {
     return Row(
       children: [
         _tabItem(
-          title: "My Requests",
+          title: l10n.myRequests,
           isSelected: selectedIndex == 0,
           onTap: () => onTabChanged(0),
         ),
         _tabItem(
-          title: "Action Items",
+          title: l10n.actionItems,
           isSelected: selectedIndex == 1,
           onTap: () => onTabChanged(1),
         ),

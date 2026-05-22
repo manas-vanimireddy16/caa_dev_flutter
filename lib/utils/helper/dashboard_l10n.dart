@@ -160,6 +160,52 @@ class DashboardL10n {
   String get eventSupportNewRequest =>
       _t('Request for Event Support', 'طلب دعم الفعالية');
 
+  String get vpnNewRequest => _t('VPN Request', 'طلب VPN');
+
+  String get assignTaskToEmployeeNewRequest =>
+      _t('Assign a Task to Employee', 'إسناد مهمة إلى موظف');
+
+  String get assignTaskFormStepDetails => _t('Task details', 'تفاصيل المهمة');
+
+  String get taskTitle => _t('Task Title', 'عنوان المهمة');
+
+  String get enterTaskTitle => _t('Enter task title', 'أدخل عنوان المهمة');
+
+  String get assignedEmployee => _t('Assigned Employee', 'الموظف المكلّف');
+
+  String get assignedToEmployeeNameId => _t(
+    'Assigned To (Employee Name / ID)',
+    'مُسند إلى (اسم الموظف / الرقم الوظيفي)',
+  );
+
+  String get completionDate => _t('Completion Date', 'تاريخ الإنجاز');
+
+  String get selectCompletionDate =>
+      _t('Select completion date', 'اختر تاريخ الإنجاز');
+
+  String get taskDescription => _t('Task Description', 'وصف المهمة');
+
+  String get enterTaskDescription =>
+      _t('Enter task description', 'أدخل وصف المهمة');
+
+  String get attachmentsOptional =>
+      _t('Attachments (Optional)', 'المرفقات (اختياري)');
+
+  String get attachOptional => _t('Attach (Optional)', 'إرفاق (اختياري)');
+
+  String priorityOption(String en) {
+    switch (en) {
+      case 'High':
+        return _t('High', 'عالية');
+      case 'Medium':
+        return _t('Medium', 'متوسطة');
+      case 'Low':
+        return _t('Low', 'منخفضة');
+      default:
+        return en;
+    }
+  }
+
   String get reasonForRequest => _t('Reason for Request', 'سبب الطلب');
 
   String get transportFormStepTripDetails =>
@@ -498,6 +544,8 @@ class DashboardL10n {
 
   String get employeeId => _t('Employee ID', 'رقم الموظف');
 
+  String get employeeMail => _t('Employee Mail', 'البريد الإلكتروني للموظف');
+
   String get contractor => _t('Contractor', 'المتعاقد');
 
   String get caaStaff => _t('CAA Staff', 'موظفو الهيئة');
@@ -541,9 +589,26 @@ class DashboardL10n {
 
   String get requestForTimePeriod => _t('Request for Time Period', 'مدة الطلب');
 
+  String get reasonsForRequest => _t('Reasons For Request', 'أسباب الطلب');
+
   String get endDate => _t('End Date', 'إلى تاريخ');
 
   String get startDate => _t('Start Date', 'تاريخ البداية');
+
+  String get deviceType => _t('Device Type', 'نوع الجهاز');
+
+  String get enterContactNumber =>
+      _t('Enter Contact Number', 'أدخل رقم التواصل');
+
+  String get contactNumberRequired =>
+      _t('Contact number is required', 'رقم التواصل مطلوب');
+
+  String get contactNumberEightDigits =>
+      _t('Contact number must be 8 digits', 'يجب أن يكون رقم التواصل 8 أرقام');
+
+  String get enterEmployeeId => _t('Enter Employee ID', 'أدخل رقم الموظف');
+
+  String get enterCountry => _t('Enter Country', 'أدخل الدولة');
 
   String get mobileDevice => _t('Mobile Device', 'جهاز الهاتف النقال');
 
@@ -1208,6 +1273,32 @@ class DashboardL10n {
         return _t('Request Type', 'نوع الطلب');
       case 'Priority':
         return _t('Priority', 'الأولوية');
+      case 'Task Title':
+        return taskTitle;
+      case 'Task Description':
+        return taskDescription;
+      case 'Completion Date':
+        return completionDate;
+      case 'Assigned Employee':
+        return assignedEmployee;
+      case 'Request For':
+        return requestFor;
+      case 'Start Date':
+        return startDate;
+      case 'End Date':
+        return endDate;
+      case 'Employee Mail':
+        return employeeMail;
+      case 'Job Title':
+        return jobTitle;
+      case 'Country':
+        return country;
+      case 'Reasons For Request':
+        return reasonsForRequest;
+      case 'Systems / Applications to Access':
+        return sysAppToAccess;
+      case 'Device Type':
+        return deviceType;
       case 'Type Of Threat':
         return _t('Type Of Threat', 'نوع التهديد');
       case 'Approver':
@@ -1317,6 +1408,45 @@ class DashboardL10n {
       case 'Priority':
         return _t('Priority', 'الأولوية');
 
+      case 'Task Title':
+        return taskTitle;
+
+      case 'Task Description':
+        return taskDescription;
+
+      case 'Completion Date':
+        return completionDate;
+
+      case 'Assigned Employee':
+        return assignedEmployee;
+
+      case 'Request For':
+        return requestFor;
+
+      case 'Start Date':
+        return startDate;
+
+      case 'End Date':
+        return endDate;
+
+      case 'Employee Mail':
+        return employeeMail;
+
+      case 'Job Title':
+        return jobTitle;
+
+      case 'Country':
+        return country;
+
+      case 'Reasons For Request':
+        return reasonsForRequest;
+
+      case 'Systems / Applications to Access':
+        return sysAppToAccess;
+
+      case 'Device Type':
+        return deviceType;
+
       case 'description':
         return _t('Description', 'الوصف');
 
@@ -1420,9 +1550,6 @@ class DashboardL10n {
 
       case 'Other Mitigation Measures:':
         return _t('Other Mitigation Measures:', 'إجراءات التخفيف الأخرى:');
-
-      case 'Request For':
-        return requestFor;
 
       case 'Vehicle Number':
         return vehicleNumberId;

@@ -712,6 +712,9 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
+      'Request For': item.requestFor ?? '-',
+      'Start Date': formatDate(item.startDate ?? '-'),
+      'End Date': formatDate(item.endDate ?? '-'),
       // 'Vehicle Number': item.vehicleNumber ?? 'N/A',
       // 'Maintenance Type': item.typeOfMaintenanceRequired ?? 'N/A',
       // 'Preferred Maintenance Date': formatDate(
@@ -732,17 +735,16 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails.request;
     return {
-      /// ───── RIGHT COLUMN ─────
       "Service Type": request?.service?.name ?? 'N/A',
-
-      /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      'Vehicle Number': request?.vehicleNumber ?? 'N/A',
-      'Maintenance Type': request?.typeOfMaintenanceRequired ?? 'N/A',
-      'Preferred Maintenance Date': formatDate(
-        request?.preferredMaintenanceDate ?? 'N/A',
-      ),
-      'Issue Description': request?.issueDescription ?? 'N/A',
+      'Request For': request?.requestFor ?? 'N/A',
+      'Employee ID': request?.employeeId ?? 'N/A',
+      'Employee Mail': request?.email ?? 'N/A',
+      'Contact Number': request?.phoneNumber ?? request?.contactNum ?? 'N/A',
+      'Reasons For Request': request?.reasonForRequest ?? 'N/A',
+      'Start Date': formatDate(request?.startDate ?? 'N/A'),
+      'End Date': formatDate(request?.endDate ?? 'N/A'),
+      'Description': request?.description ?? 'N/A',
     };
   }
 
@@ -770,8 +772,9 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, String> buildTechnicalInformation() {
     final request = state.requestDetails.request;
     return {
-      'Extension Number':
-          request?.createdByUser?.extensionNumber.toString() ?? '0',
+      'Job Title':
+          request?.jobTitle ?? request?.createdByUser?.directorate ?? 'N/A',
+      'Country': request?.countryName ?? 'N/A',
     };
   }
 
@@ -848,7 +851,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= JOB TITLE =================
     DynamicField(
       name: 'job_title',
-      label: 'Job Title',
+      label: l10n.jobTitle,
       type: FieldType.text,
       required: true,
       initialValue: userInfo?.data?.category ?? '',
@@ -858,7 +861,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DEPARTMENT =================
     DynamicField(
       name: 'department',
-      label: 'Department',
+      label: l10n.requestDetailsLabel('Department'),
       type: FieldType.text,
       required: true,
       initialValue: userInfo?.data?.department?.departmentName ?? '',
@@ -868,14 +871,14 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= REQUEST FOR =================
     DynamicField(
       name: 'request_for',
-      label: 'Request For',
+      label: l10n.requestFor,
       type: FieldType.radio,
       required: true,
       initialValue: 'CAA Staff',
 
       options: [
-        DropdownOption(value: 'CAA_STAFF', label: 'CAA Staff'),
-        DropdownOption(value: 'CONTRACTOR', label: 'Contractor'),
+        DropdownOption(value: 'CAA_STAFF', label: l10n.caaStaff),
+        DropdownOption(value: 'CONTRACTOR', label: l10n.contractor),
       ],
 
       onChanged: (value, ref) {
@@ -907,7 +910,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PERSON NAME =================
     DynamicField(
       name: 'person_name',
-      label: 'Person Name',
+      label: l10n.personName,
       type: FieldType.text,
       required: true,
       initialValue: userInfo?.data?.employeeName ?? '',
@@ -915,13 +918,13 @@ class _VSController extends StateNotifier<_ViewState> {
       disabledWhen: (values) =>
           (values['request_for'] ?? 'CAA_STAFF') == 'CAA_STAFF',
 
-      placeholder: 'Enter Person Name',
+      placeholder: l10n.enterPersonName,
     ),
 
     /// ================= CONTACT NUMBER =================
     DynamicField(
       name: 'contact_number',
-      label: 'Contact Number',
+      label: l10n.transportContactNumber,
       type: FieldType.number,
       required: true,
       initialValue: userInfo?.data?.mobile ?? '',
@@ -929,17 +932,17 @@ class _VSController extends StateNotifier<_ViewState> {
       disabledWhen: (values) =>
           (values['request_for'] ?? 'CAA_STAFF') == 'CAA_STAFF',
 
-      placeholder: 'Enter Contact Number',
+      placeholder: l10n.enterContactNumber,
 
       validator: (value, values) {
         final phone = value?.toString().trim() ?? '';
 
         if (phone.isEmpty) {
-          return 'Contact number is required';
+          return l10n.contactNumberRequired;
         }
 
         if (phone.length != 8) {
-          return 'Contact number must be 8 digits';
+          return l10n.contactNumberEightDigits;
         }
 
         return null;
@@ -949,7 +952,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= EMPLOYEE ID =================
     DynamicField(
       name: 'emp_id',
-      label: 'Employee ID',
+      label: l10n.employeeId,
       type: FieldType.text,
       required: true,
       initialValue: userInfo?.data?.employeeId ?? '',
@@ -957,13 +960,13 @@ class _VSController extends StateNotifier<_ViewState> {
       disabledWhen: (values) =>
           (values['request_for'] ?? 'CAA_STAFF') == 'CAA_STAFF',
 
-      placeholder: 'Enter Employee ID',
+      placeholder: l10n.enterEmployeeId,
     ),
 
     /// ================= EMAIL =================
     DynamicField(
       name: 'email',
-      label: 'Employee Mail',
+      label: l10n.employeeMail,
       type: FieldType.email,
       required: true,
       initialValue: userInfo?.data?.email ?? '',
@@ -971,42 +974,42 @@ class _VSController extends StateNotifier<_ViewState> {
       disabledWhen: (values) =>
           (values['request_for'] ?? 'CAA_STAFF') == 'CAA_STAFF',
 
-      placeholder: 'Enter Email',
+      placeholder: l10n.enterEmail,
     ),
 
     /// ================= COUNTRY =================
     DynamicField(
       name: 'country',
-      label: 'Country',
+      label: l10n.country,
       type: FieldType.text,
       required: true,
       initialValue: 'Oman',
 
       disabled: true,
 
-      placeholder: 'Enter Country',
+      placeholder: l10n.enterCountry,
     ),
 
     /// ================= REASONS FOR REQUEST =================
     DynamicField(
       name: 'reasons_for_request',
-      label: 'Reasons For Request',
+      label: l10n.reasonsForRequest,
       type: FieldType.checkbox,
       required: true,
 
       options: [
-        DropdownOption(value: 'Remote Work', label: 'Remote Work'),
+        DropdownOption(value: 'Remote Work', label: l10n.remoteWork),
         DropdownOption(
           value: 'Third Party/Vendor Access',
-          label: 'Third Party/Vendor Access',
+          label: l10n.thirdPartyVendorAccess,
         ),
         DropdownOption(
           value: 'Access to Internal System/Applications',
-          label: 'Access to Internal System/Applications',
+          label: l10n.accessToInternalSystemApplications,
         ),
         DropdownOption(
           value: 'Project-specific Requirement',
-          label: 'Project-specific Requirement',
+          label: l10n.projectSpecificRequirement,
         ),
       ],
     ),
@@ -1014,40 +1017,40 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= SYSTEMS / APPLICATIONS =================
     DynamicField(
       name: 'systems_access',
-      label: 'Systems / Applications to Access',
+      label: l10n.sysAppToAccess,
       type: FieldType.checkbox,
       required: true,
 
       options: [
         DropdownOption(
           value: 'Internal Databases',
-          label: 'Internal Databases',
+          label: l10n.internalDataBase,
         ),
-        DropdownOption(value: 'File Servers', label: 'File Servers'),
-        DropdownOption(value: 'Shared Servers', label: 'Shared Servers'),
-        DropdownOption(value: 'UFUQ', label: 'UFUQ'),
-        DropdownOption(value: 'ERP', label: 'ERP'),
-        DropdownOption(value: 'Other', label: 'Other'),
+        DropdownOption(value: 'File Servers', label: l10n.fileServers),
+        DropdownOption(value: 'Shared Servers', label: l10n.sharedServers),
+        DropdownOption(value: 'UFUQ', label: l10n.ufuq),
+        DropdownOption(value: 'ERP', label: l10n.erp),
+        DropdownOption(value: 'Other', label: l10n.other),
       ],
     ),
 
     /// ================= REQUEST TIME PERIOD =================
     DynamicField(
       name: 'request_time_period',
-      label: 'Request for Time Period',
+      label: l10n.requestForTimePeriod,
       type: FieldType.radio,
       required: true,
 
       options: [
-        DropdownOption(value: 'ONE_TIME', label: 'One Time'),
-        DropdownOption(value: 'Permanent', label: 'Permanent'),
+        DropdownOption(value: 'ONE_TIME', label: l10n.oneTime),
+        DropdownOption(value: 'Permanent', label: l10n.permanent),
       ],
     ),
 
     /// ================= START DATE =================
     DynamicField(
       name: 'start_date',
-      label: 'Start Date',
+      label: l10n.startDate,
       type: FieldType.date,
       required: true,
       disabledWhen: (values) => values['request_time_period'] == 'Permanent',
@@ -1056,7 +1059,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= END DATE =================
     DynamicField(
       name: 'end_date',
-      label: 'End Date',
+      label: l10n.endDate,
       type: FieldType.date,
       required: false,
 
@@ -1066,27 +1069,27 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DEVICE TYPE =================
     DynamicField(
       name: 'device_type',
-      label: 'Device Type',
+      label: l10n.deviceType,
       type: FieldType.checkbox,
       required: true,
 
       options: [
-        DropdownOption(value: 'CAA_LAPTOP', label: 'CAA Laptop'),
+        DropdownOption(value: 'CAA_LAPTOP', label: l10n.caaLaptop),
         DropdownOption(
           value: 'PERSONAL_DEVICE_COMPLIES_WITH_SECURITY_POLICIES',
-          label: 'Personal Device Complies With Security Policies',
+          label: l10n.personalDeviceCompliesWithSecurityPolicies,
         ),
-        DropdownOption(value: 'MOBILE_DEVICE', label: 'Mobile Device'),
+        DropdownOption(value: 'MOBILE_DEVICE', label: l10n.mobileDevice),
       ],
     ),
 
     /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
-      label: 'Description',
+      label: l10n.requestDetailsLabel('Description'),
       type: FieldType.textarea,
       required: false,
-      placeholder: 'Enter Description',
+      placeholder: l10n.enterDescription,
     ),
 
     /// ================= ACKNOWLEDGEMENT 1 =================
@@ -1165,13 +1168,13 @@ Violation of this policy may result in:
     /// ================= ACKNOWLEDGEMENT 2 =================
     DynamicField(
       name: 'acknowledgement2',
-      label: 'Declaration',
+      label: l10n.declaration,
       type: FieldType.acknowledgement,
       required: true,
       acknowledgements: [
         AcknowledgementItem(
           id: 'Declaration Acknowledged',
-          text: 'I understand misuse may result in disciplinary action.',
+          text: l10n.misuseMayResultDisciplinaryAction,
         ),
       ],
     ),

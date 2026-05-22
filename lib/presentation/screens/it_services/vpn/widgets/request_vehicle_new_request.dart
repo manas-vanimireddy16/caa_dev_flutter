@@ -51,8 +51,8 @@ class _VpnNewRequestScreenState extends ConsumerState<VpnNewRequestScreen> {
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: l10n.vehicleMaintenanceNewRequest,
-          stepTitles: const [''],
+          title: l10n.vpnNewRequest,
+          stepTitles: [l10n.requestDetailsTabLabel],
           steps: [controller.buildVpnFields(l10n)],
 
           /// ⭐ VERY IMPORTANT

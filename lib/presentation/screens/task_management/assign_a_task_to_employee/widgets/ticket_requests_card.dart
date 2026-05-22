@@ -16,6 +16,7 @@ class TicketRequestsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(_vsProvider(providerArgs));
     final controller = ref.read(_vsProvider(providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return Card(
       color: Colors.white,
@@ -28,13 +29,16 @@ class TicketRequestsCard extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  "Ticket Requests",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Text(
+                  l10n.ticketRequests,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: controller.openNewRequestForm,
-                  child: const Text('New Request'),
+                  child: Text(l10n.newRequest),
                 ),
               ],
             ),
@@ -44,7 +48,7 @@ class TicketRequestsCard extends ConsumerWidget {
             /// Search
             KTextField(
               focusNode: focusNode,
-              hintText: "Search by ID or Name",
+              hintText: l10n.searchByIdOrName,
               controller: controller.searchController,
               onChanged: controller.onSearchChanged,
             ),
@@ -54,6 +58,7 @@ class TicketRequestsCard extends ConsumerWidget {
             /// Tabs
             RequestTabs(
               selectedIndex: state.tabIndex,
+              l10n: l10n,
               onTabChanged: (index) {
                 controller.updateTabIndex(index);
 
@@ -76,8 +81,8 @@ class TicketRequestsCard extends ConsumerWidget {
                   controller.updateTabIndex(index);
                 },
                 children: [
-                  RequestsPage(providerArgs: providerArgs),
-                  RequestsPage(providerArgs: providerArgs),
+                  RequestsPage(providerArgs: providerArgs, l10n: l10n),
+                  RequestsPage(providerArgs: providerArgs, l10n: l10n),
                 ],
               ),
             ),

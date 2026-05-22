@@ -352,14 +352,24 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -501,6 +511,9 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request Id': item.id?.toString() ?? '-',
       'status': item.status ?? '-',
       'Request By': item.createdByUser?.employeeName ?? '-',
+      'Task Title': item.taskTitle ?? '-',
+      'Priority': item.priority ?? '-',
+      'Completion Date': item.completionDate ?? '-',
       // 'Cycle Period': item.cyclePeriod ?? '-',
       'Request Submission Date': item.createdAt.toString() ?? '-',
       // 'Asset CIA Impact': item.assetCiaImpact?.toString() ?? '-',
@@ -687,21 +700,21 @@ class _VSController extends StateNotifier<_ViewState> {
 
   final assignatasktoemployeeInstance =
       AssignaTasktoEmployeeDetailsRepository();
-  get assignTaskFields => [
+  List<DynamicField> buildAssignTaskFields(DashboardL10n l10n) => [
     /// -------- TASK TITLE --------
     DynamicField(
       name: 'taskTitle',
-      label: 'Task Title',
+      label: l10n.taskTitle,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter task title',
+      placeholder: l10n.enterTaskTitle,
       // minLength: 5,
     ),
 
     /// -------- ASSIGNED TO --------
     DynamicField(
       name: 'assignedUserId',
-      label: 'Assigned To (Employee Name / ID)',
+      label: l10n.assignedToEmployeeNameId,
       type: FieldType.select,
       required: true,
       options: state.usersList
@@ -717,44 +730,44 @@ class _VSController extends StateNotifier<_ViewState> {
     /// -------- PRIORITY --------
     DynamicField(
       name: 'priority',
-      label: 'Priority',
+      label: l10n.requestDetailsLabel('Priority'),
       type: FieldType.select,
       required: true,
-      options: const [
-        DropdownOption(value: 'High', label: 'High'),
-        DropdownOption(value: 'Medium', label: 'Medium'),
-        DropdownOption(value: 'Low', label: 'Low'),
+      options: [
+        DropdownOption(value: 'High', label: l10n.priorityOption('High')),
+        DropdownOption(value: 'Medium', label: l10n.priorityOption('Medium')),
+        DropdownOption(value: 'Low', label: l10n.priorityOption('Low')),
       ],
     ),
 
     /// -------- COMPLETION DATE --------
     DynamicField(
       name: 'completionDate',
-      label: 'Completion Date',
+      label: l10n.completionDate,
       type: FieldType.date,
       required: false,
-      placeholder: 'Select completion date',
+      placeholder: l10n.selectCompletionDate,
     ),
 
     /// -------- TASK DESCRIPTION --------
     DynamicField(
       name: 'taskDescription',
-      label: 'Task Description',
+      label: l10n.taskDescription,
       type: FieldType.textarea, // or FieldType.text with maxLines
       required: true,
-      placeholder: 'Enter task description',
+      placeholder: l10n.enterTaskDescription,
     ),
 
     /// -------- ATTACHMENTS --------
     DynamicField(
       name: 'attachments',
-      label: 'Attachments (Optional)',
+      label: l10n.attachmentsOptional,
       type: FieldType.file,
       required: false,
     ),
     DynamicField(
       name: 'attach',
-      label: 'Attach (Optional)',
+      label: l10n.attachOptional,
       type: FieldType.file,
       required: false,
     ),
