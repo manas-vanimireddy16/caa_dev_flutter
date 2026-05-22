@@ -229,6 +229,7 @@ class _ITServicesHomeScreenState extends ConsumerState<ITServicesHomeScreen> {
         SalalahDashboard(service: Service(), subService: SubService()),
         MuscatDashboard(service: Service(), subService: SubService()),
         VpnDashboard(service: Service(), subService: SubService()),
+        RequestEventSupportRoute(service: Service(), subService: SubService()),
         // LegalConsultationandReviewofAdministrativeDecisionsRoute(
         //   service: Service(),
         //   subService: SubService(),

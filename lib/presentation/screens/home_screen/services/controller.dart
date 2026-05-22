@@ -560,14 +560,14 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      // case 'Request Event Support':
-      //   KAppX.router.push(
-      //     RequestEventSupportRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
+      case 'CAA059':
+        KAppX.router.push(
+          RequestEventSupportRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       // case 'Request For Cancellation':
       //   KAppX.router.push(
       //     RequestForCancellationRoute(
