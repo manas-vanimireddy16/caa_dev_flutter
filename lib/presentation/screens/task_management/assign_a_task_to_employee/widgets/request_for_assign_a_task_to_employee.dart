@@ -39,6 +39,7 @@ class _AssignaTasktoEmployeeDetailsRequestScreenState
   Widget build(BuildContext context) {
     /// Watch state only if needed
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -50,9 +51,9 @@ class _AssignaTasktoEmployeeDetailsRequestScreenState
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: 'Mission Transfer Request',
-          stepTitles: const [''],
-          steps: [controller.assignTaskFields],
+          title: l10n.assignTaskToEmployeeNewRequest,
+          stepTitles: [l10n.assignTaskFormStepDetails],
+          steps: [controller.buildAssignTaskFields(l10n)],
 
           onSubmit: (values) async {
             await controller.submitAssignaTasktoEmployeeRequest(
