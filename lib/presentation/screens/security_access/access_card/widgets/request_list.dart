@@ -2,11 +2,13 @@ part of '../view.dart';
 
 class RequestsPage extends ConsumerWidget {
   final _VSControllerParams providerArgs;
+  final DashboardL10n l10n;
   // final bool isActionItem;
 
   const RequestsPage({
     super.key,
     required this.providerArgs,
+    required this.l10n,
     // required this.isActionItem,
   });
 
@@ -23,7 +25,7 @@ class RequestsPage extends ConsumerWidget {
     }
 
     if (items.isEmpty) {
-      return const Center(child: Text("No Data Found"));
+      return Center(child: Text(l10n.noDataFound));
     }
 
     return ListView.builder(
@@ -33,6 +35,8 @@ class RequestsPage extends ConsumerWidget {
 
         return RequestCard(
           data: controller.buildRequestCardData(item),
+          fieldLabelBuilder: l10n.fieldLabel,
+          requestIdLabelBuilder: l10n.requestIdLabel,
           onTap: () async {
             await controller.openRequestDetails(
               item.id ?? 0,

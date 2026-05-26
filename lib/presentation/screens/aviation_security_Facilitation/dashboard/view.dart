@@ -11,6 +11,7 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/hotel_reservation/models/request_data.dart';
 import 'package:code_setup/repository/housing_accommodation_service/dashboard/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,11 +75,14 @@ class _AviationSecurityFacilitationDashboardScreenState
     // final selectedService = ref.watch(bottomNavIndexProvider);
     final state = ref.watch(_vsProvider);
     final controller = ref.read(_vsProvider.notifier);
+    final l10n = DashboardL10n.of(context);
     final statsList = StatSummaryHelper.buildStatList(
       state.kpiData.data?.toJson(),
+      titleForKey: l10n.statTitle,
     );
     final statsApproverList = StatSummaryHelper.buildStatList(
       state.approvalKpiData.data?.toJson(),
+      titleForKey: l10n.statTitle,
     );
 
     // // Keep TabController in sync with provider
@@ -111,9 +115,9 @@ class _AviationSecurityFacilitationDashboardScreenState
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "Ticket Requests",
-                        style: TextStyle(
+                      Text(
+                        l10n.ticketRequests,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -122,7 +126,7 @@ class _AviationSecurityFacilitationDashboardScreenState
                         onPressed: () {
                           // KAppX.router.push(AccessCardDashboardRequestRoute());
                         },
-                        child: const Text('New Request'),
+                        child: Text(l10n.newRequest),
                       ),
                     ],
                   ),
@@ -131,7 +135,7 @@ class _AviationSecurityFacilitationDashboardScreenState
                   // Search box
                   KTextField(
                     focusNode: _focusNode,
-                    hintText: "Search by ID or Name",
+                    hintText: l10n.searchByIdOrName,
                     controller: searchController,
                     textInputAction: TextInputAction.search,
                     onSubmitted: (value) {
@@ -170,9 +174,9 @@ class _AviationSecurityFacilitationDashboardScreenState
                     indicatorColor: Colors.blue,
                     labelColor: Colors.blue,
                     unselectedLabelColor: Colors.grey,
-                    tabs: const [
-                      Tab(text: "My Requests"),
-                      Tab(text: "Action Items"),
+                    tabs: [
+                      Tab(text: l10n.myRequests),
+                      Tab(text: l10n.actionItems),
                     ],
                   ),
 
@@ -194,6 +198,8 @@ class _AviationSecurityFacilitationDashboardScreenState
                                 final item = data[index];
                                 return RequestCard(
                                   from: 'hotelreservation',
+                                  fieldLabelBuilder: l10n.fieldLabel,
+                                  requestIdLabelBuilder: l10n.requestIdLabel,
 
                                   data: {
                                     'id': item.id,
@@ -228,6 +234,8 @@ class _AviationSecurityFacilitationDashboardScreenState
                                 final item = data[index];
                                 return RequestCard(
                                   from: 'hotelreservation',
+                                  fieldLabelBuilder: l10n.fieldLabel,
+                                  requestIdLabelBuilder: l10n.requestIdLabel,
 
                                   data: {
                                     'id': item.id,

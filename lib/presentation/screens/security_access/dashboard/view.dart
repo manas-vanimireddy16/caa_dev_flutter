@@ -17,6 +17,7 @@ import 'package:code_setup/presentation/screens/logistics/models/dashBoardReques
 import 'package:code_setup/presentation/screens/security_access/widgets/activityFeed.dart';
 import 'package:code_setup/presentation/screens/security_access/widgets/kpicard.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -78,6 +79,7 @@ class _AccessCardDashboardScreenState
     // final selectedService = ref.watch(bottomNavIndexProvider);
     // final state = ref.watch(_vsProvider);
     // final controller = ref.read(_vsProvider.notifier);
+    final l10n = DashboardL10n.of(context);
 
     // // Keep TabController in sync with provider
     // if (_tabController.index != selectedTab) {
@@ -86,7 +88,7 @@ class _AccessCardDashboardScreenState
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Security & Access')),
+      appBar: AppBar(title: Text(l10n.requestAccessCard)),
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
@@ -115,9 +117,9 @@ class _AccessCardDashboardScreenState
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "Ticket Requests",
-                        style: TextStyle(
+                      Text(
+                        l10n.ticketRequests,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -126,7 +128,7 @@ class _AccessCardDashboardScreenState
                         onPressed: () {
                           // KAppX.router.push(AccessCardDashboardRequestRoute());
                         },
-                        child: const Text('New Request'),
+                        child: Text(l10n.newRequest),
                       ),
                     ],
                   ),
@@ -135,7 +137,7 @@ class _AccessCardDashboardScreenState
                   // Search box
                   KTextField(
                     focusNode: _focusNode,
-                    hintText: "Search by ID or Name",
+                    hintText: l10n.searchByIdOrName,
                     controller: searchController,
                     textInputAction: TextInputAction.search,
                     onSubmitted: (value) {
@@ -174,9 +176,9 @@ class _AccessCardDashboardScreenState
                     indicatorColor: Colors.blue,
                     labelColor: Colors.blue,
                     unselectedLabelColor: Colors.grey,
-                    tabs: const [
-                      Tab(text: "My Requests"),
-                      Tab(text: "Action Items"),
+                    tabs: [
+                      Tab(text: l10n.myRequests),
+                      Tab(text: l10n.actionItems),
                     ],
                   ),
 
@@ -197,6 +199,8 @@ class _AccessCardDashboardScreenState
                                 final item = data[index];
                                 return RequestCard(
                                   from: 'logistics',
+                                  fieldLabelBuilder: l10n.fieldLabel,
+                                  requestIdLabelBuilder: l10n.requestIdLabel,
                                   data: {
                                     'id': item['id'],
                                     'status': item['status'],
@@ -250,6 +254,8 @@ class _AccessCardDashboardScreenState
                                 final item = data[index];
                                 return RequestCard(
                                   data: item,
+                                  fieldLabelBuilder: l10n.fieldLabel,
+                                  requestIdLabelBuilder: l10n.requestIdLabel,
                                   onTap: () {
                                     // KAppX.router.push(
                                     //   ReuseRequestDetailsTabRoute(

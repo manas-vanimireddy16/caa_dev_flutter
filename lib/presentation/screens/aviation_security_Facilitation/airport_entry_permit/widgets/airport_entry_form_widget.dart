@@ -45,22 +45,27 @@ class _AirportPermissionWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = DashboardL10n.of(context);
+    final formState = ref.watch(dynamicFormProvider);
+    final errorText = formState.errors['required_areas'];
+    final textDirection = Directionality.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
-          text: const TextSpan(
+          text: TextSpan(
             children: [
               TextSpan(
-                text: 'Permission to Required Areas',
-                style: TextStyle(
+                text: l10n.permissionToRequiredAreas,
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: Colors.black,
                 ),
               ),
 
-              TextSpan(
+              const TextSpan(
                 text: ' *',
                 style: TextStyle(
                   color: Colors.red,
@@ -94,6 +99,7 @@ class _AirportPermissionWidgetState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    textDirection: textDirection,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Checkbox(
@@ -139,7 +145,10 @@ class _AirportPermissionWidgetState
                         child: Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: Text(
-                            item.permit,
+                            l10n.airportPermitAreaLabel(item.permit),
+                            textAlign: l10n.isArabic
+                                ? TextAlign.right
+                                : TextAlign.left,
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
@@ -156,9 +165,16 @@ class _AirportPermissionWidgetState
                     TextFormField(
                       initialValue: item.text,
                       maxLines: 3,
+                      textDirection: textDirection,
+                      textAlign: l10n.isArabic
+                          ? TextAlign.right
+                          : TextAlign.left,
 
                       decoration: InputDecoration(
-                        hintText: 'Enter work tasks required in this area',
+                        hintText: l10n.permissionAreaTaskHint,
+                        errorText: item.text.trim().isEmpty
+                            ? l10n.permissionAreaTaskRequired
+                            : null,
 
                         filled: true,
                         fillColor: Colors.grey.shade100,
@@ -182,6 +198,14 @@ class _AirportPermissionWidgetState
             );
           }).toList(),
         ),
+        if (errorText != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            errorText,
+            textAlign: l10n.isArabic ? TextAlign.right : TextAlign.left,
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+        ],
       ],
     );
   }

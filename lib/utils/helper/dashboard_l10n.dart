@@ -30,6 +30,8 @@ class DashboardL10n {
 
   String get ticketRequests => _t('Ticket Requests', 'طلبات التذاكر');
 
+  String get dashboard => _t('Dashboard', 'لوحة التحكم');
+
   String get newRequest => _t('New Request', 'طلب جديد');
 
   String get createRequest => _t('Create Request', 'إنشاء طلب');
@@ -133,6 +135,8 @@ class DashboardL10n {
   String get attachmentUnknownFile => _t('Unknown File', 'ملف غير معروف');
 
   String get routingAddCommentHint => _t('Add a comment...', 'أضف تعليقاً...');
+
+  String get comments => _t('Comments', 'الملاحظات');
 
   String get needMoreInfo => _t('Need more info', 'أحتاج المزيد من المعلومات');
 
@@ -395,6 +399,36 @@ class DashboardL10n {
   }
 
   // Airport Entry Permit
+  String get airportEntryPermit =>
+      _t('Airport Entry Permit', 'تصريح دخول المطار');
+
+  String get airportEntryPermitRequest =>
+      _t('Airport Entry Permit Request', 'طلب تصريح دخول المطار');
+
+  String get airportName => _t('Airport Name', 'اسم المطار');
+
+  String get permissionToRequiredAreas =>
+      _t('Permission to Required Areas', 'التصريح للمناطق المطلوبة');
+
+  String get permissionAreaTaskHint => _t(
+    'Enter work tasks required in this area',
+    'أدخل مهام العمل المطلوبة في هذه المنطقة',
+  );
+
+  String get permissionAreaTaskRequired => _t(
+    'Enter work tasks for all selected required areas',
+    'أدخل مهام العمل لجميع المناطق المطلوبة المحددة',
+  );
+
+  String get issuingNewPermit => _t('Issuing New Permit', 'إصدار تصريح جديد');
+
+  String get renewalOfPermit => _t('Renewal of Permit', 'تجديد التصريح');
+
+  String get replacingLost => _t('Replacing lost', 'بدل فاقد');
+
+  String get cancellingAirportSecurityPermits =>
+      _t('Cancelling Airport Security Permits', 'إلغاء تصاريح أمن المطار');
+
   String get allCivilAirports =>
       _t('All Civil Airports', 'جميع المطارات المدنية');
 
@@ -471,9 +505,14 @@ class DashboardL10n {
 
   String get permanent => _t('Permanent', 'دائم');
 
+  String get temporaryVisit => _t('Temporary | Visit', 'مؤقت | زيارة');
+
   String get typeOfPermit => _t('Type of permit', 'نوع التصريح');
 
   String get phoneNumber => _t('Phone Number', 'رقم الهاتف');
+
+  String get phoneNumberRequired =>
+      _t('Phone number is required', 'رقم الهاتف مطلوب');
 
   String get dateOfSubmission => _t('Date of submission', 'تاريخ التقديم');
 
@@ -507,6 +546,93 @@ class DashboardL10n {
   String get dynamicFormMultiSelectDone => _t('DONE', 'تم');
 
   String get dynamicFormSearchHint => _t('Search...', 'بحث...');
+
+  String get autoFilled => _t('Auto filled', 'يُعبأ تلقائياً');
+
+  String get idCardResidenceCard =>
+      _t('ID Card | Residence Card', 'بطاقة الهوية | بطاقة الإقامة');
+
+  String get employmentContract => _t('Employment Contract', 'عقد العمل');
+
+  String get passport => _t('Passport', 'جواز السفر');
+
+  String get permitApplicationForm =>
+      _t('Permit Application Form', 'نموذج طلب التصريح');
+
+  String get securityAwarenessForm =>
+      _t('Security Awareness Form', 'نموذج التوعية الأمنية');
+
+  String get copyOfIdCard => _t('Copy of ID Card', 'نسخة من بطاقة الهوية');
+
+  String get copyOfPreviousPermit =>
+      _t('Copy of Previous Permit', 'نسخة من التصريح السابق');
+
+  String get acknowledgements => _t('Acknowledgements', 'الإقرارات');
+
+  String airportPermitCategoryOption(String en) {
+    switch (en) {
+      case 'Issuing New Permit':
+        return issuingNewPermit;
+      case 'Renewal of Permit':
+        return renewalOfPermit;
+      case 'Replacing lost':
+        return replacingLost;
+      case 'Cancelling Airport Security Permits':
+        return cancellingAirportSecurityPermits;
+      default:
+        return en;
+    }
+  }
+
+  String airportNameOption(String en) {
+    switch (en) {
+      case 'Salalah':
+        return salalah;
+      case 'Muscat':
+        return muscat;
+      case 'Marmul':
+        return marmul;
+      case 'Duqm':
+        return duqm;
+      case 'Sohar':
+        return sohar;
+      case 'Fuhud':
+        return fuhud;
+      case 'Mukhazina':
+        return mukhazina;
+      case 'All Civil Airports':
+        return allCivilAirports;
+      default:
+        return en;
+    }
+  }
+
+  String airportPermitAreaLabel(String en) {
+    switch (en) {
+      case 'VIP Building':
+        return vipBuilding;
+      case 'Cargo Building (Imports & Exports)':
+        return cargoBuildingImportsExports;
+      case 'Arrivals Hall / Arrivals Building':
+        return arrivalsHallArrivalsBuilding;
+      case 'Departures Hall / Departures Building':
+        return departuresHallDeparturesBuilding;
+      case 'Information Center / Control Tower':
+        return informationCenterControlTower;
+      case 'Aircraft Parking Area, Aircraft Maintenance Building, Vehicle Repair Workshop, Fire Station, and Fueling Stations':
+        return aircraftParkingAreaAircraftMaintenanceBuildingVehicleRepairWorkshopFireStationAndFuelingStations;
+      case 'Baggage Sorting Area':
+        return baggageSortingArea;
+      case 'Catering Building':
+        return cateringBuilding;
+      case 'Aircraft Maintenance Building':
+        return aircraftMaintenanceBuilding;
+      case 'Gold Building':
+        return goldBuilding;
+      default:
+        return en;
+    }
+  }
 
   // Logistics Daily/Emergency
   String get vehicleRequiredFor =>
@@ -764,6 +890,10 @@ class DashboardL10n {
       _t('Passenger details', 'تفاصيل الركاب');
 
   // security access - request for access card
+  String get accessCard => _t('Access Card', 'بطاقة الدخول');
+
+  String get requestAccessCard => _t('Request A Access Card', 'طلب بطاقة دخول');
+
   String get enterName =>
       _t('Enter name (characters only)', 'أدخل الاسم (حروف فقط)');
 
@@ -772,6 +902,8 @@ class DashboardL10n {
   String get enterPhoneNumber => _t('Enter Phone Number', 'أدخل رقم الهاتف');
 
   String get type => _t('Type', 'النوع');
+
+  String get department => _t('Department', 'الدائرة');
 
   String get email => _t('Email', 'البريد الإلكتروني');
 
@@ -789,10 +921,94 @@ class DashboardL10n {
 
   String get reason => _t('Reason', 'سبب الطلب');
 
+  String get reasonMinLength =>
+      _t('Must be at least 5 characters', 'يجب ألا يقل عن 5 أحرف');
+
   String get attachPassportSizePhotoWhiteBackground => _t(
     'Attach passport size photo (White background)',
     'إرفاق صورة بحجم جواز السفر (خلفية بيضاء)',
   );
+
+  String get newOption => _t('New', 'جديد');
+
+  String get renewal => _t('Renewal', 'تجديد');
+
+  String get workers => _t('Workers', 'العمال');
+
+  String get contractors => _t('Contractors', 'المتعاقدون');
+
+  String get trainee => _t('Trainee', 'متدرب');
+
+  String get employees => _t('Employees', 'الموظفون');
+
+  String get enterPhoneNumberDigits =>
+      _t('Enter Phone Number (8-10 digits)', 'أدخل رقم الهاتف (8-10 أرقام)');
+
+  String get enterCivilIdPassportNumber => _t(
+    'Enter Civil ID / Passport Number',
+    'أدخل الرقم المدني / رقم جواز السفر',
+  );
+
+  String get accessCardNumberOptional =>
+      _t('Access Card Number (Optional)', 'رقم بطاقة الدخول (اختياري)');
+
+  String get enterAccessCardNumber =>
+      _t('Enter Access Card Number', 'أدخل رقم بطاقة الدخول');
+
+  String get universityOrganization =>
+      _t('University / Organization', 'الجامعة / المنظمة');
+
+  String get enterOrganization => _t('Enter Organization', 'أدخل المنظمة');
+
+  String get reasonPlaceholder => _t(
+    'Write here (min 5, max 250 characters)',
+    'اكتب هنا (5 أحرف كحد أدنى و250 كحد أقصى)',
+  );
+
+  String get accessCardAttachmentLabel => _t(
+    'Attachment (Passport Size Photo (White Background))',
+    'المرفق (صورة بحجم جواز السفر بخلفية بيضاء)',
+  );
+
+  String accessCardRequestForOption(String en) {
+    switch (en) {
+      case 'Self':
+        return self;
+      case 'Behalf Of':
+        return behalfOf;
+      default:
+        return en;
+    }
+  }
+
+  String accessCardTypeOption(String en) {
+    switch (en) {
+      case 'New':
+        return newOption;
+      case 'Renewal':
+        return renewal;
+      default:
+        return en;
+    }
+  }
+
+  String accessCardCategoryOption(String en) {
+    switch (en) {
+      case 'workers':
+      case 'Workers':
+        return workers;
+      case 'contractor':
+      case 'Contractors':
+        return contractors;
+      case 'trainee':
+      case 'Trainee':
+        return trainee;
+      case 'Employees':
+        return employees;
+      default:
+        return en;
+    }
+  }
 
   // Assign a task to employee
   String get enterRequestTitle => _t(
@@ -1429,8 +1645,14 @@ class DashboardL10n {
         return _t('Request By', 'طلب بواسطة');
       case 'Date':
         return _t('Date', 'التاريخ');
+      case 'Request Date':
+        return _t('Request Date', 'تاريخ الطلب');
       case 'Request Type':
         return _t('Request Type', 'نوع الطلب');
+      case 'Nationality':
+        return nationality;
+      case 'User Name':
+        return _t('User Name', 'اسم المستخدم');
       case 'Priority':
         return _t('Priority', 'الأولوية');
       case 'Task Title':
@@ -1469,6 +1691,17 @@ class DashboardL10n {
         return requestName;
       case 'Category':
         return category;
+      case 'Type':
+        return type;
+      case 'Email':
+        return email;
+      case 'ID Number':
+        return idNumber;
+      case 'Person Name':
+        return personName;
+      case 'Access Card Number':
+      case 'Access Card Number (Optional)':
+        return accessCardNumberOptional;
       case 'Hotel Name':
         return hotelName;
       case 'Check-In Date':
@@ -1505,11 +1738,23 @@ class DashboardL10n {
       case 'Status':
         return _t('Status', 'الحالة');
 
+      case 'Profile':
+        return _t('Profile', 'الملف الشخصي');
+
+      case 'User Info':
+        return _t('User Info', 'معلومات المستخدم');
+
       case 'section_name':
         return _t('Section Name', 'اسم القسم');
 
       case 'requested_date':
         return _t('Requested Date', 'تاريخ الطلب');
+
+      case 'Request Date':
+        return _t('Request Date', 'تاريخ الطلب');
+
+      case 'Reason For Request':
+        return reasonForRequest;
 
       case 'request_information':
         return _t('Request Information', 'معلومات الطلب');
@@ -1564,6 +1809,51 @@ class DashboardL10n {
 
       case 'service_type':
         return _t('Service Type', 'نوع الخدمة');
+
+      case 'Airport Name':
+        return airportName;
+
+      case 'Passport/ID Number':
+      case 'Passport/ID Card NO':
+        return passportIdCardNo;
+
+      case 'Category of Permit':
+        return categoryOfPermit;
+
+      case 'Date of Submission':
+      case 'Date of submission':
+        return dateOfSubmission;
+
+      case 'Phone Number':
+        return phoneNumber;
+
+      case 'Type of Permit':
+        return typeOfPermit;
+
+      case 'Permission to Required Areas':
+        return permissionToRequiredAreas;
+
+      case 'Additional Services':
+        return additionalServices;
+
+      case 'Person Name':
+        return personName;
+
+      case 'ID Number':
+        return idNumber;
+
+      case 'Date':
+        return date;
+
+      case 'Access Card Number':
+      case 'Access Card Number (Optional)':
+        return accessCardNumberOptional;
+
+      case 'University / Organization':
+        return universityOrganization;
+
+      case 'Reason':
+        return reason;
 
       case 'Priority':
         return _t('Priority', 'الأولوية');
@@ -1677,6 +1967,15 @@ class DashboardL10n {
         return _t('Employee ID', 'رقم الموظف');
       case 'Name':
         return _t('Name', 'الاسم');
+
+      case 'Phone':
+        return phoneNumber;
+
+      case 'Customer ID':
+        return _t('Customer ID', 'رقم العميل');
+
+      case 'Request ID':
+        return _t('Request ID', 'رقم الطلب');
 
       case 'Job Title / Designation':
         return _t('Job Title / Designation', 'المسمى الوظيفي / المنصب');

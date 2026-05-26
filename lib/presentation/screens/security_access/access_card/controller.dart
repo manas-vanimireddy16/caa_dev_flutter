@@ -282,14 +282,24 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -464,14 +474,17 @@ class _VSController extends StateNotifier<_ViewState> {
   final dutyMissionAnnualInstance = AnnualDutyMissionRepoistry();
   final securityAccessInstance = SecurityAccessRepoistory();
 
-  List<DynamicField> get securityAccessFields => [
+  List<DynamicField> securityAccessFields(DashboardL10n l10n) => [
     /// ================= REQUEST FOR =================
     DynamicField(
       name: 'request_for',
-      label: 'Request For',
+      label: l10n.requestFor,
       type: FieldType.radio,
       initialValue: 'Self',
-      options: ['Self', 'Behalf Of'],
+      options: [
+        DropdownOption(value: 'Self', label: l10n.self),
+        DropdownOption(value: 'Behalf Of', label: l10n.behalfOf),
+      ],
 
       /// 🔥 Disable "Behalf Of" when roleId == 2
       disabledOptions: roleId == 2 ? ['Behalf Of'] : [],
@@ -507,15 +520,15 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PERSON NAME =================
     DynamicField(
       name: 'person_name',
-      label: 'Person Name',
+      label: l10n.personName,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter name',
+      placeholder: l10n.enterName,
       initialValue: userInfo?.data?.employeeName ?? '',
       disabledWhen: (v) => (v['request_for'] ?? 'Self') == 'Self',
       validator: (value, values) {
         final name = value?.toString().trim() ?? '';
-        if (name.isEmpty) return 'Name is required';
+        if (name.isEmpty) return '${l10n.personName} is required';
 
         return null;
       },
@@ -524,17 +537,17 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PHONE =================
     DynamicField(
       name: 'contact_number',
-      label: 'Phone Number',
+      label: l10n.phoneNumber,
       type: FieldType.number,
       required: true,
-      placeholder: 'Enter Phone Number (8-10 digits)',
+      placeholder: l10n.enterPhoneNumberDigits,
       initialValue: userInfo?.data?.mobile ?? '',
       disabledWhen: (v) => (v['request_for'] ?? 'Self') == 'Self',
       validator: (value, values) {
         final phone = value?.toString().trim() ?? '';
         if (phone.isEmpty) return null;
         if (phone.length < 8) {
-          return 'Min should be 8 digits';
+          return l10n.securityThreatPhoneDigitsHint;
         }
         return null;
       },
@@ -543,7 +556,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DEPARTMENT =================
     DynamicField(
       name: 'department',
-      label: 'Department',
+      label: l10n.department,
       type: FieldType.select,
       required: true,
       initialValue: userInfo?.data?.department?.id?.toString(),
@@ -561,36 +574,36 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= TYPE =================
     DynamicField(
       name: 'type',
-      label: 'Type',
+      label: l10n.type,
       type: FieldType.select,
       required: true,
       options: [
-        DropdownOption(value: 'New', label: 'New'),
-        DropdownOption(value: 'Renewal', label: 'Renewal'),
+        DropdownOption(value: 'New', label: l10n.newOption),
+        DropdownOption(value: 'Renewal', label: l10n.renewal),
       ],
     ),
 
     /// ================= CATEGORY =================
     DynamicField(
       name: 'category',
-      label: 'Category',
+      label: l10n.category,
       type: FieldType.select,
       required: true,
       // initialValue: 'worker',
       options: [
-        DropdownOption(value: 'workers', label: 'Workers'),
-        DropdownOption(value: 'contractor', label: 'Contractors'),
-        DropdownOption(value: 'trainee', label: 'Trainee'),
+        DropdownOption(value: 'workers', label: l10n.workers),
+        DropdownOption(value: 'contractor', label: l10n.contractors),
+        DropdownOption(value: 'trainee', label: l10n.trainee),
       ],
       visibleWhen: (v) => (v['request_for'] ?? 'Self') != 'Self',
     ),
     DynamicField(
       name: 'category1',
-      label: 'Category',
+      label: l10n.category,
       type: FieldType.select,
       required: true,
       initialValue: 'Employees',
-      options: [DropdownOption(value: 'Employees', label: 'Employees')],
+      options: [DropdownOption(value: 'Employees', label: l10n.employees)],
       disabledWhen: (v) => (v['request_for'] ?? 'Self') == 'Self',
       visibleWhen: (v) => (v['request_for'] ?? 'Self') == 'Self',
     ),
@@ -599,7 +612,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= EMAIL (SELF) =================
     DynamicField(
       name: 'email',
-      label: 'Email',
+      label: l10n.email,
       type: FieldType.email,
       initialValue: userInfo?.data?.email ?? '',
       visibleWhen: (v) => (v['request_for'] ?? 'Self') == 'Self',
@@ -609,23 +622,23 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= EMAIL (Behalf Of) =================
     DynamicField(
       name: 'email1',
-      label: 'Email',
+      label: l10n.email,
       type: FieldType.email,
       requiredWhen: (v) => v['request_for'] == 'Behalf Of',
       visibleWhen: (v) => v['request_for'] == 'Behalf Of',
-      placeholder: 'Enter Email',
+      placeholder: l10n.enterEmail,
     ),
 
     /// ================= ID NUMBER =================
     DynamicField(
       name: 'id_number',
-      label: 'ID Number',
+      label: l10n.idNumber,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter Civil ID / Passport Number',
+      placeholder: l10n.enterCivilIdPassportNumber,
       validator: (value, values) {
         final phone = value?.toString().trim() ?? '';
-        if (phone.isEmpty) return 'ID Number or Passport Number is required';
+        if (phone.isEmpty) return '${l10n.idNumber} is required';
         return null;
       },
     ),
@@ -633,35 +646,35 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DATE =================
     DynamicField(
       name: 'date',
-      label: 'Date',
+      label: l10n.date,
       type: FieldType.date,
       firstDate: DateTime.now(),
       initialDate: DateTime.now(),
       required: false,
-      placeholder: 'Select',
+      placeholder: l10n.select,
     ),
 
     DynamicField(
       name: 'access_card_no',
-      label: 'Access Card Number (Optional)',
+      label: l10n.accessCardNumberOptional,
       type: FieldType.text,
       // requiredWhen: (v) => v['request_for'] == 'Behalf Of',
       visibleWhen: (v) =>
           (v['request_for'] == 'Behalf Of' && v['type'] == 'Renewal'),
-      placeholder: 'Enter Access Card Number',
+      placeholder: l10n.enterAccessCardNumber,
     ),
 
     /// ================= ORGANIZATION =================
     DynamicField(
       name: 'organization',
-      label: 'University / Organization',
+      label: l10n.universityOrganization,
       type: FieldType.text,
       requiredWhen: (v) => v['request_for'] == 'Behalf Of',
       visibleWhen: (v) => v['request_for'] == 'Behalf Of',
-      placeholder: 'Enter Organization',
+      placeholder: l10n.enterOrganization,
       validator: (value, values) {
         final phone = value?.toString().trim() ?? '';
-        if (phone.isEmpty) return 'University / Organization is required';
+        if (phone.isEmpty) return '${l10n.universityOrganization} is required';
 
         return null;
       },
@@ -670,13 +683,13 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= REASON =================
     DynamicField(
       name: 'reason',
-      label: 'Reason',
+      label: l10n.reason,
       type: FieldType.textarea,
       required: true,
-      placeholder: 'Write here (min 5, max 250 characters)',
+      placeholder: l10n.reasonPlaceholder,
       validator: (value, values) {
         final phone = value?.toString().trim() ?? '';
-        if (phone.isEmpty) return 'Must be at least 5 characters';
+        if (phone.isEmpty) return l10n.reasonMinLength;
 
         return null;
       },
@@ -685,7 +698,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= ATTACHMENT =================
     DynamicField(
       name: 'attachment',
-      label: 'Attachment (Passport Size Photo (White Background))',
+      label: l10n.accessCardAttachmentLabel,
       type: FieldType.file,
       required: true,
       maxFiles: 1,

@@ -14,6 +14,7 @@ class _DrawerMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final serviceName = 'Security and Access';
+    final l10n = DashboardL10n.of(context);
 
     final roles = KAppX.globalProvider.read(rolesProvider)?.services ?? [];
 
@@ -28,12 +29,12 @@ class _DrawerMenu extends ConsumerWidget {
       DrawerItemData(
         index: 0,
         icon: KImageProvider(image: KIcons.dashboard),
-        label: 'Dashboard',
+        label: l10n.dashboard,
       ),
       DrawerItemData(
         index: 1,
         icon: KImageProvider(image: KIcons.dashboard),
-        label: 'Request A Access Card',
+        label: l10n.requestAccessCard,
       ),
     ];
 

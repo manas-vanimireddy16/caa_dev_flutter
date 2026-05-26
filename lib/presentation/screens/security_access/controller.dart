@@ -60,15 +60,15 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  String titleForIndex(int index) {
+  String titleForIndex(int index, DashboardL10n l10n) {
     switch (index) {
       case 0:
-        return 'Dashboard';
+        return l10n.dashboard;
       case 1:
-        return 'Request A Access Card';
+        return l10n.requestAccessCard;
 
       default:
-        return '  Home';
+        return l10n.home;
     }
   }
 }

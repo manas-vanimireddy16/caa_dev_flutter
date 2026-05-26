@@ -26,6 +26,7 @@ import 'package:code_setup/presentation/models/request_detail.dart'
 
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/assets/icons.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 
 import 'package:flutter/material.dart';
 
@@ -50,6 +51,7 @@ class AviationSecurityFacilitationHomeScreen extends ConsumerWidget {
         .themeBox;
 
     final stateController = ref.read(bottomNavigatorVsProvider.notifier);
+    final l10n = DashboardL10n.of(context);
 
     return AutoTabsRouter.builder(
       routes: [
@@ -71,7 +73,7 @@ class AviationSecurityFacilitationHomeScreen extends ConsumerWidget {
             ),
 
             title: Text(
-              stateController.titleForIndex(activeIndex),
+              stateController.titleForIndex(activeIndex, l10n),
               style: TextStyle(
                 fontSize: currentTheme.fontSizes.s16,
                 fontWeight: currentTheme.fontWeights.wBold,

@@ -933,19 +933,19 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= FULL NAME =================
     DynamicField(
       name: 'full_name',
-      label: 'Full Name / Family Name',
+      label: l10n.fullNameFamilyName,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
 
     /// ================= NATIONALITY =================
     DynamicField(
       name: 'nationality',
-      label: 'Nationality',
+      label: l10n.nationality,
       type: FieldType.select,
       required: true,
-      placeholder: 'Select',
+      placeholder: l10n.select,
 
       options: state.nationalityList
           .map(
@@ -960,7 +960,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DATE OF BIRTH =================
     DynamicField(
       name: 'date_of_birth',
-      label: 'Date of Birth',
+      label: l10n.dob,
       type: FieldType.date,
       required: true,
       placeholder: 'dd-mm-yyyy',
@@ -969,30 +969,30 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PASSPORT / ID =================
     DynamicField(
       name: 'passport_id',
-      label: 'Passport/ID Card NO',
+      label: l10n.passportIdCardNo,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
 
     /// ================= CATEGORY OF PERMIT =================
     DynamicField(
       name: 'permit_category',
-      label: 'Category of permit',
+      label: l10n.categoryOfPermit,
       type: FieldType.select,
       required: true,
-      placeholder: 'Select',
+      placeholder: l10n.select,
 
       options: [
         DropdownOption(
           value: 'Issuing New Permit',
-          label: 'Issuing New Permit',
+          label: l10n.issuingNewPermit,
         ),
-        DropdownOption(value: 'Renewal of Permit', label: 'Renewal of Permit'),
-        DropdownOption(value: 'Replacing lost', label: 'Replacing lost'),
+        DropdownOption(value: 'Renewal of Permit', label: l10n.renewalOfPermit),
+        DropdownOption(value: 'Replacing lost', label: l10n.replacingLost),
         DropdownOption(
           value: 'Cancelling Airport Security Permits',
-          label: 'Cancelling Airport Security Permits',
+          label: l10n.cancellingAirportSecurityPermits,
         ),
       ],
     ),
@@ -1000,7 +1000,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DATE OF SUBMISSION =================
     DynamicField(
       name: 'submission_date',
-      label: 'Date of submission',
+      label: l10n.dateOfSubmission,
       type: FieldType.date,
       visibleWhen: (values) =>
           values['permit_category'] != 'Cancelling Airport Security Permits',
@@ -1011,23 +1011,23 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PHONE NUMBER =================
     DynamicField(
       name: 'phone_number',
-      label: 'Phone Number',
+      label: l10n.phoneNumber,
       type: FieldType.number,
       required: true,
       visibleWhen: (values) =>
           values['permit_category'] != 'Cancelling Airport Security Permits',
 
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
 
       validator: (value, values) {
         final phone = value?.toString().trim() ?? '';
 
         if (phone.isEmpty) {
-          return 'Phone number is required';
+          return l10n.phoneNumberRequired;
         }
 
         if (phone.length != 8) {
-          return 'Phone number must be 8 digits';
+          return l10n.securityThreatPhoneValidationError();
         }
 
         return null;
@@ -1037,25 +1037,25 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= AIRPORT NAME =================
     DynamicField(
       name: 'airport_name',
-      label: 'Airport Name',
+      label: l10n.airportName,
       type: FieldType.select,
       required: true,
       visibleWhen: (values) =>
           values['permit_category'] != 'Cancelling Airport Security Permits',
 
-      placeholder: 'Select',
+      placeholder: l10n.select,
 
       options: [
-        DropdownOption(value: 'Salalah', label: 'Salalah'),
-        DropdownOption(value: 'Muscat', label: 'Muscat'),
-        DropdownOption(value: 'Marmul', label: 'Marmul'),
-        DropdownOption(value: 'Duqm', label: 'Duqm'),
-        DropdownOption(value: 'Sohar', label: 'Sohar'),
-        DropdownOption(value: 'Fuhud', label: 'Fuhud'),
-        DropdownOption(value: 'Mukhazina', label: 'Mukhazina'),
+        DropdownOption(value: 'Salalah', label: l10n.salalah),
+        DropdownOption(value: 'Muscat', label: l10n.muscat),
+        DropdownOption(value: 'Marmul', label: l10n.marmul),
+        DropdownOption(value: 'Duqm', label: l10n.duqm),
+        DropdownOption(value: 'Sohar', label: l10n.sohar),
+        DropdownOption(value: 'Fuhud', label: l10n.fuhud),
+        DropdownOption(value: 'Mukhazina', label: l10n.mukhazina),
         DropdownOption(
           value: 'All Civil Airports',
-          label: 'All Civil Airports',
+          label: l10n.allCivilAirports,
         ),
       ],
     ),
@@ -1063,7 +1063,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= TYPE OF PERMIT =================
     DynamicField(
       name: 'permit_type',
-      label: 'Type of permit',
+      label: l10n.typeOfPermit,
       type: FieldType.radio,
       required: true,
       visibleWhen: (values) =>
@@ -1072,15 +1072,15 @@ class _VSController extends StateNotifier<_ViewState> {
       initialValue: 'temporary',
 
       options: [
-        DropdownOption(value: 'permanent', label: 'Permanent'),
-        DropdownOption(value: 'temporary', label: 'Temporary | Visit'),
+        DropdownOption(value: 'permanent', label: l10n.permanent),
+        DropdownOption(value: 'temporary', label: l10n.temporaryVisit),
       ],
     ),
 
     /// ================= START DATE =================
     DynamicField(
       name: 'start_date',
-      label: 'Start Date',
+      label: l10n.startDate,
       type: FieldType.date,
       firstDate: DateTime.now(),
       initialDate: DateTime.now(),
@@ -1097,7 +1097,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= END DATE =================
     DynamicField(
       name: 'end_date',
-      label: 'End Date',
+      label: l10n.endDate,
       type: FieldType.date,
 
       required: true,
@@ -1135,7 +1135,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DURATION =================
     DynamicField(
       name: 'duration_days',
-      label: 'Duration (Days)',
+      label: l10n.durationDaysAirportEntry,
       type: FieldType.text,
       required: true,
       disabled: true,
@@ -1143,15 +1143,22 @@ class _VSController extends StateNotifier<_ViewState> {
           (values['permit_category'] != 'Cancelling Airport Security Permits' &&
           values['permit_type'] == 'temporary'),
 
-      placeholder: 'Auto filled',
+      placeholder: l10n.autoFilled,
     ),
 
     DynamicField(
       name: 'required_areas',
-      label: 'Permission to Required Areas',
+      label: l10n.permissionToRequiredAreas,
       type: FieldType.custom,
+      required: true,
       visibleWhen: (values) =>
           values['permit_category'] != 'Cancelling Airport Security Permits',
+      validator: (value, values) {
+        if (!_hasValidRequiredAreas(values)) {
+          return l10n.permissionAreaTaskRequired;
+        }
+        return null;
+      },
 
       builder: (context, ref) {
         return AirportPermissionWidget(
@@ -1179,19 +1186,19 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= COMMENTS =================
     DynamicField(
       name: 'comments',
-      label: 'Comments',
+      label: l10n.comments,
       type: FieldType.textarea,
       visibleWhen: (values) =>
           values['permit_category'] != 'Cancelling Airport Security Permits',
 
       required: false,
-      placeholder: 'Write Here...',
+      placeholder: l10n.writeHereAr,
     ),
 
     /// ================= JOB TITLE =================
     DynamicField(
       name: 'job_title',
-      label: 'Job Title',
+      label: l10n.jobTitle,
       type: FieldType.text,
       visibleWhen: (values) =>
           values['permit_category'] != 'Cancelling Airport Security Permits',
@@ -1204,29 +1211,29 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= ADDITIONAL SERVICES =================
     DynamicField(
       name: 'additional_services',
-      label: 'Additional Services',
+      label: l10n.additionalServices,
       type: FieldType.select,
       visibleWhen: (values) =>
           values['permit_category'] != 'Cancelling Airport Security Permits',
 
       required: true,
-      placeholder: 'Select',
+      placeholder: l10n.select,
 
       options: [
-        DropdownOption(value: 'Laptop / Tablet', label: 'Laptop / Tablet'),
+        DropdownOption(value: 'Laptop / Tablet', label: l10n.laptopTablet),
         DropdownOption(
           value: 'Boarding the Aircraft',
-          label: 'Boarding the Aircraft',
+          label: l10n.boardingTheAircraft,
         ),
         DropdownOption(
           value: 'Employee Assisting People with Special Needs',
-          label: 'Employee Assisting People with Special Needs',
+          label: l10n.employeeAssistingPeopleWithSpecialNeeds,
         ),
       ],
     ),
     DynamicField(
       name: 'additional_services_details',
-      label: "Enter the device's serial number",
+      label: l10n.enterDeviceSerialNumber,
       type: FieldType.text,
       visibleWhen: (values) =>
           (values['additional_services'] == 'Laptop / Tablet' &&
@@ -1243,7 +1250,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= COMMON ATTACHMENT =================
     DynamicField(
       name: 'general_attachments',
-      label: 'Attachments',
+      label: l10n.attachmentsTabLabel,
       type: FieldType.file,
       required: false,
 
@@ -1263,7 +1270,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// =====================================================
     DynamicField(
       name: 'id_resident_card',
-      label: 'ID Card | Residence Card',
+      label: l10n.idCardResidenceCard,
       type: FieldType.file,
       required: true,
 
@@ -1279,7 +1286,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     DynamicField(
       name: 'employment_contract',
-      label: 'Employment Contract',
+      label: l10n.employmentContract,
       type: FieldType.file,
       required: true,
 
@@ -1295,7 +1302,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     DynamicField(
       name: 'passport_copy',
-      label: 'Passport',
+      label: l10n.passport,
       type: FieldType.file,
       required: false,
 
@@ -1311,7 +1318,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     DynamicField(
       name: 'permit_application_form',
-      label: 'Permit Application Form',
+      label: l10n.permitApplicationForm,
       type: FieldType.file,
       required: true,
 
@@ -1327,7 +1334,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     DynamicField(
       name: 'security_awareness_form',
-      label: 'Security Awareness Form',
+      label: l10n.securityAwarenessForm,
       type: FieldType.file,
       required: true,
 
@@ -1346,7 +1353,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// =====================================================
     DynamicField(
       name: 'renewal_id_copy',
-      label: 'Copy of ID Card',
+      label: l10n.copyOfIdCard,
       type: FieldType.file,
       required: true,
 
@@ -1362,7 +1369,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     DynamicField(
       name: 'previous_permit_copy',
-      label: 'Copy of Previous Permit',
+      label: l10n.copyOfPreviousPermit,
       type: FieldType.file,
       required: true,
 
@@ -1403,7 +1410,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= ACKNOWLEDGEMENT 1 =================
     DynamicField(
       name: 'acknowledgement_1',
-      label: 'Acknowledgements',
+      label: l10n.acknowledgements,
       type: FieldType.acknowledgement,
       required: true,
 
@@ -1454,18 +1461,100 @@ If you suspect privacy compromise: Close all tabs and windows you are browsing C
     /// ================= ACKNOWLEDGEMENT 2 =================
     DynamicField(
       name: 'acknowledgement_2',
-      label: 'Acknowledgements',
+      label: l10n.acknowledgements,
       type: FieldType.acknowledgement,
       required: true,
 
       acknowledgements: [
         AcknowledgementItem(
           id: 'disciplinary_action',
-          text: 'I understand misuse may result in disciplinary action.',
+          text: l10n.misuseMayResultDisciplinaryAction,
         ),
       ],
     ),
   ];
+
+  bool canSubmitAirportEntryPermit(Map<String, dynamic> values) {
+    final permitCategory = values['permit_category'];
+    if (!_hasValue(values['full_name']) ||
+        !_hasValue(values['nationality']) ||
+        !_hasValue(values['date_of_birth']) ||
+        !_hasValue(values['passport_id']) ||
+        !_hasCheckedAcknowledgements(values['acknowledgement_1']) ||
+        !_hasCheckedAcknowledgements(values['acknowledgement_2'])) {
+      return false;
+    }
+
+    if (permitCategory == 'Cancelling Airport Security Permits') {
+      return true;
+    }
+
+    if (!_hasValue(values['submission_date']) ||
+        !_hasValue(values['phone_number']) ||
+        !_hasValue(values['airport_name']) ||
+        !_hasValue(values['permit_type']) ||
+        !_hasValue(values['job_title']) ||
+        !_hasValue(values['additional_services']) ||
+        !_hasValidRequiredAreas(values)) {
+      return false;
+    }
+
+    if (values['permit_type'] == 'temporary' &&
+        (!_hasValue(values['start_date']) ||
+            !_hasValue(values['end_date']) ||
+            !_hasValue(values['duration_days']))) {
+      return false;
+    }
+
+    if (values['additional_services'] == 'Laptop / Tablet' &&
+        !_hasValue(values['additional_services_details'])) {
+      return false;
+    }
+
+    if (permitCategory == 'Issuing New Permit') {
+      return _hasValue(values['id_resident_card']) &&
+          _hasValue(values['employment_contract']) &&
+          _hasValue(values['permit_application_form']) &&
+          _hasValue(values['security_awareness_form']);
+    }
+
+    if (permitCategory == 'Renewal of Permit') {
+      return _hasValue(values['renewal_id_copy']) &&
+          _hasValue(values['previous_permit_copy']);
+    }
+
+    return true;
+  }
+
+  static bool _hasValidRequiredAreas(Map<String, dynamic> values) {
+    final requiredAreas = values['required_areas'];
+    if (requiredAreas is! List || requiredAreas.isEmpty) {
+      return false;
+    }
+
+    return requiredAreas.every((area) {
+      if (area is! Map) return false;
+      final text = area['text']?.toString().trim() ?? '';
+      return text.isNotEmpty;
+    });
+  }
+
+  static bool _hasValue(dynamic value) {
+    if (value == null) return false;
+    if (value is String) return value.trim().isNotEmpty;
+    if (value is List) return value.isNotEmpty;
+    return true;
+  }
+
+  static bool _hasCheckedAcknowledgements(dynamic value) {
+    if (value is! List || value.isEmpty) return false;
+    return value.every((item) {
+      if (item is AcknowledgementItem) {
+        return !item.isRequired || item.isChecked;
+      }
+      return false;
+    });
+  }
 
   /// ========================= API CALLS =========================
 

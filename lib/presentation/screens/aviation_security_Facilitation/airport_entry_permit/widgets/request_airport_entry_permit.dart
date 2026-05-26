@@ -52,14 +52,14 @@ class _AirportEntryPermitNewRequestScreenState
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: l10n.newRequest,
+          title: l10n.airportEntryPermit,
           stepTitles: const [''],
           steps: [controller.buildAirportEntryPermitFields(l10n)],
 
           /// ⭐ VERY IMPORTANT
-          // enableSubmitWhen: (values) {
-          //   return state.hrTasks.isNotEmpty;
-          // },
+          enableSubmitWhen: (values) {
+            return controller.canSubmitAirportEntryPermit(values);
+          },
           onSubmit: (values) async {
             await controller.submitProjectApprovalRequest(
               widget.serviceId,

@@ -108,11 +108,12 @@ class _DrawerMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = DashboardL10n.of(context);
     final items = [
       DrawerItemData(
         index: 0,
         icon: KImageProvider(image: KIcons.dashboard),
-        label: 'Dashboard',
+        label: l10n.dashboard,
       ),
       DrawerItemData(
         index: 1,
@@ -120,7 +121,7 @@ class _DrawerMenu extends StatelessWidget {
           image: KIcons.playlistAddCheck,
           tintColor: Colors.black,
         ),
-        label: 'Airport Entry Permit Request',
+        label: l10n.airportEntryPermitRequest,
       ),
     ];
     final currentTheme = KAppX.globalProvider
