@@ -384,6 +384,7 @@ class RequestDetailData {
   final String? locationOfEvent;
   final String? typeOfEvent;
   final int? eventDepartmentId;
+
   RequestDetailData({
     this.request,
     this.risk,

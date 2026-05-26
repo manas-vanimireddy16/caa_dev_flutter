@@ -313,13 +313,13 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      // case 'Temporary Decision':
-      //   KAppX.router.push(
-      //     TemporaryAssignmentDecisionRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
+      case 'CAA062':
+        KAppX.router.push(
+          TemporaryAssignmentDecisionRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
       // case 'Service Transfer Decision':
       //   KAppX.router.push(
       //     ServiceTransferRoute(

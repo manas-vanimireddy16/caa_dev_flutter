@@ -329,11 +329,11 @@ class AppRouter extends RootStackRouter {
       page: SecondmentDecisionDetailsRoute.page,
       path: RouteNames.secondmentDecisionDetails,
     ),
-    AutoRoute(
-      page: NewTemporaryAssignmentDecisionRequestRoute.page,
-      path: RouteNames.temporaryAssignmentDecisionNewRequest,
-    ),
 
+    // AutoRoute(
+    //   page: NewTemporaryAssignmentDecisionRequestRoute.page,
+    //   path: RouteNames.temporaryAssignmentDecisionNewRequest,
+    // ),
     AutoRoute(
       page: TemporaryAssignmentDecisionDetailsRoute.page,
       path: RouteNames.temporaryAssignmentDecisionDetails,

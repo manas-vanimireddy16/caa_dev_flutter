@@ -666,19 +666,25 @@ class ApiEndPoint {
 
   static String secondmentDecisionSendAttachmentById(int id) =>
       '/v1/hr-service/secondment-decisions/request/$id/attachment';
+  // ===================== Temporary Assignment Decision =====================
 
-  // Temporary Assignment Decision
+  /// Create Request
   static const String temporaryAssignmentDecisionNewRequest =
       '/v1/hr-service/temporary-assignment-decision/request';
 
+  /// Get My Requests
   static const String temporaryAssignmentDecisionRequests =
       '/v1/hr-service/temporary-assignment-decision/requests';
 
+  /// Approval Requests
   static const String temporaryAssignmentDecisionApprovalRequests =
       '/v1/hr-service/temporary-assignment-decision/requests/for-approval';
 
+  /// Request By Id
   static String temporaryAssignmentDecisionRequestById(int id) =>
       '/v1/hr-service/temporary-assignment-decision/request/$id';
+
+  /// ===================== APPROVAL APIs =====================
 
   static const String temporaryAssignmentDecisionApproval =
       '/v1/hr-service/temporary-assignment-decision/approve';
@@ -686,20 +692,37 @@ class ApiEndPoint {
   static const String temporaryAssignmentDecisionReject =
       '/v1/hr-service/temporary-assignment-decision/reject';
 
-  static const String temporaryAssignmentDecisionApprovalKpiData =
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI
+  static const String temporaryAssignmentDecisionKpiData =
       '/v1/hr-service/temporary-assignment-decision/analytics/kpi-cards';
 
-  static const String temporaryAssignmentDecisionKpiData =
+  /// Approval KPI
+  static const String temporaryAssignmentDecisionApprovalKpiData =
       '/v1/hr-service/temporary-assignment-decision/analytics/approval-kpi-cards';
 
-  static String temporaryAssignmentDecisionStatusBreakdown =
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request Status Breakdown
+  static const String temporaryAssignmentDecisionStatusBreakdown =
       '/v1/hr-service/temporary-assignment-decision/analytics/status-breakdown';
-  static String temporaryAssignmentDecisionTrendBreakdown =
-      '/v1/hr-service/temporary-assignment-decision/analytics/trend-breakdown';
-  static String temporaryAssignmentDecisionApprovalStatusBreakdown =
+
+  /// Approval Status Breakdown
+  static const String temporaryAssignmentDecisionApprovalStatusBreakdown =
       '/v1/hr-service/temporary-assignment-decision/analytics/approval-status-breakdown';
-  static String temporaryAssignmentDecisionApprovalTrendBreakdown =
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request Trend Breakdown
+  static const String temporaryAssignmentDecisionTrendBreakdown =
+      '/v1/hr-service/temporary-assignment-decision/analytics/trend-breakdown';
+
+  /// Approval Trend Breakdown
+  static const String temporaryAssignmentDecisionApprovalTrendBreakdown =
       '/v1/hr-service/temporary-assignment-decision/analytics/approval-trend-breakdown';
+
+  /// ===================== EMPLOYEE APIs =====================
 
   static const String temporaryAssignmentDecisionEmployeesList =
       '/v1/hr-service/temporary-assignment-decision/employees';
@@ -710,18 +733,25 @@ class ApiEndPoint {
   static const String temporaryAssignmentDecisionReplaceEmployee =
       '/v1/hr-service/temporary-assignment-decision/request/replace-employee';
 
+  /// ===================== CHAT APIs =====================
+
+  /// Get Chats
   static String temporaryAssignmentDecisionChatById(int id) =>
-      '/v1/hr-service/secondment-decisions/request/$id/chats';
+      '/v1/hr-service/temporary-assignment-decision/request/$id/chats';
 
+  /// Send Chat
   static String temporaryAssignmentDecisionSendChatById(int id) =>
-      '/v1/hr-service/secondment-decisions/request/$id/chat';
+      '/v1/hr-service/temporary-assignment-decision/request/$id/chat';
 
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Get Attachments
   static String temporaryAssignmentDecisionAttachmentById(int id) =>
       '/v1/hr-service/temporary-assignment-decision/request/$id/attachments';
 
+  /// Send Attachment
   static String temporaryAssignmentDecisionSendAttachmentById(int id) =>
       '/v1/hr-service/temporary-assignment-decision/request/$id/attachment';
-
   // Service Transfer
 
   static const String serviceTransferNewRequest =
