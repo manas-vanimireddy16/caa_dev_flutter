@@ -34,14 +34,14 @@ class StatusChip extends StatelessWidget {
         break;
 
       case "in progress":
-        bg = const Color(0xFFE8EEFF);
-        text = const Color(0xFF283593);
+        bg = Color(0xFFFFF7E6);
+        text = const Color(0xFFFFB74D);
         icon = Icons.sync;
         break;
 
       case "assigned":
-        bg = const Color(0xFFE8EEFF);
-        text = const Color(0xFF283593);
+        bg = const Color(0xFFF5F6FA);
+        text = const Color(0xFF818184);
         icon = Icons.assignment_turned_in;
         break;
 

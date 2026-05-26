@@ -44,18 +44,18 @@ abstract class TemporaryAssignmentDecisionRepoistry {
     String status = '', // 👈 changed to List
     String searchText = '',
   });
-  Future<List<ThreatRequestDetail>> getCombinedActionItems({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
-  });
+  // Future<List<ThreatRequestDetail>> getCombinedActionItems({
+  //   required int offset,
+  //   required int limit,
+  //   // String sortBy = 'created_at',
+  //   // String sortOrder = 'DESC',
+  //   String status = '', // 👈 changed to List
+  //   String searchText = '',
+  // });
 
   Future<KPIResponse?> getApprovalKpiData(int service_id, int sub_service_id);
-  Future<KPIResponse?> getCombinedKpiData();
-  Future<KPIResponse?> getCombinedApprovalKpiData();
+  // Future<KPIResponse?> getCombinedKpiData();
+  // Future<KPIResponse?> getCombinedApprovalKpiData();
 
   Future<void> onAssignRejectClose(Map<String, dynamic> payload);
   Future<void> onEventChange(int requestId, Map<String, dynamic> payload);

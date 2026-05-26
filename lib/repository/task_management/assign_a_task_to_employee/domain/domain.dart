@@ -45,6 +45,11 @@ abstract class AssignaTasktoEmployeeDetailsRepository {
   Future<void> onSendComplete(Map<String, dynamic> payload);
   Future<void> onSendInProgress(Map<String, dynamic> payload);
   Future<String> sendChat(Map<String, dynamic> payload, int id);
+  Future<List<AttachmentModel>> getAttachmentsById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  });
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
   Future<List<ChatMessageModel>> getchatById(int id);
   Future<StatusBreakdownModel?> getApprovalStatusBreakdownData(String period);

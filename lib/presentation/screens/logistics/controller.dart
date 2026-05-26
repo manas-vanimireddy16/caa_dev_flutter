@@ -68,8 +68,8 @@ class _VSController extends StateNotifier<_ViewState> {
         return 'Request a Vehicle: Daily/Emergency';
       case 1:
         return 'Transportation for Foreign Employee';
-      // case 3:
-      //   return 'Request for Vehicle Maintenance';
+      case 2:
+        return 'Request for Vehicle Maintenance';
 
       default:
         return '  Home';

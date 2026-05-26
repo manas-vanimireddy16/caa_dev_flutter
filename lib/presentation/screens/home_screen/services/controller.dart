@@ -289,14 +289,14 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      // case 'Airport Entry Permit Request':
-      //   KAppX.router.push(
-      //     AirportEntryPermitRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
+      case 'CAA010':
+        KAppX.router.push(
+          AirportEntryPermitRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       // case 'Assignment Decision':
       //   KAppX.router.push(
       //     AssignmentDecisionRoute(
@@ -328,14 +328,14 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      // case 'Assign a task':
-      //   KAppX.router.push(
-      //     AssignaTasktoEmployeeRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
+      case 'CAA034':
+        KAppX.router.push(
+          AssignaTasktoEmployeeRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       // case 'Duty Mission':
       //   KAppX.router.push(
       //     RequestforDutyMissionPlannedRoute(

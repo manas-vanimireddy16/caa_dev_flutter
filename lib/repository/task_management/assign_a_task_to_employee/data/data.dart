@@ -409,8 +409,8 @@ class AssignaTasktoEmployeeDetailsRepositoryImple
     try {
       if (client != null) {
         final Map<String, dynamic> queryParams = {
-          'offset': offset,
-          'limit': limit,
+          // 'offset': offset,
+          // 'limit': limit,
         };
 
         if (searchText.isNotEmpty) {
@@ -454,8 +454,8 @@ class AssignaTasktoEmployeeDetailsRepositoryImple
       final client = await KAppX.network.secureClient();
       if (client != null) {
         final queryParams = {
-          'offset': offset.toString(),
-          'limit': limit.toString(),
+          // 'offset': offset.toString(),
+          // 'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
         };
@@ -686,6 +686,38 @@ class AssignaTasktoEmployeeDetailsRepositoryImple
       }
     } catch (e) {
       throw Exception("Error fetching request details: $e");
+    }
+  }
+
+  @override
+  Future<List<AttachmentModel>> getAttachmentsById({
+    required int id,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.foreignEmployeeVehicleAttachmentsById(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = AttachmentByIdResponseModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching attachmentById details: $e");
     }
   }
 }

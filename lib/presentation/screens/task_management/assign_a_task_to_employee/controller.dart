@@ -45,6 +45,7 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
+  final bool isRequestLoading;
   final String selectedPriority;
 
   final List<FileUploadItem> selectedFileUrl;
@@ -103,6 +104,7 @@ class _ViewState {
 
   _ViewState({
     required this.isLoading,
+    required this.isRequestLoading,
     required this.selectedPriority,
     required this.selectedFileUrl,
     required this.attachments,
@@ -138,6 +140,7 @@ class _ViewState {
   _ViewState.init()
     : this(
         isLoading: false,
+        isRequestLoading: false,
         selectedPriority: '',
         selectedFileUrl: [],
         attachments: [],
@@ -172,6 +175,7 @@ class _ViewState {
 
   _ViewState copyWith({
     bool? isLoading,
+    bool? isRequestLoading,
     int? threatType,
     String? selectedPriority,
     String? visitorChecks,
@@ -217,6 +221,7 @@ class _ViewState {
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
       selectedPriority: selectedPriority ?? this.selectedPriority,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
@@ -325,9 +330,9 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchUsers();
     fetchRequests();
     fetchActionItems();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
   }
 
@@ -370,6 +375,7 @@ class _VSController extends StateNotifier<_ViewState> {
       state.tabIndex == 0
       ? requestStatsList(titleForKey)
       : approverStatsList(titleForKey);
+
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -549,7 +555,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // Request details
       'Task Description': request?.taskDescription ?? 'N/A',
       'Completion Date': request?.completionDate ?? 'N/A',
-      'Assigned Employee': request?.assignedEmployeeName ?? 'N/A',
+      // 'Assigned Employee': request?.assignedEmployeeName ?? 'N/A',
     };
   }
 
@@ -702,14 +708,6 @@ class _VSController extends StateNotifier<_ViewState> {
       AssignaTasktoEmployeeDetailsRepository();
   List<DynamicField> buildAssignTaskFields(DashboardL10n l10n) => [
     /// -------- TASK TITLE --------
-    DynamicField(
-      name: 'taskTitle',
-      label: l10n.taskTitle,
-      type: FieldType.text,
-      required: true,
-      placeholder: l10n.enterTaskTitle,
-      // minLength: 5,
-    ),
 
     /// -------- ASSIGNED TO --------
     DynamicField(
@@ -725,6 +723,46 @@ class _VSController extends StateNotifier<_ViewState> {
             ),
           )
           .toList(),
+      placeholder: l10n.select,
+    ),
+
+    DynamicField(
+      name: 'completionDate',
+      label: l10n.completionDateOptional,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      // initialValue: DateTime.now(),
+      type: FieldType.date,
+      required: false,
+      placeholder: l10n.select,
+    ),
+    DynamicField(
+      name: 'taskTitle',
+      label: l10n.taskTitle,
+      type: FieldType.text,
+      required: true,
+      placeholder: l10n.enterRequestTitleLogistics,
+      validator: (value, values) {
+        final extension = value?.toString().trim() ?? '';
+
+        // Required validation
+        if (extension.isEmpty) {
+          return l10n.taskTitleRequired;
+        }
+
+        // // Only digits validation
+        // if (!RegExp(r'^\d+$').hasMatch(extension)) {
+        //   return 'Extension Number must contain only digits';
+        // }
+
+        // Exact 5 digits validation
+        if (extension.length < 5) {
+          return l10n.taskTitleMinLength;
+        }
+
+        return null;
+      },
+      // minLength: 5,
     ),
 
     /// -------- PRIORITY --------
@@ -738,16 +776,10 @@ class _VSController extends StateNotifier<_ViewState> {
         DropdownOption(value: 'Medium', label: l10n.priorityOption('Medium')),
         DropdownOption(value: 'Low', label: l10n.priorityOption('Low')),
       ],
+      placeholder: l10n.select,
     ),
 
     /// -------- COMPLETION DATE --------
-    DynamicField(
-      name: 'completionDate',
-      label: l10n.completionDate,
-      type: FieldType.date,
-      required: false,
-      placeholder: l10n.selectCompletionDate,
-    ),
 
     /// -------- TASK DESCRIPTION --------
     DynamicField(
@@ -755,7 +787,27 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.taskDescription,
       type: FieldType.textarea, // or FieldType.text with maxLines
       required: true,
-      placeholder: l10n.enterTaskDescription,
+      placeholder: l10n.transportSpecialInstructionsPlaceholder,
+      validator: (value, values) {
+        final extension = value?.toString().trim() ?? '';
+
+        // Required validation
+        if (extension.isEmpty) {
+          return l10n.taskDescriptionRequired;
+        }
+
+        // // Only digits validation
+        // if (!RegExp(r'^\d+$').hasMatch(extension)) {
+        //   return 'Extension Number must contain only digits';
+        // }
+
+        // Exact 5 digits validation
+        if (extension.length < 5) {
+          return l10n.taskDescriptionMinLength;
+        }
+
+        return null;
+      },
     ),
 
     /// -------- ATTACHMENTS --------
@@ -765,12 +817,12 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.file,
       required: false,
     ),
-    DynamicField(
-      name: 'attach',
-      label: l10n.attachOptional,
-      type: FieldType.file,
-      required: false,
-    ),
+    // DynamicField(
+    //   name: 'attach',
+    //   label: l10n.attachOptional,
+    //   type: FieldType.file,
+    //   required: false,
+    // ),
   ];
 
   void fetchDepartmentName() {
@@ -945,10 +997,10 @@ class _VSController extends StateNotifier<_ViewState> {
   }) async {
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(requestData: []);
-      }
-
+      // if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
+      //   state = state.copyWith(requestData: []);
+      // }
+      state = state.copyWith(isRequestLoading: true);
       final requests = await assignatasktoemployeeInstance.getRequests(
         offset: 0,
         limit: 8,
@@ -957,9 +1009,10 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
+      state = state.copyWith(isRequestLoading: false);
     }
   }
 
@@ -1105,7 +1158,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        // await assignatasktoemployeeInstance.sendAttachment(payload, requestId);
+        await assignatasktoemployeeInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -1128,9 +1181,12 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await assignatasktoemployeeInstance.sendChat(payload, requestId);
       }
+      // fetchChatById(requestId);
+      // fetchAttachmentsById(requestId);
+      fetchRequestDetailsById(requestId);
 
       /// 3️⃣ Clear UI state
-      chatController.clear();
+      // chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
@@ -1162,9 +1218,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchActionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1332,7 +1388,7 @@ class _VSController extends StateNotifier<_ViewState> {
       return;
     }
 
-    final status = active.approvalStatus?.toLowerCase();
+    final status = state.requestDetails.request?.status?.toLowerCase() ?? '';
 
     // ✅ Disable ONLY if ACTIVE is approved
     final shouldDisable = status == 'approved';
@@ -1383,69 +1439,12 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(selectedFileUrl: urls);
   }
 
-  void onVisitorCheckChange(String value) {
-    state = state.copyWith(visitorChecks: value);
-  }
-
-  void onMediaCoverageChange(String value) =>
-      state = state.copyWith(mediaCoverageRequired: value);
-
-  void onSelectedApprovalId(int value) =>
-      state = state.copyWith(approvalId: value);
-
   void updateRequestTab(int index) {
     state = state.copyWith(requestDetailTab: index);
   }
 
   void updateTabIndex(int index) {
     state = state.copyWith(tabIndex: index);
-  }
-
-  void onSelectedAcknowledgements(List<String> value) =>
-      state = state.copyWith(acknowledgement: value);
-  void onRemoveFile(int index) {
-    final urls = List<FileUploadItem>.from(state.selectedFileUrl);
-    urls.removeAt(index);
-    state = state.copyWith(selectedFileUrl: urls);
-  }
-
-  bool submitSecurityAwarenessRequest() {
-    // 1. Validate all text fields inside the Form
-    if (!state.formKey.currentState!.validate()) {
-      return false;
-    }
-
-    // 2. Accommodation Type
-    if (titleController.text.isEmpty) {
-      return false;
-    }
-
-    // 5. Meal Preference (optional but recommended)
-    if (startDateController.text.isEmpty) {
-      return false;
-    }
-
-    // 6. Services (optional)
-    // if (contactNumberController.text.isEmpty) {
-    //   return false;
-    // }
-
-    // 7. Guests Count Validation (controller-based)
-    // if (eventDateController.text.isEmpty) {
-    //   return false;
-    // }
-
-    // 8. Description
-    // if (descriptionController.text.isEmpty) {
-    //   return false;
-    // }
-
-    // 9. File Upload (optional)
-    if (eventTimeController.text.isEmpty) {
-      return false;
-    }
-
-    return true;
   }
 
   void refreshUI() {
@@ -1614,9 +1613,10 @@ class _VSController extends StateNotifier<_ViewState> {
       final userInfo = KAppX.globalProvider.read(userInfoProvider);
 
       // Build attachments list
-      final List<Map<String, dynamic>> attachments = state.selectedFileUrl
-          .map((file) => file.toJson())
-          .toList();
+      final List<Map<String, dynamic>> attachments =
+          (values['attachments'] as List<FileUploadItem>? ?? [])
+              .map((file) => file.toJson())
+              .toList();
 
       // BUILD FINAL PAYLOAD
       final payload = {
@@ -1624,14 +1624,12 @@ class _VSController extends StateNotifier<_ViewState> {
         "req_user_section_id": userData?.sectionId ?? 0,
         "service_id": serviceId,
         "sub_service_id": subServiceId,
-        "user_id": userInfo?.data?.id != null
-            ? int.parse(userInfo!.data!.id!)
-            : 0,
+        "user_id": values['assignedUserId'],
         "task_title": values['taskTitle'],
         "task_description": values['taskDescription'],
         "priority": values['priority'],
         "completion_date": values['completionDate'],
-        "attachments": [],
+        "attachments": attachments,
       };
 
       debugPrint("✅ Final Payload: $payload");
@@ -1644,14 +1642,14 @@ class _VSController extends StateNotifier<_ViewState> {
         payload,
       );
       // KAppX.router.pop();
-
+      await Future.delayed(Duration(seconds: 2));
       fetchKpi();
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
 
-      fetchApprovalStatusBreakdown('monthly');
-      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchApprovalKpi();
+      // fetchApprovalStatusBreakdown('weekly');
+      // fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+      // fetchApprovalKpi();
       fetchRequests();
       fetchActionItems();
     } catch (e, st) {

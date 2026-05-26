@@ -10,6 +10,7 @@ import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 enum CommentStatus { pending, validating, approved }
 
@@ -284,24 +285,69 @@ class _AttachmentPreview extends StatelessWidget {
 
 class _AddCommentBoxState extends State<AddCommentBox> {
   bool isCommentMode = false;
-
-  Widget _actionButton(String text, Color color, VoidCallback? onTap) {
+  Widget _actionButton(
+    String text,
+    Color color,
+    VoidCallback? onTap, {
+    Widget? icon,
+  }) {
     final disabled = widget.buttonsDisabled;
 
     return ElevatedButton(
       onPressed: disabled ? null : onTap,
+
       style: ButtonStyle(
-        minimumSize: WidgetStateProperty.all(const Size(100, 35)),
+        minimumSize: WidgetStateProperty.all(
+          Size(96.toAutoScaledWidth, 32.toAutoScaledHeight),
+        ),
+
+        padding: WidgetStateProperty.all(
+          EdgeInsets.symmetric(
+            horizontal: 10.toAutoScaledWidth,
+            vertical: 4.toAutoScaledHeight,
+          ),
+        ),
+
         backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
           if (states.contains(WidgetState.disabled)) {
             return color.withOpacity(0.6);
           }
+
           return color;
         }),
+
+        elevation: WidgetStateProperty.all(0),
+
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+          ),
+        ),
       ),
-      child: Text(
-        text,
-        style: TextStyle(color: Colors.white.withOpacity(disabled ? 0.7 : 1)),
+
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+
+        children: [
+          /// =========================================
+          /// ICON
+          /// =========================================
+          if (icon != null) ...[icon, 5.toHorizontalSizedBox],
+
+          /// =========================================
+          /// TEXT
+          /// =========================================
+          Text(
+            text,
+
+            style: TextStyle(
+              color: Colors.white.withOpacity(disabled ? 0.7 : 1),
+
+              fontSize: 14.toAutoScaledWidth,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -375,6 +421,12 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               () async {
                 await widget.onApprove?.call();
               },
+              icon: SvgPicture.asset(
+                'assets/icons/check_circle_24dp_white.svg',
+
+                width: 18.toAutoScaledWidth,
+                height: 18.toAutoScaledHeight,
+              ),
             ),
             10.toHorizontalSizedBox,
             _actionButton(
@@ -383,6 +435,12 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               () async {
                 await widget.onReject?.call();
               },
+              icon: SvgPicture.asset(
+                'assets/icons/close_24dp_white.svg',
+
+                width: 18.toAutoScaledWidth,
+                height: 18.toAutoScaledHeight,
+              ),
             ),
           ],
         );
@@ -447,6 +505,36 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               const Color(0xFF0D652D),
               () async {
                 await widget.onReassign?.call();
+              },
+            ),
+            8.toHorizontalSizedBox,
+            _actionButton(
+              l10n.commentButtonClose,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onClose?.call();
+              },
+            ),
+            8.toHorizontalSizedBox,
+            _actionButton(
+              l10n.commentButtonReject,
+              const Color(0xFFC02211),
+              () async {
+                await widget.onReject?.call();
+              },
+            ),
+          ],
+        );
+
+      case ActionButtonsType.assignCloseReject:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            _actionButton(
+              l10n.commentButtonAssign,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onAssign?.call();
               },
             ),
             8.toHorizontalSizedBox,

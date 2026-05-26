@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/airport_entry_request_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/human_resource_annual_plan.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/cyber_security_risk_management_model.dart';
@@ -178,7 +179,7 @@ class RequestDetailData {
   final String? startDate;
   final String? endDate;
   final String? assignmentAllowance;
-  final String? reasonForRequest;
+  final List<String>? reasonForRequest;
 
   // Replacement
   final bool? isReplaced;
@@ -653,6 +654,27 @@ class RequestDetailData {
     this.typeOfEvent,
     this.eventDepartmentId,
   });
+  static List<String> parseStringList(dynamic data) {
+    try {
+      if (data == null) return [];
+
+      /// Already List
+      if (data is List) {
+        return data.map((e) => e.toString()).toList();
+      }
+
+      /// Single String
+      if (data is String) {
+        return [data];
+      }
+
+      return [];
+    } catch (e) {
+      print("❌ parseStringList Error: $e");
+      print("❌ Value: $data");
+      return [];
+    }
+  }
 
   factory RequestDetailData.fromJson(
     Map<String, dynamic> json,
@@ -833,8 +855,7 @@ class RequestDetailData {
     startDate: json["start_date"],
     endDate: json["end_date"],
     assignmentAllowance: json["assignment_allowance"]?.toString(),
-    reasonForRequest: json["reason_for_request"],
-
+    reasonForRequest: parseStringList(json['reason_for_request']),
     isReplaced: json["is_replaced"],
     replacementEmployeeName: json["replacement_employee_name"],
     replacementEmployeeId: json["replacement_employee_id"],
@@ -1109,6 +1130,7 @@ class RequestModel {
   final String? travelDateFrom;
   final String? travelDateTo;
   final int? duration;
+  final String? locationOfEvent;
 
   // ─────────────────────────────
   // ACCOMMODATION FIELDS
@@ -1141,23 +1163,6 @@ class RequestModel {
   // ─────────────────────────────
   // AIRPORT ENTRY / PERMIT FIELDS
   // ─────────────────────────────
-  final String? nameFullFamilyName;
-  final String? nationality;
-  final String? dob;
-  final String? passportIdCardNo;
-  final String? categoryOfPermit;
-  final String? typeOfPermit;
-
-  final List<String>? permissionToRequiredAreas;
-  final String? occupationStaff;
-  final String? temporaryStartTime;
-  final String? temporaryDuration;
-  final List<String>? forVisitor;
-  final String? currentEntity;
-  final String? transferredToEntity;
-
-  final String? salaryDetails;
-  final String? salaryDetailsDescription;
 
   // ─────────────────────────────
   // CONSENTS / FLAGS
@@ -1203,7 +1208,7 @@ class RequestModel {
   final String? startDate;
   final String? endDate;
   final String? assignmentAllowance;
-  final String? reasonForRequest;
+  final List<String>? reasonForRequest;
 
   // Replacement
   final bool? isReplaced;
@@ -1377,6 +1382,26 @@ class RequestModel {
   final List<TaskModel>? tasks;
 
   /// Accommodation in Muscat specific fields
+  ///
+  ///
+  final String? nameFullFamilyName;
+  final String? nationality;
+  final String? dob;
+  final String? passportIdCardNo;
+  final String? categoryOfPermit;
+  final String? typeOfPermit;
+  final List<PermissionToRequiredAreas>? permissionToRequiredAreas;
+  final String? details;
+  final String? occupationStaff;
+  final String? temporaryStartTime;
+  final String? temporaryDuration;
+  final dynamic forVisitor;
+  final List<String>? additionalServices;
+  final dynamic deviceSerialNumber;
+  final dynamic newPermitIssuanceFile;
+  final dynamic formsAttachmentFile;
+  final dynamic permitRenewalFile;
+
   ///   final int? durationOfDays;
   final String? travellingFromRegion;
   final String? travelFrom;
@@ -1441,6 +1466,7 @@ class RequestModel {
   final String? requestingEntity;
   final String? projectCodeBudgetCode;
   final String? companyName;
+  final String? eventTitle;
 
   // vehicle Maintenance
   final String? typeOfMaintenanceRequired;
@@ -1527,8 +1553,10 @@ class RequestModel {
     this.vehicleRequiredFor,
     this.vehicleRequiredLocation,
     this.title,
+    this.locationOfEvent,
     this.purposeOfTravel,
     this.typeOfVehicleRequired,
+    this.eventTitle,
     this.typeOfRequest,
     this.dateOfTravel,
     this.timeOfTravel,
@@ -1571,17 +1599,7 @@ class RequestModel {
     this.eventDate,
     this.eventTime,
     this.mediaCoverageRequired,
-    this.nameFullFamilyName,
-    this.nationality,
-    this.dob,
-    this.passportIdCardNo,
-    this.categoryOfPermit,
-    this.typeOfPermit,
-    this.permissionToRequiredAreas,
-    this.occupationStaff,
-    this.temporaryStartTime,
-    this.temporaryDuration,
-    this.forVisitor,
+
     this.acknowledgeSecurityPolicies,
     this.acknowledgeDisciplinaryAction,
     this.consentApproveToIssuePermit,
@@ -1603,8 +1621,27 @@ class RequestModel {
     this.currentJobPosition,
     this.assignedJobPosition,
 
-    this.startDate,
+    this.nameFullFamilyName,
+    this.nationality,
+    this.dob,
+    this.passportIdCardNo,
+    this.categoryOfPermit,
+    this.location,
+    this.typeOfPermit,
+    this.permissionToRequiredAreas,
+    this.details,
+    this.occupationStaff,
+    this.temporaryStartTime,
+    this.temporaryDuration,
+    this.forVisitor,
+    this.additionalServices,
     this.endDate,
+    this.deviceSerialNumber,
+    this.newPermitIssuanceFile,
+    this.formsAttachmentFile,
+    this.permitRenewalFile,
+
+    this.startDate,
     this.assignmentAllowance,
     this.reasonForRequest,
 
@@ -1622,11 +1659,6 @@ class RequestModel {
     this.toEntity,
     this.assignedToRole,
 
-    this.currentEntity,
-    this.transferredToEntity,
-
-    this.salaryDetails,
-    this.salaryDetailsDescription,
     this.taskTitle,
     this.taskDescription,
     this.completionDate,
@@ -1683,7 +1715,6 @@ class RequestModel {
     this.courseCost,
     this.totalCost,
     this.reason,
-    this.location,
     this.employeeList,
     this.proposedImplementationDate,
     this.typeOfTraining,
@@ -1837,6 +1868,28 @@ class RequestModel {
     this.specialInstructions,
   });
 
+  static List<String> parseStringList(dynamic data) {
+    try {
+      if (data == null) return [];
+
+      /// Already List
+      if (data is List) {
+        return data.map((e) => e.toString()).toList();
+      }
+
+      /// Single String
+      if (data is String) {
+        return [data];
+      }
+
+      return [];
+    } catch (e) {
+      print("❌ parseStringList Error: $e");
+      print("❌ Value: $data");
+      return [];
+    }
+  }
+
   // ─────────────────────────────
   // FROM JSON (supports BOTH KEY versions)
   // ─────────────────────────────
@@ -1930,24 +1983,6 @@ class RequestModel {
       eventDate: json["event_date"],
       eventTime: json["event_time"],
       mediaCoverageRequired: json["media_coverage_required"],
-      nameFullFamilyName: json["name_full_family_name"],
-      nationality: json["nationality"],
-      dob: json["dob"],
-      passportIdCardNo: json["passport_id_card_no"],
-      categoryOfPermit: json["category_of_permit"],
-      typeOfPermit: json["type_of_permit"],
-
-      permissionToRequiredAreas: json["permission_to_required_areas"] != null
-          ? List<String>.from(json["permission_to_required_areas"])
-          : null,
-
-      occupationStaff: json["occupation_staff"],
-      temporaryStartTime: json["temporary_start_time"],
-      temporaryDuration: json["temporary_duration"],
-
-      forVisitor: json["for_visitor"] != null
-          ? List<String>.from(json["for_visitor"])
-          : null,
 
       acknowledgeSecurityPolicies: json["acknowledge_security_policies"],
       acknowledgeDisciplinaryAction: json["acknowledge_disciplinary_action"],
@@ -1955,6 +1990,7 @@ class RequestModel {
       consentDoNotApproveToIssuePermit:
           json["consent_do_not_approve_to_issue_permit"],
       consentJustification: json["consent_justification"],
+      eventTitle: json["event_title"],
 
       requestId: json["request_id"],
       expirationDate: json["expiration_date"],
@@ -1971,12 +2007,12 @@ class RequestModel {
       currentJobPosition: json["current_job_position"],
       assignedJobPosition: json["assigned_job_position"],
       workflowInstanceId: json["workflow_execution_id"],
+      locationOfEvent: json['location_of_event'],
 
       startDate: json["start_date"],
       endDate: json["end_date"],
       assignmentAllowance: json["assignment_allowance"]?.toString(),
-      reasonForRequest: json["reason_for_request"],
-
+      reasonForRequest: parseStringList(json['reason_for_request']),
       isReplaced: json["is_replaced"],
       replacementEmployeeName: json["replacement_employee_name"],
       replacementEmployeeId: json["replacement_employee_id"],
@@ -1993,11 +2029,34 @@ class RequestModel {
       toEntity: json["to_entity"],
 
       assignedToRole: json["assigned_to_role"],
-      currentEntity: json['current_entity'],
-      transferredToEntity: json['transferred_to_entity'],
 
-      salaryDetails: json['salary_details'],
-      salaryDetailsDescription: json['salary_details_description'],
+      // airport entry / permit fields will be added here when needed
+      nameFullFamilyName: json['name_full_family_name'] as String?,
+      nationality: json['nationality'] as String?,
+      dob: json['dob'] as String?,
+      passportIdCardNo: json['passport_id_card_no'] as String?,
+      categoryOfPermit: json['category_of_permit'] as String?,
+      location: json['location'] as String?,
+      typeOfPermit: json['type_of_permit'] as String?,
+      permissionToRequiredAreas: json['permission_to_required_areas'] != null
+          ? (json['permission_to_required_areas'] as List)
+                .map((e) => PermissionToRequiredAreas.fromJson(e))
+                .toList()
+          : [],
+      details: json['details'] as String?,
+      occupationStaff: json['occupation_staff'] as String?,
+
+      temporaryStartTime: json['temporary_start_time'] as String?,
+      temporaryDuration: json['temporary_duration'] as String?,
+      forVisitor: json['for_visitor'],
+      additionalServices: json['additional_services'] != null
+          ? List<String>.from(json['additional_services'])
+          : [],
+      deviceSerialNumber: json['device_serial_number'],
+      newPermitIssuanceFile: json['new_permit_issuance_file'],
+      formsAttachmentFile: json['forms_attachment_file'],
+      permitRenewalFile: json['permit_renewal_file'],
+
       // ───────── TASK MANAGEMENT ─────────
       taskTitle: json["task_title"],
       taskDescription: json["task_description"] ?? json["description"],
@@ -2070,7 +2129,6 @@ class RequestModel {
       courseCost: json['course_cost'],
       totalCost: json['total_cost'],
       reason: json['reason'],
-      location: json['location'],
       employeeList: json['employee_list'],
       proposedImplementationDate: json['proposed_implementation_date'],
       typeOfTraining: json['type_of_training'],

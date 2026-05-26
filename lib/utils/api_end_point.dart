@@ -185,6 +185,10 @@ class ApiEndPoint {
   /// Get my requests
   static const String vpnGetRequests = '/v1/it-service/vpn/requests';
 
+  static const String vpnApprove = '/v1/it-service/vpn/approve';
+  static const String vpnAssign = '/v1/it-service/vpn/request/assign';
+  static const String vpnTechnicianList = '/v1/it-service/vpn/technicians';
+
   /// Get approval list (For approvers)
   static const String vpnGetActionItems =
       '/v1/it-service/vpn/requests/for-approval';
@@ -463,56 +467,105 @@ class ApiEndPoint {
   static String eventDateChange(int id) =>
       '/v1/it-service/security-awareness/request/$id/event-datetime';
 
-  // Airport Entry - APIs
+  /// ===================== AIRPORT ENTRY APIs =====================
 
-  static const String airportEntryPostRequest =
+  /// Send Request (Create Request)
+  static const String airportEntrySendRequest =
       '/v1/it-service/airport-entry-permit/request';
 
-  static String uploadAirportEntryChat(String id) =>
-      '/v1/it-service/security-awareness/request/$id/chat';
-
-  static const String airportEntryKpi =
-      '/v1/it-service/airport-entry-permit/analytics/kpi-cards';
-
-  static String airportEntryStatusBreakdown =
-      '/v1/it-service/airport-entry-permit/analytics/status-breakdown';
-
-  static String airportEntryTrendBreakdown =
-      '/v1/it-service/airport-entry-permit/analytics/trend-breakdown';
-
-  static String airportEntryApprovalStatusBreakdown =
-      '/v1/it-service/airport-entry-permit/analytics/approval-status-breakdown';
-
-  static String airportEntryApprovalTrendBreakdown =
-      '/v1/it-service/airport-entry-permit/analytics/approval-trend-breakdown';
-
-  static String airportEntryChatById(int id) =>
-      '/v1/it-service/airport-entry-permit/request/$id/chats';
-  static String airportEntrySendChatById(int id) =>
-      '/v1/it-service/airport-entry-permit/request/$id/chat';
-
-  static const String airportEntryApprovalKpi =
-      '/v1/it-service/airport-entry-permit/analytics/approval-kpi-cards';
-
-  static const String airportEntryRequests =
+  /// Get my requests
+  static const String airportEntryGetRequests =
       '/v1/it-service/airport-entry-permit/requests';
 
-  static const String airportEntryActionItems =
+  /// Get approval list (For approvers)
+  static const String airportEntryGetActionItems =
       '/v1/it-service/airport-entry-permit/requests/for-approval';
 
-  static String airportEntryRequestById(int id) =>
-      '/v1/it-service/airport-entry-permit/request/$id';
+  /// Get request by ID
+  static String airportEntryRequestById(int requestId) =>
+      '/v1/it-service/airport-entry-permit/request/$requestId';
 
-  static String airportEntryApprove =
+  /// ===================== UPDATE REQUEST =====================
+  /// (Optional – if backend supports)
+
+  static String airportEntryUpdateRequest(int requestId) =>
+      '/v1/it-service/airport-entry-permit/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String airportEntryApprove =
       '/v1/it-service/airport-entry-permit/approve';
 
-  static String airportEntryAssign = '/v1/it-service/security-awareness/assign';
+  /// ===================== CHAT APIs =====================
 
-  static String airportEntryEngineers(int id) =>
-      '/v1/it-service/security-awareness/users/by-role?roleId=$id';
+  /// Send chat
+  static String airportEntrySendChatById(int requestId) =>
+      '/v1/it-service/airport-entry-permit/request/$requestId/chat';
 
-  static String airportEntryEventDateChange(int id) =>
-      '/v1/it-service/security-awareness/request/$id/event-datetime';
+  /// Get chats
+  static String airportEntryChatsById(int requestId) =>
+      '/v1/it-service/airport-entry-permit/request/$requestId/chats';
+
+  /// Update chat
+  static String airportEntryUpdateChat(int chatId) =>
+      '/v1/it-service/airport-entry-permit/chats/$chatId';
+
+  /// Delete chat
+  static String airportEntryDeleteChat(int chatId) =>
+      '/v1/it-service/airport-entry-permit/chats/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Add attachment
+  static String airportEntrySendAttachmentById(int requestId) =>
+      '/v1/it-service/airport-entry-permit/request/$requestId/attachment';
+
+  /// Get attachments
+  static String airportEntryAttachmentsById(int requestId) =>
+      '/v1/it-service/airport-entry-permit/request/$requestId/attachments';
+
+  /// Update attachment
+  static String airportEntryUpdateAttachment(int attachmentId) =>
+      '/v1/it-service/airport-entry-permit/attachments/$attachmentId';
+
+  /// Delete attachment
+  static String airportEntryDeleteAttachment(int attachmentId) =>
+      '/v1/it-service/airport-entry-permit/attachments/$attachmentId';
+
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI cards
+  static const String airportEntryKpiCards =
+      '/v1/it-service/airport-entry-permit/analytics/kpi-cards';
+
+  /// Approver KPI cards
+  static const String airportEntryApprovalKpiCards =
+      '/v1/it-service/airport-entry-permit/analytics/approval-kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request status breakdown
+  static const String airportEntryStatusBreakdown =
+      '/v1/it-service/airport-entry-permit/analytics/status-breakdown';
+
+  /// Approval status breakdown
+  static const String airportEntryApprovalStatusBreakdown =
+      '/v1/it-service/airport-entry-permit/analytics/approval-status-breakdown';
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request trend breakdown
+  static const String airportEntryTrendBreakdown =
+      '/v1/it-service/airport-entry-permit/analytics/trend-breakdown';
+
+  /// Approval trend breakdown
+  static const String airportEntryApprovalTrendBreakdown =
+      '/v1/it-service/airport-entry-permit/analytics/approval-trend-breakdown';
+
+  /// ===================== OTHER APIs =====================
+
+  /// Nationality list
+  static const String nationalityList = '/v1/user-service/nationality/list';
 
   /// HR Services
   ///

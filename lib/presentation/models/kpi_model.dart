@@ -29,6 +29,9 @@ class KPIData {
   final int? rejected;
   final int? expired;
   final int? pendingActionItems;
+  final int? inProgress;
+  final int? assigned;
+  final int? completed;
 
   KPIData({
     this.totalRequests,
@@ -39,6 +42,9 @@ class KPIData {
     this.rejected,
     this.expired,
     this.pendingActionItems,
+    this.inProgress,
+    this.assigned,
+    this.completed,
   });
 
   factory KPIData.fromJson(Map<String, dynamic> json) {
@@ -52,6 +58,9 @@ class KPIData {
       expired: json['expired'],
       pendingActionItems:
           json['pendingActionItems'] ?? json['pending_action_items'],
+      inProgress: json['in_progress'],
+      assigned: json['assigned'],
+      completed: json['completed'],
     );
   }
 
@@ -63,6 +72,9 @@ class KPIData {
     'pending': pending,
     'rejected': rejected,
     'expired': expired,
+    'in_progress': inProgress,
+    'assigned': assigned,
+    'completed': completed,
     'pendingActionItems': pendingActionItems,
   };
 }

@@ -344,6 +344,7 @@ import 'package:intl/intl.dart';
 class RequestCard extends StatelessWidget {
   final String from;
   final Map<String, dynamic> data;
+  final bool isShowClosed;
   final VoidCallback? onTap;
   final VoidCallback? onSelfAssign;
   final String Function(String key)? fieldLabelBuilder;
@@ -359,6 +360,7 @@ class RequestCard extends StatelessWidget {
     this.fieldLabelBuilder,
     this.statusLabelBuilder,
     this.requestIdLabelBuilder,
+    this.isShowClosed = false,
   });
 
   // ✅ NEW: resolve status properly
@@ -366,7 +368,10 @@ class RequestCard extends StatelessWidget {
     if (status == null || status.toString().trim().isEmpty) {
       return "Draft";
     }
-    return status.toString();
+
+    final value = status.toString().toLowerCase();
+
+    return value[0].toUpperCase() + value.substring(1);
   }
 
   String _formatDate(String date) {
@@ -404,6 +409,12 @@ class RequestCard extends StatelessWidget {
 
   String _statusLabel() {
     final status = _resolveStatus(data["status"]);
+
+    /// ✅ SHOW CLOSED INSTEAD OF APPROVED
+    if (isShowClosed && status.toLowerCase() == "approved") {
+      return "Closed";
+    }
+
     return statusLabelBuilder?.call(status) ?? status;
   }
 
@@ -435,11 +446,6 @@ class RequestCard extends StatelessWidget {
       );
     }
 
-    final isLogistics = from.toLowerCase() == 'logistics';
-    final isVPn = from.toLowerCase() == 'vpn';
-    final isHotelReservation = from.toLowerCase() == 'hotelreservation';
-    final isSecurityAccess = from.toLowerCase() == 'requestaccesscard';
-
     return GestureDetector(
       onTap: onTap,
       child: _buildCard(
@@ -468,34 +474,13 @@ class RequestCard extends StatelessWidget {
             ),
             12.toVerticalSizedBox,
 
-            if (isLogistics) ...[
-              _buildInfoRow("Service Type", data["Service Type"] ?? "-"),
-              _buildInfoRow(
-                "Purpose of Travel",
-                data["Purpose of Travel"] ?? "-",
+            Text(
+              "Request Name: ${data["requestName"] ?? "-"}",
+              style: TextStyle(
+                fontWeight: currentTheme.fontWeights.wBolder,
+                fontSize: currentTheme.fontSizes.s16,
               ),
-              const Divider(),
-              _buildInfo("Date", _formatDate(data["Date"]?.toString() ?? "")),
-            ] else if (isVPn) ...[
-              _buildInfoRow("Request Type", data["Request Type"] ?? "-"),
-              _buildInfoRow("Request For", data["Request For"] ?? "-"),
-              const Divider(),
-              _buildInfo("Start Date", _formatDate(data["Start Date"] ?? "")),
-            ] else if (isHotelReservation) ...[
-              _buildInfoRow("User Name", data["User Name"] ?? "-"),
-              _buildInfoRow("Hotel Name", data["Hotel Name"] ?? "-"),
-            ] else if (isSecurityAccess) ...[
-              _buildInfoRow("User Name", data["User Name"] ?? "-"),
-              _buildInfoRow("Approver", data["Approver"] ?? "-"),
-            ] else ...[
-              Text(
-                "Request Name: ${data["requestName"] ?? "-"}",
-                style: TextStyle(
-                  fontWeight: currentTheme.fontWeights.wBolder,
-                  fontSize: currentTheme.fontSizes.s16,
-                ),
-              ),
-            ],
+            ),
           ],
         ),
       ),

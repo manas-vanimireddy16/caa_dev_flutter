@@ -11,6 +11,7 @@ class BaseRequestModel {
   final int? serviceId;
   final int? subServiceId;
   final ServiceModel? service;
+  final ServiceTypeModel? serviceType;
   final SubServiceModel? subService;
 
   /// Department Info
@@ -75,6 +76,7 @@ class BaseRequestModel {
     this.assignedToRole,
     this.description,
     this.comment,
+    this.serviceType,
   });
 
   factory BaseRequestModel.fromJson(Map<String, dynamic>? json) {
@@ -91,6 +93,7 @@ class BaseRequestModel {
       service: json['service'] != null
           ? ServiceModel.fromJson(json['service'])
           : null,
+
       subService: json['sub_service'] != null
           ? SubServiceModel.fromJson(json['sub_service'])
           : null,

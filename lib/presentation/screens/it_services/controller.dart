@@ -71,7 +71,7 @@ class _VSController extends StateNotifier<_ViewState> {
       case 2:
         return 'Vpn Service';
       case 3:
-        return 'Event Support';
+        return 'Request Event Support';
       // case 2:
       //   return 'Request to Organize Security Awareness';
       // case 3:

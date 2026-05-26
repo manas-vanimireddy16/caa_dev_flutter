@@ -554,12 +554,44 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
         final diff = end.difference(start).inDays;
 
         if (diff >= 0) {
-          values['duration'] = (diff + 1).toString();
+          values['duration'] = '${(diff + 1).toString()} Day(s)';
         } else {
           values['duration'] = '';
         }
       } else {
         values['duration'] = '';
+      }
+    }
+
+    if (key == 'start_date' || key == 'end_date') {
+      DateTime? start;
+      DateTime? end;
+
+      final rawStart = values['start_date'];
+      final rawEnd = values['end_date'];
+
+      if (rawStart is DateTime) {
+        start = rawStart;
+      } else if (rawStart is String) {
+        start = DateTime.tryParse(rawStart);
+      }
+
+      if (rawEnd is DateTime) {
+        end = rawEnd;
+      } else if (rawEnd is String) {
+        end = DateTime.tryParse(rawEnd);
+      }
+
+      if (start != null && end != null) {
+        final diff = end.difference(start).inDays;
+
+        if (diff >= 0) {
+          values['duration_days'] = '${(diff + 1).toString()} Day(s)';
+        } else {
+          values['duration_days'] = '';
+        }
+      } else {
+        values['duration_days'] = '';
       }
     }
 

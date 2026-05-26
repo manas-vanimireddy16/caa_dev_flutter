@@ -142,9 +142,7 @@ class _RequestForVehicleMaintenanceScreenState
         children: [
           /// KPI
           StatSummaryRow(
-            stats: controller.currentStats(
-              (key) => l10n.statTitle(key, isSecurityThreat: true),
-            ),
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
           20.toHorizontalSizedBox,
 

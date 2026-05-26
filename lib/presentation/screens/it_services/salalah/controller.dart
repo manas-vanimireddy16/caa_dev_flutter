@@ -295,7 +295,7 @@ class _VSController extends StateNotifier<_ViewState> {
     String Function(String key) titleForKey,
   ) => StatSummaryHelper.buildStatList(
     state.kpiData.data?.toJson(),
-    // isSecurityThreat: true,
+    isShowApprovalAsClose: true,
     titleForKey: titleForKey,
   );
 
@@ -303,7 +303,7 @@ class _VSController extends StateNotifier<_ViewState> {
     String Function(String key) titleForKey,
   ) => StatSummaryHelper.buildStatList(
     state.approvalKpiData.data?.toJson(),
-    // isSecurityThreat: true,
+    isShowApprovalAsClose: true,
     titleForKey: titleForKey,
   );
 

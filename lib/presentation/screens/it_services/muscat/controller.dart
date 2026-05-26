@@ -27,6 +27,8 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
+  final bool isRequestLoading;
+  final bool isRequestDetailsLoading;
   final String selectedRequestFor;
   final List<Map<String, dynamic>> attachments;
   final List<ServiceData> serviceDropDown;
@@ -85,6 +87,8 @@ class _ViewState {
   ];
 
   _ViewState({
+    required this.isRequestLoading,
+    required this.isRequestDetailsLoading,
     required this.isLoading,
     required this.selectedRequestFor,
     required this.attachments,
@@ -127,6 +131,8 @@ class _ViewState {
   _ViewState.init()
     : this(
         isLoading: false,
+        isRequestLoading: false,
+        isRequestDetailsLoading: false,
         selectedRequestFor: 'Self',
         attachments: [],
         serviceDropDown: [],
@@ -203,6 +209,8 @@ class _ViewState {
     final int? selectedSectionId,
     final int? selectedRoleId,
     final int? selectedUserId,
+    final bool? isRequestLoading,
+    final bool? isRequestDetailsLoading,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -243,6 +251,9 @@ class _ViewState {
       selectedSectionId: selectedSectionId ?? this.selectedSectionId,
       selectedRoleId: selectedRoleId ?? this.selectedRoleId,
       selectedUserId: selectedUserId ?? this.selectedUserId,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
+      isRequestDetailsLoading:
+          isRequestDetailsLoading ?? this.isRequestDetailsLoading,
     );
   }
 }
@@ -320,7 +331,7 @@ class _VSController extends StateNotifier<_ViewState> {
     String Function(String key) titleForKey,
   ) => StatSummaryHelper.buildStatList(
     state.kpiData.data?.toJson(),
-    // isSecurityThreat: true,
+    isShowApprovalAsClose: true,
     titleForKey: titleForKey,
   );
 
@@ -329,6 +340,7 @@ class _VSController extends StateNotifier<_ViewState> {
   ) => StatSummaryHelper.buildStatList(
     state.approvalKpiData.data?.toJson(),
     // isSecurityThreat: true,
+    isShowApprovalAsClose: true,
     titleForKey: titleForKey,
   );
 
@@ -391,6 +403,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // / ================= EMPLOYEE INFO =================
       'Problem': item.problem ?? '-',
       'Created By': item.base?.createdByUser?.employeeName ?? '-',
+      'Service Type': item.serviceType?.name ?? '-',
 
       /// ================= CURRENT DETAILS =================
       'Date': item.base?.createdAt.toString().split('T').first ?? '-',
@@ -694,6 +707,23 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: true,
       placeholder: l10n.enterProblem,
+      validator: (value, values) {
+        final problem = value?.toString().trim() ?? '';
+
+        // Required validation
+        // if (problem.isEmpty) {
+        //   return l10n.enterProblem;
+        // }
+
+        // Only digits validation
+
+        // Exact 5 digits validation
+        if (problem.isEmpty) {
+          return 'Problem is required';
+        }
+
+        return null;
+      },
     ),
 
     /// ================= DESCRIPTION =================
@@ -766,7 +796,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     /// ================= ATTACHMENT =================
     DynamicField(
-      name: 'attachment',
+      name: 'attachments',
       label: l10n.attachFile,
       type: FieldType.file,
       required: false,
@@ -840,11 +870,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
     /// 3️⃣ Role must match
     if (approval.approverRoleId != null &&
+        approval.approverRoleId != 30 &&
         approval.approverRoleId != selectedRole?.roleId) {
       debugPrint(
         '❌ Denied: Role mismatch '
         '(${approval.approverRoleId} != ${selectedRole?.roleId})',
       );
+
       return false;
     }
 
@@ -1047,7 +1079,8 @@ class _VSController extends StateNotifier<_ViewState> {
     /// SHOW CLOSE + REJECT
     /// =========================================================
     ///
-    if (status == 'pending' && level.approverUserId == 9 && level.level == 1) {
+    if (status == 'pending' && level.approverUserId == 9 ||
+        level.approverRoleId == 30 && level.level == 1) {
       debugPrint('✅ SHOW ASSIGN BUTTON');
 
       return ActionButtonsType.closeReject;
@@ -1325,7 +1358,7 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isRequestLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
       // if (isRefresh || status.isNotEmpty) {
@@ -1342,9 +1375,9 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestData: requests, isLoading: false);
+      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isRequestLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -1950,6 +1983,7 @@ class _VSController extends StateNotifier<_ViewState> {
       final response = await dashboardinstance.sendRequest(payload);
 
       if (response['status'] == 'success') {
+        state = state.copyWith(isRequestLoading: true);
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1960,7 +1994,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> _refreshDashboard() async {
-    await Future.delayed(const Duration(milliseconds: 1500));
+    await Future.delayed(const Duration(milliseconds: 2000));
 
     fetchKpi();
     fetchStatusBreakdown('weekly');

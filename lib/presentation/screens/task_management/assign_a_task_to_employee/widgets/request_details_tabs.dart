@@ -24,7 +24,7 @@ class RequestDetailsTabs extends ConsumerWidget {
 
     final labels = [
       l10n.requestDetailsTabLabel,
-      l10n.requestHistoryTabLabel,
+      l10n.routingHistoryTabLabel,
       l10n.attachmentsTabLabel,
       l10n.workFlowTabLabel,
     ];

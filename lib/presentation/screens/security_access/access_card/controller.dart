@@ -31,6 +31,8 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
+  final bool isRequestLoading;
+  final bool isRequestDetailsLoading;
 
   final List<FileUploadItem> selectedFileUrl;
   final List<Map<String, dynamic>> attachments;
@@ -100,11 +102,15 @@ class _ViewState {
     required this.attachmentsById,
     required this.usersList,
     required this.departments,
+    required this.isRequestLoading,
+    required this.isRequestDetailsLoading,
   });
 
   _ViewState.init()
     : this(
         isLoading: false,
+        isRequestLoading: false,
+        isRequestDetailsLoading: false,
         selectedFileUrl: [],
         attachments: [],
         kpiData: KPIResponse(),
@@ -192,6 +198,8 @@ class _ViewState {
     List<EmployeeList>? selectedUsersList,
     List<ResidentalUnitRentalLocationModel>? unitLocations,
     List<SectionModel>? sections,
+    bool? isRequestLoading,
+    bool? isRequestDetailsLoading,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -217,6 +225,9 @@ class _ViewState {
       attachmentsById: attachmentsById ?? this.attachmentsById,
       usersList: usersList ?? this.usersList,
       departments: departments ?? this.departments,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
+      isRequestDetailsLoading:
+          isRequestDetailsLoading ?? this.isRequestDetailsLoading,
     );
   }
 }
@@ -244,7 +255,7 @@ class _VSController extends StateNotifier<_ViewState> {
     searchController = TextEditingController();
     fetchKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
@@ -339,7 +350,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'status': item.status ?? '-',
 
       /// 📄 REQUEST TYPE
-      'Request Type': item.requestType ?? '-',
+      'Request Type': item.base?.subService?.subServiceName ?? '-',
 
       /// 🙋 REQUEST FOR
       'Request For': item.requestFor ?? '-',
@@ -362,7 +373,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request For': request?.requestFor ?? '-',
       'Category': request?.category ?? '-',
       'Request Date': formatDate(request?.createdAt ?? '-'),
-      'Reason For Request': request?.reasonForRequest ?? '-',
+      'Reason For Request': request?.reasonForRequest?.join(', ') ?? 'N/A',
       // 'ID Number': request?. ?? '-',
     };
   }
@@ -887,7 +898,7 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isRequestLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
       // if (isRefresh || status.isNotEmpty) {
@@ -904,9 +915,9 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestData: requests, isLoading: false);
+      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isRequestLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -1125,9 +1136,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchactionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1483,7 +1494,7 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       fetchactionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -1620,7 +1631,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .securityAccessCardCreateRequest(payload);
 
       if (response['status'] == 'success') {
-        await Future.delayed(Duration(seconds: 2));
+        state = state.copyWith(isRequestLoading: true);
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1630,11 +1641,13 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  void _refreshDashboard() {
+  Future<void> _refreshDashboard() async {
+    await Future.delayed(Duration(seconds: 2));
+
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests(isRefresh: true);

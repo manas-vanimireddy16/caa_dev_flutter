@@ -31,6 +31,8 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
+  final isRequestLoading;
+  final isRequestDetailsLoading;
 
   final List<FileUploadItem> selectedFileUrl;
   final List<Map<String, dynamic>> attachments;
@@ -74,382 +76,382 @@ class _ViewState {
 
   final List<Map<String, dynamic>> vehicles = [
     {
-      "chassisNumber": "MHFKU8FS8R0198168",
-      "engineNumber": "1GRH393291",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "43/88",
-      "no": 1,
+      'chassisNumber': "MHFKU8FS8R0198168",
+      'engineNumber': "1GRH393291",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Fortuner 4x4",
+      'vehicleNumber': "43/88",
+      'no': "1",
     },
     {
-      "chassisNumber": "MHFKU8FSXR0197944",
-      "engineNumber": "1GRH394412",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "47/88",
-      "no": 2,
+      'chassisNumber': "MHFKU8FSXR0197944",
+      'engineNumber': "1GRH394412",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Fortuner 4x4",
+      'vehicleNumber': "47/88",
+      'no': "2",
     },
     {
-      "chassisNumber": "MHFKU8FS4R0198183",
-      "engineNumber": "1GRH393738",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "42/88",
-      "no": 3,
+      'chassisNumber': "MHFKU8FS4R0198183",
+      'engineNumber': "1GRH393738",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Fortuner 4x4",
+      'vehicleNumber': "42/88",
+      'no': "3",
     },
     {
-      "chassisNumber": "MHFKU8FS1R0197895",
-      "engineNumber": "1GRH3932364",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "45/88",
-      "no": 4,
+      'chassisNumber': "MHFKU8FS1R0197895",
+      'engineNumber': "1GRH3932364",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Fortuner 4x4",
+      'vehicleNumber': "45/88",
+      'no': "4",
     },
     {
-      "chassisNumber": "MHFKU8FS8R0197893",
-      "engineNumber": "1GRH392372",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "46/88",
-      "no": 5,
+      'chassisNumber': "MHFKU8FS8R0197893",
+      'engineNumber': "1GRH392372",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Fortuner 4x4",
+      'vehicleNumber': "46/88",
+      'no': "5",
     },
     {
-      "chassisNumber": "MHFKU8FS3R0198191",
-      "engineNumber": "1GRH393620",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "48/88",
-      "no": 6,
+      'chassisNumber': "MHFKU8FS3R0198191",
+      'engineNumber': "1GRH393620",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Fortuner 4x4",
+      'vehicleNumber': "48/88",
+      'no': "6",
     },
     {
-      "chassisNumber": "MHFKU8FS2R0197906",
-      "engineNumber": "1GRH394369",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "37/88",
-      "no": 7,
+      'chassisNumber': "MHFKU8FS2R0197906",
+      'engineNumber': "1GRH394369",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Fortuner 4x4",
+      'vehicleNumber': "37/88",
+      'no': "7",
     },
     {
-      "chassisNumber": "MHFKU8FS7R0197920",
-      "engineNumber": "1GRH393135",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "36/88",
-      "no": 8,
+      'chassisNumber': "MHFKU8FS7R0197920",
+      'engineNumber': "1GRH393135",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Fortuner 4x4",
+      'vehicleNumber': "36/88",
+      'no': "8",
     },
     {
-      "chassisNumber": "MHFKU8FS3R0198224",
-      "engineNumber": "1GRH393976",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "44/88",
-      "no": 9,
+      'chassisNumber': "MHFKU8FS3R0198224",
+      'engineNumber': "1GRH393976",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Fortuner 4x4",
+      'vehicleNumber': "44/88",
+      'no': "9",
     },
     {
-      "chassisNumber": "MHFKU8FS7R0198226",
-      "engineNumber": "1GRH393932",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "49/88",
-      "no": 10,
+      'chassisNumber': "MHFKU8FS7R0198226",
+      'engineNumber': "1GRH393932",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Fortuner 4x4",
+      'vehicleNumber': "49/88",
+      'no': "10",
     },
     {
-      "chassisNumber": "JTNB19HK8R3246981",
-      "engineNumber": "A250D74665",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "98/88",
-      "no": 11,
+      'chassisNumber': "JTNB19HK8R3246981",
+      'engineNumber': "A250D74665",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "98/88",
+      'no': "11",
     },
     {
-      "chassisNumber": "JTNB19HK2R3249147",
-      "engineNumber": "A250D80919",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "59/88",
-      "no": 12,
+      'chassisNumber': "JTNB19HK2R3249147",
+      'engineNumber': "A250D80919",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "59/88",
+      'no': "12",
     },
     {
-      "chassisNumber": "JTNB19HK7R3247409",
-      "engineNumber": "A250D76198",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "57/88",
-      "no": 13,
+      'chassisNumber': "JTNB19HK7R3247409",
+      'engineNumber': "A250D76198",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "57/88",
+      'no': "13",
     },
     {
-      "chassisNumber": "JTNB19HK7R3248771",
-      "engineNumber": "A250D79786",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "56/88",
-      "no": 14,
+      'chassisNumber': "JTNB19HK7R3248771",
+      'engineNumber': "A250D79786",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "56/88",
+      'no': "14",
     },
     {
-      "chassisNumber": "JTNB19HK2R3248273",
-      "engineNumber": "A250D78346",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "54/88",
-      "no": 15,
+      'chassisNumber': "JTNB19HK2R3248273",
+      'engineNumber': "A250D78346",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "54/88",
+      'no': "15",
     },
     {
-      "chassisNumber": "JTNB19HK4R3245794",
-      "engineNumber": "A250D71332",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "24/88",
-      "no": 16,
+      'chassisNumber': "JTNB19HK4R3245794",
+      'engineNumber': "A250D71332",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "24/88",
+      'no': "16",
     },
     {
-      "chassisNumber": "JTNB19HK1R3245610",
-      "engineNumber": "A250D70920",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "97/88",
-      "no": 17,
+      'chassisNumber': "JTNB19HK1R3245610",
+      'engineNumber': "A250D70920",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "97/88",
+      'no': "17",
     },
     {
-      "chassisNumber": "JTNB19HKxR3245394",
-      "engineNumber": "A250D70280",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "96/88",
-      "no": 18,
+      'chassisNumber': "JTNB19HKxR3245394",
+      'engineNumber': "A250D70280",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "96/88",
+      'no': "18",
     },
     {
-      "chassisNumber": "JTNB19HK0R3244965",
-      "engineNumber": "A250D69119",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "76/88",
-      "no": 19,
+      'chassisNumber': "JTNB19HK0R3244965",
+      'engineNumber': "A250D69119",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "76/88",
+      'no': "19",
     },
     {
-      "chassisNumber": "JTNB19HK1R3248796",
-      "engineNumber": "A250D79746",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "58/88",
-      "no": 20,
+      'chassisNumber': "JTNB19HK1R3248796",
+      'engineNumber': "A250D79746",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "58/88",
+      'no': "20",
     },
     {
-      "chassisNumber": "JTNB19HK1R3245560",
-      "engineNumber": "A250D70818",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "95/88",
-      "no": 21,
+      'chassisNumber': "JTNB19HK1R3245560",
+      'engineNumber': "A250D70818",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "95/88",
+      'no': "21",
     },
     {
-      "chassisNumber": "JTNB19HK0R3246909",
-      "engineNumber": "A250D74461",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "79/88",
-      "no": 22,
+      'chassisNumber': "JTNB19HK0R3246909",
+      'engineNumber': "A250D74461",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Camry Sedan",
+      'vehicleNumber': "79/88",
+      'no': "22",
     },
     {
-      "chassisNumber": "JTEBU9FJ0PK239298",
-      "engineNumber": "1GRC726969",
-      "color": "Pearl White",
-      "model": "2023",
-      "vehicleType": "Toyota Prado 4x4",
-      "vehicleNumber": "55/88",
-      "no": 23,
+      'chassisNumber': "JTEBU9FJ0PK239298",
+      'engineNumber': "1GRC726969",
+      'color': "Pearl White",
+      'model': "2023",
+      'vehicleType': "Toyota Prado 4x4",
+      'vehicleNumber': "55/88",
+      'no': "23",
     },
     {
-      "chassisNumber": "JTEBU9FJ8PK247214",
-      "engineNumber": "1GRC792827",
-      "color": "Pearl White",
-      "model": "2023",
-      "vehicleType": "Toyota Prado 4x4",
-      "vehicleNumber": "4./88",
-      "no": 24,
+      'chassisNumber': "JTEBU9FJ8PK247214",
+      'engineNumber': "1GRC792827",
+      'color': "Pearl White",
+      'model': "2023",
+      'vehicleType': "Toyota Prado 4x4",
+      'vehicleNumber': "4./88",
+      'no': "24",
     },
     {
-      "chassisNumber": "JTEBU9FJ6PK246675",
-      "engineNumber": "1GRC788110",
-      "color": "Pearl White",
-      "model": "2023",
-      "vehicleType": "Toyota Prado 4x4",
-      "vehicleNumber": "5./88",
-      "no": 25,
+      'chassisNumber': "JTEBU9FJ6PK246675",
+      'engineNumber': "1GRC788110",
+      'color': "Pearl White",
+      'model': "2023",
+      'vehicleType': "Toyota Prado 4x4",
+      'vehicleNumber': "5./88",
+      'no': "25",
     },
     {
-      "chassisNumber": "JTEJU9FJ3B5013808",
-      "engineNumber": "A237596",
-      "color": "White",
-      "model": "2011",
-      "vehicleType": "Toyota Prado 4x4",
-      "vehicleNumber": "8./88",
-      "no": 26,
+      'chassisNumber': "JTEJU9FJ3B5013808",
+      'engineNumber': "A237596",
+      'color': "White",
+      'model': "2011",
+      'vehicleType': "Toyota Prado 4x4",
+      'vehicleNumber': "8./88",
+      'no': "26",
     },
     {
-      "chassisNumber": "JTEJU9FJ8B5016574",
-      "engineNumber": "A272362",
-      "color": "White",
-      "model": "2011",
-      "vehicleType": "Toyota Prado 4x4",
-      "vehicleNumber": "9./88",
-      "no": 27,
+      'chassisNumber': "JTEJU9FJ8B5016574",
+      'engineNumber': "A272362",
+      'color': "White",
+      'model': "2011",
+      'vehicleType': "Toyota Prado 4x4",
+      'vehicleNumber': "9./88",
+      'no': "27",
     },
     {
-      "chassisNumber": "5N1AN0N69CN801970",
-      "engineNumber": "930446A",
-      "color": "Silver",
-      "model": "2011",
-      "vehicleType": "Nissan Pathfinder 4x4",
-      "vehicleNumber": "23/88",
-      "no": 28,
+      'chassisNumber': "5N1AN0N69CN801970",
+      'engineNumber': "930446A",
+      'color': "Silver",
+      'model': "2011",
+      'vehicleType': "Nissan Pathfinder 4x4",
+      'vehicleNumber': "23/88",
+      'no': "28",
     },
     {
-      "chassisNumber": "5N1AR1N80BC600156",
-      "engineNumber": "904776A",
-      "color": "Silver",
-      "model": "2011",
-      "vehicleType": "Nissan Pathfinder 4x4",
-      "vehicleNumber": "21/88",
-      "no": 29,
+      'chassisNumber': "5N1AR1N80BC600156",
+      'engineNumber': "904776A",
+      'color': "Silver",
+      'model': "2011",
+      'vehicleType': "Nissan Pathfinder 4x4",
+      'vehicleNumber': "21/88",
+      'no': "29",
     },
     {
-      "chassisNumber": "5N1AN0N69CN801970",
-      "engineNumber": "174185B",
-      "color": "White",
-      "model": "2012",
-      "vehicleType": "Nissan X-Terra 4x4",
-      "vehicleNumber": "10./88",
-      "no": 30,
+      'chassisNumber': "5N1AN0N69CN801970",
+      'engineNumber': "174185B",
+      'color': "White",
+      'model': "2012",
+      'vehicleType': "Nissan X-Terra 4x4",
+      'vehicleNumber': "10./88",
+      'no': "30",
     },
     {
-      "chassisNumber": "JMYLYV97WDJ703723",
-      "engineNumber": "6G758E9XS3556",
-      "color": "White",
-      "model": "2013",
-      "vehicleType": "Toyota Pajero 4x4",
-      "vehicleNumber": "6./88",
-      "no": 31,
+      'chassisNumber': "JMYLYV97WDJ703723",
+      'engineNumber': "6G758E9XS3556",
+      'color': "White",
+      'model': "2013",
+      'vehicleType': "Toyota Pajero 4x4",
+      'vehicleNumber': "6./88",
+      'no': "31",
     },
     {
-      "chassisNumber": "1GKS27KD6PR329789",
-      "engineNumber": "L84APR329789",
-      "color": "Brown",
-      "model": "2023",
-      "vehicleType": "GMC Yukon 4x4",
-      "vehicleNumber": "111/88",
-      "no": 32,
+      'chassisNumber': "1GKS27KD6PR329789",
+      'engineNumber': "L84APR329789",
+      'color': "Brown",
+      'model': "2023",
+      'vehicleType': "GMC Yukon 4x4",
+      'vehicleNumber': "111/88",
+      'no': "32",
     },
     {
-      "chassisNumber": "MR0DX9CD0R2649011",
-      "engineNumber": "2TRB145770",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Hilux Pickup",
-      "vehicleNumber": "108/88",
-      "no": 33,
+      'chassisNumber': "MR0DX9CD0R2649011",
+      'engineNumber': "2TRB145770",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Hilux Pickup",
+      'vehicleNumber': "108/88",
+      'no': "33",
     },
     {
-      "chassisNumber": "MR0DX9CD3R2649021",
-      "engineNumber": "2TRB146621",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Hilux Pickup",
-      "vehicleNumber": "109/88",
-      "no": 34,
+      'chassisNumber': "MR0DX9CD3R2649021",
+      'engineNumber': "2TRB146621",
+      'color': "Pearl White",
+      'model': "2024",
+      'vehicleType': "Toyota Hilux Pickup",
+      'vehicleNumber': "109/88",
+      'no': "34",
     },
     {
-      "chassisNumber": "MR0EW12G8D3020457",
-      "engineNumber": "7433363",
-      "color": "White",
-      "model": "2013",
-      "vehicleType": "Toyota Hilux Pickup",
-      "vehicleNumber": "26/88",
-      "no": 35,
+      'chassisNumber': "MR0EW12G8D3020457",
+      'engineNumber': "7433363",
+      'color': "White",
+      'model': "2013",
+      'vehicleType': "Toyota Hilux Pickup",
+      'vehicleNumber': "26/88",
+      'no': "35",
     },
     {
-      "chassisNumber": "MNTDD22S9C6003117",
-      "engineNumber": "917712Z",
-      "color": "White",
-      "model": "2012",
-      "vehicleType": "Nissan Pickup",
-      "vehicleNumber": "18/88",
-      "no": 36,
+      'chassisNumber': "MNTDD22S9C6003117",
+      'engineNumber': "917712Z",
+      'color': "White",
+      'model': "2012",
+      'vehicleType': "Nissan Pickup",
+      'vehicleNumber': "18/88",
+      'no': "36",
     },
     {
-      "chassisNumber": "MMBJNKA50BD023348",
-      "engineNumber": "4G64UCAJ3745",
-      "color": "White",
-      "model": "2011",
-      "vehicleType": "Mitsubishi Pickup",
-      "vehicleNumber": "30/88",
-      "no": 37,
+      'chassisNumber': "MMBJNKA50BD023348",
+      'engineNumber': "4G64UCAJ3745",
+      'color': "White",
+      'model': "2011",
+      'vehicleType': "Mitsubishi Pickup",
+      'vehicleNumber': "30/88",
+      'no': "37",
     },
     {
-      "chassisNumber": "JL6BCE6J9DK008760",
-      "engineNumber": "6D16A23924",
-      "color": "White",
-      "model": "2009",
-      "vehicleType": "Mitsubishi Truck with Crane",
-      "vehicleNumber": "40/88",
-      "no": 38,
+      'chassisNumber': "JL6BCE6J9DK008760",
+      'engineNumber': "6D16A23924",
+      'color': "White",
+      'model': "2009",
+      'vehicleType': "Mitsubishi Truck with Crane",
+      'vehicleNumber': "40/88",
+      'no': "38",
     },
     {
-      "chassisNumber": "4P3SRDJ1ABE802237",
-      "engineNumber": "4G69PD4331",
-      "color": "White",
-      "model": "2011",
-      "vehicleType": "Mitsubishi Galant Sedan",
-      "vehicleNumber": "29/88",
-      "no": 39,
+      'chassisNumber': "4P3SRDJ1ABE802237",
+      'engineNumber': "4G69PD4331",
+      'color': "White",
+      'model': "2011",
+      'vehicleType': "Mitsubishi Galant Sedan",
+      'vehicleNumber': "29/88",
+      'no': "39",
     },
     {
-      "chassisNumber": "JL6BCE6J9DK008760",
-      "engineNumber": "4D34N38913",
-      "color": "White",
-      "model": "2013",
-      "vehicleType": "Mitsubishi Truck with Crane",
-      "vehicleNumber": "27/88",
-      "no": 40,
+      'chassisNumber': "JL6BCE6J9DK008760",
+      'engineNumber': "4D34N38913",
+      'color': "White",
+      'model': "2013",
+      'vehicleType': "Mitsubishi Truck with Crane",
+      'vehicleNumber': "27/88",
+      'no': "40",
     },
     {
-      "chassisNumber": "JTMHU09J0B5051720",
-      "engineNumber": "A318476",
-      "color": "White",
-      "model": "2011",
-      "vehicleType": "Toyota Land Cruiser 4x4",
-      "vehicleNumber": "1./88",
-      "no": 41,
+      'chassisNumber': "JTMHU09J0B5051720",
+      'engineNumber': "A318476",
+      'color': "White",
+      'model': "2011",
+      'vehicleType': "Toyota Land Cruiser 4x4",
+      'vehicleNumber': "1./88",
+      'no': "41",
     },
     {
-      "chassisNumber": "JN8AY25Y0C9027176",
-      "engineNumber": "038827A",
-      "color": "Green",
-      "model": "2012",
-      "vehicleType": "Nissan Patrol 4x4",
-      "vehicleNumber": "2./88",
-      "no": 42,
+      'chassisNumber': "JN8AY25Y0C9027176",
+      'engineNumber': "038827A",
+      'color': "Green",
+      'model': "2012",
+      'vehicleType': "Nissan Patrol 4x4",
+      'vehicleNumber': "2./88",
+      'no': "42",
     },
   ];
 
@@ -477,6 +479,8 @@ class _ViewState {
     required this.isButtonDisabled,
     required this.chatById,
     required this.attachmentsById,
+    required this.isRequestLoading,
+    required this.isRequestDetailsLoading,
   });
 
   _ViewState.init()
@@ -502,10 +506,14 @@ class _ViewState {
         chatById: [],
 
         attachmentsById: [],
+        isRequestLoading: false,
+        isRequestDetailsLoading: false,
       );
 
   _ViewState copyWith({
     bool? isLoading,
+    bool? isRequestLoading,
+    bool? isRequestDetailsLoading,
     int? threatType,
     String? selectedPriority,
     String? visitorChecks,
@@ -570,6 +578,9 @@ class _ViewState {
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
+      isRequestDetailsLoading:
+          isRequestDetailsLoading ?? this.isRequestDetailsLoading,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
@@ -614,8 +625,9 @@ class _VSController extends StateNotifier<_ViewState> {
     titleController = TextEditingController();
     searchController = TextEditingController();
     fetchKpi();
+    fetchApprovalKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
@@ -643,26 +655,24 @@ class _VSController extends StateNotifier<_ViewState> {
       List.generate(6, (index) => (currentYear - index).toString());
   List<StatSummaryData> requestStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.kpiData.data?.toJson(),
-        isSecurityThreat: true,
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    // isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> approverStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.approvalKpiData.data?.toJson(),
-        isSecurityThreat: true,
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    // isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
       state.tabIndex == 0
-          ? requestStatsList(titleForKey)
-          : approverStatsList(titleForKey);
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -718,6 +728,9 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       'Vehicle Number': item.vehicleNumber ?? 'N/A',
       'Maintenance Type': item.typeOfMaintenanceRequired ?? 'N/A',
+      'Request Submission Date': formatDate(
+        item.base?.createdAt.toString() ?? 'N/A',
+      ),
       'Preferred Maintenance Date': formatDate(
         item.preferredMaintenanceDate ?? 'N/A',
       ),
@@ -857,7 +870,9 @@ class _VSController extends StateNotifier<_ViewState> {
       options: state.vehicles.map((vehicle) {
         return DropdownOption(
           value: vehicle['vehicleNumber'].toString(),
-          label: vehicle['vehicleNumber'].toString(),
+          label:
+              '${vehicle['vehicleNumber']} - ${vehicle['vehicleType']}(${vehicle['model']})'
+                  .toString(),
         );
       }).toList(),
     ),
@@ -901,6 +916,9 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'preferred_maintenance_date',
       label: l10n.preferredMaintenanceDate,
       type: FieldType.date,
+      placeholder: l10n.select,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
       required: true,
     ),
 
@@ -1134,12 +1152,9 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isRequestLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
 
       final requests = await vehicleMaintenanceInstance.getRequests(
         offset: 1,
@@ -1151,9 +1166,9 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isRequestLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -1166,10 +1181,6 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(actionItems: [], isLoading: false);
-      }
-
       final items = await vehicleMaintenanceInstance.getActionItems(
         offset: 1,
         limit: 8,
@@ -1356,9 +1367,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchactionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1738,12 +1749,12 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchRequests();
       fetchKpi();
       fetchStatusBreakdown('weekly');
-      fetchTrendBreakDown('2026');
+      fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
-      fetchactionItems();
+      fetchactionItems(isRefresh: true);
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
-      fetchApprovalTrendBreakDown('2026');
+      fetchApprovalStatusBreakdown('weekly');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }
 
@@ -1861,6 +1872,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .vehicleMaintenanceCreateRequest(payload);
 
       if (response['status'] == 'success') {
+        state = state.copyWith(isRequestLoading: true, requestData: []);
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1870,14 +1882,15 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  void _refreshDashboard() {
+  Future<void> _refreshDashboard() async {
+    await Future.delayed(Duration(milliseconds: 2500));
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests();
+    fetchRequests(isRefresh: true);
     fetchactionItems();
   }
 

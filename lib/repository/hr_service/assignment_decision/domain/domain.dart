@@ -32,14 +32,14 @@ abstract class AssignmentDecisionRepoistory {
     String status = '', // 👈 changed to List
     String searchText = '',
   });
-  Future<List<OrganizeSecurityAwarenessRequestData>> getCombinedRequests({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
-  });
+  // Future<List<OrganizeSecurityAwarenessRequestData>> getCombinedRequests({
+  //   required int offset,
+  //   required int limit,
+  //   // String sortBy = 'created_at',
+  //   // String sortOrder = 'DESC',
+  //   String status = '', // 👈 changed to List
+  //   String searchText = '',
+  // });
   Future<List<AssignmentDecision>> getActionItems({
     required int offset,
     required int limit,
@@ -48,18 +48,18 @@ abstract class AssignmentDecisionRepoistory {
     String status = '', // 👈 changed to List
     String searchText = '',
   });
-  Future<List<ThreatRequestDetail>> getCombinedActionItems({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
-  });
+  // Future<List<ThreatRequestDetail>> getCombinedActionItems({
+  //   required int offset,
+  //   required int limit,
+  //   // String sortBy = 'created_at',
+  //   // String sortOrder = 'DESC',
+  //   String status = '', // 👈 changed to List
+  //   String searchText = '',
+  // });
 
   Future<KPIResponse?> getApprovalKpiData();
-  Future<KPIResponse?> getCombinedKpiData();
-  Future<KPIResponse?> getCombinedApprovalKpiData();
+  // Future<KPIResponse?> getCombinedKpiData();
+  // Future<KPIResponse?> getCombinedApprovalKpiData();
 
   Future<void> onApprove(Map<String, dynamic> payload);
   Future<void> onReject(Map<String, dynamic> payload);

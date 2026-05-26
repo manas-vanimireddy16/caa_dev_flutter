@@ -167,7 +167,7 @@ class _ServiceTransferDetailsScreenScreenState
                       'End Date (Optional)': request?.endDate ?? 'N/A',
 
                       // Reason
-                      'Reason For Request': request?.reasonForRequest ?? 'N/A',
+                      // 'Reason For Request': request?.reasonForRequest ?? 'N/A',
 
                       // Workflow
                       'Workflow Execution ID':

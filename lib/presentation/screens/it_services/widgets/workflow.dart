@@ -507,9 +507,11 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
               itemCount: steps.length,
               itemBuilder: (context, index) {
                 final s = steps[index];
+
                 return _buildStep(
                   index: index,
                   total: steps.length,
@@ -530,6 +532,7 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
   }
 
   // ------------------ STEP UI ------------------
+  // ------------------ STEP UI ------------------
   Widget _buildStep({
     required int index,
     required int total,
@@ -542,60 +545,134 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
     required String department,
   }) {
     final showLine = index < total - 1;
+
     final showActor = actor != "-" && actor.isNotEmpty;
-    final showDetails = status == WorkflowStepStatus.approved;
+
+    final showDetails =
+        index == 0 ||
+        status == WorkflowStepStatus.approved ||
+        status == WorkflowStepStatus.submitted;
 
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+
         children: [
+          /// =====================================================
+          /// LEFT TIMELINE
+          /// =====================================================
           Column(
             children: [
               _statusIndicator(status, index == 0),
+
               if (showLine)
                 Expanded(
-                  child: Container(width: 3, color: const Color(0xFFDFDFDF)),
+                  child: Container(width: 2, color: const Color(0xFFE0E0E0)),
                 ),
             ],
           ),
-          const SizedBox(width: 16),
+
+          const SizedBox(width: 12),
+
+          /// =====================================================
+          /// RIGHT CONTENT
+          /// =====================================================
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 22),
+              padding: const EdgeInsets.only(bottom: 18),
+
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                  /// =====================================================
+                  /// TITLE
+                  /// =====================================================
+                  SizedBox(
+                    width: double.infinity,
+
+                    child: Text(
+                      title,
+
+                      softWrap: true,
+
+                      overflow: TextOverflow.visible,
+
+                      maxLines: 4,
+
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        height: 1.3,
+                      ),
                     ),
                   ),
+
                   if (showDetails) ...[
+                    const SizedBox(height: 8),
+
+                    /// =====================================================
+                    /// DEPARTMENT TAG
+                    /// =====================================================
                     if (department.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Chip(label: Text(department)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF5F1F5),
+
+                          borderRadius: BorderRadius.circular(8),
+
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+
+                        child: Text(
+                          department,
+
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
+
                     if (showActor) ...[
-                      const SizedBox(height: 6),
-                      Text(
+                      const SizedBox(height: 10),
+
+                      const Text(
                         "Action Taken By:",
-                        style: const TextStyle(
-                          fontSize: 13,
+
+                        style: TextStyle(
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      Text(actor),
+
+                      const SizedBox(height: 2),
+
+                      Text(actor, style: const TextStyle(fontSize: 12)),
                     ],
-                    if (empId.isNotEmpty && empId != "-")
-                      Text("Employee ID: $empId"),
-                    const SizedBox(height: 4),
+
+                    if (empId.isNotEmpty && empId != "-") ...[
+                      const SizedBox(height: 2),
+
+                      Text(
+                        "Employee ID: $empId",
+
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
+
+                    const SizedBox(height: 6),
+
                     Text(
                       date,
+
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: Colors.black54,
                       ),
                     ),
@@ -612,18 +689,28 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
   // ------------------ STATUS ICON ------------------
   Widget _statusIndicator(WorkflowStepStatus status, bool isFirst) {
     String icon = KIcons.workflowPending;
+
     Color color = const Color(0xFFC77700);
 
     if (isFirst || status == WorkflowStepStatus.approved) {
       icon = KIcons.workflowCompleted;
+
       color = const Color(0xFF26285F);
     }
 
+    const double size = 24;
+
+    const double iconSize = 12;
+
     return Container(
-      width: 40,
-      height: 40,
+      width: size,
+      height: size,
+
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      child: Center(child: KImageProvider(width: 22, height: 22, image: icon)),
+
+      child: Center(
+        child: KImageProvider(width: iconSize, height: iconSize, image: icon),
+      ),
     );
   }
 }
@@ -637,7 +724,7 @@ String _formatTitle(String? content) {
   if (text.contains("assignment")) return "Request Assigned";
   if (text.contains("progress")) return "Request Processed";
   if (text.contains("approval")) return "Awaiting Approval";
-  if (text.contains("notification")) return "Notification Sent";
+  // if (text.contains("notification")) return "Notification Sent";
 
   return content;
 }

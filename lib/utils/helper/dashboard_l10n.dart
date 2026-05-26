@@ -32,6 +32,12 @@ class DashboardL10n {
 
   String get newRequest => _t('New Request', 'طلب جديد');
 
+  String get createRequest => _t('Create Request', 'إنشاء طلب');
+
+  String get assignNewTask => _t('Assign New Task', 'تعيين مهمة جديدة');
+
+  String get newTicket => _t('New Ticket', 'طلب جديد');
+
   String get searchByIdOrName => _t('Search by Request Id', 'البحث برقم الطلب');
 
   String get myRequests => _t('My Requests', 'التذاكر الخاصة بي');
@@ -87,6 +93,7 @@ class DashboardL10n {
   /// Shown while typing until the field has exactly 8 digits.
   String get securityThreatPhoneDigitsHint =>
       _t('Min should be 8 digits', 'يرجى إدخال 8 أرقام');
+
   String get securityThreatTicketNameHint =>
       _t('Must be at least 5 characters', 'يجب ألا يقل عن 5 أحرف');
 
@@ -159,6 +166,20 @@ class DashboardL10n {
 
   String get eventSupportNewRequest =>
       _t('Request for Event Support', 'طلب دعم الفعالية');
+  String get eventSupportPhoneNumberErrorText => _t(
+    'Phone Number must be exactly 10 digits',
+    'يجب أن يكون رقم التواصل 10 أرقام',
+  );
+
+  String get eventSupportRequestForErrorText => _t(
+    'Request For must be at least 5 characters',
+    'يجب أن يكون نوع الطلب 5 أحرف على الأقل',
+  );
+
+  String get eventSupportReasonForRequestErrorText => _t(
+    'Reason For Request must be at least 5 characters',
+    'يجب أن يكون سبب الطلب 5 أحرف على الأقل',
+  );
 
   String get vpnNewRequest => _t('VPN Request', 'طلب VPN');
 
@@ -167,23 +188,31 @@ class DashboardL10n {
 
   String get assignTaskFormStepDetails => _t('Task details', 'تفاصيل المهمة');
 
-  String get taskTitle => _t('Task Title', 'عنوان المهمة');
-
   String get enterTaskTitle => _t('Enter task title', 'أدخل عنوان المهمة');
+  String get taskTitleRequired =>
+      _t('Task title is required', 'عنوان المهمة مطلوب');
+  String get taskTitleMinLength => _t(
+    'Task Title must be at least 5 characters',
+    'يجب أن يكون عنوان المهمة 5 أحرف على الأقل',
+  );
+  String get taskDescriptionMinLength => _t(
+    'Task Description must be at least 5 characters',
+    'يجب أن يكون وصف المهمة 5 أحرف على الأقل',
+  );
+  String get taskDescriptionRequired =>
+      _t('Task Description is required', 'وصف المهمة مطلوب');
 
   String get assignedEmployee => _t('Assigned Employee', 'الموظف المكلّف');
 
-  String get assignedToEmployeeNameId => _t(
-    'Assigned To (Employee Name / ID)',
-    'مُسند إلى (اسم الموظف / الرقم الوظيفي)',
-  );
+  String get enter => _t('Enter', 'أدخل');
+  String get eventSupportPlaceholderRequestFor =>
+      _t('Enter your request', 'أدخل طلبك');
 
-  String get completionDate => _t('Completion Date', 'تاريخ الإنجاز');
+  String get eventSupportPlaceholderReason =>
+      _t('Enter your Reason', 'أدخل سبب الطلب');
 
   String get selectCompletionDate =>
       _t('Select completion date', 'اختر تاريخ الإنجاز');
-
-  String get taskDescription => _t('Task Description', 'وصف المهمة');
 
   String get enterTaskDescription =>
       _t('Enter task description', 'أدخل وصف المهمة');
@@ -196,11 +225,11 @@ class DashboardL10n {
   String priorityOption(String en) {
     switch (en) {
       case 'High':
-        return _t('High', 'عالية');
+        return _t('High', 'عالي');
       case 'Medium':
-        return _t('Medium', 'متوسطة');
+        return _t('Medium', 'متوسط');
       case 'Low':
-        return _t('Low', 'منخفضة');
+        return _t('Low', 'منخفض');
       default:
         return en;
     }
@@ -365,6 +394,101 @@ class DashboardL10n {
     }
   }
 
+  // Airport Entry Permit
+  String get allCivilAirports =>
+      _t('All Civil Airports', 'جميع المطارات المدنية');
+
+  String get salalah => _t('Salalah', 'صلالة');
+
+  String get muscat => _t('Muscat', 'مسقط');
+
+  String get marmul => _t('Marmul', 'مرمول');
+
+  String get duqm => _t('Duqm', 'الدقم');
+
+  String get sohar => _t('Sohar', 'صحار');
+
+  String get fuhud => _t('Fuhud', 'فهود');
+
+  String get mukhazina => _t('Mukhazina', 'مخيزنه');
+
+  String get laptopTablet => _t('Laptop/Tablet', 'حاسوب محمول / جهاز لوحي');
+
+  String get boardingTheAircraft => _t('Boarding the Aircraft', 'صعود الطائرة');
+
+  String get employeeAssistingPeopleWithSpecialNeeds => _t(
+    'Employee Assisting People with Special Needs',
+    'الموظف المساعد لذوي الاحتياجات الخاصة',
+  );
+
+  String get enterDeviceSerialNumber =>
+      _t("Enter the device's serial number", 'إدخال الرقم التسلسلي للجهاز');
+
+  String get additionalServices =>
+      _t('Additional Services', 'الخدمات الإضافية');
+
+  String get vipBuilding => _t('VIP Building', 'مبنى كبار الشخصيات');
+
+  String get cargoBuildingImportsExports =>
+      _t('Cargo Building (Imports & Exports)', 'مبنى الشحن (الصادر والوارد)');
+
+  String get arrivalsHallArrivalsBuilding =>
+      _t('Arrivals Hall / Arrivals Building', 'صالة القادمين ومبنى القادمين');
+
+  String get departuresHallDeparturesBuilding => _t(
+    'Departures Hall / Departures Building',
+    'صالة المغادرين ومبنى المغادرين',
+  );
+
+  String get informationCenterControlTower => _t(
+    'Information Center / Control Tower',
+    'مبنى مركز المعلومات وبرج المراقبة',
+  );
+
+  String
+  get aircraftParkingAreaAircraftMaintenanceBuildingVehicleRepairWorkshopFireStationAndFuelingStations => _t(
+    'Aircraft Parking Area, Aircraft Maintenance Building, Vehicle Repair Workshop, Fire Station, and Fueling Stations',
+    'ساحة مواقف الطائرات، مبنى صيانة الطائرات، ورشة تصليح المركبات، مركز الإطفاء ومحطات تعبئة الوقود.',
+  );
+
+  String get baggageSortingArea =>
+      _t('Baggage Sorting Area', 'منطقة فرز الحقائب');
+
+  String get cateringBuilding =>
+      _t('Catering Building', 'مبـــــــــنى التمويــن');
+
+  String get aircraftMaintenanceBuilding =>
+      _t('Aircraft Maintenance Building', 'مبـــــــــنى صيانة الطائرات');
+
+  String get goldBuilding => _t('Gold Building', 'مبنى الذهــــب');
+
+  String get vip => _t('VIP', 'كبار الشخصيات');
+
+  String get durationDaysAirportEntry =>
+      _t('Duration (Days)', 'المدة (بالأيام)');
+
+  String get temporary => _t('Temporary', 'مؤقت');
+
+  String get permanent => _t('Permanent', 'دائم');
+
+  String get typeOfPermit => _t('Type of permit', 'نوع التصريح');
+
+  String get phoneNumber => _t('Phone Number', 'رقم الهاتف');
+
+  String get dateOfSubmission => _t('Date of submission', 'تاريخ التقديم');
+
+  String get categoryOfPermit => _t('Category of permit', 'فئة التصريح');
+
+  String get passportIdCardNo =>
+      _t('Passport/ID Card NO', 'رقم الجواز / الرقم المدني');
+
+  String get dob => _t('Date of Birth', 'تاريخ الميلاد');
+
+  String get nationality => _t('Nationality', 'الجنسية');
+
+  String get fullNameFamilyName =>
+      _t('Full Name / Family Name', 'الاسم الكامل / اسم العائلة');
+
   String get dynamicFormPrevious => _t('Previous', 'السابق');
 
   String get dynamicFormNext => _t('Next', 'التالي');
@@ -425,6 +549,10 @@ class DashboardL10n {
     'I have read and accepted the Security & Privacy Policy',
     'لقد قرأت وقبلت سياسة الأمان والخصوصية',
   );
+  String get airportEntryPermitSecurityPrivacyPolicy => _t(
+    'I have read and understood all the security policies outlined above.',
+    'سياسة الأمان والخصوصية',
+  );
 
   String get servicesLabel => _t('Services', 'الخدمات');
 
@@ -449,15 +577,22 @@ class DashboardL10n {
   );
 
   // reuqest fpr vehicle maintenance
-  String get vehicleNumberId =>
-      _t('Vehicle Number / ID', 'رقم المركبة / المعرف');
+  String get vehicleNumberId => _t('Vehicle Number', 'رقم المركبة');
 
-  String get typeOfMaintenanceRequired =>
+  String get typeOfMaintenanceRequired => _t('Maintenance Type', 'نوع الصيانة');
+
+  String get typeOfMaintenanceDetailsRequired =>
       _t('Type of Maintenance Required', 'نوع الصيانة المطلوبة');
 
   String get preventive => _t('Preventive', 'صيانة وقائية');
 
   String get corrective => _t('Corrective', 'صيانة تصحيحية');
+
+  String get writeHere => _t(
+    'Write Here... (min 10 characters, max 255 characters)',
+    'اكتب هنا... (الحد الأدنى 10 أحرف، الحد الأقصى 255 حرف)',
+  );
+  String get issueDescription => _t('Issue Description', 'وصف المشكلة');
 
   String get preferredMaintenanceDate =>
       _t('Preferred Maintenance Date', 'تاريخ الصيانة المرغوب');
@@ -465,12 +600,9 @@ class DashboardL10n {
   String get requestSubmissionDate =>
       _t('Request Submission Date', 'تاريخ تقديم الطلب');
 
-  String get issueDescription => _t('Issue Description', 'وصف المشكلة');
+  String get maintenanceType => _t('Maintenance Type', 'نوع الصيانة');
 
-  String get writeHere => _t(
-    'Write Here... (min 10 characters, max 255 characters)',
-    'اكتب هنا... (الحد الأدنى 10 أحرف، الحد الأقصى 255 حرف)',
-  );
+  String get vehicleNumber => _t('Vehicle Number', 'رقم المركبة');
 
   /// IT Services
   /// Salalah
@@ -525,8 +657,6 @@ class DashboardL10n {
 
   String get typeOfEvent => _t('Type of Event', 'نوع الفعالية');
 
-  String get phoneNumber => _t('Phone Number', 'رقم الهاتف');
-
   String get requestFor => _t('Request For', 'نوع الطلب');
 
   String get attachFile => _t('Attach File', 'إرفاق ملفات');
@@ -564,8 +694,6 @@ class DashboardL10n {
 
   String get projectSpecificRequirement =>
       _t('Project-specific Requirement', 'متطلبات خاصة بالمشروع');
-
-  String get permanent => _t('Permanent', 'دائم');
 
   String get oneTime => _t('One Time', 'لمرة واحدة');
 
@@ -665,6 +793,32 @@ class DashboardL10n {
     'Attach passport size photo (White background)',
     'إرفاق صورة بحجم جواز السفر (خلفية بيضاء)',
   );
+
+  // Assign a task to employee
+  String get enterRequestTitle => _t(
+    'Enter request title (min 5, max 250 characters)',
+    'أدخل عنوان الطلب (5 أحرف كحد أدنى و250 كحد أقصى)',
+  );
+
+  String get priority => _t('Priority', 'الأولوية');
+
+  String get taskDescription => _t('Task Description', 'وصف المهمة');
+
+  String get taskTitle => _t('Task Title', 'عنوان المهمة');
+
+  String get high => _t('High', 'عالي');
+
+  String get medium => _t('Medium', 'متوسط');
+
+  String get low => _t('Low', 'منخفض');
+
+  String get assignedToEmployeeNameId =>
+      _t('Assigned To (Employee Name/ID)', 'مكلّف إلى (اسم الموظف / المعرف)');
+
+  String get completionDate => _t('Completion Date', 'تاريخ الإتمام');
+
+  String get completionDateOptional =>
+      _t('Completion Date (Optional)', 'تاريخ الإنجاز (اختياري)');
 
   String logisticsDailyEmergencyOption(String en) {
     switch (en) {
@@ -1214,8 +1368,14 @@ class DashboardL10n {
         return _t('Expired', 'منتهي');
       case 'open':
         return _t('Open', 'مفتوح');
+      case 'completed':
+        return _t('Completed', 'مكتمل');
+
+      case 'assigned':
+        return _t('Assigned', 'تم التعيين');
+
       case 'inprogress':
-        return _t('In Progress', 'قيد التنفيذ');
+        return _t('In Progress', 'قيد المعالجة');
       default:
         return _formatKey(key);
     }
@@ -1326,7 +1486,7 @@ class DashboardL10n {
       case 'Vehicle Number':
         return vehicleNumberId;
       case 'Maintenance Type':
-        return typeOfMaintenanceRequired;
+        return typeOfMaintenanceDetailsRequired;
       case 'Preferred Maintenance Date':
         return preferredMaintenanceDate;
       default:
@@ -1555,7 +1715,7 @@ class DashboardL10n {
         return vehicleNumberId;
 
       case 'Maintenance Type':
-        return typeOfMaintenanceRequired;
+        return typeOfMaintenanceDetailsRequired;
 
       case 'Preferred Maintenance Date':
         return preferredMaintenanceDate;

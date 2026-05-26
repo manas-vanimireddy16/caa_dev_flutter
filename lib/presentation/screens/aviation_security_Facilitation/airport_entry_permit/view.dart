@@ -1,65 +1,94 @@
 import 'dart:async';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
-import 'package:code_setup/presentation/common_widgets/RadioButton.dart';
+import 'package:code_setup/presentation/common_widgets/approval_comment_dialog.dart';
 import 'package:code_setup/presentation/common_widgets/chat.dart';
-import 'package:code_setup/presentation/common_widgets/checkBox.dart';
 import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
+import 'package:code_setup/presentation/common_widgets/employee_information_card.dart';
 import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
 import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
-import 'package:code_setup/presentation/common_widgets/file_upload.dart';
 import 'package:code_setup/presentation/common_widgets/requestCard.dart';
 import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.dart';
 import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';
 import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
+import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
+import 'package:code_setup/presentation/dynamic_form/models/acknowledgement_item.dart';
+import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
+import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
+import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_notifier.dart';
+import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
 import 'package:code_setup/presentation/models/activity_feed_model.dart';
+import 'package:code_setup/presentation/models/allowance_employee.dart';
 import 'package:code_setup/presentation/models/buttons_enum.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/file_upload_model.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
+import 'package:code_setup/presentation/models/master_roles.dart';
+import 'package:code_setup/presentation/models/selection_dialog_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/area_permission.dart';
+import 'package:code_setup/presentation/screens/asset_affairs/models/unit_locations_model.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/airport_entry_area_model.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/airport_entry_request_model.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/nationality_list_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_list.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/hr_task.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
+import 'package:code_setup/presentation/screens/information_security_services/cyber_security_risk_management/widgets/terms.dart';
+import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
+import 'package:code_setup/presentation/screens/logistics/models/vehicle_maintenance_model.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
-import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
-import 'package:code_setup/repository/aviation_security_facilitation/airport_entry/domain/domain.dart';
+import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
+import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
+import 'package:code_setup/repository/aviation_security_facilitation/airport_entry_permit/domain/domain.dart';
+import 'package:code_setup/repository/it_services/request_event_support/domain/domain.dart';
+import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
+import 'package:code_setup/repository/logistics/vehicle_maintenance/domain/domain.dart';
+import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/rendering.dart' hide Border;
+// import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:multi_dropdown/multi_dropdown.dart';
 
-part 'widgets/request_for_airport_entry_permit.dart';
+part 'widgets/request_airport_entry_permit.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
-part 'widgets/assign_engineer_dialog.dart';
 part 'widgets/request_details_tabs.dart';
 part 'widgets/request_list.dart';
 part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
+part 'widgets/airport_entry_form_widget.dart';
 
 @RoutePage()
 class AirportEntryPermitScreen extends ConsumerStatefulWidget {
   final Service service;
   final SubService subService;
+
   const AirportEntryPermitScreen({
     super.key,
     required this.service,
@@ -72,58 +101,46 @@ class AirportEntryPermitScreen extends ConsumerStatefulWidget {
 }
 
 class _AirportEntryPermitScreenState
-    extends ConsumerState<AirportEntryPermitScreen>
-    with SingleTickerProviderStateMixin {
-  late TextEditingController searchController;
+    extends ConsumerState<AirportEntryPermitScreen> {
   late FocusNode _focusNode;
-  late TabController _tabController;
   late _VSControllerParams _providerArgs;
   late PageController _pageController;
 
   @override
-  @override
   void initState() {
     super.initState();
-    searchController = TextEditingController(
-      text: ref.read(searchQueryProvider),
-    );
-    _focusNode = FocusNode();
-    _providerArgs = _VSControllerParams(
-      service: widget.service,
-      subService: widget.subService,
-    );
-    _pageController = PageController();
-    searchController.addListener(() {
-      setState(() {}); // rebuild suffixIcon
-    });
 
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        ref.read(selectedrequesteventTabProvider.notifier).state =
-            _tabController.index;
-      }
-    });
+    final selected = ref.read(selectedServiceProvider);
+
+    final service = widget.service.id != null
+        ? widget.service
+        : selected.service;
+
+    final subService = widget.subService.id != null
+        ? widget.subService
+        : selected.subService;
+
+    _providerArgs = _VSControllerParams(
+      service: service,
+      subService: subService,
+    );
+
+    _focusNode = FocusNode();
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
-    searchController.dispose();
     _focusNode.dispose();
-    _tabController.dispose();
-    _pageController.dispose();
     super.dispose();
+    _pageController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
-
-    // // Keep TabController in sync with provider
-    // if (_tabController.index != selectedTab) {
-    //   _tabController.index = selectedTab;
-    // }
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -131,7 +148,9 @@ class _AirportEntryPermitScreenState
         padding: const EdgeInsets.all(12),
         children: [
           /// KPI
-          StatSummaryRow(stats: controller.currentStats),
+          StatSummaryRow(
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
+          ),
           20.toHorizontalSizedBox,
 
           /// Status Breakdown
@@ -139,8 +158,16 @@ class _AirportEntryPermitScreenState
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
-            onChanged: controller.onStatusFilterChanged,
+            title: l10n.requestsStatusBreakdown,
+            filterLabel: l10n.periodFilterLabels[0],
+            filterLabelList: l10n.periodFilterLabels,
+            centerMetricLabel: l10n.totalRequests,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
+            preserveFilterLabelOnChange: true,
+            onChanged: (value) => controller.onStatusFilterChanged(
+              value != null ? l10n.periodFilterValue(value) : null,
+            ),
             breakdown: state.statusBreakdown.data,
           ),
 
@@ -149,7 +176,8 @@ class _AirportEntryPermitScreenState
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,

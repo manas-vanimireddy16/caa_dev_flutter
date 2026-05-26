@@ -7,6 +7,10 @@ class StatSummaryHelper {
   static List<StatSummaryData> buildStatList(
     Map<String, dynamic>? map, {
     bool isSecurityThreat = false,
+
+    /// NEW FLAG
+    bool isShowApprovalAsClose = false,
+
     String Function(String key)? titleForKey,
   }) {
     if (map == null) return [];
@@ -19,7 +23,7 @@ class StatSummaryHelper {
 
           /// Hide original closed card
           /// because approved becomes closed
-          if (isSecurityThreat && entry.key == 'closed') {
+          if (isShowApprovalAsClose && entry.key == 'closed') {
             return false;
           }
 
@@ -30,8 +34,8 @@ class StatSummaryHelper {
           String count = item.value.toString();
 
           /// Replace Approved -> Closed
-          if (isSecurityThreat && item.key == 'approved') {
-            count = (map['closed'] ?? 0).toString();
+          if (isShowApprovalAsClose && item.key == 'approved') {
+            count = (map['approved'] ?? 0).toString();
             key = 'closed';
           }
 
@@ -66,6 +70,18 @@ class StatSummaryHelper {
 
   static IconData getIcon(String key) {
     switch (key) {
+      case 'total_requests':
+        return Icons.assignment_outlined;
+
+      case 'assigned':
+        return Icons.task_alt_outlined;
+
+      case 'in_progress':
+        return Icons.timelapse_outlined;
+
+      case 'completed':
+        return Icons.check_circle_outline;
+
       case 'approved':
       case 'closed':
         return Icons.check_circle_outline;
@@ -86,6 +102,18 @@ class StatSummaryHelper {
 
   static Color getColor(String key) {
     switch (key) {
+      case 'total_requests':
+        return const Color(0xFFF3F4F6);
+
+      case 'assigned':
+        return const Color(0xFFE3F2FD);
+
+      case 'in_progress':
+        return const Color(0xFFFFF8E1);
+
+      case 'completed':
+        return const Color(0xFFE8F5E9);
+
       case 'approved':
       case 'closed':
         return const Color(0xFFE8F5E9);

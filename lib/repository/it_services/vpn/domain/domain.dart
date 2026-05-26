@@ -3,6 +3,7 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/technicians_list_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/vpn_request_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/vehicle_maintenance_model.dart';
@@ -56,6 +57,7 @@ abstract class VpnRepository {
     required int subServiceId,
   });
   Future<void> onApprove(Map<String, dynamic> payload);
+  Future<void> onAssign(Map<String, dynamic> payload);
 
   Future<String> sendChat(Map<String, dynamic> payload, int id);
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
@@ -94,4 +96,8 @@ abstract class VpnRepository {
   Future<List<DepartmentModel>> getDepartments();
   Future<List<SectionModel>> getSections({required String? userDepartmentId});
   Future<void> onAllocateVehicle(Map<String, dynamic> payload, int requestId);
+  Future<List<TechnicianData>> getAssignUsersList({
+    String? departmentId,
+    String? sectionId,
+  });
 }

@@ -43,21 +43,21 @@ abstract class SecondmentDecisionReposiroty {
     String status = '', // 👈 changed to List
     String searchText = '',
   });
-  Future<List<ThreatRequestDetail>> getCombinedActionItems({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
-  });
+  // Future<List<ThreatRequestDetail>> getCombinedActionItems({
+  //   required int offset,
+  //   required int limit,
+  //   // String sortBy = 'created_at',
+  //   // String sortOrder = 'DESC',
+  //   String status = '', // 👈 changed to List
+  //   String searchText = '',
+  // });
 
   Future<KPIResponse?> getApprovalKpiData({
     required int serviceId,
     required int subServiceId,
   });
-  Future<KPIResponse?> getCombinedKpiData();
-  Future<KPIResponse?> getCombinedApprovalKpiData();
+  // Future<KPIResponse?> getCombinedKpiData();
+  // Future<KPIResponse?> getCombinedApprovalKpiData();
 
   Future<void> onApprove(Map<String, dynamic> payload);
   Future<void> onReject(Map<String, dynamic> payload);

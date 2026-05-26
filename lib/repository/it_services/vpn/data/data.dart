@@ -7,6 +7,7 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/technicians_list_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/vpn_request_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/vehicle_maintenance_model.dart';
@@ -425,6 +426,45 @@ class VpnRepositoryImpl implements VpnRepository {
   }
 
   @override
+  Future<List<TechnicianData>> getAssignUsersList({
+    String? departmentId,
+    String? sectionId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final Map<String, String> queryParams = {};
+        if (departmentId != null) {
+          queryParams['department_id'] = departmentId;
+        }
+        if (sectionId != null) {
+          queryParams['section_id'] = sectionId;
+        }
+        final url = ApiEndPoint.vpnTechnicianList;
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          final List<dynamic> list = data['data'];
+
+          return list
+              .map((e) => TechnicianData.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception(
+            'Failed to fetch technicians: ${response.statusCode}',
+          );
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching technicians: $e");
+    }
+  }
+
+  @override
   Future<List<AccessRequestModel>> getRequests({
     required int offset,
     required int limit,
@@ -613,7 +653,39 @@ class VpnRepositoryImpl implements VpnRepository {
   @override
   Future<void> onApprove(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.muscatApprove;
+    final String url = ApiEndPoint.vpnApprove;
+
+    try {
+      if (client != null) {
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            '${response.data['message']}',
+          );
+          debugPrint('✅ Request sent successfully');
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          ShowFlutterToast().showFlutterToastFailure(
+            '${response.statusMessage}',
+          );
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  @override
+  Future<void> onAssign(Map<String, dynamic> payload) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.vpnAssign;
 
     try {
       if (client != null) {
@@ -721,11 +793,11 @@ class VpnRepositoryImpl implements VpnRepository {
     try {
       if (client != null) {
         final queryParams = {
-          'service_id': serviceId,
-          'sub_service_id': subServiceId,
+          // 'service_id': serviceId,
+          // 'sub_service_id': subServiceId,
         };
         final url = ApiEndPoint.vpnRequestById(id);
-        final response = await client.get(url, queryParameters: queryParams);
+        final response = await client.get(url);
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> json = response.data;

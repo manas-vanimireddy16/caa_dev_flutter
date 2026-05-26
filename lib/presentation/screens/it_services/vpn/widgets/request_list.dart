@@ -14,7 +14,7 @@ class RequestsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(_vsProvider(providerArgs));
     final controller = ref.read(_vsProvider(providerArgs).notifier);
-    final isActionItem = state.tabIndex == 1;
+    final isActionItem = state.tabIndex == 0;
 
     final items = isActionItem ? state.actionItems : state.requestData;
 
@@ -35,12 +35,13 @@ class RequestsPage extends ConsumerWidget {
           data: controller.buildRequestCardData(item),
           fieldLabelBuilder: l10n.fieldLabel,
           requestIdLabelBuilder: l10n.requestIdLabel,
+          isShowClosed: true,
           onTap: () async {
             await controller.openRequestDetails(
               item.base?.id ?? 0,
               fromActionItems: isActionItem,
             );
-            controller.updateTabIndex(0);
+            controller.updateTabIndex(1);
           },
         );
       },

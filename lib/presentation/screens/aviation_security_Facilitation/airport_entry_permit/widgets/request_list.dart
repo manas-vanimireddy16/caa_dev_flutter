@@ -2,12 +2,12 @@ part of '../view.dart';
 
 class RequestsPage extends ConsumerWidget {
   final _VSControllerParams providerArgs;
-  // final bool isActionItem;
+  final DashboardL10n l10n;
 
   const RequestsPage({
     super.key,
     required this.providerArgs,
-    // required this.isActionItem,
+    required this.l10n,
   });
 
   @override
@@ -18,12 +18,12 @@ class RequestsPage extends ConsumerWidget {
 
     final items = isActionItem ? state.actionItems : state.requestData;
 
-    if (state.isLoading) {
+    if (state.isRequestLoading || state.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (items.isEmpty) {
-      return const Center(child: Text("No Data Found"));
+      return Center(child: Text(l10n.noDataFound));
     }
 
     return ListView.builder(
@@ -33,9 +33,11 @@ class RequestsPage extends ConsumerWidget {
 
         return RequestCard(
           data: controller.buildRequestCardData(item),
+          fieldLabelBuilder: l10n.fieldLabel,
+          requestIdLabelBuilder: l10n.requestIdLabel,
           onTap: () async {
             await controller.openRequestDetails(
-              item.id ?? 0,
+              item.base?.id ?? 0,
               fromActionItems: isActionItem,
             );
             controller.updateTabIndex(0);

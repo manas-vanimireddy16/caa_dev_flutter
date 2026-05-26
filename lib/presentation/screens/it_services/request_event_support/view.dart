@@ -51,6 +51,7 @@ import 'package:code_setup/repository/it_services/request_event_support/domain/d
 import 'package:code_setup/repository/legal_consultation_services/legal_consultation_and_review_of_administrative_decisions/domain/domain.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
@@ -136,9 +137,7 @@ class _RequestEventSupportScreenState
         children: [
           /// KPI
           StatSummaryRow(
-            stats: controller.currentStats(
-              (key) => l10n.statTitle(key, isSecurityThreat: true),
-            ),
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
           20.toHorizontalSizedBox,
 

@@ -277,7 +277,7 @@ class AppRouter extends RootStackRouter {
     ),
 
     AutoRoute(
-      page: NewRequestForAirportEntryPermitRoute.page,
+      page: AirportEntryPermitNewRequestRoute.page,
       path: RouteNames.airportPermitNewRequest,
     ),
 

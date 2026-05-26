@@ -1,4 +1,5 @@
 import 'package:code_setup/presentation/models/base_request_model.dart';
+import 'package:code_setup/presentation/models/details_models.dart';
 
 class SalalahRequestModel {
   /// ⭐ BASE MODEL (COMMON FIELDS)
@@ -16,6 +17,7 @@ class SalalahRequestModel {
   final String? personName;
   final String? personContactNumber;
   final String? requestDate;
+  final ServiceTypeModel? serviceType;
 
   const SalalahRequestModel({
     this.base,
@@ -30,6 +32,7 @@ class SalalahRequestModel {
     this.personName,
     this.personContactNumber,
     this.requestDate,
+    this.serviceType,
   });
 
   /// ================= FROM JSON =================
@@ -50,6 +53,7 @@ class SalalahRequestModel {
       personName: json['person_name'],
       personContactNumber: json['person_contact_number'],
       requestDate: json['request_date'],
+      serviceType: ServiceTypeModel.fromJson(json['service_type']),
     );
   }
 }

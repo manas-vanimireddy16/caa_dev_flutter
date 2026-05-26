@@ -43,6 +43,7 @@ import 'package:code_setup/presentation/screens/hr_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/cyber_security_risk_management/widgets/terms.dart';
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/technicians_list_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/vpn_request_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/vehicle_maintenance_model.dart';
@@ -152,7 +153,7 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
-            data: state.tabIndex == 0
+            data: state.tabIndex == 1
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
             title: l10n.requestsStatusBreakdown,
@@ -169,7 +170,7 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
           ),
 
           RequestTrendBreakdownCard(
-            monthlyData: state.tabIndex == 0
+            monthlyData: state.tabIndex == 1
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,

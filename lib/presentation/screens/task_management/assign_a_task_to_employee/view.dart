@@ -143,7 +143,9 @@ class _AssignaTasktoEmployeeScreenScreenState
         padding: const EdgeInsets.all(12),
         children: [
           // KPI Cards
-          StatSummaryRow(stats: controller.currentStats(l10n.statTitle)),
+          StatSummaryRow(
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
+          ),
           20.toHorizontalSizedBox,
 
           /// Status Breakdown

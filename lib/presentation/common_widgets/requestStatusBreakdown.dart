@@ -336,18 +336,20 @@ class _BreakdownLegend extends StatelessWidget {
         // ),
         8.toVerticalSizedBox,
         // Dynamic legend
-        ...sections.map(
-          (section) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: _LegendItem(
-              color: getStatusColor(section.status),
-              label: statusLabelBuilder != null
-                  ? statusLabelBuilder!(section.status ?? 'NA')
-                  : (section.status ?? 'NA'),
-              value: section.count ?? 0,
+        ...sections
+            .where((section) => section.status?.toLowerCase() != 'cancelled')
+            .map(
+              (section) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _LegendItem(
+                  color: getStatusColor(section.status),
+                  label: statusLabelBuilder != null
+                      ? statusLabelBuilder!(section.status ?? 'NA')
+                      : (section.status ?? 'NA'),
+                  value: section.count ?? 0,
+                ),
+              ),
             ),
-          ),
-        ),
       ],
     );
   }
@@ -455,11 +457,13 @@ Color getStatusColor(String? status) {
     case 'expired':
       return const Color(0xFFC02211);
     case 'in progress':
-      return Colors.blue;
+      return Color(0xFFFFB74D);
     case 'failed':
       return const Color(0xFFC02211);
     case 'rejected':
       return const Color(0xFFC02211);
+    case 'assigned':
+      return Color(0xFF1976D2);
     default:
       return Colors.grey; // default color if status doesn't match
   }

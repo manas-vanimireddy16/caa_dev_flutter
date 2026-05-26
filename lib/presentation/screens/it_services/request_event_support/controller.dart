@@ -233,8 +233,9 @@ class _VSController extends StateNotifier<_ViewState> {
     titleController = TextEditingController();
     searchController = TextEditingController();
     fetchKpi();
+    fetchApprovalKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
@@ -262,26 +263,24 @@ class _VSController extends StateNotifier<_ViewState> {
       List.generate(6, (index) => (currentYear - index).toString());
   List<StatSummaryData> requestStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.kpiData.data?.toJson(),
-        isSecurityThreat: true,
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    // isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> approverStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.approvalKpiData.data?.toJson(),
-        isSecurityThreat: true,
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    // isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
       state.tabIndex == 0
-          ? requestStatsList(titleForKey)
-          : approverStatsList(titleForKey);
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -332,9 +331,11 @@ class _VSController extends StateNotifier<_ViewState> {
     return {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
-      'Request By': item.base?.createdByUser?.employeeName ?? '-',
+      'User': item.base?.createdByUser?.employeeName ?? '-',
+      'Event Title': item.eventTitle ?? '-',
+      'Request By': item.requestFor ?? '-',
       // 'Cycle Period': item.cyclePeriod ?? '-',
-      'Request Submission Date': item.base?.createdAt.toString() ?? '-',
+      'Request Submission Date': formatDate(item.base?.createdAt.toString()),
 
       /// ================= EMPLOYEE INFO =================
 
@@ -358,7 +359,12 @@ class _VSController extends StateNotifier<_ViewState> {
       // 'Request Classification': request?.requestClassification ?? '-',
       // 'Date of Submission': request?.submissionDate.toString() ?? '-',
       // 'Request Title': request?.requestTitle ?? '-',
-      'Request Type': request?.requestType ?? '-',
+      'Event Type': request?.eventTitle ?? '-',
+      'Request For': request?.requestFor ?? '-',
+      'Date of Event': request?.dateOfEvent ?? '-',
+      'Location of Event': request?.locationOfEvent ?? '-',
+      'Phone Number': request?.phoneNumber ?? '-',
+      'Reason for Request': request?.reasonForRequest?.join(', ') ?? '-',
     };
   }
 
@@ -467,6 +473,7 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'event_title',
       label: l10n.eventTitle,
       type: FieldType.text,
+      placeholder: l10n.enter,
       required: true,
     ),
 
@@ -475,6 +482,9 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'event_date',
       label: l10n.dateOfEvent,
       type: FieldType.date,
+      firstDate: DateTime.now().add(const Duration(days: 3)),
+      initialDate: DateTime.now().add(const Duration(days: 3)),
+      placeholder: l10n.enter,
       required: true,
     ),
 
@@ -483,6 +493,7 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'location',
       label: l10n.locationOfEvent,
       type: FieldType.text,
+      placeholder: l10n.enter,
       required: true,
     ),
 
@@ -491,6 +502,7 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'event_type',
       label: l10n.typeOfEvent,
       type: FieldType.text,
+      placeholder: l10n.enter,
       required: false,
     ),
 
@@ -498,8 +510,17 @@ class _VSController extends StateNotifier<_ViewState> {
     DynamicField(
       name: 'phone_number',
       label: l10n.phoneNumber,
-      type: FieldType.text,
+      type: FieldType.number,
+      placeholder: l10n.enter,
       required: true,
+      validator: (value, values) {
+        final phone = value?.toString().trim() ?? '';
+        if (phone.isEmpty) return null;
+        if (phone.length != 10) {
+          return l10n.eventSupportPhoneNumberErrorText;
+        }
+        return null;
+      },
     ),
 
     /// ================= REQUEST FOR =================
@@ -507,7 +528,16 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'request_for',
       label: l10n.requestFor,
       type: FieldType.text,
+      placeholder: l10n.eventSupportPlaceholderRequestFor,
       required: true,
+      validator: (value, values) {
+        final text = value?.toString().trim() ?? '';
+        if (text.isEmpty) return null;
+        if (text.length < 5) {
+          return l10n.eventSupportRequestForErrorText;
+        }
+        return null;
+      },
     ),
 
     /// ================= REASON =================
@@ -515,7 +545,16 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'reason',
       label: l10n.reasonForRequest,
       type: FieldType.text,
+      placeholder: l10n.eventSupportPlaceholderReason,
       required: true,
+      validator: (value, values) {
+        final text = value?.toString().trim() ?? '';
+        if (text.isEmpty) return null;
+        if (text.length < 5) {
+          return l10n.eventSupportReasonForRequestErrorText;
+        }
+        return null;
+      },
     ),
 
     /// ================= ATTACHMENT =================
@@ -726,9 +765,6 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
 
       final requests = await requestEventSupportInstance.getRequests(
         offset: 1,
@@ -740,7 +776,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: e.toString());
@@ -755,10 +791,6 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(actionItems: [], isLoading: false);
-      }
-
       final items = await requestEventSupportInstance.getActionItems(
         offset: 1,
         limit: 8,
@@ -945,9 +977,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchactionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1303,7 +1335,7 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       fetchactionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -1428,6 +1460,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .requestEventSupportCreateRequest(payload);
 
       if (response['status'] == 'success') {
+        state = state.copyWith(isLoading: true);
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1437,14 +1470,15 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  void _refreshDashboard() {
+  Future<void> _refreshDashboard() async {
+    await Future.delayed(Duration(milliseconds: 2000));
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests();
+    fetchRequests(isRefresh: true);
     fetchactionItems();
   }
 

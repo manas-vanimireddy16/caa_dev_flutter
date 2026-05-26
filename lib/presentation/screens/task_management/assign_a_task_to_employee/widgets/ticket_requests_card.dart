@@ -37,8 +37,12 @@ class TicketRequestsCard extends ConsumerWidget {
                   ),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B873E),
+                    foregroundColor: Colors.white,
+                  ),
                   onPressed: controller.openNewRequestForm,
-                  child: Text(l10n.newRequest),
+                  child: Text(l10n.assignNewTask),
                 ),
               ],
             ),
@@ -58,8 +62,11 @@ class TicketRequestsCard extends ConsumerWidget {
             /// Tabs
             RequestTabs(
               selectedIndex: state.tabIndex,
-              l10n: l10n,
+              actionItemCount: state.approvalKpiData?.data?.pending ?? 0,
               onTabChanged: (index) {
+                focusNode.unfocus();
+                controller.searchController.clear();
+                controller.onSearchChanged("");
                 controller.updateTabIndex(index);
 
                 pageController.animateToPage(
@@ -78,6 +85,9 @@ class TicketRequestsCard extends ConsumerWidget {
               child: PageView(
                 controller: pageController,
                 onPageChanged: (index) {
+                  focusNode.unfocus();
+                  controller.searchController.clear();
+                  controller.onSearchChanged("");
                   controller.updateTabIndex(index);
                 },
                 children: [

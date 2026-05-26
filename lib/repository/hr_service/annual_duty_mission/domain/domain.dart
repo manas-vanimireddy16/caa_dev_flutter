@@ -53,13 +53,13 @@ abstract class AnnualDutyMissionRepoistry {
     String searchText = '',
   });
 
-  Future<List<ThreatRequestDetail>> getCombinedActionItems({
-    required int offset,
-    required int limit,
-    required String tripType,
-    String status = '',
-    String searchText = '',
-  });
+  // Future<List<ThreatRequestDetail>> getCombinedActionItems({
+  //   required int offset,
+  //   required int limit,
+  //   required String tripType,
+  //   String status = '',
+  //   String searchText = '',
+  // });
 
   /// ===================== KPI =====================
   Future<KPIResponse?> getKpiData(
@@ -74,9 +74,9 @@ abstract class AnnualDutyMissionRepoistry {
     String tripType,
   );
 
-  Future<KPIResponse?> getCombinedKpiData(String tripType);
+  // Future<KPIResponse?> getCombinedKpiData(String tripType);
 
-  Future<KPIResponse?> getCombinedApprovalKpiData(String tripType);
+  // Future<KPIResponse?> getCombinedApprovalKpiData(String tripType);
 
   /// ===================== APPROVAL ACTIONS =====================
   Future<void> onApprove(Map<String, dynamic> payload);

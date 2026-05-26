@@ -169,7 +169,7 @@ class _TransferFromOneJobtoAnotherJobNatureDetailsScreenState
                           request?.effectiveFromDate ?? 'N/A',
                       "Civil Id Card Number":
                           request?.civilIdCardNumber ?? 'N/A',
-                      "Reason For Request": request?.reasonForRequest ?? 'N/A',
+                      // "Reason For Request": request?.reasonForRequest ?? 'N/A',
 
                       /// ───── RIGHT COLUMN ─────
                       "Description": request?.description ?? 'N/A',

@@ -897,7 +897,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.requestTitleLogistics,
       type: FieldType.text,
       required: true,
-      placeholder: l10n.enterRequestTitleLogistics,
+      placeholder: l10n.enterRequestTitle,
     ),
     DynamicField(
       name: 'type_of_request',

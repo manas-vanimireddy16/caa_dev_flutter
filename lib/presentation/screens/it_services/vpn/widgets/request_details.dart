@@ -139,6 +139,13 @@ class _VPNRequestDetailsTabScreenState
                       );
                     },
 
+                    onClose: () async {
+                      controller.showApprovalCommentDialog(
+                        type: ApprovalDialogType.approve,
+                        approverId: approverId ?? 0,
+                        requestId: requestId ?? 0,
+                      );
+                    },
                     onApprove: () async {
                       controller.showApprovalCommentDialog(
                         type: ApprovalDialogType.approve,
@@ -146,6 +153,13 @@ class _VPNRequestDetailsTabScreenState
                         requestId: requestId ?? 0,
                       );
                     },
+                    onAssign: () async {
+                      controller.showAssignTechnicianDialog(
+                        context,
+                        approvalId: approverId ?? 0,
+                      );
+                    },
+
                     onReject: () async {
                       controller.showApprovalCommentDialog(
                         type: ApprovalDialogType.reject,

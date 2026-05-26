@@ -19,13 +19,13 @@ class RequestTabs extends StatelessWidget {
     return Row(
       children: [
         _tabItem(
-          title: l10n.myRequests,
+          title: l10n.actionItems,
+          count: actionItemCount,
           isSelected: selectedIndex == 0,
           onTap: () => onTabChanged(0),
         ),
         _tabItem(
-          title: l10n.actionItems,
-          count: actionItemCount,
+          title: l10n.myRequests,
           isSelected: selectedIndex == 1,
           onTap: () => onTabChanged(1),
         ),

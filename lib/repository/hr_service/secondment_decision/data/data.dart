@@ -251,63 +251,63 @@ class SecondmentDecisionRepositoryImple
     }
   }
 
-  @override
-  Future<KPIResponse?> getCombinedKpiData() async {
-    String url = ApiEndPoint.airportEntryKpi;
-    final client = await KAppX.network.secureClient();
+  // @override
+  // Future<KPIResponse?> getCombinedKpiData() async {
+  //   String url = ApiEndPoint.airportEntryKpi;
+  //   final client = await KAppX.network.secureClient();
 
-    try {
-      if (client != null) {
-        final response = await client.get(url);
+  //   try {
+  //     if (client != null) {
+  //       final response = await client.get(url);
 
-        if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          return KPIResponse.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      return null;
-    } on DioException catch (error) {
-      log('caught dio error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching KPI data $e');
-      throw ApiException(e.toString());
-    }
-  }
+  //       if (response.statusCode == 200) {
+  //         final data = response.data as Map<String, dynamic>;
+  //         return KPIResponse.fromJson(data);
+  //       } else {
+  //         final errorMessage =
+  //             response.data?['message'] ?? 'Unexpected error occurred';
+  //         throw ApiException(errorMessage);
+  //       }
+  //     }
+  //     return null;
+  //   } on DioException catch (error) {
+  //     log('caught dio error');
+  //     final message = error.response?.data['message'] ?? error.message;
+  //     throw ApiException(message);
+  //   } catch (e) {
+  //     log('error fetching KPI data $e');
+  //     throw ApiException(e.toString());
+  //   }
+  // }
 
-  @override
-  Future<KPIResponse?> getCombinedApprovalKpiData() async {
-    String url = ApiEndPoint.airportEntryApprovalKpi;
-    final client = await KAppX.network.secureClient();
+  // @override
+  // Future<KPIResponse?> getCombinedApprovalKpiData() async {
+  //   String url = ApiEndPoint.airportEntryApprovalKpi;
+  //   final client = await KAppX.network.secureClient();
 
-    try {
-      if (client != null) {
-        final response = await client.get(url);
+  //   try {
+  //     if (client != null) {
+  //       final response = await client.get(url);
 
-        if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          return KPIResponse.fromJson(data);
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
-      return null;
-    } on DioException catch (error) {
-      log('caught dio error');
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      log('error fetching KPI data $e');
-      throw ApiException(e.toString());
-    }
-  }
+  //       if (response.statusCode == 200) {
+  //         final data = response.data as Map<String, dynamic>;
+  //         return KPIResponse.fromJson(data);
+  //       } else {
+  //         final errorMessage =
+  //             response.data?['message'] ?? 'Unexpected error occurred';
+  //         throw ApiException(errorMessage);
+  //       }
+  //     }
+  //     return null;
+  //   } on DioException catch (error) {
+  //     log('caught dio error');
+  //     final message = error.response?.data['message'] ?? error.message;
+  //     throw ApiException(message);
+  //   } catch (e) {
+  //     log('error fetching KPI data $e');
+  //     throw ApiException(e.toString());
+  //   }
+  // }
 
   @override
   Future<KPIResponse?> getApprovalKpiData({
@@ -590,106 +590,106 @@ class SecondmentDecisionRepositoryImple
     }
   }
 
-  @override
-  Future<List<OrganizeSecurityAwarenessRequestData>> getCombinedRequests({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
-  }) async {
-    final client = await KAppX.network.secureClient();
+  // @override
+  // Future<List<OrganizeSecurityAwarenessRequestData>> getCombinedRequests({
+  //   required int offset,
+  //   required int limit,
+  //   // String sortBy = 'created_at',
+  //   // String sortOrder = 'DESC',
+  //   String status = '', // 👈 changed to List
+  //   String searchText = '',
+  // }) async {
+  //   final client = await KAppX.network.secureClient();
 
-    try {
-      if (client != null) {
-        final quaryParams = {'offset': offset, 'limit': limit};
+  //   try {
+  //     if (client != null) {
+  //       final quaryParams = {'offset': offset, 'limit': limit};
 
-        final url = ApiEndPoint.airportEntryRequests;
-        final response = await client.get(url, queryParameters: quaryParams);
+  //       final url = ApiEndPoint.airportEntryRequests;
+  //       final response = await client.get(url, queryParameters: quaryParams);
 
-        if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          final List<dynamic> list = data['data'];
+  //       if (response.statusCode == 200) {
+  //         final data = response.data as Map<String, dynamic>;
+  //         final List<dynamic> list = data['data'];
 
-          return list
-              .map(
-                (e) => OrganizeSecurityAwarenessRequestData.fromJson(
-                  e as Map<String, dynamic>,
-                ),
-              )
-              .toList();
-        } else {
-          throw Exception('Failed to fetch services: ${response.statusCode}');
-        }
-      } else {
-        return [];
-      }
-    } catch (e) {
-      throw Exception("Error fetching services: $e");
-    }
-  }
+  //         return list
+  //             .map(
+  //               (e) => OrganizeSecurityAwarenessRequestData.fromJson(
+  //                 e as Map<String, dynamic>,
+  //               ),
+  //             )
+  //             .toList();
+  //       } else {
+  //         throw Exception('Failed to fetch services: ${response.statusCode}');
+  //       }
+  //     } else {
+  //       return [];
+  //     }
+  //   } catch (e) {
+  //     throw Exception("Error fetching services: $e");
+  //   }
+  // }
 
-  @override
-  Future<List<ThreatRequestDetail>> getCombinedActionItems({
-    required int offset,
-    required int limit,
-    String status = '',
-    String searchText = '',
-  }) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {
-          'offset': offset.toString(),
-          'limit': limit.toString(),
-          'order_by': 'created_at',
-          'sort_order': 'DESC',
-        };
+  // @override
+  // Future<List<ThreatRequestDetail>> getCombinedActionItems({
+  //   required int offset,
+  //   required int limit,
+  //   String status = '',
+  //   String searchText = '',
+  // }) async {
+  //   try {
+  //     final client = await KAppX.network.secureClient();
+  //     if (client != null) {
+  //       final queryParams = {
+  //         'offset': offset.toString(),
+  //         'limit': limit.toString(),
+  //         'order_by': 'created_at',
+  //         'sort_order': 'DESC',
+  //       };
 
-        if (status.isNotEmpty) {
-          queryParams['status'] = status;
-        }
+  //       if (status.isNotEmpty) {
+  //         queryParams['status'] = status;
+  //       }
 
-        if (searchText.isNotEmpty) {
-          queryParams['search_text'] = searchText;
-        }
+  //       if (searchText.isNotEmpty) {
+  //         queryParams['search_text'] = searchText;
+  //       }
 
-        final response = await client.get(
-          ApiEndPoint.airportEntryActionItems,
-          queryParameters: queryParams,
-        );
+  //       final response = await client.get(
+  //         ApiEndPoint.airportEntryActionItems,
+  //         queryParameters: queryParams,
+  //       );
 
-        if (response.statusCode == 200 && response.data != null) {
-          final data = Map<String, dynamic>.from(response.data);
+  //       if (response.statusCode == 200 && response.data != null) {
+  //         final data = Map<String, dynamic>.from(response.data);
 
-          final List<dynamic> list = data['data'] ?? [];
+  //         final List<dynamic> list = data['data'] ?? [];
 
-          /// Parse each Action Item
-          final actionItems = list
-              .map(
-                (item) =>
-                    ThreatRequestDetail.fromJson(item as Map<String, dynamic>),
-              )
-              .toList();
+  //         /// Parse each Action Item
+  //         final actionItems = list
+  //             .map(
+  //               (item) =>
+  //                   ThreatRequestDetail.fromJson(item as Map<String, dynamic>),
+  //             )
+  //             .toList();
 
-          return actionItems;
-        } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
+  //         return actionItems;
+  //       } else {
+  //         final errorMessage =
+  //             response.data?['message'] ?? 'Unexpected error occurred';
+  //         throw ApiException(errorMessage);
+  //       }
+  //     }
 
-      /// If client is null
-      return [];
-    } on DioException catch (error) {
-      final message = error.response?.data['message'] ?? error.message;
-      throw ApiException(message);
-    } catch (e) {
-      throw ApiException(e.toString());
-    }
-  }
+  //     /// If client is null
+  //     return [];
+  //   } on DioException catch (error) {
+  //     final message = error.response?.data['message'] ?? error.message;
+  //     throw ApiException(message);
+  //   } catch (e) {
+  //     throw ApiException(e.toString());
+  //   }
+  // }
 
   @override
   Future<RequestDetailData?> getRequestsById(int id) async {

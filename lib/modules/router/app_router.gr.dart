@@ -24,7 +24,7 @@ import 'package:code_setup/presentation/screens/asset_affairs/request_to_renewal
 import 'package:code_setup/presentation/screens/asset_affairs/residental_unit_rental/view.dart'
     as _i70;
 import 'package:code_setup/presentation/screens/asset_affairs/view.dart' as _i9;
-import 'package:code_setup/presentation/screens/aviation_security_Facilitation/airport_entry_permit_request/view.dart'
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/airport_entry_permit/view.dart'
     as _i3;
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/dashboard/view.dart'
     as _i13;
@@ -441,11 +441,95 @@ class AccessCardRequestRouteArgs {
 }
 
 /// generated route for
+/// [_i3.AirportEntryPermitNewRequestScreen]
+class AirportEntryPermitNewRequestRoute
+    extends _i84.PageRouteInfo<AirportEntryPermitNewRequestRouteArgs> {
+  AirportEntryPermitNewRequestRoute({
+    _i85.Key? key,
+    required int serviceId,
+    required int subServiceId,
+    required _i86.Service service,
+    required _i86.SubService subService,
+    List<_i84.PageRouteInfo>? children,
+  }) : super(
+         AirportEntryPermitNewRequestRoute.name,
+         args: AirportEntryPermitNewRequestRouteArgs(
+           key: key,
+           serviceId: serviceId,
+           subServiceId: subServiceId,
+           service: service,
+           subService: subService,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'AirportEntryPermitNewRequestRoute';
+
+  static _i84.PageInfo page = _i84.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<AirportEntryPermitNewRequestRouteArgs>();
+      return _i3.AirportEntryPermitNewRequestScreen(
+        key: args.key,
+        serviceId: args.serviceId,
+        subServiceId: args.subServiceId,
+        service: args.service,
+        subService: args.subService,
+      );
+    },
+  );
+}
+
+class AirportEntryPermitNewRequestRouteArgs {
+  const AirportEntryPermitNewRequestRouteArgs({
+    this.key,
+    required this.serviceId,
+    required this.subServiceId,
+    required this.service,
+    required this.subService,
+  });
+
+  final _i85.Key? key;
+
+  final int serviceId;
+
+  final int subServiceId;
+
+  final _i86.Service service;
+
+  final _i86.SubService subService;
+
+  @override
+  String toString() {
+    return 'AirportEntryPermitNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! AirportEntryPermitNewRequestRouteArgs) return false;
+    return key == other.key &&
+        serviceId == other.serviceId &&
+        subServiceId == other.subServiceId &&
+        service == other.service &&
+        subService == other.subService;
+  }
+
+  @override
+  int get hashCode =>
+      key.hashCode ^
+      serviceId.hashCode ^
+      subServiceId.hashCode ^
+      service.hashCode ^
+      subService.hashCode;
+}
+
+/// generated route for
 /// [_i3.AirportEntryPermitScreen]
 class AirportEntryPermitRoute
     extends _i84.PageRouteInfo<AirportEntryPermitRouteArgs> {
   AirportEntryPermitRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required _i86.Service service,
     required _i86.SubService subService,
     List<_i84.PageRouteInfo>? children,
@@ -481,7 +565,7 @@ class AirportEntryPermitRouteArgs {
     required this.subService,
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final _i86.Service service;
 
@@ -510,7 +594,7 @@ class AirportEntryPermitRouteArgs {
 class AirportEntryRequestDetailsTabRoute
     extends _i84.PageRouteInfo<AirportEntryRequestDetailsTabRouteArgs> {
   AirportEntryRequestDetailsTabRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
@@ -562,7 +646,7 @@ class AirportEntryRequestDetailsTabRouteArgs {
     this.from = '',
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final int id;
 
@@ -4379,90 +4463,6 @@ class NewAssignmentDecisionRouteArgs {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! NewAssignmentDecisionRouteArgs) return false;
-    return key == other.key &&
-        serviceId == other.serviceId &&
-        subServiceId == other.subServiceId &&
-        service == other.service &&
-        subService == other.subService;
-  }
-
-  @override
-  int get hashCode =>
-      key.hashCode ^
-      serviceId.hashCode ^
-      subServiceId.hashCode ^
-      service.hashCode ^
-      subService.hashCode;
-}
-
-/// generated route for
-/// [_i3.NewRequestForAirportEntryPermitScreen]
-class NewRequestForAirportEntryPermitRoute
-    extends _i84.PageRouteInfo<NewRequestForAirportEntryPermitRouteArgs> {
-  NewRequestForAirportEntryPermitRoute({
-    _i87.Key? key,
-    required int serviceId,
-    required int subServiceId,
-    required _i86.Service service,
-    required _i86.SubService subService,
-    List<_i84.PageRouteInfo>? children,
-  }) : super(
-         NewRequestForAirportEntryPermitRoute.name,
-         args: NewRequestForAirportEntryPermitRouteArgs(
-           key: key,
-           serviceId: serviceId,
-           subServiceId: subServiceId,
-           service: service,
-           subService: subService,
-         ),
-         initialChildren: children,
-       );
-
-  static const String name = 'NewRequestForAirportEntryPermitRoute';
-
-  static _i84.PageInfo page = _i84.PageInfo(
-    name,
-    builder: (data) {
-      final args = data.argsAs<NewRequestForAirportEntryPermitRouteArgs>();
-      return _i3.NewRequestForAirportEntryPermitScreen(
-        key: args.key,
-        serviceId: args.serviceId,
-        subServiceId: args.subServiceId,
-        service: args.service,
-        subService: args.subService,
-      );
-    },
-  );
-}
-
-class NewRequestForAirportEntryPermitRouteArgs {
-  const NewRequestForAirportEntryPermitRouteArgs({
-    this.key,
-    required this.serviceId,
-    required this.subServiceId,
-    required this.service,
-    required this.subService,
-  });
-
-  final _i87.Key? key;
-
-  final int serviceId;
-
-  final int subServiceId;
-
-  final _i86.Service service;
-
-  final _i86.SubService subService;
-
-  @override
-  String toString() {
-    return 'NewRequestForAirportEntryPermitRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! NewRequestForAirportEntryPermitRouteArgs) return false;
     return key == other.key &&
         serviceId == other.serviceId &&
         subServiceId == other.subServiceId &&

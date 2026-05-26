@@ -56,6 +56,7 @@ class _ViewState {
   final bool isButtonDisabled;
   final List<ChatMessageModel> chatById;
   final List<AttachmentModel> attachmentsById;
+  final List<TechnicianData> techniciansList;
 
   final List<String> months = [
     'January',
@@ -70,387 +71,6 @@ class _ViewState {
     'October',
     'November',
     'December',
-  ];
-
-  final List<Map<String, dynamic>> vehicles = [
-    {
-      "chassisNumber": "MHFKU8FS8R0198168",
-      "engineNumber": "1GRH393291",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "43/88",
-      "no": 1,
-    },
-    {
-      "chassisNumber": "MHFKU8FSXR0197944",
-      "engineNumber": "1GRH394412",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "47/88",
-      "no": 2,
-    },
-    {
-      "chassisNumber": "MHFKU8FS4R0198183",
-      "engineNumber": "1GRH393738",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "42/88",
-      "no": 3,
-    },
-    {
-      "chassisNumber": "MHFKU8FS1R0197895",
-      "engineNumber": "1GRH3932364",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "45/88",
-      "no": 4,
-    },
-    {
-      "chassisNumber": "MHFKU8FS8R0197893",
-      "engineNumber": "1GRH392372",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "46/88",
-      "no": 5,
-    },
-    {
-      "chassisNumber": "MHFKU8FS3R0198191",
-      "engineNumber": "1GRH393620",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "48/88",
-      "no": 6,
-    },
-    {
-      "chassisNumber": "MHFKU8FS2R0197906",
-      "engineNumber": "1GRH394369",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "37/88",
-      "no": 7,
-    },
-    {
-      "chassisNumber": "MHFKU8FS7R0197920",
-      "engineNumber": "1GRH393135",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "36/88",
-      "no": 8,
-    },
-    {
-      "chassisNumber": "MHFKU8FS3R0198224",
-      "engineNumber": "1GRH393976",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "44/88",
-      "no": 9,
-    },
-    {
-      "chassisNumber": "MHFKU8FS7R0198226",
-      "engineNumber": "1GRH393932",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Fortuner 4x4",
-      "vehicleNumber": "49/88",
-      "no": 10,
-    },
-    {
-      "chassisNumber": "JTNB19HK8R3246981",
-      "engineNumber": "A250D74665",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "98/88",
-      "no": 11,
-    },
-    {
-      "chassisNumber": "JTNB19HK2R3249147",
-      "engineNumber": "A250D80919",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "59/88",
-      "no": 12,
-    },
-    {
-      "chassisNumber": "JTNB19HK7R3247409",
-      "engineNumber": "A250D76198",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "57/88",
-      "no": 13,
-    },
-    {
-      "chassisNumber": "JTNB19HK7R3248771",
-      "engineNumber": "A250D79786",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "56/88",
-      "no": 14,
-    },
-    {
-      "chassisNumber": "JTNB19HK2R3248273",
-      "engineNumber": "A250D78346",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "54/88",
-      "no": 15,
-    },
-    {
-      "chassisNumber": "JTNB19HK4R3245794",
-      "engineNumber": "A250D71332",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "24/88",
-      "no": 16,
-    },
-    {
-      "chassisNumber": "JTNB19HK1R3245610",
-      "engineNumber": "A250D70920",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "97/88",
-      "no": 17,
-    },
-    {
-      "chassisNumber": "JTNB19HKxR3245394",
-      "engineNumber": "A250D70280",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "96/88",
-      "no": 18,
-    },
-    {
-      "chassisNumber": "JTNB19HK0R3244965",
-      "engineNumber": "A250D69119",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "76/88",
-      "no": 19,
-    },
-    {
-      "chassisNumber": "JTNB19HK1R3248796",
-      "engineNumber": "A250D79746",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "58/88",
-      "no": 20,
-    },
-    {
-      "chassisNumber": "JTNB19HK1R3245560",
-      "engineNumber": "A250D70818",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "95/88",
-      "no": 21,
-    },
-    {
-      "chassisNumber": "JTNB19HK0R3246909",
-      "engineNumber": "A250D74461",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Camry Sedan",
-      "vehicleNumber": "79/88",
-      "no": 22,
-    },
-    {
-      "chassisNumber": "JTEBU9FJ0PK239298",
-      "engineNumber": "1GRC726969",
-      "color": "Pearl White",
-      "model": "2023",
-      "vehicleType": "Toyota Prado 4x4",
-      "vehicleNumber": "55/88",
-      "no": 23,
-    },
-    {
-      "chassisNumber": "JTEBU9FJ8PK247214",
-      "engineNumber": "1GRC792827",
-      "color": "Pearl White",
-      "model": "2023",
-      "vehicleType": "Toyota Prado 4x4",
-      "vehicleNumber": "4./88",
-      "no": 24,
-    },
-    {
-      "chassisNumber": "JTEBU9FJ6PK246675",
-      "engineNumber": "1GRC788110",
-      "color": "Pearl White",
-      "model": "2023",
-      "vehicleType": "Toyota Prado 4x4",
-      "vehicleNumber": "5./88",
-      "no": 25,
-    },
-    {
-      "chassisNumber": "JTEJU9FJ3B5013808",
-      "engineNumber": "A237596",
-      "color": "White",
-      "model": "2011",
-      "vehicleType": "Toyota Prado 4x4",
-      "vehicleNumber": "8./88",
-      "no": 26,
-    },
-    {
-      "chassisNumber": "JTEJU9FJ8B5016574",
-      "engineNumber": "A272362",
-      "color": "White",
-      "model": "2011",
-      "vehicleType": "Toyota Prado 4x4",
-      "vehicleNumber": "9./88",
-      "no": 27,
-    },
-    {
-      "chassisNumber": "5N1AN0N69CN801970",
-      "engineNumber": "930446A",
-      "color": "Silver",
-      "model": "2011",
-      "vehicleType": "Nissan Pathfinder 4x4",
-      "vehicleNumber": "23/88",
-      "no": 28,
-    },
-    {
-      "chassisNumber": "5N1AR1N80BC600156",
-      "engineNumber": "904776A",
-      "color": "Silver",
-      "model": "2011",
-      "vehicleType": "Nissan Pathfinder 4x4",
-      "vehicleNumber": "21/88",
-      "no": 29,
-    },
-    {
-      "chassisNumber": "5N1AN0N69CN801970",
-      "engineNumber": "174185B",
-      "color": "White",
-      "model": "2012",
-      "vehicleType": "Nissan X-Terra 4x4",
-      "vehicleNumber": "10./88",
-      "no": 30,
-    },
-    {
-      "chassisNumber": "JMYLYV97WDJ703723",
-      "engineNumber": "6G758E9XS3556",
-      "color": "White",
-      "model": "2013",
-      "vehicleType": "Toyota Pajero 4x4",
-      "vehicleNumber": "6./88",
-      "no": 31,
-    },
-    {
-      "chassisNumber": "1GKS27KD6PR329789",
-      "engineNumber": "L84APR329789",
-      "color": "Brown",
-      "model": "2023",
-      "vehicleType": "GMC Yukon 4x4",
-      "vehicleNumber": "111/88",
-      "no": 32,
-    },
-    {
-      "chassisNumber": "MR0DX9CD0R2649011",
-      "engineNumber": "2TRB145770",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Hilux Pickup",
-      "vehicleNumber": "108/88",
-      "no": 33,
-    },
-    {
-      "chassisNumber": "MR0DX9CD3R2649021",
-      "engineNumber": "2TRB146621",
-      "color": "Pearl White",
-      "model": "2024",
-      "vehicleType": "Toyota Hilux Pickup",
-      "vehicleNumber": "109/88",
-      "no": 34,
-    },
-    {
-      "chassisNumber": "MR0EW12G8D3020457",
-      "engineNumber": "7433363",
-      "color": "White",
-      "model": "2013",
-      "vehicleType": "Toyota Hilux Pickup",
-      "vehicleNumber": "26/88",
-      "no": 35,
-    },
-    {
-      "chassisNumber": "MNTDD22S9C6003117",
-      "engineNumber": "917712Z",
-      "color": "White",
-      "model": "2012",
-      "vehicleType": "Nissan Pickup",
-      "vehicleNumber": "18/88",
-      "no": 36,
-    },
-    {
-      "chassisNumber": "MMBJNKA50BD023348",
-      "engineNumber": "4G64UCAJ3745",
-      "color": "White",
-      "model": "2011",
-      "vehicleType": "Mitsubishi Pickup",
-      "vehicleNumber": "30/88",
-      "no": 37,
-    },
-    {
-      "chassisNumber": "JL6BCE6J9DK008760",
-      "engineNumber": "6D16A23924",
-      "color": "White",
-      "model": "2009",
-      "vehicleType": "Mitsubishi Truck with Crane",
-      "vehicleNumber": "40/88",
-      "no": 38,
-    },
-    {
-      "chassisNumber": "4P3SRDJ1ABE802237",
-      "engineNumber": "4G69PD4331",
-      "color": "White",
-      "model": "2011",
-      "vehicleType": "Mitsubishi Galant Sedan",
-      "vehicleNumber": "29/88",
-      "no": 39,
-    },
-    {
-      "chassisNumber": "JL6BCE6J9DK008760",
-      "engineNumber": "4D34N38913",
-      "color": "White",
-      "model": "2013",
-      "vehicleType": "Mitsubishi Truck with Crane",
-      "vehicleNumber": "27/88",
-      "no": 40,
-    },
-    {
-      "chassisNumber": "JTMHU09J0B5051720",
-      "engineNumber": "A318476",
-      "color": "White",
-      "model": "2011",
-      "vehicleType": "Toyota Land Cruiser 4x4",
-      "vehicleNumber": "1./88",
-      "no": 41,
-    },
-    {
-      "chassisNumber": "JN8AY25Y0C9027176",
-      "engineNumber": "038827A",
-      "color": "Green",
-      "model": "2012",
-      "vehicleType": "Nissan Patrol 4x4",
-      "vehicleNumber": "2./88",
-      "no": 42,
-    },
   ];
 
   /// FORM KEY
@@ -477,6 +97,7 @@ class _ViewState {
     required this.isButtonDisabled,
     required this.chatById,
     required this.attachmentsById,
+    required this.techniciansList,
   });
 
   _ViewState.init()
@@ -489,7 +110,7 @@ class _ViewState {
         statusBreakdown: StatusBreakdownModel(),
         trendData: TrendBreakdownModel(),
         requestDataById: RequestDetailModel(),
-        tabIndex: 0,
+        tabIndex: 1,
         selectedTab: 0,
         approvalStatusBreakdown: StatusBreakdownModel(),
         approvalTrendData: TrendBreakdownModel(),
@@ -502,6 +123,7 @@ class _ViewState {
         chatById: [],
 
         attachmentsById: [],
+        techniciansList: [],
       );
 
   _ViewState copyWith({
@@ -567,6 +189,7 @@ class _ViewState {
     List<EmployeeList>? selectedUsersList,
     List<ResidentalUnitRentalLocationModel>? unitLocations,
     List<SectionModel>? sections,
+    List<TechnicianData>? techniciansList,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -590,6 +213,7 @@ class _ViewState {
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
       chatById: chatById ?? this.chatById,
       attachmentsById: attachmentsById ?? this.attachmentsById,
+      techniciansList: techniciansList ?? this.techniciansList,
     );
   }
 }
@@ -615,7 +239,7 @@ class _VSController extends StateNotifier<_ViewState> {
     searchController = TextEditingController();
     fetchKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
@@ -627,7 +251,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final int currentVersion = ++_searchVersion;
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
+      if (state.tabIndex == 1) {
         await fetchRequests(isRefresh: true, searchText: value);
       } else {
         await fetchactionItems(isRefresh: true, searchText: value);
@@ -658,11 +282,11 @@ class _VSController extends StateNotifier<_ViewState> {
   );
 
   List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
-      state.tabIndex == 0
+      state.tabIndex == 1
       ? requestStatsList(titleForKey)
       : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
-    if (state.tabIndex == 0) {
+    if (state.tabIndex == 1) {
       fetchStatusBreakdown(value ?? '');
     } else {
       fetchApprovalStatusBreakdown(value ?? '');
@@ -672,7 +296,7 @@ class _VSController extends StateNotifier<_ViewState> {
   void onTrendFilterChanged(String? value) {
     if (value == null) return;
 
-    if (state.tabIndex == 0) {
+    if (state.tabIndex == 1) {
       fetchTrendBreakDown(value);
     } else {
       fetchApprovalTrendBreakDown(value);
@@ -709,12 +333,13 @@ class _VSController extends StateNotifier<_ViewState> {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
-      'Request Id': item.base?.id?.toString() ?? '-',
-      'status': item.base?.status ?? '-',
-      'Request By': item.base?.createdByUser?.employeeName ?? '-',
+      'Request Id': item.id?.toString() ?? '-',
+      'status': item.status ?? '-',
+      'Request Type': item.base?.subService?.subServiceName ?? '-',
       'Request For': item.requestFor ?? '-',
       'Start Date': formatDate(item.startDate ?? '-'),
       'End Date': formatDate(item.endDate ?? '-'),
+
       // 'Vehicle Number': item.vehicleNumber ?? 'N/A',
       // 'Maintenance Type': item.typeOfMaintenanceRequired ?? 'N/A',
       // 'Preferred Maintenance Date': formatDate(
@@ -741,7 +366,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Employee ID': request?.employeeId ?? 'N/A',
       'Employee Mail': request?.email ?? 'N/A',
       'Contact Number': request?.phoneNumber ?? request?.contactNum ?? 'N/A',
-      'Reasons For Request': request?.reasonForRequest ?? 'N/A',
+      'Reasons For Request': request?.reasonForRequest?.join(', ') ?? 'N/A',
       'Start Date': formatDate(request?.startDate ?? 'N/A'),
       'End Date': formatDate(request?.endDate ?? 'N/A'),
       'Description': request?.description ?? 'N/A',
@@ -807,6 +432,8 @@ class _VSController extends StateNotifier<_ViewState> {
     int id, {
     bool fromActionItems = false,
   }) async {
+    await fetchTechnicianList();
+
     updateRequestTab(0);
 
     await KAppX.router.push(
@@ -832,7 +459,7 @@ class _VSController extends StateNotifier<_ViewState> {
     ]);
   }
 
-  void openNewRequestForm() {
+  Future<void> openNewRequestForm() async {
     KAppX.router.push(
       VpnNewRequestRoute(
         serviceId: service.id ?? 0,
@@ -1053,6 +680,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.startDate,
       type: FieldType.date,
       required: true,
+      placeholder: l10n.select,
       disabledWhen: (values) => values['request_time_period'] == 'Permanent',
     ),
 
@@ -1062,6 +690,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.endDate,
       type: FieldType.date,
       required: false,
+      placeholder: l10n.select,
 
       disabledWhen: (values) => values['request_time_period'] == 'Permanent',
     ),
@@ -1192,7 +821,13 @@ Violation of this policy may result in:
       );
 
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests, isLoading: false);
+        state = state.copyWith(
+          requestDetails: requests,
+          isLoading: false,
+          chatById: requests.chatMessages ?? [],
+          attachmentsById: requests.attachments ?? [],
+        );
+
         // fetchAssignEmployeesList();
 
         // fetchChatById(id);
@@ -1210,6 +845,7 @@ Violation of this policy may result in:
         }
       }
     } on ApiException catch (apiError) {
+      debugPrint('API ERROR: ${apiError.message}');
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -1374,18 +1010,42 @@ Violation of this policy may result in:
     }
   }
 
+  Future<void> fetchTechnicianList({
+    bool isRefresh = false,
+    String searchText = '',
+    String status = '',
+  }) async {
+    /// ✅ SHOW LOADER + CLEAR OLD LIST
+    // state = state.copyWith(isLoading: true, requestData: []);
+
+    try {
+      final userInfo = KAppX.globalProvider.read(userInfoProvider);
+      final departmentId = userInfo?.data?.department?.id;
+      final sectionId = userInfo?.data?.section?.id;
+      final requests = await vpnInstance.getAssignUsersList(
+        departmentId: departmentId,
+        sectionId: sectionId,
+      );
+
+      /// ✅ UPDATE NEW DATA
+      state = state.copyWith(techniciansList: requests);
+    } catch (e) {
+      /// ✅ STOP LOADER ON ERROR
+      // state = state.copyWith(isLoading: false);
+
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
   Future<void> fetchRequests({
     bool isRefresh = false,
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
-    try {
-      // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
+    /// ✅ SHOW LOADER + CLEAR OLD LIST
+    state = state.copyWith(isLoading: true, requestData: []);
 
+    try {
       final requests = await vpnInstance.getRequests(
         offset: 1,
         limit: 8,
@@ -1395,10 +1055,12 @@ Violation of this policy may result in:
         subServiceId: subService.id ?? 0,
       );
 
-      // No merging needed
-      state = state.copyWith(requestData: requests);
+      /// ✅ UPDATE NEW DATA
+      state = state.copyWith(requestData: requests, isLoading: false);
     } catch (e) {
+      /// ✅ STOP LOADER ON ERROR
       state = state.copyWith(isLoading: false);
+
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -1411,10 +1073,6 @@ Violation of this policy may result in:
     state = state.copyWith(isLoading: true);
 
     try {
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(actionItems: [], isLoading: false);
-      }
-
       final items = await vpnInstance.getActionItems(
         offset: 1,
         limit: 8,
@@ -1481,6 +1139,238 @@ Violation of this policy may result in:
           );
         },
       ),
+    );
+  }
+
+  void showAssignTechnicianDialog(
+    BuildContext context, {
+    required int approvalId,
+  }) {
+    final searchController = TextEditingController();
+
+    List<TechnicianData> filteredList = List.from(state.techniciansList);
+
+    KAppX.extendedRouter.dialog.showKDialog(
+      barrierDismissible: false,
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 24,
+              ),
+
+              child: Container(
+                width: 700,
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.85,
+                ),
+
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    /// HEADER
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
+                      child: Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              "Assign Request",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+
+                          InkWell(
+                            borderRadius: BorderRadius.circular(30),
+                            onTap: () => KAppX.router.pop(),
+                            child: const Padding(
+                              padding: EdgeInsets.all(6),
+                              child: Icon(Icons.close),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const Divider(height: 1),
+
+                    /// BODY
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          children: [
+                            /// SEARCH
+                            TextField(
+                              controller: searchController,
+                              onChanged: (value) {
+                                setState(() {
+                                  filteredList = state.techniciansList.where((
+                                    e,
+                                  ) {
+                                    final name =
+                                        e.employeeName?.toLowerCase() ?? '';
+
+                                    return name.contains(value.toLowerCase());
+                                  }).toList();
+                                });
+                              },
+
+                              decoration: InputDecoration(
+                                hintText: "Search by Technician Name",
+                                prefixIcon: const Icon(Icons.search),
+
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            /// TABLE HEADER
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 16,
+                              ),
+
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+
+                              child: const Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "TECHNICIAN NAME",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey,
+                                        letterSpacing: 1,
+                                      ),
+                                    ),
+                                  ),
+
+                                  SizedBox(
+                                    width: 80,
+                                    child: Text(
+                                      "TASKS",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey,
+                                        letterSpacing: 1,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            /// LIST
+                            Expanded(
+                              child: filteredList.isEmpty
+                                  ? const Center(
+                                      child: Text("No technicians found"),
+                                    )
+                                  : ListView.separated(
+                                      itemCount: filteredList.length,
+
+                                      separatorBuilder: (_, __) =>
+                                          const Divider(height: 1),
+
+                                      itemBuilder: (context, index) {
+                                        final technician = filteredList[index];
+
+                                        return InkWell(
+                                          onTap: () async {
+                                            await onAssign(
+                                              approveralId: approvalId,
+                                              technicianUserId:
+                                                  technician.userId ?? 0,
+                                              comment: "",
+                                            );
+
+                                            KAppX.router.pop();
+                                          },
+
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 20,
+                                              vertical: 18,
+                                            ),
+
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    technician.employeeName ??
+                                                        '',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ),
+
+                                                SizedBox(
+                                                  width: 80,
+                                                  child: Text(
+                                                    '${technician.inProgressCount ?? 0}',
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -1601,9 +1491,9 @@ Violation of this policy may result in:
       fetchactionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1643,6 +1533,41 @@ Violation of this policy may result in:
       await vpnInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
+      // if (decisionNo != null) {
+      KAppX.router.pop();
+      // }
+      await fetchactionItems();
+      await fetchRequests();
+    } catch (e) {
+      debugPrint('❌ Error submitting request: $e');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> onAssign({
+    required int approveralId,
+    required String comment,
+    required int technicianUserId,
+  }) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      // 1️⃣ Upload files
+
+      // 2️⃣ Build payload
+      final payload = {
+        "technician_user_id": technicianUserId,
+        "comment": comment,
+        "approval_id": approveralId,
+      };
+
+      debugPrint("✅ Final Payload: $payload");
+
+      // 3️⃣ Send request
+      await vpnInstance.onAssign(payload);
+      await Future.delayed(Duration(seconds: 3));
+      // KAppX.router.pop();
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
@@ -1842,7 +1767,7 @@ Violation of this policy may result in:
 
     if (isManager == true) {
       debugPrint('this user can only approve');
-      return ActionButtonsType.assignReject;
+      return ActionButtonsType.assignCloseReject;
     } else if (level != null) {
       debugPrint('this user can approve and reject');
       return ActionButtonsType.approveReject;
@@ -1979,7 +1904,7 @@ Violation of this policy may result in:
 
   void updateTabIndex(int index) {
     state = state.copyWith(tabIndex: index);
-    if (index == 0) {
+    if (index == 1) {
       fetchRequests();
       fetchKpi();
       fetchStatusBreakdown('weekly');
@@ -1987,7 +1912,7 @@ Violation of this policy may result in:
     } else {
       fetchactionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -2151,14 +2076,15 @@ Violation of this policy may result in:
     }
   }
 
-  void _refreshDashboard() {
+  Future<void> _refreshDashboard() async {
+    await Future.delayed(Duration(milliseconds: 2000));
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests();
+    fetchRequests(isRefresh: true);
     fetchactionItems();
   }
 

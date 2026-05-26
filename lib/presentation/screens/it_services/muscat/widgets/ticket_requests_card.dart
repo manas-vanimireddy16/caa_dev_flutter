@@ -42,7 +42,7 @@ class TicketRequestsCard extends ConsumerWidget {
                     foregroundColor: Colors.white,
                   ),
                   onPressed: controller.openNewRequestForm,
-                  child: Text(l10n.newRequest),
+                  child: Text(l10n.newTicket),
                 ),
               ],
             ),
