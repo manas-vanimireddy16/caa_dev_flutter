@@ -12,6 +12,7 @@ import 'package:code_setup/presentation/screens/aviation_security_Facilitation/m
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/temporary_decision.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
@@ -219,15 +220,18 @@ class SecondmentDecisionRepositoryImple
   }
 
   @override
-  Future<KPIResponse?> getKpiData(int service_id, int sub_service_id) async {
+  Future<KPIResponse?> getKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     String url = ApiEndPoint.secondmentDecisionKpiData;
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
         final queryParams = {
-          'service_id': service_id,
-          'sub_service_id': sub_service_id,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
         final response = await client.get(url, queryParameters: queryParams);
 
@@ -342,9 +346,11 @@ class SecondmentDecisionRepositoryImple
   }
 
   @override
-  Future<StatusBreakdownModel> getApprovalStatusBreakdownData(
-    String period,
-  ) async {
+  Future<StatusBreakdownModel> getApprovalStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
@@ -376,9 +382,11 @@ class SecondmentDecisionRepositoryImple
   }
 
   @override
-  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(
-    String period,
-  ) async {
+  Future<TrendBreakdownModel> getApprovalTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
@@ -413,7 +421,11 @@ class SecondmentDecisionRepositoryImple
   }
 
   @override
-  Future<StatusBreakdownModel> getStatusBreakdownData(String period) async {
+  Future<StatusBreakdownModel> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
@@ -445,7 +457,11 @@ class SecondmentDecisionRepositoryImple
   }
 
   @override
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period) async {
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
@@ -480,9 +496,11 @@ class SecondmentDecisionRepositoryImple
   }
 
   @override
-  Future<List<AssignmentDecision>> getRequests({
+  Future<List<TemporaryDecision>> getRequests({
     required int offset,
     required int limit,
+    required serviceId,
+    required subServiceId,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
@@ -495,6 +513,8 @@ class SecondmentDecisionRepositoryImple
         final Map<String, dynamic> queryParams = {
           'offset': offset,
           'limit': limit,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
 
         if (searchText.isNotEmpty) {
@@ -512,9 +532,7 @@ class SecondmentDecisionRepositoryImple
           final List<dynamic> list = data['data'];
 
           return list
-              .map(
-                (e) => AssignmentDecision.fromJson(e as Map<String, dynamic>),
-              )
+              .map((e) => TemporaryDecision.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
           throw Exception(
@@ -530,9 +548,11 @@ class SecondmentDecisionRepositoryImple
   }
 
   @override
-  Future<List<AssignmentDecision>> getActionItems({
+  Future<List<TemporaryDecision>> getActionItems({
     required int offset,
     required int limit,
+    required int serviceId,
+    required int subServiceId,
     String status = '',
     String searchText = '',
   }) async {
@@ -542,6 +562,8 @@ class SecondmentDecisionRepositoryImple
         final queryParams = {
           'offset': offset.toString(),
           'limit': limit.toString(),
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
           'order_by': 'created_at',
           'sort_order': 'DESC',
         };
@@ -568,7 +590,7 @@ class SecondmentDecisionRepositoryImple
           final actionItems = list
               .map(
                 (item) =>
-                    AssignmentDecision.fromJson(item as Map<String, dynamic>),
+                    TemporaryDecision.fromJson(item as Map<String, dynamic>),
               )
               .toList();
 
@@ -729,6 +751,9 @@ class SecondmentDecisionRepositoryImple
         final response = await client.post(url, data: payload);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
           debugPrint('✅ Message sent successfully');
 
           return response.data["message"] ?? "Success";
@@ -1072,6 +1097,105 @@ class SecondmentDecisionRepositoryImple
     } catch (e) {
       log('error failed to Replaced Employee $e');
       throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> createTemporaryDecisionRequest(Map<String, dynamic> payload) {
+    // TODO: implement createTemporaryDecisionRequest
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.secondmentDecisionSendAttachmentById(id);
+
+    try {
+      if (client != null) {
+        final response = await client.post(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('✅ Message sent successfully');
+
+          return response.data["message"] ?? "Success";
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          return response.data["message"] ?? "Something went wrong";
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+        return "Something went wrong";
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  @override
+  Future<List<AttachmentModel>> getAttachmentsById({required int id}) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.secondmentDecisionAttachmentById(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = AttachmentByIdResponseModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching attachmentById details: $e");
+    }
+  }
+
+  @override
+  Future<void> onAssignRejectClose(Map<String, dynamic> payload) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.secondmentDecisionApproval;
+
+    try {
+      if (client != null) {
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            '${response.data['message']}',
+          );
+          debugPrint('✅ Request sent successfully');
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          ShowFlutterToast().showFlutterToastFailure(
+            '${response.statusMessage}',
+          );
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
     }
   }
 }

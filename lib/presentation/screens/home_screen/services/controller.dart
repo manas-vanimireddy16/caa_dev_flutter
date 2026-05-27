@@ -305,14 +305,14 @@ class _VSController extends StateNotifier<_ViewState> {
       //     ),
       //   );
       //   break;
-      // case 'Secondment Decision':
-      //   KAppX.router.push(
-      //     SecondmentDecisionRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
+      case 'CAA061':
+        KAppX.router.push(
+          SecondmentDecisionRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       case 'CAA062':
         KAppX.router.push(
           TemporaryAssignmentDecisionRoute(

@@ -321,11 +321,6 @@ class AppRouter extends RootStackRouter {
     ),
 
     AutoRoute(
-      page: NewSecondmentDecisionRequestRoute.page,
-      path: RouteNames.secondmentDecisionNewRequest,
-    ),
-
-    AutoRoute(
       page: SecondmentDecisionDetailsRoute.page,
       path: RouteNames.secondmentDecisionDetails,
     ),

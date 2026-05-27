@@ -943,13 +943,21 @@ class _VSController extends StateNotifier<_ViewState> {
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      await fetchRequestDetailsById(requestId);
+      if (isRequestApproved()) {}
+
+      await _refreshDashboard();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  bool isRequestApproved() {
+    if (state.requestDetails.status?.toLowerCase() != 'approved') return false;
+
+    return true;
   }
 
   Future<void> onSendInProgress(int approverId, int requestId) async {

@@ -666,6 +666,7 @@ class ApiEndPoint {
 
   static String secondmentDecisionSendAttachmentById(int id) =>
       '/v1/hr-service/secondment-decisions/request/$id/attachment';
+
   // ===================== Temporary Assignment Decision =====================
 
   /// Create Request
