@@ -1,9 +1,12 @@
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/master_roles.dart';
+import 'package:code_setup/presentation/models/status_breakdown_model.dart';
+import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/temporary_decision.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart'
@@ -13,7 +16,14 @@ import 'package:code_setup/repository/hr_service/assignment_decision/data/data.d
 
 abstract class AssignmentDecisionRepoistory {
   factory AssignmentDecisionRepoistory() => AssignmentDecisionRepoistoryImple();
+  Future<List<EmployeeSummary>> getEmployeeList({
+    required int departmentId,
+    required int sectionId,
+    required String roleId,
+  });
 
+  Future<List<PendingApprovalUser>> getEngineersList(int id);
+  Future<List<MasterRolesModel>> getRolesList();
   Future<List<Position>> getPositions();
   Future<List<Employee>> getUsers();
 
@@ -22,11 +32,16 @@ abstract class AssignmentDecisionRepoistory {
     List<Map<String, dynamic>> attachments,
   );
   Future<RequestDetailData?> getRequestsById(int id);
-  Future<KPIResponse?> getKpiData(int service_id, int sub_service_id);
+  Future<KPIResponse?> getKpiData({
+    required int serviceId,
+    required int subServiceId,
+  });
 
-  Future<List<AssignmentDecision>> getRequests({
+  Future<List<TemporaryDecision>> getRequests({
     required int offset,
     required int limit,
+    required int serviceId,
+    required int subServiceId,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
@@ -40,9 +55,11 @@ abstract class AssignmentDecisionRepoistory {
   //   String status = '', // 👈 changed to List
   //   String searchText = '',
   // });
-  Future<List<AssignmentDecision>> getActionItems({
+  Future<List<TemporaryDecision>> getActionItems({
     required int offset,
     required int limit,
+    required int serviceId,
+    required int subServiceId,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
@@ -57,7 +74,31 @@ abstract class AssignmentDecisionRepoistory {
   //   String searchText = '',
   // });
 
-  Future<KPIResponse?> getApprovalKpiData();
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<TrendBreakdownModel> getApprovalTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+
+  Future<StatusBreakdownModel?> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
   // Future<KPIResponse?> getCombinedKpiData();
   // Future<KPIResponse?> getCombinedApprovalKpiData();
 
@@ -66,15 +107,12 @@ abstract class AssignmentDecisionRepoistory {
   Future<void> onEventChange(int requestId, Map<String, dynamic> payload);
 
   Future<String> sendChat(Map<String, dynamic> payload, int id);
-  Future<List<PendingApprovalUser>> getEngineersList(int id);
-  Future<List<MasterRolesModel>> getRolesList();
   Future<void> onAssignEngineer(Map<String, dynamic> payload);
   Future<List<ChatMessageModel>> getchatById(int id);
-  Future<List<EmployeeSummary>> getEmployeeList({
-    required int departmentId,
-    required int sectionId,
-    required String roleId,
-  });
+
   Future<void> onAssignEmployee(Map<String, dynamic> payload);
   Future<void> onReplaceEmployee(Map<String, dynamic> payload);
+
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id);
+  Future<List<AttachmentModel>> getAttachmentsById({required int id});
 }

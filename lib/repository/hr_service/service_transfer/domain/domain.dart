@@ -1,4 +1,7 @@
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/status_breakdown.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/temporary_decision.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/trend_breakdown.dart';
 import 'package:code_setup/repository/hr_service/service_transfer/data/data.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
@@ -23,20 +26,27 @@ abstract class ServiceTransferRepoistry {
     List<Map<String, dynamic>> attachments,
   );
   Future<RequestDetailData?> getRequestsById(int id);
-  Future<KPIResponse?> getKpiData(int service_id, int sub_service_id);
+  Future<KPIResponse?> getKpiData({
+    required int serviceId,
+    required int subServiceId,
+  });
 
-  Future<List<AssignmentDecision>> getRequests({
+  Future<List<TemporaryDecision>> getRequests({
     required int offset,
     required int limit,
+    required int serviceId,
+    required int subServiceId,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
     String searchText = '',
   });
 
-  Future<List<AssignmentDecision>> getActionItems({
+  Future<List<TemporaryDecision>> getActionItems({
     required int offset,
     required int limit,
+    required int serviceId,
+    required int subServiceId,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
@@ -51,7 +61,10 @@ abstract class ServiceTransferRepoistry {
   //   String searchText = '',
   // });
 
-  Future<KPIResponse?> getApprovalKpiData(int service_id, int sub_service_id);
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
+  });
   // Future<KPIResponse?> getCombinedKpiData();
   // Future<KPIResponse?> getCombinedApprovalKpiData();
 
@@ -74,9 +87,27 @@ abstract class ServiceTransferRepoistry {
   Future<void> onAssignEmployee(Map<String, dynamic> payload);
   Future<void> onReplaceEmployee(Map<String, dynamic> payload);
 
-  Future<StatusBreakdownModel?> getApprovalStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(String period);
+  Future<ServiceTransferStatus?> getApprovalStatusBreakdownData({
+    required int serviceId,
+    required int subServiceId,
+    required String period,
+  });
+  Future<ServiceTransferTrend> getApprovalTrendBreakdownData({
+    required int serviceId,
+    required int subServiceId,
+    required String period,
+  });
 
-  Future<StatusBreakdownModel?> getStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period);
+  Future<ServiceTransferStatus?> getStatusBreakdownData({
+    required int serviceId,
+    required int subServiceId,
+    required String period,
+  });
+  Future<ServiceTransferTrend> getTrendBreakdownData({
+    required int serviceId,
+    required int subServiceId,
+    required String period,
+  });
+  Future<List<AttachmentModel>> getAttachmentsById({required int id});
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id);
 }

@@ -556,6 +556,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
+      await generateTemporaryAssignmentPdf();
       final kpis = await temporaryDecisionInstance.getKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -944,7 +945,9 @@ class _VSController extends StateNotifier<_ViewState> {
       KAppX.router.pop();
       // }
       await fetchRequestDetailsById(requestId);
-      if (isRequestApproved()) {}
+      if (isRequestApproved()) {
+        await generateTemporaryAssignmentPdf();
+      }
 
       await _refreshDashboard();
     } catch (e) {
@@ -958,6 +961,366 @@ class _VSController extends StateNotifier<_ViewState> {
     if (state.requestDetails.status?.toLowerCase() != 'approved') return false;
 
     return true;
+  }
+
+  Future<void> generateTemporaryAssignmentPdf() async {
+    try {
+      final request = state.requestDetails;
+      final pdf = pw.Document();
+      final logos = await Future.wait([
+        _loadPdfImage('assets/images/pdfimage1.png'),
+        _loadPdfImage('assets/images/pdfimage.png'),
+        _loadPdfImage('assets/images/caa_logo.png'),
+      ]);
+
+      final decisionNumber = _safePdfValue(request.decisionNumber);
+      final employeeName = _safePdfValue(
+        request.assignedEmployeeName ?? request.employeeName,
+      );
+      final fromEntity = _safePdfValue(
+        request.fromEntity ?? request.currentEntity,
+      );
+      final toEntity = _safePdfValue(
+        request.toEntity ?? request.transferredToEntity,
+      );
+      final jobPosition = _safePdfValue(
+        request.assignedJobPosition ?? request.currentJobPosition,
+      );
+      final startDate = _formatPdfDate(request.startDate);
+      final endDate = _formatPdfDate(request.endDate);
+      final issuedDate = _getLastApproverDate();
+      final regularFont = await PdfGoogleFonts.notoNaskhArabicRegular();
+      final boldFont = await PdfGoogleFonts.notoNaskhArabicBold();
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.only(
+            top: 20,
+            left: 28,
+            right: 28,
+            bottom: 35,
+          ),
+          build: (context) {
+            final normalStyle = pw.TextStyle(
+              font: regularFont,
+              fontSize: 10.5,
+              height: 1.7,
+              // font: regularFont,
+              color: PdfColors.black,
+            );
+
+            final boldStyle = pw.TextStyle(
+              font: boldFont,
+              fontSize: 11,
+              fontWeight: pw.FontWeight.bold,
+              // font: boldFont,
+            );
+
+            final titleStyle = pw.TextStyle(
+              font: boldFont,
+              fontSize: 17,
+              fontWeight: pw.FontWeight.bold,
+            );
+
+            return pw.Directionality(
+              textDirection: pw.TextDirection.rtl,
+              child: pw.Container(
+                height: PdfPageFormat.a4.availableHeight,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                  children: [
+                    /// ================= HEADER =================
+                    pw.Directionality(
+                      textDirection: pw.TextDirection.ltr,
+                      child: pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          _logo(logos[0], width: 88, height: 58),
+
+                          _logo(logos[1], width: 95, height: 58),
+
+                          _logo(logos[2], width: 120, height: 72),
+                        ],
+                      ),
+                    ),
+
+                    pw.SizedBox(height: 14),
+
+                    pw.Container(height: 1.2, color: PdfColors.black),
+
+                    pw.SizedBox(height: 26),
+
+                    /// ================= TITLE =================
+                    pw.Center(
+                      child: pw.Text('قرار إداري رقم', style: titleStyle),
+                    ),
+
+                    pw.SizedBox(height: 24),
+
+                    /// ================= INTRO =================
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.symmetric(horizontal: 12),
+                      child: pw.Text(
+                        'استناداً إلى قانون الخدمة المدنية الصادر بالمرسوم السلطاني رقم (٢٠٠٤/١٢٠)، وإلى نظام هيئة الطيران المدني الصادر بالمرسوم السلطاني رقم (٢٠١٣/٤٣)، وإلى اللائحة التنفيذية لقانون الخدمة المدنية الصادرة بالقرار رقم (٢٠١٠/٩)، وإلى خطاب الرئيس التنفيذي لمطارات عمان رقم ....... بتاريخ ......... وبناءً على ما تقتضيه مصلحة العمل.',
+                        style: normalStyle,
+                        textAlign: pw.TextAlign.center,
+                      ),
+                    ),
+
+                    pw.SizedBox(height: 18),
+
+                    pw.Divider(thickness: 0.6, color: PdfColors.grey400),
+
+                    pw.SizedBox(height: 30),
+
+                    /// ================= TQRR =================
+                    pw.Center(
+                      child: pw.Text(
+                        'تقرر',
+                        style: pw.TextStyle(
+                          font: boldFont,
+                          fontSize: 15,
+                          fontWeight: pw.FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    pw.SizedBox(height: 35),
+
+                    /// ================= ARTICLES =================
+                    _reactArticle(
+                      title: 'المادة الأولى:',
+                      body:
+                          'إعارة الفاضل/ $employeeName من هيئة الطيران المدني إلى $toEntity لوظيفة $jobPosition وذلك اعتباراً من تاريخ $startDate إلى تاريخ $endDate',
+                      titleStyle: boldStyle,
+                      bodyStyle: normalStyle,
+                    ),
+
+                    pw.SizedBox(height: 26),
+
+                    _reactArticle(
+                      title: 'المادة الثانية:',
+                      body:
+                          'تتحمل هيئة الطيران المدني الراتب والمخصصات المالية المذكور خلال فترة الإعارة مع إيقاف طبيعة عمل وبدل المناوبة.',
+                      titleStyle: boldStyle,
+                      bodyStyle: normalStyle,
+                    ),
+
+                    pw.SizedBox(height: 26),
+
+                    _reactArticle(
+                      title: 'المادة الثالثة:',
+                      body: 'على جهات الاختصاص تنفيذ هذا القرار.',
+                      titleStyle: boldStyle,
+                      bodyStyle: normalStyle,
+                    ),
+
+                    /// THIS IS THE IMPORTANT FIX
+                    /// pushes footer naturally like HTML flex
+                    pw.Spacer(),
+
+                    /// ================= SIGNATURE =================
+                    pw.Align(
+                      alignment: pw.Alignment.centerRight,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.end,
+                        children: [
+                          pw.Text('صدر في $issuedDate', style: normalStyle),
+
+                          pw.SizedBox(height: 16),
+
+                          pw.Text('الموافق : NA', style: normalStyle),
+
+                          pw.SizedBox(height: 30),
+
+                          pw.Text(
+                            'م. نايف بن علي بن حمد العبري',
+                            style: boldStyle,
+                          ),
+
+                          pw.SizedBox(height: 4),
+
+                          pw.Text(
+                            'رئيس هيئة الطيران المدني',
+                            style: normalStyle,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    pw.SizedBox(height: 38),
+
+                    /// ================= FOOTER =================
+                    pw.Divider(thickness: 0.6, color: PdfColors.grey400),
+
+                    pw.SizedBox(height: 8),
+
+                    pw.Directionality(
+                      textDirection: pw.TextDirection.ltr,
+                      child: pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Column(
+                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            children: [
+                              pw.Text(
+                                'صندوق البريد: ١١١ الرمز البريدي: ١١١ - مسقط - سلطنة عمان',
+                                style: pw.TextStyle(
+                                  fontSize: 6.5,
+                                  color: PdfColors.grey700,
+                                ),
+                              ),
+
+                              pw.SizedBox(height: 2),
+
+                              pw.Text(
+                                'Fax: +968 23368884 - www.caa.gov.om - 24354435 968+ / 24354433 968+',
+                                style: pw.TextStyle(
+                                  fontSize: 6.5,
+                                  color: PdfColors.grey700,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          pw.Text(
+                            'P.C.: 111, Muscat - Sultanate of Oman',
+                            style: pw.TextStyle(
+                              fontSize: 6.5,
+                              color: PdfColors.grey700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+      final pdfBytes = await pdf.save();
+      final requestId = request.id?.toString() ?? 'NA';
+      final fileDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final fileName =
+          'Temporary_Assignment_Decision_${requestId}_$fileDate.pdf';
+
+      await FilePicker.platform.saveFile(fileName: fileName, bytes: pdfBytes);
+      Fluttertoast.showToast(msg: 'PDF downloaded successfully');
+    } catch (e, st) {
+      debugPrint('Failed to generate temporary assignment PDF: $e');
+      debugPrintStack(stackTrace: st);
+      Fluttertoast.showToast(msg: 'Error generating PDF. Please try again.');
+    }
+  }
+
+  Future<pw.MemoryImage> _loadPdfImage(String assetPath) async {
+    final bytes = await rootBundle.load(assetPath);
+    return pw.MemoryImage(bytes.buffer.asUint8List());
+  }
+
+  pw.Widget _reactArticle({
+    required String title,
+    required String body,
+    required pw.TextStyle titleStyle,
+    required pw.TextStyle bodyStyle,
+  }) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.end,
+      children: [
+        pw.Align(
+          alignment: pw.Alignment.centerRight,
+          child: pw.Text(title, style: titleStyle),
+        ),
+
+        pw.SizedBox(height: 12),
+
+        pw.Padding(
+          padding: const pw.EdgeInsets.only(left: 15),
+          child: pw.Text(body, style: bodyStyle, textAlign: pw.TextAlign.right),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _logo(
+    pw.MemoryImage image, {
+    required double width,
+    required double height,
+  }) {
+    return pw.Image(
+      image,
+      width: width,
+      height: height,
+      fit: pw.BoxFit.contain,
+    );
+  }
+
+  pw.Widget _article({
+    required String title,
+    required String body,
+    required pw.TextStyle textStyle,
+    required pw.TextStyle boldStyle,
+  }) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.end,
+      children: [
+        pw.Text(title, style: boldStyle),
+        pw.SizedBox(height: 8),
+        pw.Text(body, style: textStyle, textAlign: pw.TextAlign.right),
+      ],
+    );
+  }
+
+  String _safePdfValue(Object? value) {
+    if (value == null) return 'N/A';
+    final text = value.toString().trim();
+    return text.isEmpty ? 'N/A' : text;
+  }
+
+  String _formatPdfDate(String? value) {
+    if (value == null || value.trim().isEmpty) return 'N/A';
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return value;
+    return DateFormat('dd/MM/yyyy').format(parsed);
+  }
+
+  String _getLastApproverDate() {
+    final approvals = state.requestDetails.approvalDetails ?? [];
+    if (approvals.isEmpty) {
+      return DateFormat('dd/MM/yyyy').format(DateTime.now());
+    }
+
+    final approvedApprovals =
+        approvals
+            .where(
+              (approval) =>
+                  approval.approvalStatus?.toLowerCase() == 'approved',
+            )
+            .toList()
+          ..sort((a, b) => (b.level ?? 0).compareTo(a.level ?? 0));
+
+    if (approvedApprovals.isNotEmpty) {
+      final latest = approvedApprovals.first;
+      final date = latest.updatedAt ?? latest.createdAt;
+      return _formatPdfDate(date);
+    }
+
+    final sortedByDate = List<ApprovalDetailModel>.from(approvals)
+      ..sort((a, b) {
+        final dateA = DateTime.tryParse(a.updatedAt ?? a.createdAt ?? '');
+        final dateB = DateTime.tryParse(b.updatedAt ?? b.createdAt ?? '');
+        return (dateB ?? DateTime.fromMillisecondsSinceEpoch(0)).compareTo(
+          dateA ?? DateTime.fromMillisecondsSinceEpoch(0),
+        );
+      });
+
+    return _formatPdfDate(
+      sortedByDate.first.updatedAt ?? sortedByDate.first.createdAt,
+    );
   }
 
   Future<void> onSendInProgress(int approverId, int requestId) async {

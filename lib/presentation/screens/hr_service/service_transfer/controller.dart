@@ -9,12 +9,18 @@ final requestDeatilsTabSelectedProvider = StateProvider.autoDispose<int>(
   (ref) => 0,
 );
 
+class _VSControllerParams extends Equatable {
+  final Service service;
+  final SubService subService;
+
+  const _VSControllerParams({required this.service, required this.subService});
+
+  @override
+  List<Object?> get props => [service, subService];
+}
+
 final _vsProvider = StateNotifierProvider.autoDispose
-    .family<
-      _VSController,
-      _ViewState,
-      ({Service service, SubService subService})
-    >((ref, params) {
+    .family<_VSController, _ViewState, _VSControllerParams>((ref, params) {
       final controller = _VSController(
         service: params.service,
         subService: params.subService,
@@ -25,11 +31,8 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
-  final String priority;
-  final int threatType;
-  final String permitCategory;
-  final String visitorChecks;
-  final List<String> servicePreference;
+  final isRequestLoading;
+  final isRequestDetailsLoading;
 
   final List<FileUploadItem> selectedFileUrl;
   final List<Map<String, dynamic>> attachments;
@@ -37,145 +40,101 @@ class _ViewState {
   final KPIResponse kpiData;
   final KPIResponse approvalKpiData;
 
-  final List<ActivitiesFeedData> activityFeed;
-
-  final StatusBreakdownModel statusBreakdown;
-  final TrendBreakdownModel trendData;
+  final ServiceTransferStatus statusBreakdown;
+  final ServiceTransferTrend trendData;
   final RequestDetailModel requestDataById;
 
   final int tabIndex;
+  final int selectedTab;
 
-  final StatusBreakdownModel approvalStatusBreakdown;
-  final TrendBreakdownModel approvalTrendData;
-  final List<AssignmentDecision> temporaryAssignmentDecisionRequestData;
-  final List<AssignmentDecision> temporaryAssignmentDecisionActionItemsData;
+  final ServiceTransferStatus approvalStatusBreakdown;
+  final ServiceTransferTrend approvalTrendData;
+  final List<TemporaryDecision> requestData;
+  final List<TemporaryDecision> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
-  final List<PendingApprovalUser> engineersList;
   final int approvalId;
-  final String mediaCoverageRequired;
-  final String departmentName;
-  final String location;
-  final String permitType;
-  final List<String> selectedpermissionAreas;
-  final List<String> acknowledgement;
-  final String threatOption;
-  final bool isFormValid;
+
   final bool isButtonDisabled;
   final List<ChatMessageModel> chatById;
-  final List<Position> positionsList;
-  final List<Employee> usersList;
-  final String selectedPositionName;
-  final Employee? selectedUser;
-  final String selectedUserName;
-  final String selectedSalaryDetails;
+  final List<AttachmentModel> attachmentsById;
 
-  final int? selectedUserId;
-  final List<EmployeeSummary> employeeList;
-  final bool isStartDateSelected;
-
-  final String selectedRequestType;
+  final List<String> months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
 
   /// FORM KEY
   final formKey = GlobalKey<FormState>();
 
   _ViewState({
     required this.isLoading,
-    required this.priority,
-    required this.threatType,
-    required this.visitorChecks,
-    required this.servicePreference,
     required this.selectedFileUrl,
     required this.attachments,
     required this.kpiData,
     required this.approvalKpiData,
-    required this.activityFeed,
     required this.statusBreakdown,
     required this.trendData,
     required this.requestDataById,
     required this.tabIndex,
+    required this.selectedTab,
     required this.approvalStatusBreakdown,
     required this.approvalTrendData,
-    required this.temporaryAssignmentDecisionRequestData,
-    required this.temporaryAssignmentDecisionActionItemsData,
+    required this.requestData,
+    required this.actionItems,
     required this.requestDetails,
     required this.requestDetailTab,
-    required this.permitCategory,
-    required this.departmentName,
-    required this.engineersList,
     required this.approvalId,
-    required this.mediaCoverageRequired,
-    required this.location,
-    required this.permitType,
-    required this.selectedpermissionAreas,
-    required this.acknowledgement,
-    required this.threatOption,
-    required this.isFormValid,
     required this.isButtonDisabled,
     required this.chatById,
-    required this.positionsList,
-    required this.selectedPositionName,
-    this.selectedUserId,
-    required this.usersList,
-    required this.selectedUserName,
-    this.selectedUser,
-    required this.employeeList,
-    required this.isStartDateSelected,
-    required this.selectedSalaryDetails,
-    required this.selectedRequestType,
+    required this.attachmentsById,
+    required this.isRequestLoading,
+    required this.isRequestDetailsLoading,
   });
 
   _ViewState.init()
     : this(
         isLoading: false,
-        priority: '',
-        threatType: 0,
-        visitorChecks: '',
-        servicePreference: [],
         selectedFileUrl: [],
         attachments: [],
         kpiData: KPIResponse(),
         approvalKpiData: KPIResponse(),
-        activityFeed: [],
-        statusBreakdown: StatusBreakdownModel(),
-        trendData: TrendBreakdownModel(),
+        statusBreakdown: ServiceTransferStatus(),
+        trendData: ServiceTransferTrend(),
         requestDataById: RequestDetailModel(),
         tabIndex: 0,
-        approvalStatusBreakdown: StatusBreakdownModel(),
-        approvalTrendData: TrendBreakdownModel(),
-        temporaryAssignmentDecisionRequestData: [],
-        temporaryAssignmentDecisionActionItemsData: [],
+        selectedTab: 0,
+        approvalStatusBreakdown: ServiceTransferStatus(),
+        approvalTrendData: ServiceTransferTrend(),
+        requestData: [],
+        actionItems: [],
         requestDetails: RequestDetailData(),
         requestDetailTab: 0,
-        permitCategory: '',
-        departmentName: '',
-        engineersList: [],
         approvalId: 0,
-        mediaCoverageRequired: '',
-        location: '',
-        permitType: 'Temporary',
-        selectedpermissionAreas: [],
-        acknowledgement: [],
-        threatOption: '',
-        isFormValid: false,
         isButtonDisabled: false,
         chatById: [],
-        positionsList: [],
-        selectedPositionName: '',
-        selectedUserId: null,
-        usersList: [],
-        selectedUserName: '',
-        selectedUser: null,
-        employeeList: [],
-        isStartDateSelected: false,
-        selectedSalaryDetails: '',
-        selectedRequestType: '',
+
+        attachmentsById: [],
+        isRequestLoading: false,
+        isRequestDetailsLoading: false,
       );
 
   _ViewState copyWith({
     bool? isLoading,
+    bool? isRequestLoading,
+    bool? isRequestDetailsLoading,
     int? threatType,
-    String? priority,
+    String? selectedPriority,
     String? visitorChecks,
     List<String>? servicePreference,
     List<FileUploadItem>? selectedFileUrl,
@@ -183,14 +142,15 @@ class _ViewState {
     KPIResponse? kpiData,
     KPIResponse? approvalKpiData,
     List<ActivitiesFeedData>? activityFeed,
-    StatusBreakdownModel? statusBreakdown,
-    TrendBreakdownModel? trendData,
+    ServiceTransferStatus? statusBreakdown,
+    ServiceTransferTrend? trendData,
     RequestDetailModel? requestDataById,
-    StatusBreakdownModel? approvalStatusBreakdown,
-    TrendBreakdownModel? approvalTrendData,
+    ServiceTransferStatus? approvalStatusBreakdown,
+    ServiceTransferTrend? approvalTrendData,
     int? tabIndex,
-    List<AssignmentDecision>? temporaryAssignmentDecisionRequestData,
-    List<AssignmentDecision>? temporaryAssignmentDecisionActionItemsData,
+    int? selectedTab,
+    List<TemporaryDecision>? requestData,
+    List<TemporaryDecision>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -209,66 +169,57 @@ class _ViewState {
     List<Position>? positionsList,
     String? selectedPositionName,
     int? selectedUserId,
-    List<Employee>? usersList,
+    List<EmployeeList>? usersList,
     String? selectedUserName,
-    Employee? selectedUser,
+    EmployeeList? selectedUser,
     List<EmployeeSummary>? employeeList,
     bool? isStartDateSelected,
     String? selectedSalaryDetails,
     String? selectedRequestType,
+    List<AllowanceEmployee>? allowanceEmployees,
+    List<DepartmentModel>? departments,
+    List<LocationModel>? locations,
+    List<AttachmentModel>? attachmentsById,
+    List<MasterRolesModel>? rolesList,
+    List<SelectionDialogItem>? selectionItems,
+    List<Grade>? gradeList,
+    List<GoalModel>? byCycleGoalsData,
+    List<GoalListModel>? goalWeightList,
+    List<HrTask>? hrTasks,
+    String? hrTaskInput,
+    String? hrResponsibilityInput,
+    String? hrFrequencyInput,
+    String? hrDurationInput,
+    ValueGetter<int?>? hrEditingIndex,
+    List<EmployeeList>? selectedUsersList,
+    List<ResidentalUnitRentalLocationModel>? unitLocations,
+    List<SectionModel>? sections,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
-      threatType: threatType ?? this.threatType,
-      priority: priority ?? this.priority,
-      visitorChecks: visitorChecks ?? this.visitorChecks,
-      servicePreference: servicePreference ?? this.servicePreference,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
+      isRequestDetailsLoading:
+          isRequestDetailsLoading ?? this.isRequestDetailsLoading,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
       approvalKpiData: approvalKpiData ?? this.approvalKpiData,
-      activityFeed: activityFeed ?? this.activityFeed,
       statusBreakdown: statusBreakdown ?? this.statusBreakdown,
       trendData: trendData ?? this.trendData,
       requestDataById: requestDataById ?? this.requestDataById,
       tabIndex: tabIndex ?? this.tabIndex,
+      selectedTab: selectedTab ?? this.selectedTab,
       approvalStatusBreakdown:
           approvalStatusBreakdown ?? this.approvalStatusBreakdown,
       approvalTrendData: approvalTrendData ?? this.approvalTrendData,
-      temporaryAssignmentDecisionRequestData:
-          temporaryAssignmentDecisionRequestData ??
-          this.temporaryAssignmentDecisionRequestData,
-      temporaryAssignmentDecisionActionItemsData:
-          temporaryAssignmentDecisionActionItemsData ??
-          this.temporaryAssignmentDecisionActionItemsData,
+      requestData: requestData ?? this.requestData,
+      actionItems: actionItems ?? this.actionItems,
       requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
-      permitCategory: permitCategory ?? this.permitCategory,
-      departmentName: departmentName ?? this.departmentName,
-      engineersList: engineersList ?? this.engineersList,
       approvalId: approvalId ?? this.approvalId,
-      mediaCoverageRequired:
-          mediaCoverageRequired ?? this.mediaCoverageRequired,
-      location: location ?? this.location,
-      permitType: permitType ?? this.permitType,
-      selectedpermissionAreas:
-          selectedpermissionAreas ?? this.selectedpermissionAreas,
-      acknowledgement: acknowledgement ?? this.acknowledgement,
-      threatOption: threatOption ?? this.threatOption,
-      isFormValid: isFormValid ?? this.isFormValid,
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
       chatById: chatById ?? this.chatById,
-      positionsList: positionsList ?? this.positionsList,
-      selectedPositionName: selectedPositionName ?? this.selectedPositionName,
-      selectedUserId: selectedUserId ?? this.selectedUserId,
-      usersList: usersList ?? this.usersList,
-      selectedUserName: selectedUserName ?? this.selectedUserName,
-      selectedUser: selectedUser ?? this.selectedUser,
-      employeeList: employeeList ?? this.employeeList,
-      isStartDateSelected: isStartDateSelected ?? this.isStartDateSelected,
-      selectedSalaryDetails:
-          selectedSalaryDetails ?? this.selectedSalaryDetails,
-      selectedRequestType: selectedRequestType ?? this.selectedRequestType,
+      attachmentsById: attachmentsById ?? this.attachmentsById,
     );
   }
 }
@@ -276,155 +227,365 @@ class _ViewState {
 class _VSController extends StateNotifier<_ViewState> {
   final Service service;
   final SubService subService;
-
+  late final _VSControllerParams params;
   _VSController({required this.service, required this.subService})
-    : super(_ViewState.init());
+    : super(_ViewState.init()) {
+    params = _VSControllerParams(service: service, subService: subService);
+  }
+
+  Timer? _searchDebounce;
 
   late TextEditingController chatController;
   late TextEditingController titleController;
-  late TextEditingController fromEntityController;
-  late TextEditingController toEntityController;
-  late TextEditingController startDateController;
-  late TextEditingController empIdController;
-  late TextEditingController eventTimeController;
-  late TextEditingController occupationController;
-  late TextEditingController detailsController;
-  late TextEditingController assignmentAllowanceController;
-  late TextEditingController startTimeController;
-  late TextEditingController endTimeController;
-  late TextEditingController phoneController;
-  late TextEditingController dateSubmitController;
-  late TextEditingController civilIdCardNumberController;
-  late TextEditingController currentJobPositionController;
-  late TextEditingController assignedEmployeeController;
-  late TextEditingController reasonForRequestController;
-  late TextEditingController allowancePercentageController;
-  late TextEditingController socialServiceFundContribution;
+  late TextEditingController searchController;
 
   void initState() {
     chatController = TextEditingController();
     titleController = TextEditingController();
-    fromEntityController = TextEditingController();
-    toEntityController = TextEditingController();
-    startDateController = TextEditingController();
-    empIdController = TextEditingController();
-    eventTimeController = TextEditingController();
-    occupationController = TextEditingController();
-    detailsController = TextEditingController();
-    assignmentAllowanceController = TextEditingController();
-    startTimeController = TextEditingController();
-    phoneController = TextEditingController();
-    dateSubmitController = TextEditingController();
-    civilIdCardNumberController = TextEditingController();
-    currentJobPositionController = TextEditingController();
-    assignedEmployeeController = TextEditingController();
-    endTimeController = TextEditingController();
-    reasonForRequestController = TextEditingController();
-    allowancePercentageController = TextEditingController();
-    socialServiceFundContribution = TextEditingController();
-
-    phoneController.addListener(_validateForm);
-    startTimeController.addListener(_validateForm);
-    phoneController.addListener(_validateForm);
-    fromEntityController.addListener(_validateForm);
-    currentJobPositionController.addListener(_validateForm);
-    civilIdCardNumberController.addListener(_validateForm);
-    assignedEmployeeController.addListener(_validateForm);
-    empIdController.addListener(_validateForm);
-    endTimeController.addListener(_validateForm);
-    reasonForRequestController.addListener(_validateForm);
-    toEntityController.addListener(_validateForm);
-    allowancePercentageController.addListener(_validateForm);
-    socialServiceFundContribution.addListener(_validateForm);
-    // fetchDepartmentName();
+    searchController = TextEditingController();
     fetchKpi();
     fetchApprovalKpi();
-    fetchpositionsList();
-    fetchUsers();
     fetchRequests();
-    fetchActionItems();
-    fetchAssignEmployeesList();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
-    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
-  void _validateForm() {
-    final valid = isFormValid();
+  int _searchVersion = 0;
 
-    if (state.isFormValid != valid) {
-      state = state.copyWith(isFormValid: valid);
+  void onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    final int currentVersion = ++_searchVersion;
+
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
+      if (state.tabIndex == 0) {
+        await fetchRequests(isRefresh: true, searchText: value);
+      } else {
+        await fetchactionItems(isRefresh: true, searchText: value);
+      }
+
+      if (currentVersion != _searchVersion) return; // ignore old response
+    });
+  }
+
+  int get currentYear => DateTime.now().year;
+
+  List<String> get filterLabelList =>
+      List.generate(6, (index) => (currentYear - index).toString());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    // isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
+
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    // isSecurityThreat: true,
+    titleForKey: titleForKey,
+  );
+
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
+  void onStatusFilterChanged(String? value) {
+    if (state.tabIndex == 0) {
+      fetchStatusBreakdown(value ?? '');
+    } else {
+      fetchApprovalStatusBreakdown(value ?? '');
     }
   }
 
-  bool isFormValid() {
-    return assignedEmployeeController.text.isNotEmpty &&
-        civilIdCardNumberController.text.isNotEmpty &&
-        empIdController.text.isNotEmpty &&
-        currentJobPositionController.text.isNotEmpty &&
-        phoneController.text.isNotEmpty &&
-        assignmentAllowanceController.text.isNotEmpty &&
-        fromEntityController.text.isNotEmpty &&
-        state.selectedUserId != null &&
-        state.selectedPositionName.isNotEmpty &&
-        startTimeController.text.isNotEmpty &&
-        endTimeController.text.isNotEmpty &&
-        reasonForRequestController.text.isNotEmpty &&
-        toEntityController.text.isNotEmpty &&
-        allowancePercentageController.text.isNotEmpty &&
-        socialServiceFundContribution.text.isNotEmpty;
+  List<ChartData> get currentStatusBreakdownList {
+    return state.tabIndex == 0
+        ? statusBreakdownList
+        : approvalStatusBreakdownList;
   }
 
-  bool get isFormFilled {
-    return assignedEmployeeController.text.isNotEmpty &&
-        civilIdCardNumberController.text.isNotEmpty &&
-        empIdController.text.isNotEmpty &&
-        currentJobPositionController.text.isNotEmpty &&
-        phoneController.text.isNotEmpty &&
-        state.selectedUserId != null &&
-        state.selectedPositionName.isNotEmpty &&
-        startTimeController.text.isNotEmpty &&
-        endTimeController.text.isNotEmpty &&
-        toEntityController.text.isNotEmpty &&
-        socialServiceFundContribution.text.isNotEmpty &&
-        fromEntityController.text.isNotEmpty &&
-        state.selectedRequestType.isNotEmpty;
-  }
-
-  void updateFormValidity() {
-    final formState = state.formKey.currentState;
-    if (formState == null) return;
-
-    final valid = formState.validate();
-    if (state.isFormValid != valid) {
-      state = state.copyWith(isFormValid: valid);
+  StatusData get currentStatusBreakdownData {
+    if (state.tabIndex == 0) {
+      return StatusData(
+        timePeriod: state.statusBreakdown.data?.timePeriod,
+        totalRequests: state.statusBreakdown.data?.totalRequests,
+        approved: state.statusBreakdown.data?.approved,
+        pending: state.statusBreakdown.data?.pending,
+        rejected: state.statusBreakdown.data?.rejected,
+        breakdown: statusBreakdownList,
+      );
     }
+
+    return StatusData(
+      timePeriod: state.approvalStatusBreakdown.data?.timePeriod,
+      totalRequests: state.approvalStatusBreakdown.data?.totalRequests,
+      approved: state.approvalStatusBreakdown.data?.approved,
+      pending: state.approvalStatusBreakdown.data?.pending,
+      rejected: state.approvalStatusBreakdown.data?.rejected,
+      breakdown: approvalStatusBreakdownList,
+    );
+  }
+
+  List<ChartData> mapStatusBreakdown(ServiceTransferStatusData? data) {
+    if (data == null) return [];
+
+    final total =
+        (state.tabIndex == 0 ? data.totalRequests : data.totalApprovals) ?? 0;
+
+    final approved = data.approved ?? 0;
+    final pending = data.pending ?? 0;
+    final rejected = data.rejected ?? 0;
+
+    double calculatePercentage(int value) {
+      if (total == 0) return 0;
+      return (value / total) * 100;
+    }
+
+    return [
+      ChartData(status: 'Total', count: total, percentage: 100),
+
+      ChartData(
+        status: 'Approved',
+        count: approved,
+        percentage: calculatePercentage(approved),
+      ),
+
+      ChartData(
+        status: 'Pending',
+        count: pending,
+        percentage: calculatePercentage(pending),
+      ),
+
+      ChartData(
+        status: 'Rejected',
+        count: rejected,
+        percentage: calculatePercentage(rejected),
+      ),
+    ];
+  }
+
+  List<ChartData> get statusBreakdownList {
+    return mapStatusBreakdown(state.statusBreakdown.data);
+  }
+
+  List<ChartData> get approvalStatusBreakdownList {
+    return mapStatusBreakdown(state.approvalStatusBreakdown.data);
+  }
+
+  void onTrendFilterChanged(String? value) {
+    if (value == null) return;
+
+    if (state.tabIndex == 0) {
+      fetchTrendBreakDown(value);
+    } else {
+      fetchApprovalTrendBreakDown(value);
+    }
+  }
+
+  List<int> get trendCounts {
+    final data = state.trendData.data?.monthlyData;
+
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.total ?? 0).toList();
+  }
+
+  List<int> get approvalTrendCounts {
+    final data = state.approvalTrendData.data?.monthlyData;
+
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.total ?? 0).toList();
+  }
+
+  Map<String, String> buildRequestCardData(TemporaryDecision item) {
+    final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
+
+    return {
+      'Request Id': item.base?.id?.toString() ?? '-',
+      'status': item.base?.status ?? '-',
+      'User Name': item.base?.createdByUser?.employeeName ?? '-',
+      'Request Type': item.base?.subService?.subServiceName ?? '-',
+      'Assigned Employee Name': item.assignedEmployeeName ?? '',
+      'Date': item.createdBy.toString(),
+      // 'Vehicle Number': item.vehicleNumber ?? 'N/A',
+      // 'Maintenance Type': item.typeOfMaintenanceRequired ?? 'N/A',
+      // 'Request Submission Date': formatDate(
+      //   item.base?.createdAt.toString() ?? 'N/A',
+      // ),
+      // 'Preferred Maintenance Date': formatDate(
+      //   item.preferredMaintenanceDate ?? 'N/A',
+      // ),
+
+      /// ================= EMPLOYEE INFO =================
+
+      /// 👇 APPROVER (SINGLE LINE)
+      if (approverMap.containsKey('role')) ...{
+        'Approver': approverMap['role'] ?? '-',
+      } else if (approverMap.containsKey('department')) ...{
+        'Approver': _buildDepartmentSection(approverMap),
+      },
+    };
+  }
+
+  Map<String, String> buildRequestInformationData() {
+    final request = state.requestDetails;
+    return {
+      /// ───── RIGHT COLUMN ─────
+      "Service Type": request?.service?.name ?? 'N/A',
+
+      /// ───── LEFT COLUMN ─────
+      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
+      "Assigned Employee Name": request?.assignedEmployeeName ?? 'N/A',
+      "Current Job Position": request?.currentJobPosition ?? 'N/A',
+      "Assigned Job Position": request?.assignedJobPosition ?? 'N/A',
+      'From entity': request?.fromEntity ?? '',
+      'To Entity': request?.toEntity ?? '',
+      'Start Date': request?.startDate ?? '',
+      'End Date': request.endDate ?? '',
+      'Reason for Request': request?.reasonForRequest.toString() ?? '',
+      'Salary Payment Source': request.salaryPaymentSource ?? '',
+      // 'Vehicle Number': request?.vehicleNumber ?? 'N/A',
+      // 'Maintenance Type': request?.typeOfMaintenanceRequired ?? 'N/A',
+      // 'Preferred Maintenance Date': formatDate(
+      //   request?.preferredMaintenanceDate ?? 'N/A',
+      // ),
+      // 'Issue Description': request?.issueDescription ?? 'N/A',
+    };
+  }
+
+  Map<String, String> buildStatusInformation() {
+    final request = state.requestDetails;
+    final approvals = state.requestDetails.approvalDetails;
+    final nextApprover = resolveApproverMap(approvals);
+    return {
+      "Approval Status": request?.status ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt ?? 'N/A'),
+      // "Last Updated":
+      //     request?.updatedAt?.split('T').first ?? 'N/A',
+      if (nextApprover.containsKey('department'))
+        'Department': nextApprover['department']!,
+      if (nextApprover.containsKey('section'))
+        'Section': nextApprover['section']!,
+
+      if (nextApprover.containsKey('name'))
+        'Approver Name': nextApprover['name']!,
+      if (nextApprover.containsKey('email'))
+        'Approver Email': nextApprover['email']!,
+    };
+  }
+
+  Map<String, String> buildTechnicalInformation() {
+    final request = state.requestDetails;
+    return {
+      'Extension Number':
+          request?.createdByUser?.extensionNumber.toString() ?? '0',
+    };
+  }
+
+  String _buildDepartmentSection(Map<String, String> approverMap) {
+    final department = approverMap['department'];
+    final section = approverMap['section'];
+
+    if ((department ?? '').isNotEmpty && (section ?? '').isNotEmpty) {
+      return '$department - $section';
+    }
+
+    return department ?? '-';
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
+  }
+
+  Future<void> openRequestDetails(
+    int id, {
+    bool fromActionItems = false,
+  }) async {
+    updateRequestTab(0);
+
+    await KAppX.router.push(
+      ServiceTransferDetailsRoute(
+        id: id,
+        from: fromActionItems ? 'action items' : '',
+        service: service,
+        subService: subService,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      ),
+    );
+
+    await refreshAfterReturn();
+  }
+
+  Future<void> refreshAfterReturn() async {
+    await Future.wait([
+      fetchRequests(),
+      fetchKpi(),
+      fetchStatusBreakdown('weekly'),
+      fetchTrendBreakDown(DateTime.now().year.toString()),
+    ]);
+  }
+
+  void openNewRequestForm() {
+    KAppX.router.push(
+      RequestForVehicleMaintenanceNewRequestRoute(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+        service: service,
+        subService: subService,
+      ),
+    );
   }
 
   final serviceTransferInstance = ServiceTransferRepoistry();
+  final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  void fetchDepartmentName() {
-    final selectedRole = KAppX.globalProvider.read(userInfoProvider);
-    if (selectedRole != null) {
-      state = state.copyWith(
-        departmentName: selectedRole.data?.department?.departmentName ?? '',
-      );
-    }
-  }
+  /// ========================= API CALLS =========================
 
   Future<void> fetchRequestDetailsById(int id) async {
+    state = state.copyWith(isLoading: true);
     try {
       final requests = await serviceTransferInstance.getRequestsById(id);
+
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests);
+        state = state.copyWith(requestDetails: requests, isLoading: false);
+        // fetchAssignEmployeesList();
+
         fetchChatById(id);
+        // fetchAttachmentsById(id);
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
+
+        /// ✅ CHECK ACTION TYPE HERE
+        final actionType = getActionButtonsType(
+          requests,
+          requests.approvalDetails ?? [],
+        );
+        if (actionType == ActionButtonsType.assignReject) {
+          // fetchAssignEmployeesList();
+          debugPrint('this user can only approve');
+        }
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      // optionally handle other errors
+      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
   }
@@ -433,7 +594,8 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       final requests = await serviceTransferInstance.getchatById(id);
       if (requests != null) {
-        state = state.copyWith(chatById: requests);
+        final chats = requests.reversed.toList();
+        state = state.copyWith(chatById: chats);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
@@ -443,185 +605,182 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  // Future<void> getRoleDetails() async {
-  //   final storage = KAuthCred();
-  //   final saved = await storage.getSelectedRole();
-  //   if (saved != null) {
-  //     state = state.copyWith(currentRoleName: saved.roleName);
-  //   }
-  // }
-
-  Future<void> fetchKpi() async {
+  Future<void> fetchAttachmentsById(int id) async {
     try {
-      final kpis = await serviceTransferInstance.getKpiData(
-        service.id ?? 0,
-        subService.id ?? 0,
+      final attachments = await serviceTransferInstance.getAttachmentsById(
+        id: id,
       );
-
-      if (kpis != null) {
-        state = state.copyWith(kpiData: kpis);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchApprovalTrendBreakDown(String period) async {
-    try {
-      final data = await serviceTransferInstance.getApprovalTrendBreakdownData(
-        period,
-      );
-
-      if (data != null) {
-        state = state.copyWith(approvalTrendData: data);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchApprovalStatusBreakdown(String period) async {
-    try {
-      final statusBreakdown = await serviceTransferInstance
-          .getApprovalStatusBreakdownData(period);
-      if (statusBreakdown != null) {
-        state = state.copyWith(approvalStatusBreakdown: statusBreakdown);
+      if (attachments != null) {
+        state = state.copyWith(attachmentsById: attachments);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       // optionally handle other errors
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchKpi() async {
+    state = state.copyWith(isLoading: true);
+    try {
+      // await generateTemporaryAssignmentPdf();
+      final kpis = await serviceTransferInstance.getKpiData(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (kpis != null) {
+        state = state.copyWith(kpiData: kpis, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchApprovalTrendBreakDown(String period) async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final data = await serviceTransferInstance.getApprovalTrendBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (data != null) {
+        state = state.copyWith(approvalTrendData: data, isLoading: false);
+      } else {
+        state = state.copyWith(isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchApprovalStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final data = await serviceTransferInstance.getApprovalStatusBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (data != null) {
+        state = state.copyWith(approvalStatusBreakdown: data, isLoading: false);
+      } else {
+        state = state.copyWith(isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
   }
 
   Future<void> fetchStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
+
     try {
-      final statusBreakdown = await serviceTransferInstance
-          .getStatusBreakdownData(period);
-      if (statusBreakdown != null) {
-        state = state.copyWith(statusBreakdown: statusBreakdown);
+      final data = await serviceTransferInstance.getStatusBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (data != null) {
+        state = state.copyWith(statusBreakdown: data, isLoading: false);
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      // optionally handle other errors
+      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
   }
 
   Future<void> fetchTrendBreakDown(String period) async {
+    state = state.copyWith(isLoading: true);
+
     try {
-      final data = await serviceTransferInstance.getTrendBreakdownData(period);
+      final data = await serviceTransferInstance.getTrendBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       if (data != null) {
-        state = state.copyWith(trendData: data);
+        state = state.copyWith(trendData: data, isLoading: false);
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchpositionsList() async {
-    try {
-      final position = await serviceTransferInstance.getPositions();
-
-      if (position != null) {
-        state = state.copyWith(positionsList: position);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
-  Future<void> fetchUsers() async {
-    try {
-      final users = await serviceTransferInstance.getUsers();
-
-      state = state.copyWith(usersList: users);
-      print('✅ Users fetched: ${users.length}');
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-      print('❌ API ERROR: ${apiError.message}');
-    } catch (e, stack) {
-      print('❌ UNKNOWN ERROR: $e');
-      print(stack);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
     }
   }
 
-  Future<void> fetchAssignEmployeesList() async {
-    try {
-      final user = KAppX.globalProvider.read(rolesProvider);
-      final employeeList = await serviceTransferInstance.getEmployeeList(
-        departmentId: user?.departmentId ?? 0,
-
-        sectionId: user?.sectionId ?? 0,
-        roleId: user?.roleName ?? '',
-      );
-
-      if (employeeList != null) {
-        state = state.copyWith(employeeList: employeeList);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
-  }
-
   Future<void> fetchApprovalKpi() async {
+    state = state.copyWith(isLoading: true);
     try {
       final kpis = await serviceTransferInstance.getApprovalKpiData(
-        service.id ?? 0,
-        subService.id ?? 0,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
       );
 
       if (kpis != null) {
-        state = state.copyWith(approvalKpiData: kpis);
+        state = state.copyWith(approvalKpiData: kpis, isLoading: false);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
   }
-
-  // Future<void> fetchEngineersList() async {
-  //   try {
-  //     // Clear list only if explicitly refreshing or searching
-
-  //     final engineersList = await serviceTransferInstance
-  //         .getEngineersList();
-
-  //     // No merging needed
-  //     state = state.copyWith(engineersList: engineersList);
-  //   } catch (e) {
-  //     Fluttertoast.showToast(msg: e.toString());
-  //   }
-  // }
 
   Future<void> fetchRequests({
     bool isRefresh = false,
     String searchText = '',
     String status = '',
   }) async {
+    state = state.copyWith(isRequestLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(temporaryAssignmentDecisionRequestData: []);
-      }
 
       final requests = await serviceTransferInstance.getRequests(
-        offset: 0,
+        offset: 1,
         limit: 8,
         searchText: searchText,
         status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
       );
 
       // No merging needed
-      state = state.copyWith(temporaryAssignmentDecisionRequestData: requests);
+      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
+      state = state.copyWith(isRequestLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
 
-  Future<void> fetchActionItems({
+  Future<void> fetchactionItems({
     bool isRefresh = false,
     String searchText = '',
     String status = '',
@@ -629,134 +788,105 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
 
     try {
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(temporaryAssignmentDecisionActionItemsData: []);
-      }
-
       final items = await serviceTransferInstance.getActionItems(
-        offset: 0,
+        offset: 1,
         limit: 8,
         searchText: searchText,
         status: status,
+
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
       );
 
       // No merging needed
-      state = state.copyWith(
-        temporaryAssignmentDecisionActionItemsData: items,
-        isLoading: false,
-      );
+      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }
   }
 
-  /// Dialog for approve and reject request
+  bool lastApprover(List<ApprovalDetailModel> approvals) {
+    if (approvals.isEmpty) return false;
+
+    if (approvals.any(
+      (status) =>
+          status.approvalStatus?.toLowerCase() == 'pending' ||
+          status.approvalStatus?.toLowerCase() == 'rejected',
+    )) {
+      return false;
+    }
+
+    if (approvals
+            .where(
+              (status) => status.approvalStatus?.toLowerCase() == 'in progress',
+            )
+            .length ==
+        1) {
+      return true;
+    }
+
+    return false;
+  }
+
   void showApprovalCommentDialog({
     required ApprovalDialogType type,
     required int approverId,
     required int requestId,
   }) {
+    // final showDecionNumber = lastApprover(
+    //   state.requestDetails.approvalDetails ?? [],
+    // );
     KAppX.extendedRouter.dialog.showKDialog(
       builder: (_) => ApprovalCommentDialog(
         type: type,
+        // showDecisionNumber: showDecionNumber,
         onSubmit: (comment, decisionNo) async {
-          if (type == ApprovalDialogType.approve) {
-            await onApprove(
-              approverId,
-              requestId,
-              comment, // optional
-            );
-          } else {
-            await onReject(
-              approverId,
-              requestId,
-              comment, // mandatory
-            );
-          }
+          final status = type == ApprovalDialogType.approve
+              ? ApprovalStatus.approved
+              : ApprovalStatus.rejected;
+
+          await onApproveReject(
+            approverId,
+            requestId,
+            comment.trim(), // always safe
+            status.apiValue,
+            decisionNo, // ✅ backend-safe string
+          );
         },
       ),
     );
   }
 
-  void showAssignEngineerDialog({
-    required int requestId,
-    required int approverRoleId,
-    // required int? departmentId,
-    // required int? sectionId,
-  }) {
-    KAppX.extendedRouter.dialog.showKDialog(
-      builder: (_) => AssignEngineerDialog(
-        requestId: requestId,
-        approverRoleId: approverRoleId,
-        service: service,
-        subService: subService,
-        // departmentId: departmentId,
-        // sectionId: sectionId,
-      ),
-    );
-  }
-
-  Future<void> assignEngineer({
-    required int engineerUserId,
-    required int approverRoleId,
-
-    String comment = "Assigning engineer",
-  }) async {
-    try {
-      final client = await KAppX.network.secureClient();
-      if (client == null) return;
-      final userInfo = KAppX.globalProvider.read(rolesProvider);
-      final payload = {
-        "request_id": state.requestDetails.request?.id,
-        "assigned_to_user_id": engineerUserId,
-      };
-      print(payload);
-
-      await serviceTransferInstance.onAssignEmployee(payload);
-
-      // Refresh details after assigning
-      // await fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
-    } catch (e) {
-      print("Error assigning engineer: $e");
-    }
-  }
-
-  // String _resolveMessageType() {
-  //   // No attachment → text
-  //   if (state.attachments.isEmpty) {
-  //     return 'text';
-  //   }
-
-  //   // Attachment exists → detect file type
-  //   final file = state.attachments.first;
-  //   final category = getFileTypeFromPath(file.);
-
-  //   return mapCategoryToMessageType(category); // image | file
-  // }
   Future<void> sendChatMessage({
     required int serviceId,
     required int subServiceId,
   }) async {
     try {
-      String finalType = 'text';
+      final requestId = state.requestDetails.id;
+      if (requestId == null) {
+        throw Exception("Request ID missing");
+      }
+
+      final hasMessage = chatController.text.trim().isNotEmpty;
+      final hasAttachment = state.attachments.isNotEmpty;
+
+      String messageType = 'text';
 
       String? fileUrl;
       String? fileName;
       String? fileType;
       String? fileSize;
 
-      // 1️⃣ If attachment exists → detect type from LOCAL file
-      if (state.attachments.isNotEmpty) {
+      /// 1️⃣ Upload attachment if exists
+      if (hasAttachment) {
         final localFile = state.attachments.first;
 
         final category = getFileTypeFromPath(localFile['file_name']);
-        finalType = mapCategoryToMessageType(category); // image | file
+        messageType = mapCategoryToMessageType(category); // image | file
 
-        debugPrint('📎 Uploading attachment as $finalType');
-
-        // 2️⃣ Upload file
-        final List<Map<String, dynamic>> uploadedFiles =
-            await serviceTransferInstance.uploadAttachments(state.attachments);
+        final uploadedFiles = await serviceTransferInstance.uploadAttachments(
+          state.attachments,
+        );
 
         if (uploadedFiles.isEmpty) {
           throw Exception("File upload failed");
@@ -764,46 +894,66 @@ class _VSController extends StateNotifier<_ViewState> {
 
         final uploaded = uploadedFiles.first;
 
-        // 3️⃣ SAFE Map access
         fileUrl = uploaded['file_url'];
         fileName = uploaded['file_name'];
-        fileType = uploaded['file_type'];
+        fileType = messageType;
         fileSize = uploaded['file_size']?.toString();
       }
 
-      // 4️⃣ Build payload
-      final payload = {
-        "request_id": state.requestDetails?.id,
-        "service_id": serviceId,
-        "sub_service_id": subServiceId,
-        "message": chatController.text,
-        "messageType": finalType,
+      /// ------------------------------------------------------------
+      /// CASE 1️⃣ : ONLY ATTACHMENT (NO MESSAGE)
+      /// ------------------------------------------------------------
+      if (!hasMessage && hasAttachment) {
+        final payload = {
+          "request_id": requestId,
+          "service_id": serviceId,
+          "sub_service_id": subServiceId,
+          "file_url": fileUrl,
+          "file_name": fileName,
+          "file_type": fileType,
+          "file_size": fileSize,
+        };
 
-        // backend-required fields
-        "file_url": finalType == 'text' ? null : fileUrl,
-        "file_name": finalType == 'text' ? null : fileName,
-        "file_type": finalType == 'text' ? null : finalType,
-        "file_size": finalType == 'text' ? null : fileSize,
-      };
+        debugPrint('📎 Attachment-only payload: $payload');
 
-      debugPrint('📤 Chat payload: $payload');
+        await serviceTransferInstance.sendAttachment(payload, requestId);
+      }
 
-      // 5️⃣ Send chat
-      await serviceTransferInstance.sendChat(
-        payload,
-        state.requestDetails.request?.id ?? 0,
-      );
+      /// ------------------------------------------------------------
+      /// CASE 2️⃣ : CHAT (with OR without attachment)
+      /// ------------------------------------------------------------
+      if (hasMessage) {
+        final payload = {
+          "request_id": requestId,
+          "service_id": serviceId,
+          "sub_service_id": subServiceId,
+          "message": chatController.text.trim(),
+          "messageType": hasAttachment ? messageType : 'text',
+          // "file_url": hasAttachment ? fileUrl : null,
+          "file_name": hasAttachment ? fileName : null,
+          "file_type": hasAttachment ? fileType : null,
+          "file_size": hasAttachment ? fileSize : null,
+        };
 
-      // 6️⃣ Clear state
-      chatController.clear();
+        debugPrint('💬 Chat payload: $payload');
+
+        await serviceTransferInstance.sendChat(payload, requestId);
+      }
+      fetchChatById(requestId);
+      fetchRequestDetailsById(requestId);
+      fetchAttachmentsById(requestId);
+
+      /// 3️⃣ Clear UI state
+      // chatController.clear();
       state.attachments.clear();
-    } catch (e) {
+    } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
+      debugPrintStack(stackTrace: st);
       rethrow;
     }
   }
 
-  Future<void> onApprove(int approverId, int requestId, String comment) async {
+  Future<void> onComplete(int approverId, int requestId) async {
     try {
       state = state.copyWith(isLoading: true);
 
@@ -812,19 +962,72 @@ class _VSController extends StateNotifier<_ViewState> {
       // 2️⃣ Build payload
       final payload = {
         "request_id": requestId,
-        "status": "Approved",
-        "comment": comment,
+        "status": "Completed",
+        "comment": '',
         "approval_id": approverId,
       };
 
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await serviceTransferInstance.onApprove(payload);
+      // await serviceTransferInstance.onAssignRejectClose(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchActionItems();
-      await fetchRequests();
+      fetchactionItems();
+      fetchRequests();
+      fetchApprovalKpi();
+      fetchApprovalStatusBreakdown('weekly');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+      fetchStatusBreakdown('weekly');
+      fetchTrendBreakDown(DateTime.now().year.toString());
+      fetchKpi();
+    } catch (e) {
+      debugPrint('❌ Error submitting request: $e');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+    return;
+  }
+
+  Future<void> onApproveReject(
+    int approverId,
+    int requestId,
+    String comment,
+    String status,
+    String? decisionNo,
+  ) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      // 1️⃣ Upload files
+
+      // 2️⃣ Build payload
+      final payload = {
+        "request_id": requestId,
+        "status": status,
+        "comment": comment,
+        "approval_id": approverId,
+      };
+      if (decisionNo != null) {
+        payload['decision_number'] = decisionNo;
+      }
+
+      debugPrint("✅ Final Payload: $payload");
+
+      // 3️⃣ Send request
+      await serviceTransferInstance.onApprove(payload);
+      // await Future.delayed(Duration(seconds: 3));
+      KAppX.router.pop();
+      // if (decisionNo != null) {
+      KAppX.router.pop();
+      // }
+      await fetchRequestDetailsById(requestId);
+      if (isRequestApproved()) {
+        await generateTemporaryAssignmentPdf();
+      }
+      fetchApprovalKpi();
+
+      await _refreshDashboard();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -832,28 +1035,388 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> onReject(int approverId, int requestId, String comment) async {
+  bool isRequestApproved() {
+    if (state.requestDetails.status?.toLowerCase() != 'approved') return false;
+
+    return true;
+  }
+
+  Future<void> generateTemporaryAssignmentPdf() async {
+    try {
+      final request = state.requestDetails;
+      final pdf = pw.Document();
+      final logos = await Future.wait([
+        _loadPdfImage('assets/images/pdfimage1.png'),
+        _loadPdfImage('assets/images/pdfimage.png'),
+        _loadPdfImage('assets/images/caa_logo.png'),
+      ]);
+
+      final decisionNumber = _safePdfValue(request.decisionNumber);
+      final employeeName = _safePdfValue(
+        request.assignedEmployeeName ?? request.employeeName,
+      );
+      final fromEntity = _safePdfValue(
+        request.fromEntity ?? request.currentEntity,
+      );
+      final toEntity = _safePdfValue(
+        request.toEntity ?? request.transferredToEntity,
+      );
+      final jobPosition = _safePdfValue(
+        request.assignedJobPosition ?? request.currentJobPosition,
+      );
+      final startDate = _formatPdfDate(request.startDate);
+      final endDate = _formatPdfDate(request.endDate);
+      final issuedDate = _getLastApproverDate();
+      final regularFont = await PdfGoogleFonts.notoNaskhArabicRegular();
+      final boldFont = await PdfGoogleFonts.notoNaskhArabicBold();
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.only(
+            top: 20,
+            left: 28,
+            right: 28,
+            bottom: 35,
+          ),
+          build: (context) {
+            final normalStyle = pw.TextStyle(
+              font: regularFont,
+              fontSize: 10.5,
+              height: 1.7,
+              // font: regularFont,
+              color: PdfColors.black,
+            );
+
+            final boldStyle = pw.TextStyle(
+              font: boldFont,
+              fontSize: 11,
+              fontWeight: pw.FontWeight.bold,
+              // font: boldFont,
+            );
+
+            final titleStyle = pw.TextStyle(
+              font: boldFont,
+              fontSize: 17,
+              fontWeight: pw.FontWeight.bold,
+            );
+
+            return pw.Directionality(
+              textDirection: pw.TextDirection.rtl,
+              child: pw.Container(
+                height: PdfPageFormat.a4.availableHeight,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                  children: [
+                    /// ================= HEADER =================
+                    pw.Directionality(
+                      textDirection: pw.TextDirection.ltr,
+                      child: pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          _logo(logos[0], width: 88, height: 58),
+
+                          _logo(logos[1], width: 95, height: 58),
+
+                          _logo(logos[2], width: 120, height: 72),
+                        ],
+                      ),
+                    ),
+
+                    pw.SizedBox(height: 14),
+
+                    pw.Container(height: 1.2, color: PdfColors.black),
+
+                    pw.SizedBox(height: 26),
+
+                    /// ================= TITLE =================
+                    pw.Center(
+                      child: pw.Text('قرار إداري رقم', style: titleStyle),
+                    ),
+
+                    pw.SizedBox(height: 24),
+
+                    /// ================= INTRO =================
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.symmetric(horizontal: 12),
+                      child: pw.Text(
+                        'استناداً إلى قانون الخدمة المدنية الصادر بالمرسوم السلطاني رقم (٢٠٠٤/١٢٠)، وإلى نظام هيئة الطيران المدني الصادر بالمرسوم السلطاني رقم (٢٠١٣/٤٣)، وإلى اللائحة التنفيذية لقانون الخدمة المدنية الصادرة بالقرار رقم (٢٠١٠/٩)، وإلى خطاب الرئيس التنفيذي لمطارات عمان رقم ....... بتاريخ ......... وبناءً على ما تقتضيه مصلحة العمل.',
+                        style: normalStyle,
+                        textAlign: pw.TextAlign.center,
+                      ),
+                    ),
+
+                    pw.SizedBox(height: 18),
+
+                    pw.Divider(thickness: 0.6, color: PdfColors.grey400),
+
+                    pw.SizedBox(height: 30),
+
+                    /// ================= TQRR =================
+                    pw.Center(
+                      child: pw.Text(
+                        'تقرر',
+                        style: pw.TextStyle(
+                          font: boldFont,
+                          fontSize: 15,
+                          fontWeight: pw.FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    pw.SizedBox(height: 35),
+
+                    /// ================= ARTICLES =================
+                    _reactArticle(
+                      title: 'المادة الأولى:',
+                      body:
+                          'إعارة الفاضل/ $employeeName من هيئة الطيران المدني إلى $toEntity لوظيفة $jobPosition وذلك اعتباراً من تاريخ $startDate إلى تاريخ $endDate',
+                      titleStyle: boldStyle,
+                      bodyStyle: normalStyle,
+                    ),
+
+                    pw.SizedBox(height: 26),
+
+                    _reactArticle(
+                      title: 'المادة الثانية:',
+                      body:
+                          'تتحمل هيئة الطيران المدني الراتب والمخصصات المالية المذكور خلال فترة الإعارة مع إيقاف طبيعة عمل وبدل المناوبة.',
+                      titleStyle: boldStyle,
+                      bodyStyle: normalStyle,
+                    ),
+
+                    pw.SizedBox(height: 26),
+
+                    _reactArticle(
+                      title: 'المادة الثالثة:',
+                      body: 'على جهات الاختصاص تنفيذ هذا القرار.',
+                      titleStyle: boldStyle,
+                      bodyStyle: normalStyle,
+                    ),
+
+                    /// THIS IS THE IMPORTANT FIX
+                    /// pushes footer naturally like HTML flex
+                    pw.Spacer(),
+
+                    /// ================= SIGNATURE =================
+                    pw.Align(
+                      alignment: pw.Alignment.centerRight,
+                      child: pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.end,
+                        children: [
+                          pw.Text('صدر في $issuedDate', style: normalStyle),
+
+                          pw.SizedBox(height: 16),
+
+                          pw.Text('الموافق : NA', style: normalStyle),
+
+                          pw.SizedBox(height: 30),
+
+                          pw.Text(
+                            'م. نايف بن علي بن حمد العبري',
+                            style: boldStyle,
+                          ),
+
+                          pw.SizedBox(height: 4),
+
+                          pw.Text(
+                            'رئيس هيئة الطيران المدني',
+                            style: normalStyle,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    pw.SizedBox(height: 38),
+
+                    /// ================= FOOTER =================
+                    pw.Divider(thickness: 0.6, color: PdfColors.grey400),
+
+                    pw.SizedBox(height: 8),
+
+                    pw.Directionality(
+                      textDirection: pw.TextDirection.ltr,
+                      child: pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.Column(
+                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            children: [
+                              pw.Text(
+                                'صندوق البريد: ١١١ الرمز البريدي: ١١١ - مسقط - سلطنة عمان',
+                                style: pw.TextStyle(
+                                  fontSize: 6.5,
+                                  color: PdfColors.grey700,
+                                ),
+                              ),
+
+                              pw.SizedBox(height: 2),
+
+                              pw.Text(
+                                'Fax: +968 23368884 - www.caa.gov.om - 24354435 968+ / 24354433 968+',
+                                style: pw.TextStyle(
+                                  fontSize: 6.5,
+                                  color: PdfColors.grey700,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          pw.Text(
+                            'P.C.: 111, Muscat - Sultanate of Oman',
+                            style: pw.TextStyle(
+                              fontSize: 6.5,
+                              color: PdfColors.grey700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+      final pdfBytes = await pdf.save();
+      final requestId = request.id?.toString() ?? 'NA';
+      final fileDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final fileName =
+          'Temporary_Assignment_Decision_${requestId}_$fileDate.pdf';
+
+      await FilePicker.platform.saveFile(fileName: fileName, bytes: pdfBytes);
+      Fluttertoast.showToast(msg: 'PDF downloaded successfully');
+    } catch (e, st) {
+      debugPrint('Failed to generate temporary assignment PDF: $e');
+      debugPrintStack(stackTrace: st);
+      Fluttertoast.showToast(msg: 'Error generating PDF. Please try again.');
+    }
+  }
+
+  Future<pw.MemoryImage> _loadPdfImage(String assetPath) async {
+    final bytes = await rootBundle.load(assetPath);
+    return pw.MemoryImage(bytes.buffer.asUint8List());
+  }
+
+  pw.Widget _reactArticle({
+    required String title,
+    required String body,
+    required pw.TextStyle titleStyle,
+    required pw.TextStyle bodyStyle,
+  }) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.end,
+      children: [
+        pw.Align(
+          alignment: pw.Alignment.centerRight,
+          child: pw.Text(title, style: titleStyle),
+        ),
+
+        pw.SizedBox(height: 12),
+
+        pw.Padding(
+          padding: const pw.EdgeInsets.only(left: 15),
+          child: pw.Text(body, style: bodyStyle, textAlign: pw.TextAlign.right),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _logo(
+    pw.MemoryImage image, {
+    required double width,
+    required double height,
+  }) {
+    return pw.Image(
+      image,
+      width: width,
+      height: height,
+      fit: pw.BoxFit.contain,
+    );
+  }
+
+  pw.Widget _article({
+    required String title,
+    required String body,
+    required pw.TextStyle textStyle,
+    required pw.TextStyle boldStyle,
+  }) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.end,
+      children: [
+        pw.Text(title, style: boldStyle),
+        pw.SizedBox(height: 8),
+        pw.Text(body, style: textStyle, textAlign: pw.TextAlign.right),
+      ],
+    );
+  }
+
+  String _safePdfValue(Object? value) {
+    if (value == null) return 'N/A';
+    final text = value.toString().trim();
+    return text.isEmpty ? 'N/A' : text;
+  }
+
+  String _formatPdfDate(String? value) {
+    if (value == null || value.trim().isEmpty) return 'N/A';
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return value;
+    return DateFormat('dd/MM/yyyy').format(parsed);
+  }
+
+  String _getLastApproverDate() {
+    final approvals = state.requestDetails.approvalDetails ?? [];
+    if (approvals.isEmpty) {
+      return DateFormat('dd/MM/yyyy').format(DateTime.now());
+    }
+
+    final approvedApprovals =
+        approvals
+            .where(
+              (approval) =>
+                  approval.approvalStatus?.toLowerCase() == 'approved',
+            )
+            .toList()
+          ..sort((a, b) => (b.level ?? 0).compareTo(a.level ?? 0));
+
+    if (approvedApprovals.isNotEmpty) {
+      final latest = approvedApprovals.first;
+      final date = latest.updatedAt ?? latest.createdAt;
+      return _formatPdfDate(date);
+    }
+
+    final sortedByDate = List<ApprovalDetailModel>.from(approvals)
+      ..sort((a, b) {
+        final dateA = DateTime.tryParse(a.updatedAt ?? a.createdAt ?? '');
+        final dateB = DateTime.tryParse(b.updatedAt ?? b.createdAt ?? '');
+        return (dateB ?? DateTime.fromMillisecondsSinceEpoch(0)).compareTo(
+          dateA ?? DateTime.fromMillisecondsSinceEpoch(0),
+        );
+      });
+
+    return _formatPdfDate(
+      sortedByDate.first.updatedAt ?? sortedByDate.first.createdAt,
+    );
+  }
+
+  Future<void> onSendInProgress(int approverId, int requestId) async {
     try {
       state = state.copyWith(isLoading: true);
 
       // 1️⃣ Upload files
 
       // 2️⃣ Build payload
-      final payload = {
-        "request_id": requestId,
-        "status": "Rejected",
-        "comment": comment,
-        "approval_id": approverId,
-      };
+      final payload = {"request_id": requestId, "status": "In Progress"};
 
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await serviceTransferInstance.onReject(payload);
+      // await serviceTransferInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      KAppX.router.pop();
-      await fetchActionItems();
+      await fetchactionItems();
       await fetchRequests();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -868,33 +1431,60 @@ class _VSController extends StateNotifier<_ViewState> {
 
     final int userId = int.parse(user!.data!.id!);
 
+    debugPrint('---------------- APPROVAL CHECK ----------------');
+    debugPrint('Logged User ID: $userId');
+    debugPrint('Delegate User ID: ${approval.delegateUserId}');
+    debugPrint('Approver User ID: ${approval.approverUserId}');
+    debugPrint('Approver Role ID: ${approval.approverRoleId}');
+    debugPrint('Selected Role ID: ${selectedRole?.roleId}');
+    debugPrint('Approval Department ID: ${approval.departmentId}');
+    debugPrint('User Department ID: ${selectedRole?.departmentId}');
+    debugPrint('Approval Section ID: ${approval.sectionId}');
+    debugPrint('User Section ID: ${selectedRole?.sectionId}');
+    debugPrint('------------------------------------------------');
+
     /// 1️⃣ Delegate always allowed
-    if (approval.delegateUserId == userId) return true;
+    if (approval.delegateUserId == userId) {
+      debugPrint('✅ Allowed: User is delegate approver');
+      return true;
+    }
 
     /// 2️⃣ Approver user rule
-    /// null → open approval
-    /// not null → must match logged-in user
     if (approval.approverUserId != null && approval.approverUserId != userId) {
+      debugPrint(
+        '❌ Denied: Approver User ID mismatch (${approval.approverUserId} != $userId)',
+      );
       return false;
     }
 
-    /// 3️⃣ Role must match (if defined)
+    /// 3️⃣ Role must match
     if (approval.approverRoleId != null &&
         approval.approverRoleId != selectedRole?.roleId) {
+      debugPrint(
+        '❌ Denied: Role mismatch (${approval.approverRoleId} != ${selectedRole?.roleId})',
+      );
       return false;
     }
 
-    /// 4️⃣ Department must match (if defined)
+    /// 4️⃣ Department must match
     if (approval.departmentId != null &&
         approval.departmentId != selectedRole?.departmentId) {
+      debugPrint(
+        '❌ Denied: Department mismatch (${approval.departmentId} != ${selectedRole?.departmentId})',
+      );
       return false;
     }
 
-    /// 5️⃣ Section must match (if defined)
+    /// 5️⃣ Section must match
     if (approval.sectionId != null &&
         approval.sectionId != selectedRole?.sectionId) {
+      debugPrint(
+        '❌ Denied: Section mismatch (${approval.sectionId} != ${selectedRole?.sectionId})',
+      );
       return false;
     }
+
+    debugPrint('✅ Allowed: User can act on this approval level');
 
     return true;
   }
@@ -968,21 +1558,12 @@ class _VSController extends StateNotifier<_ViewState> {
     final int approvalLevel = level.level ?? 0;
     final bool ishasReplace = level.isReplace ?? false;
 
-    if (request?.status?.toLowerCase() == 'approved' &&
-        (isPresident ?? false) &&
-        ishasReplace) {
-      return ActionButtonsType.replace;
-    }
-
-    if (isPresident == true) {
-      return ActionButtonsType.approveReject;
-    }
-    if (isManager == null || isManager == false) {
-      return ActionButtonsType.approveReject;
-    }
-
     if (isManager == true) {
-      return ActionButtonsType.assign;
+      debugPrint('this user can only approve');
+      return ActionButtonsType.assignReject;
+    } else if (level != null) {
+      debugPrint('this user can approve and reject');
+      return ActionButtonsType.approveReject;
     }
 
     return ActionButtonsType.none;
@@ -998,73 +1579,114 @@ class _VSController extends StateNotifier<_ViewState> {
     }
 
     // If active approval is NOT allowed → disable
-    if (active.isAllowed != true) {
+    if (active.isAllowed != null && active.isAllowed != true) {
       state = state.copyWith(isButtonDisabled: true);
       return;
     }
 
     final status = active.approvalStatus?.toLowerCase();
 
-    // ✅ Disable ONLY if ACTIVE is approved
-    final shouldDisable = status == 'approved';
+    // ✅ Disable ONLY if ACTIVE is approved or assigned
+    final shouldDisable = status == 'approved' || status == 'assigned';
 
     state = state.copyWith(isButtonDisabled: shouldDisable);
   }
 
-  void onPositionChange(String position) =>
-      state = state.copyWith(selectedPositionName: position);
-  void onSelectedSalaryDetailsChange(String salaryDetails) =>
-      state = state.copyWith(selectedSalaryDetails: salaryDetails);
-
-  void onselectedRequestTypeChange(String requestDetails) =>
-      state = state.copyWith(selectedRequestType: requestDetails);
-  void onUserChange(int userId) {
-    final user = state.usersList.firstWhere((e) => e.id == userId);
-
-    state = state.copyWith(
-      selectedUserId: user.id,
-      selectedUserName: user.employeeName,
-    );
-
-    assignedEmployeeController.text = user.employeeName ?? '';
-    civilIdCardNumberController.text = user.civilEmployeeId ?? '';
-    empIdController.text = user.employeeId ?? '';
-    phoneController.text = user.mobile ?? '';
-    currentJobPositionController.text = user.position?.name ?? '';
-    // Auto-fill text field
-    // assignedEmployeeController.text = user.employeeName ?? '';
+  bool _isPendingOrInProgress(String? status) {
+    final s = status?.toLowerCase();
+    return s == 'in progress';
   }
 
-  /// End Date enabled/disabled handler
-  void updateStartDateSelected(bool value) {
-    state = state.copyWith(isStartDateSelected: value);
+  bool _isCompleted(String? status) {
+    return status?.toLowerCase() == 'completed' ||
+        status?.toLowerCase() == 'approved';
   }
 
-  void onLocationChange(String value) =>
-      state = state.copyWith(location: value);
-  void onAreaPermissionChange(List<AreaPermission> list) {
-    final List<String> permissionAreas = list.map((e) => e.name).toList();
-    state = state.copyWith(selectedpermissionAreas: permissionAreas);
-    _validateForm();
+  DateTime _parseDate(String? value) {
+    try {
+      return DateTime.parse(value ?? '');
+    } catch (_) {
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
   }
 
-  void onPermitChange(String value) =>
-      state = state.copyWith(permitType: value);
-  void onSelectedServicePreference(List<String> value) =>
-      state = state.copyWith(servicePreference: value);
+  Map<String, String> resolveApproverMap(List<ApprovalDetailModel>? approvals) {
+    if (approvals == null || approvals.isEmpty) {
+      return {};
+    }
+
+    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    final pendingList = approvals
+        .where((a) => _isPendingOrInProgress(a.approvalStatus))
+        .toList();
+
+    if (pendingList.isNotEmpty) {
+      pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
+      final next = pendingList.first;
+
+      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
+      if (next.approverRoleId != null) {
+        final name = next.approverUser?.employeeName;
+        final email = next.approverUser?.email;
+        final roleName = next.approverRole?.name;
+
+        if ((name ?? '').isNotEmpty) {
+          return {
+            'name': name!,
+            if ((email ?? '').isNotEmpty) 'email': email!,
+            if ((roleName ?? '').isNotEmpty) 'role': roleName!,
+          };
+        }
+      }
+
+      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
+      final department = next.department?.departmentName;
+      final section = next.section?.sectionName;
+
+      if ((department ?? '').isNotEmpty) {
+        return {
+          'department': department!,
+          if ((section ?? '').isNotEmpty) 'section': section!,
+        };
+      }
+
+      return {};
+    }
+
+    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
+    final completedList = approvals
+        .where((a) => _isCompleted(a.approvalStatus))
+        .toList();
+
+    if (completedList.isEmpty) {
+      return {};
+    }
+
+    completedList.sort((a, b) {
+      final levelCompare = (a.level ?? 0).compareTo(b.level ?? 0);
+      if (levelCompare != 0) return levelCompare;
+      return _parseDate(a.updatedAt).compareTo(_parseDate(b.updatedAt));
+    });
+
+    final last = completedList.last;
+
+    final name =
+        last.approvedByUser?.employeeName ?? last.approverUser?.employeeName;
+
+    final email = last.approverUser?.email;
+
+    if ((name ?? '').isNotEmpty) {
+      return {'name': name!, if ((email ?? '').isNotEmpty) 'email': email!};
+    }
+
+    return {};
+  }
 
   void onUploadFileSuccess(FileUploadItem url) {
     final urls = List<FileUploadItem>.from(state.selectedFileUrl);
     urls.add(url);
     state = state.copyWith(selectedFileUrl: urls);
   }
-
-  void onVisitorCheckChange(String value) {
-    state = state.copyWith(visitorChecks: value);
-  }
-
-  void onMediaCoverageChange(String value) =>
-      state = state.copyWith(mediaCoverageRequired: value);
 
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
@@ -1075,65 +1697,28 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void updateTabIndex(int index) {
     state = state.copyWith(tabIndex: index);
+    if (index == 0) {
+      fetchRequests();
+      fetchKpi();
+      fetchStatusBreakdown('weekly');
+      fetchTrendBreakDown(DateTime.now().year.toString());
+    } else {
+      fetchactionItems(isRefresh: true);
+      fetchApprovalKpi();
+      fetchApprovalStatusBreakdown('weekly');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    }
   }
 
-  void onPriorityChange(String value) =>
-      state = state.copyWith(priority: value);
-
-  void onSelectedAcknowledgements(List<String> value) =>
-      state = state.copyWith(acknowledgement: value);
   void onRemoveFile(int index) {
     final urls = List<FileUploadItem>.from(state.selectedFileUrl);
     urls.removeAt(index);
     state = state.copyWith(selectedFileUrl: urls);
   }
 
-  bool submitSecurityAwarenessRequest() {
-    // 1. Validate all text fields inside the Form
-    if (!state.formKey.currentState!.validate()) {
-      return false;
-    }
-
-    // 2. Accommodation Type
-    if (titleController.text.isEmpty) {
-      return false;
-    }
-
-    // 5. Meal Preference (optional but recommended)
-    if (startDateController.text.isEmpty) {
-      return false;
-    }
-
-    // 6. Services (optional)
-    // if (contactNumberController.text.isEmpty) {
-    //   return false;
-    // }
-
-    // 7. Guests Count Validation (controller-based)
-    // if (eventDateController.text.isEmpty) {
-    //   return false;
-    // }
-
-    // 8. Description
-    // if (descriptionController.text.isEmpty) {
-    //   return false;
-    // }
-
-    // 9. File Upload (optional)
-    if (eventTimeController.text.isEmpty) {
-      return false;
-    }
-
-    if (state.mediaCoverageRequired.isEmpty) {
-      return false;
-    }
-
-    return true;
-  }
-
   void refreshUI() {
     // triggers rebuild in UI
-    state = state.copyWith();
+    state = state.copyWith(isLoading: false);
   }
 
   Future<void> pickFile() async {
@@ -1172,176 +1757,76 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(attachments: []);
   }
 
-  void onThreatTypeChange(int value, String threat) =>
-      state = state.copyWith(threatType: value, threatOption: threat);
-
   void removeFile(Map<String, dynamic> file) {
     final updated = List<Map<String, dynamic>>.from(state.attachments)
       ..remove(file);
     state = state.copyWith(attachments: updated);
   }
 
-  // Future<String> sendChat(int id, String message) async {
-  //   try {
-  //     state = state.copyWith(isLoading: true);
+  List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {
+    return (values['attachments'] as List<FileUploadItem>? ?? [])
+        .map((file) => file.toJson())
+        .toList();
+  }
 
-  //     List<dynamic> uploadedFiles = [];
-
-  //     // 🧩 1️⃣ Upload only if not a text message
-  //     if (type != 'text') {
-  //       debugPrint('📎 Attachment Message: $message');
-  //       uploadedFiles = await serviceTransferInstance.uploadAttachments(
-  //         state.attachments,
-  //       );
-
-  //       // ✅ Safety check: ensure upload success
-  //       if (uploadedFiles.isEmpty || uploadedFiles[0]["file_url"] == null) {
-  //         throw Exception('File upload failed or returned empty response.');
-  //       }
-  //     }
-
-  //     // 🧩 2️⃣ Detect image types (png, jpg, jpeg, gif, etc.)
-
-  //     if (type != 'text') {
-  //       final uploadedFileType = (uploadedFiles.first["file_type"] ?? '')
-  //           .toLowerCase();
-  //       if (uploadedFileType.contains('png') ||
-  //           uploadedFileType.contains('jpg') ||
-  //           uploadedFileType.contains('jpeg') ||
-  //           uploadedFileType.contains('gif') ||
-  //           uploadedFileType.contains('bmp') ||
-  //           uploadedFileType.contains('webp') ||
-  //           uploadedFileType.contains('tiff')) {
-  //         type = 'image';
-  //       } else {
-  //         type = uploadedFileType;
-  //       }
-  //     }
-
-  //     // 🧩 3️⃣ Build payload safely
-  //     final payload = {
-  //       "request_id": id,
-  //       "service_id": 20,
-  //       "sub_service_id": 12,
-  //       "message": type == 'text'
-  //           ? message
-  //           : uploadedFiles.first["file_url"], // safe access
-  //       "messageType": type,
-  //       "file_name": type != 'text' ? uploadedFiles.first["file_name"] : null,
-  //       "file_type": type != 'text' ? type : null,
-  //       "file_size": type != 'text' ? uploadedFiles.first["file_size"] : null,
-  //     };
-
-  //     debugPrint("✅ Final Payload: $payload");
-
-  //     // 🧩 4️⃣ Send request
-  //     final resMessage = await serviceTransferInstance.sendChat(payload, id, type);
-
-  //     // 🧩 5️⃣ Refresh UI state
-  //     await fetchRequestDetailsById(id);
-
-  //     chatController.clear();
-
-  //     state = state.copyWith(attachments: []);
-  //     // 🧩 6️⃣ Close chat modal or pop page
-  //     // KAppX.router.pop();
-
-  //     return resMessage;
-  //   } catch (e, stack) {
-  //     debugPrint('❌ Error submitting chat: $e');
-  //     debugPrint('Stacktrace: $stack');
-  //     return 'Not sent';
-  //   } finally {
-  //     state = state.copyWith(isLoading: false);
-  //   }
-  // }
-
-  // Future<String> sendAttachment(int id, String message) async {
-  //   try {
-  //     state = state.copyWith(isLoading: true);
-
-  //     // 2️⃣ Build payload
-  //     final payload = {
-  //       "request_id": id,
-  //       "service_id": 20,
-  //       "sub_service_id": 12,
-  //       "message": message,
-  //       "messageType": "text",
-  //       "file_name": null,
-  //       "file_type": null,
-  //       "file_size": null,
-  //     };
-
-  //     debugPrint("✅ Final Payload: $payload");
-
-  //     // 3️⃣ Send request
-  //     final resMessage = await logisticsDashboardinstance.sendChat(payload, id);
-  //     return resMessage;
-  //   } catch (e) {
-  //     debugPrint('❌ Error submitting request: $e');
-  //     return 'Not sent';
-  //   } finally {
-  //     state = state.copyWith(isLoading: false);
-  //   }
-  // }
-
-  Future<void> submitSecondmentDecisionRequest(
+  Map<String, dynamic> _buildPayload(
     int serviceId,
     int subServiceId,
+    Map<String, dynamic> values,
+  ) {
+    final userInfo = KAppX.globalProvider.read(userInfoProvider);
+
+    return {
+      /// ⭐ USER INFO
+      "req_user_department_id": userInfo?.data?.department?.id ?? 0,
+
+      "req_user_section_id": userInfo?.data?.section?.id ?? 0,
+
+      /// ⭐ SERVICE INFO
+      "service_id": serviceId,
+
+      "sub_service_id": subServiceId,
+
+      /// ⭐ VEHICLE MAINTENANCE DETAILS
+      "vehicle_number": values['vehicle_number'] ?? "",
+
+      "type_of_maintenance_required": values['maintenance_type'] ?? "",
+
+      "preferred_maintenance_date": values['preferred_maintenance_date'] ?? "",
+
+      "request_submission_date": values['request_submission_date'] ?? "",
+
+      "issue_description": values['issue_description'] ?? "",
+
+      /// ⭐ ATTACHMENTS
+      "attachments": _buildAttachments(values),
+    };
+  }
+
+  Future<void> submitProjectApprovalRequest(
+    int serviceId,
+    int subServiceId,
+    Map<String, dynamic> values,
   ) async {
     try {
       state = state.copyWith(isLoading: true);
 
-      final userData = KAppX.globalProvider.read(rolesProvider);
-
-      // Build attachments list
-      final List<Map<String, dynamic>> attachments = state.selectedFileUrl
-          .map((file) => file.toJson())
-          .toList();
-
-      // BUILD FINAL PAYLOAD
-      final payload = {
-        "service_id": serviceId,
-        "sub_service_id": subServiceId,
-
-        "assigned_employee_name": assignedEmployeeController.text.trim(),
-        "employee_id": state.selectedUserId.toString(),
-
-        "current_job_position": currentJobPositionController.text.trim(),
-        "assigned_job_position": state.selectedUserName,
-
-        "civil_id_card_number": civilIdCardNumberController.text.trim(),
-        "phone_number": phoneController.text.trim(),
-
-        "start_date": startTimeController.text.trim(), // yyyy-MM-dd
-        "end_date": endTimeController.text.trim(),
-
-        "reason_for_request": reasonForRequestController.text.trim(),
-        "current_entity": fromEntityController.text.trim(),
-        "transferred_to_entity": toEntityController.text.trim(),
-        'salary_details': state.selectedSalaryDetails,
-        'request_type': state.selectedRequestType,
-        "attachments": attachments,
-      };
+      final payload = _buildPayload(
+        serviceId,
+        subServiceId,
+        values,
+        // state.hrTasks,
+      );
 
       debugPrint("✅ Final Payload: $payload");
-      print("=====================================");
-      print("FINAL PAYLOAD: $payload");
-      print("=====================================");
 
-      // SEND REQUEST
-      await serviceTransferInstance.sendServiceTransferDecisionRequest(payload);
-      KAppX.router.pop();
+      // final response = await serviceTransferInstance
+      //     .createTemporaryDecisionRequest(payload);
 
-      // fetchKpi();
-      // fetchStatusBreakdown('monthly');
-      // fetchTrendBreakDown('2025');
-
-      // await fetchRequests();
-      // fetchApprovalStatusBreakdown('monthly');
-      // fetchApprovalTrendBreakDown('2025');
-      // fetchApprovalKpi();
-      // await fetchActionItems();
+      // // if (response['status'] == 'success') {
+      // state = state.copyWith(isRequestLoading: true, requestData: []);
+      // _refreshDashboard();
+      // }
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
     } finally {
@@ -1349,16 +1834,20 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  Future<void> _refreshDashboard() async {
+    await Future.delayed(Duration(milliseconds: 2500));
+    fetchKpi();
+    fetchStatusBreakdown('weekly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalStatusBreakdown('weekly');
+    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalKpi();
+    fetchRequests(isRefresh: true);
+    fetchactionItems();
+  }
+
   @override
   void dispose() {
-    // 🔥 Dispose ALL controllers
-    titleController.dispose();
-    startDateController.dispose();
-    eventTimeController.dispose();
-
-    // Optional
-    // eventDateController.dispose();
-
     super.dispose();
   }
 }

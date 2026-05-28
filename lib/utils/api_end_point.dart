@@ -23,6 +23,10 @@ class ApiEndPoint {
 
   static String download(String id) => '/v1/user-service/download/$id';
 
+  static String getBookmarks(String userId) =>
+      '/v1/user-service/service/bookmarks/$userId';
+  static const String updateBookmark = '/v1/user-service/service/bookmark';
+
   static const String departmentsList =
       '/v1/user-service/master/departments/listing';
   static const String countryList = '/v1/user-service/country-master/list';
@@ -593,9 +597,9 @@ class ApiEndPoint {
   static const String assignmentDecisionReject =
       '/v1/hr-service/assignment-decision/reject';
   static const String assignmentDecisionApprovalKpiData =
-      '/v1/hr-service/assignment-decision/analytics/kpi-cards';
-  static const String assignmentDecisionKpiData =
       '/v1/hr-service/assignment-decision/analytics/approval-kpi-cards';
+  static const String assignmentDecisionKpiData =
+      '/v1/hr-service/assignment-decision/analytics/kpi-cards';
   static const String assignmentDecisionEmployeesList =
       '/v1/hr-service/assignment-decision/employees';
   static const String assignmentDecisionEmployeeAssignEmployee =
@@ -607,6 +611,12 @@ class ApiEndPoint {
       '/v1/hr-service/assignment-decision/request/$id/attachments';
   static String assignmentDecisionSendAttachmentById(int id) =>
       '/v1/hr-service/assignment-decision/request/$id/attachment';
+
+  static String assignmentDecisionGetChatsById(int id) =>
+      '/v1/hr-service/assignment-decision/request/$id/chats';
+
+  static String assignmentDecisionSendChatsById(int id) =>
+      '/v1/hr-service/assignment-decision/request/$id/chat';
 
   /// Secondment Decision
   static const String secondmentDecisionUsers = '/v1/hr-service/users';
@@ -753,6 +763,7 @@ class ApiEndPoint {
   /// Send Attachment
   static String temporaryAssignmentDecisionSendAttachmentById(int id) =>
       '/v1/hr-service/temporary-assignment-decision/request/$id/attachment';
+
   // Service Transfer
 
   static const String serviceTransferNewRequest =

@@ -68,7 +68,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchUserRoles(
       userData?.userId ?? 0,
     ); //0); //(40);(1017);(userData?.userId ?? 0);
-    // fetchBookmarks();
+    fetchBookmarks();
   }
 
   final dashboardinstance = DashboardRepository();
@@ -168,14 +168,14 @@ class _VSController extends StateNotifier<_ViewState> {
     print("🎯 Selected Role: ${selected.services}");
   }
 
-  // Future<void> fetchBookmarks() async {
-  //   state = state.copyWith(isLoading: true);
-  //   final Bookmarksmodel = await dashboardinstance.getBookmarks();
-  //   final bookmarks = Bookmarksmodel;
-  //   print(bookmarks);
-  //   state = state.copyWith(isLoading: false, bookmarks: bookmarks);
-  //   print(bookmarks);
-  // }
+  Future<void> fetchBookmarks() async {
+    state = state.copyWith(isLoading: true);
+    final Bookmarksmodel = await dashboardinstance.getBookmarks();
+    final bookmarks = Bookmarksmodel;
+    print(bookmarks);
+    state = state.copyWith(isLoading: false, bookmarks: bookmarks);
+    print(bookmarks);
+  }
 
   // Future<void> fetchUser() async {
   //   final userData = KAppX.globalProvider.read(userProvider);
@@ -193,13 +193,10 @@ class _VSController extends StateNotifier<_ViewState> {
       // Optional: show loading if needed
       state = state.copyWith(isLoading: true);
 
-      await dashboardinstance.updateBookmark(
-        userId: userId,
-        serviceId: serviceId,
-      );
+      await dashboardinstance.updateBookmark(serviceId: serviceId);
 
       // Optional: refresh services/bookmarks
-      // fetchBookmarks();
+      fetchBookmarks();
 
       state = state.copyWith(isLoading: false);
     } catch (e) {
@@ -297,14 +294,14 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      // case 'Assignment Decision':
-      //   KAppX.router.push(
-      //     AssignmentDecisionRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
+      case 'CAA060':
+        KAppX.router.push(
+          AssignmentDecisionRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       case 'CAA061':
         KAppX.router.push(
           SecondmentDecisionRoute(
@@ -320,14 +317,14 @@ class _VSController extends StateNotifier<_ViewState> {
             subService: subService ?? SubService(),
           ),
         );
-      // case 'Service Transfer Decision':
-      //   KAppX.router.push(
-      //     ServiceTransferRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
+      case 'CAA063':
+        KAppX.router.push(
+          ServiceTransferRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       case 'CAA034':
         KAppX.router.push(
           AssignaTasktoEmployeeRoute(

@@ -312,10 +312,6 @@ class AppRouter extends RootStackRouter {
     ),
 
     AutoRoute(
-      page: NewAssignmentDecisionRoute.page,
-      path: RouteNames.decisionAssignmentNewRequest,
-    ),
-    AutoRoute(
       page: AssignmentDecisionDetailsRoute.page,
       path: RouteNames.decisionAssignmentDetails,
     ),
@@ -332,10 +328,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: TemporaryAssignmentDecisionDetailsRoute.page,
       path: RouteNames.temporaryAssignmentDecisionDetails,
-    ),
-    AutoRoute(
-      page: NewServiceTransferRequestRoute.page,
-      path: RouteNames.serviceTransferDecisionNewRequest,
     ),
 
     AutoRoute(

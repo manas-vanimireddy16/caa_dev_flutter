@@ -63,6 +63,8 @@ dependencies:
   multi_dropdown: ^3.0.1
   excel: ^4.0.6
   dropdown_search: ^7.0.0
+  pdf: ^3.11.3
+  printing: ^5.14.2
 
 dev_dependencies:
   flutter_test:
