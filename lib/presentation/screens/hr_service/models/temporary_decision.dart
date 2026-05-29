@@ -43,6 +43,14 @@ class TemporaryDecision {
   final String? createdAt;
   final int? updatedBy;
   final String? updatedAt;
+  final String? employeeName;
+  final String? jobTitle;
+  final String? financialGrade;
+  final String? allowanceValue;
+  final String? shiftStartDate;
+  final String? shiftEndDate;
+  final String? startTime;
+  final String? endTime;
 
   TemporaryDecision({
     this.base,
@@ -87,6 +95,14 @@ class TemporaryDecision {
     this.createdAt,
     this.updatedBy,
     this.updatedAt,
+    this.employeeName,
+    this.jobTitle,
+    this.financialGrade,
+    this.allowanceValue,
+    this.shiftStartDate,
+    this.shiftEndDate,
+    this.startTime,
+    this.endTime,
   });
 
   factory TemporaryDecision.fromJson(Map<String, dynamic>? json) {
@@ -132,6 +148,14 @@ class TemporaryDecision {
       replacementCivilIdCardNumber: json['replacement_civil_id_card_number'],
       replacementReason: json['replacement_reason'],
       replacedByUserId: json['replaced_by_user_id'],
+      employeeName: json['employee_name'] as String?,
+      jobTitle: json['job_title'] as String?,
+      financialGrade: json['financial_grade'] as String?,
+      allowanceValue: json['allowance_value'] as String?,
+      shiftStartDate: json['shift_start_date'] as String?,
+      shiftEndDate: json['shift_end_date'] as String?,
+      startTime: json['start_time'] as String?,
+      endTime: json['end_time'] as String?,
       replacedAt: json['replaced_at'],
       createdBy: json['created_by'],
       createdAt: json['created_at'],

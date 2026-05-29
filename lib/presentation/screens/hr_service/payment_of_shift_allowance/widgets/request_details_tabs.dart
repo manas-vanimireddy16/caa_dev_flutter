@@ -1,17 +1,16 @@
 part of '../view.dart';
 
-class RequestTabs extends ConsumerWidget {
+class RequestDetailsTabs extends ConsumerWidget {
   final int selectedTab;
   final Service service;
   final SubService subService;
 
-  RequestTabs({
+  RequestDetailsTabs({
     super.key,
     required this.selectedTab,
     required this.service,
     required this.subService,
   });
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final providerArgs = _VSControllerParams(
@@ -19,23 +18,25 @@ class RequestTabs extends ConsumerWidget {
       subService: subService,
     );
 
-    // ✅ Correct provider family usage
+    final state = ref.watch(_vsProvider(providerArgs));
     final controller = ref.read(_vsProvider(providerArgs).notifier);
+
+    final l10n = DashboardL10n.of(context);
+    final labels = [
+      l10n.requestDetailsTabLabel,
+      l10n.routingHistoryTabLabel,
+      l10n.attachmentsTabLabel,
+      l10n.workFlowTabLabel,
+    ];
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: List.generate(4, (index) {
-          final labels = [
-            "Request Details",
-            "Request History",
-            "Attachments",
-            "Work Flow",
-          ];
           return TabItem(
             text: labels[index],
             index: index,
-            selectedIndex: selectedTab,
+            selectedIndex: state.requestDetailTab, // 👈 use provider state
             onTap: () => controller.updateRequestTab(index),
           );
         }),

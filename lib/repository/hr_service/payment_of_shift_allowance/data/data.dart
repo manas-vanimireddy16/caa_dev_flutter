@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
+import 'package:code_setup/presentation/models/master_roles.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/payment_of_shift_allowance_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/temporary_decision.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/request_data_model.dart';
@@ -217,15 +220,18 @@ class PaymentofShiftAllowanceRepositoryImple
   }
 
   @override
-  Future<KPIResponse?> getKpiData(int service_id, int sub_service_id) async {
+  Future<KPIResponse?> getKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     String url = ApiEndPoint.paymentForShiftAllowanceKpiCards;
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
         final queryParams = {
-          'service_id': service_id,
-          'sub_service_id': sub_service_id,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
         final response = await client.get(url, queryParameters: queryParams);
 
@@ -448,7 +454,7 @@ class PaymentofShiftAllowanceRepositoryImple
   }
 
   @override
-  Future<List<PaymentOfShiftAllowanceRequestModel>> getRequests({
+  Future<List<TemporaryDecision>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -484,11 +490,7 @@ class PaymentofShiftAllowanceRepositoryImple
           final List<dynamic> list = data['data'];
 
           return list
-              .map(
-                (e) => PaymentOfShiftAllowanceRequestModel.fromJson(
-                  e as Map<String, dynamic>,
-                ),
-              )
+              .map((e) => TemporaryDecision.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
           throw Exception(
@@ -506,7 +508,7 @@ class PaymentofShiftAllowanceRepositoryImple
   }
 
   @override
-  Future<List<PaymentOfShiftAllowanceRequestModel>> getActionItems({
+  Future<List<TemporaryDecision>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -547,9 +549,8 @@ class PaymentofShiftAllowanceRepositoryImple
           /// Parse each Action Item
           final actionItems = list
               .map(
-                (item) => PaymentOfShiftAllowanceRequestModel.fromJson(
-                  item as Map<String, dynamic>,
-                ),
+                (item) =>
+                    TemporaryDecision.fromJson(item as Map<String, dynamic>),
               )
               .toList();
 
@@ -766,7 +767,7 @@ class PaymentofShiftAllowanceRepositoryImple
   @override
   Future<void> onAssignEmployee(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.jobTransferAssign;
+    final String url = ApiEndPoint.paymentForShiftAllowanceAssign;
     try {
       if (client != null) {
         final response = await client.put(url, data: payload);
@@ -832,6 +833,98 @@ class PaymentofShiftAllowanceRepositoryImple
       }
     } catch (e) {
       throw Exception("Error fetching chatById details: $e");
+    }
+  }
+
+  @override
+  Future<List<PendingApprovalUser>> getEngineersList(int id) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.reportSecurityThreatEngineers(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          final List<dynamic> list = data['data'];
+
+          return list
+              .map(
+                (e) => PendingApprovalUser.fromJson(e as Map<String, dynamic>),
+              )
+              .toList();
+        } else {
+          throw Exception('Failed to engineers ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching engineers: $e");
+    }
+  }
+
+  @override
+  Future<List<MasterRolesModel>> getRolesList() async {
+    final client = await KAppX.network.secureClient();
+    // final userInfo = KAppX.globalProvider.read(rolesProvider);
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.masterRoles;
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          final List<dynamic> list = data['data'];
+
+          return list
+              .map((e) => MasterRolesModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception('Failed to roles list ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching roles list: $e");
+    }
+  }
+
+  @override
+  Future<void> onAssignEngineer(Map<String, dynamic> payload) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.organizeSecurityAwarenessAssign;
+    try {
+      if (client != null) {
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          debugPrint('✅ Assigned engineer successfully');
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Assigned engineer successfully',
+          );
+        } else {
+          ShowFlutterToast().showFlutterToastFailure(
+            response.data['message'] ?? 'Failed to Assign engineer',
+          );
+          debugPrint(
+            '⚠️ Failed to send vehicle request: ${response.statusCode}',
+          );
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot Fail to Assign engineer');
+      }
+    } on DioException catch (e) {
+      log('caught error');
+      final message = e.response?.data['message'] ?? e.message;
+      throw ApiException(message);
+      throw e;
+    } catch (e) {
+      log('error failed to Assigned Engineer $e');
+      throw ApiException(e.toString());
     }
   }
 }

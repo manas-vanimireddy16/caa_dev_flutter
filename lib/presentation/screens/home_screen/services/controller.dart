@@ -3,101 +3,138 @@ part of 'view.dart';
 final servicesProvider =
     StateNotifierProvider.autoDispose<_VSController, _ViewState>((ref) {
       final stateController = _VSController();
-      stateController.initState();
       return stateController;
     });
 
 class _ViewState {
   final bool isLoading;
+  final bool isBookmarksLoading;
   final String fromDate;
   final String toDate;
   final String selectedRole;
   final List<Service>? services;
-  final List<Bookmarksmodel>? bookmarks;
+  final Set<int> bookmarkedServiceIds;
   final UserRoleResponse userRoles;
+  final ServicesListFilter listFilter;
+  final String searchQuery;
 
   _ViewState({
     required this.isLoading,
+    required this.isBookmarksLoading,
     required this.fromDate,
     required this.toDate,
     required this.selectedRole,
     required this.services,
+    required this.bookmarkedServiceIds,
     required this.userRoles,
-    required this.bookmarks,
+    required this.listFilter,
+    required this.searchQuery,
   });
 
   _ViewState.init()
     : this(
         isLoading: false,
+        isBookmarksLoading: false,
         fromDate: '',
         toDate: '',
         selectedRole: '',
         services: [],
-        bookmarks: [],
+        bookmarkedServiceIds: {},
         userRoles: UserRoleResponse(),
+        listFilter: ServicesListFilter.all,
+        searchQuery: '',
       );
 
   _ViewState copyWith({
     bool? isLoading,
+    bool? isBookmarksLoading,
     String? fromDate,
     String? toDate,
     String? selectedRole,
     List<Service>? services,
-    List<Bookmarksmodel>? bookmarks,
+    Set<int>? bookmarkedServiceIds,
     UserRoleResponse? userRoles,
+    ServicesListFilter? listFilter,
+    String? searchQuery,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      isBookmarksLoading: isBookmarksLoading ?? this.isBookmarksLoading,
       fromDate: fromDate ?? this.fromDate,
       toDate: toDate ?? this.toDate,
       selectedRole: selectedRole ?? this.selectedRole,
       services: services ?? this.services,
-      bookmarks: bookmarks ?? this.bookmarks,
+      bookmarkedServiceIds: bookmarkedServiceIds ?? this.bookmarkedServiceIds,
       userRoles: userRoles ?? this.userRoles,
+      listFilter: listFilter ?? this.listFilter,
+      searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 }
 
 class _VSController extends StateNotifier<_ViewState> {
   _VSController() : super(_ViewState.init());
-  // late TextEditingController fromDateController;
-
-  void initState() {
-    // fromDateController = TextEditingController();
-    final userData = KAppX.globalProvider.read(userProvider);
-    fetchUserRoles(
-      userData?.userId ?? 0,
-    ); //0); //(40);(1017);(userData?.userId ?? 0);
-    fetchBookmarks();
-  }
 
   final dashboardinstance = DashboardRepository();
+  final Set<int> _pendingBookmarkToggles = {};
+  bool _isFetchingBookmarks = false;
+
+  bool isBookmarked(int serviceId) =>
+      serviceId != 0 && state.bookmarkedServiceIds.contains(serviceId);
+
+  void setListFilter(ServicesListFilter filter) {
+    if (state.listFilter == filter) return;
+    state = state.copyWith(listFilter: filter);
+  }
+
+  void setSearchQuery(String query) {
+    if (state.searchQuery == query) return;
+    state = state.copyWith(searchQuery: query);
+  }
+
+  List<Service> filteredServices({required bool isArabic}) {
+    var list = List<Service>.from(state.services ?? []);
+
+    if (state.listFilter == ServicesListFilter.myServices) {
+      list = list.where((s) => isBookmarked(s.id ?? 0)).toList(growable: false);
+    }
+
+    final query = state.searchQuery.trim().toLowerCase();
+    if (query.isEmpty) return list;
+
+    return list
+        .where((s) {
+          final en = (s.name ?? '').toLowerCase();
+          final ar = (s.arabicName ?? '').toLowerCase();
+          return en.contains(query) || ar.contains(query);
+        })
+        .toList(growable: false);
+  }
+
+  static int? _bookmarkServiceId(Bookmarksmodel bookmark) {
+    final tableId = bookmark.serviceTableId;
+    if (tableId != null && tableId != 0) return tableId;
+    return int.tryParse(bookmark.serviceId ?? '');
+  }
+
+  static Set<int> _bookmarkIdsFrom(List<Bookmarksmodel> bookmarks) {
+    return bookmarks
+        .map(_bookmarkServiceId)
+        .whereType<int>()
+        .where((id) => id != 0)
+        .toSet();
+  }
 
   Future<void> fetchUserRoles(int id) async {
     state = state.copyWith(isLoading: true);
 
     try {
-      final storage = KAuthCred();
-      final saved = await storage.getSelectedRole();
-      final roleId = saved?.roleId;
-
-      UserRoleResponse? roles = state.userRoles;
-
-      // ✅ STEP 1: Decide whether to call API
-      // if (roleId == null || roleId == 0 || roles == null) {
-      roles = await _fetchAndStoreRoles(id);
-      // }
-
-      // ✅ STEP 2: Ensure role is selected
+      final roles = await _fetchAndStoreRoles(id);
       final effectiveRoleId = await _ensureRoleSelected(roles);
-
-      // ✅ STEP 3: Filter services (single reusable method)
       final services = _filterServicesByRole(roles, effectiveRoleId);
-
-      // ✅ STEP 4: Update state
       state = state.copyWith(services: services, isLoading: false);
     } catch (e) {
-      debugPrint("fetchUserRoles error: $e");
+      debugPrint('fetchUserRoles error: $e');
       state = state.copyWith(isLoading: false);
     }
   }
@@ -116,10 +153,9 @@ class _VSController extends StateNotifier<_ViewState> {
     final saved = await storage.getSelectedRole();
 
     if (saved?.roleId != null && saved!.roleId != 0) {
-      return saved.roleId!;
+      return saved.roleId;
     }
 
-    // fallback (should rarely happen)
     final firstRole = roles.data?.roleDetails?.firstOrNull?.role?.id ?? 0;
     return firstRole;
   }
@@ -134,7 +170,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     state = state.copyWith(userRoles: roles);
 
-    if (roleId == null || roleId == 0 || roles == null) {
+    if (roleId == null || roleId == 0) {
       await selectOrStoreRole(roles);
     }
     return roles;
@@ -142,12 +178,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> selectOrStoreRole(UserRoleResponse userRoles) async {
     final storage = KAuthCred();
-    final saved = await storage.getSelectedRole();
-
-    // First role from summary
     final first = userRoles.data!.rolesSummary!.first;
 
-    // Match it inside role_details
     final detail = userRoles.data!.roleDetails!.firstWhere(
       (e) => e.role?.id == first.roleId,
       orElse: () => userRoles.data!.roleDetails!.first,
@@ -162,46 +194,64 @@ class _VSController extends StateNotifier<_ViewState> {
     );
 
     await storage.storeSelectedRole(selected);
-
-    // state = state.copyWith(userRoles: _wrapSelectedRole(saved!));
-
-    print("🎯 Selected Role: ${selected.services}");
+    debugPrint('Selected Role: ${selected.services}');
   }
 
   Future<void> fetchBookmarks() async {
-    state = state.copyWith(isLoading: true);
-    final Bookmarksmodel = await dashboardinstance.getBookmarks();
-    final bookmarks = Bookmarksmodel;
-    print(bookmarks);
-    state = state.copyWith(isLoading: false, bookmarks: bookmarks);
-    print(bookmarks);
+    if (_isFetchingBookmarks) return;
+    _isFetchingBookmarks = true;
+
+    final showLoading = state.bookmarkedServiceIds.isEmpty;
+    if (showLoading) {
+      state = state.copyWith(isBookmarksLoading: true);
+    }
+
+    try {
+      final bookmarks = await dashboardinstance.getBookmarks();
+      state = state.copyWith(
+        bookmarkedServiceIds: _bookmarkIdsFrom(bookmarks),
+        isBookmarksLoading: false,
+      );
+    } catch (e) {
+      debugPrint('fetchBookmarks error: $e');
+      state = state.copyWith(isBookmarksLoading: false);
+    } finally {
+      _isFetchingBookmarks = false;
+    }
   }
 
-  // Future<void> fetchUser() async {
-  //   final userData = KAppX.globalProvider.read(userProvider);
-  //   state = state.copyWith(isLoading: true);
-  //   final userModel = await dashboardinstance.getUser(userData?.userId ?? 0);
-  //   final user = userModel;
-  //   state = state.copyWith(isLoading: false);
-  // }
+  Future<void> toggleBookmark(int serviceId) async {
+    if (serviceId == 0 || _pendingBookmarkToggles.contains(serviceId)) {
+      return;
+    }
 
-  Future<void> updateBookmark({
-    required int userId,
-    required int serviceId,
-  }) async {
+    final wasBookmarked = isBookmarked(serviceId);
+    final optimistic = Set<int>.from(state.bookmarkedServiceIds);
+    if (wasBookmarked) {
+      optimistic.remove(serviceId);
+    } else {
+      optimistic.add(serviceId);
+    }
+
+    state = state.copyWith(bookmarkedServiceIds: optimistic);
+    _pendingBookmarkToggles.add(serviceId);
+
     try {
-      // Optional: show loading if needed
-      state = state.copyWith(isLoading: true);
-
       await dashboardinstance.updateBookmark(serviceId: serviceId);
-
-      // Optional: refresh services/bookmarks
-      fetchBookmarks();
-
-      state = state.copyWith(isLoading: false);
     } catch (e) {
-      print('❌ Error updating bookmark: $e');
-      state = state.copyWith(isLoading: false);
+      debugPrint('Error updating bookmark: $e');
+      final reverted = Set<int>.from(state.bookmarkedServiceIds);
+      if (wasBookmarked) {
+        reverted.add(serviceId);
+      } else {
+        reverted.remove(serviceId);
+      }
+      state = state.copyWith(bookmarkedServiceIds: reverted);
+      ShowFlutterToast().showFlutterToastFailure(
+        'Could not update bookmark. Please try again.',
+      );
+    } finally {
+      _pendingBookmarkToggles.remove(serviceId);
     }
   }
 
@@ -211,16 +261,6 @@ class _VSController extends StateNotifier<_ViewState> {
     SubService? subService,
   }) {
     switch (name.trim()) {
-      // 🔹 Main Services
-      // case 'IT Services':
-      //   KAppX.router.push(ITServicesHomeRoute());
-      //   break;
-      // case 'Logistics Services':
-      //   KAppX.router.push(LogisticsHomeRoute());
-      //   break;
-      // case 'Security and Access':
-      //   KAppX.router.push(RequestForAccessHomeRoute());
-      //   break;
       case 'CAA032':
         KAppX.router.push(
           LogisticsForeignersRequestPortalRoute(
@@ -253,14 +293,6 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      // case 'CAA046':
-      //   KAppX.router.push(
-      //     HotelReservationRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
       case 'CAA006':
         KAppX.router.push(
           SecurityThreatRoute(
@@ -269,23 +301,6 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-
-      // case 'Request to Organize Security Awareness':
-      //   KAppX.router.push(
-      //     OrganizeSecurityAwarenessRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Request for Project Approval':
-      //   KAppX.router.push(
-      //     RequestForProjectApprovalRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
       case 'CAA010':
         KAppX.router.push(
           AirportEntryPermitRoute(
@@ -317,6 +332,7 @@ class _VSController extends StateNotifier<_ViewState> {
             subService: subService ?? SubService(),
           ),
         );
+        break;
       case 'CAA063':
         KAppX.router.push(
           ServiceTransferRoute(
@@ -333,127 +349,6 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      // case 'Duty Mission':
-      //   KAppX.router.push(
-      //     RequestforDutyMissionPlannedRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Request For Coverage':
-      //   KAppX.router.push(
-      //     RequestforCoverageRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Training Room Booking':
-      //   KAppX.router.push(
-      //     RequestforTrainingRoomBookingRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Annual Training Plan':
-      //   KAppX.router.push(
-      //     AnnualTrainingPlanRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'CAA015':
-      //   KAppX.router.push(
-      //     RequestTrainingRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'CAA016':
-      //   KAppX.router.push(
-      //     RequestForStudyLeaveRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Transfer from One Job to Another Job Nature':
-      //   KAppX.router.push(
-      //     TransferFromOneJobtoAnotherJobNatureRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Payment of Shift Allowance':
-      //   KAppX.router.push(
-      //     PaymentofShiftAllowanceRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Payment of Cash Allowance for Leave':
-      //   KAppX.router.push(
-      //     PaymentofCashAllowanceForLeaveRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Required New Resource':
-      //   KAppX.router.push(
-      //     RequiredNewResourceRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Promotions':
-      //   KAppX.router.push(
-      //     PromotionsRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-
-      //   break;
-      // case 'Annual Increment':
-      //   KAppX.router.push(
-      //     AnnualIncrementRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Skill Enhancement':
-      //   KAppX.router.push(
-      //     SkillsEnhancementRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Performance Management':
-      //   KAppX.router.push(
-      //     PerformanceManagementRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Human Resource Annual Planning':
-      //   KAppX.router.push(
-      //     RequestForHumanResourceAnnualPlanningRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
       case 'CAA004':
         KAppX.router.push(
           MuscatDashboard(
@@ -478,85 +373,6 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      // case 'Request for Hospitality Use in Muscat':
-      //   KAppX.router.push(
-      //     RequestForAccommodationInMuscatGovernorateRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Residential Unit Rental':
-      //   KAppX.router.push(
-      //     ResidentalUnitRentalRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Request to Renew a Housing Contract':
-      //   KAppX.router.push(
-      //     RequestToRenewalHousingContractRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Cancel a Housing Contract':
-      //   KAppX.router.push(
-      //     CancelHousingContractRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Request for VAPT and Infrastructure Review':
-      //   KAppX.router.push(
-      //     RequestForVAPTAndInfrastructureReviewRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      // case 'Request for Internal Audit (Cyber Security Audit)':
-      //   KAppX.router.push(
-      //     RequestForInternalAuditRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Cyber Security Risk Management':
-      //   KAppX.router.push(
-      //     CyberSecurityRiskManagementRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Request for Legal Contract Review':
-      //   KAppX.router.push(
-      //     RequestForLegalContractReviewRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Appeal Against Administrative Decisions':
-      //   KAppX.router.push(
-      //     AppealAgainstAdministrativeDecisionsRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Legal Consultation and Review of Administrative Decisions':
-      //   KAppX.router.push(
-      //     LegalConsultationandReviewofAdministrativeDecisionsRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
       case 'CAA059':
         KAppX.router.push(
           RequestEventSupportRoute(
@@ -565,76 +381,25 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
-      // case 'Request For Cancellation':
-      //   KAppX.router.push(
-      //     RequestForCancellationRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Request a Tender Service':
-      //   KAppX.router.push(
-      //     RequestTenderServiceRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Request a Service to Respond to Enquiries':
-      //   KAppX.router.push(
-      //     RequestAServiceToRespondToEnquiriesRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Request Tender Ananlysis Service':
-      //   KAppX.router.push(
-      //     RequestTenderAnalysisServiceRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Contract Service Request':
-      //   KAppX.router.push(
-      //     ContractServiceRequestRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Request to Book CAA Halls':
-      //   KAppX.router.push(
-      //     RequestToBookCAAHallsRoute(
-      //       service: service ?? Service(),
-      //       subService: subService ?? SubService(),
-      //     ),
-      //   );
-      //   break;
-      // case 'Services':
-      //   KAppX.router.push(const Services());
-      //   break;
-
-      // // 🔹 Sub-services (example)
-      // case 'Leave Request':
-      //   KAppX.router.push(const LeaveRequestRoute());
-      //   break;
-      // case 'Travel Request':
-      //   KAppX.router.push(const TravelRequestRoute());
-      //   break;
-      // case 'IT Support':
-      //   KAppX.router.push(const ITSupportRoute());
-      //   break;
+      case 'CAA066':
+        KAppX.router.push(
+          PaymentofShiftAllowanceRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'CAA067':
+        KAppX.router.push(
+          PaymentofCashAllowanceForLeaveRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
 
       default:
-        debugPrint('⚠️ No route found for $name');
+        debugPrint('No route found for $name');
     }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }

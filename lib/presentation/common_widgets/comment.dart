@@ -1,6 +1,5 @@
 // Model for each comment entry
 
-import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
@@ -11,6 +10,17 @@ import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+
+class _CommentsRoutingStyles {
+  static const borderColor = Color(0xFFE5E7EB);
+  static const labelColor = Color(0xFF6B7280);
+  static const valueColor = Color(0xFF111827);
+  static const fieldFill = Color(0xFFF3F4F6);
+  static const needMoreInfoGreen = Color(0xFF1B5E3B);
+  static const approveGreen = Color(0xFF2E9B5F);
+  static const rejectRed = Color(0xFFC02211);
+  static const cardBackground = Color(0xFFFAFAFA);
+}
 
 enum CommentStatus { pending, validating, approved }
 
@@ -85,106 +95,79 @@ class CommentEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String dateTime = formatDate(data.createdAt);
-    final String action = data.message ?? "-";
-    final String role = data.role?.name ?? "Employee";
-    final String status = data.status ?? "-";
+    final String action = data.message ?? '-';
+    final String role = data.role?.name ?? 'Employee';
+    final String status = data.status ?? '-';
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(12.toAutoScaledWidth),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        color: _CommentsRoutingStyles.cardBackground,
+        borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
+        border: Border.all(color: _CommentsRoutingStyles.borderColor, width: 1),
       ),
-      child: Column(
-        children: [
-          /// -------- ROW 1 --------
-          Row(
-            children: [
-              _item(l10n?.routingTileDateTime ?? 'Date / Time', dateTime),
-              _item(l10n?.routingTileRole ?? 'Role', role),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-          Divider(color: Colors.grey.shade300, height: 1),
-          const SizedBox(height: 12),
-
-          /// -------- ROW 2 --------
-          Row(
-            children: [
-              _item(l10n?.routingTileAction ?? 'Action', action),
-              _item(l10n?.routingTileStatus ?? 'Status', status),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Label + value (no box)
-  Widget _item(String label, String value) {
-    return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: Colors.black54,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Status with chip
-  Widget _statusItem(String label, String status) {
-    final Color color = status.toLowerCase() == "approved"
-        ? const Color(0xFF0D652D)
-        : status.toLowerCase() == "rejected"
-        ? const Color(0xFFC02211)
-        : Colors.orange;
-
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: Colors.black54,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              status,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: color,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _labelValue(
+                  l10n?.routingTileDateTime ?? 'Date & Time',
+                  dateTime,
+                  maxLines: 1,
+                ),
               ),
-            ),
+              SizedBox(width: 8.toAutoScaledWidth),
+              Expanded(
+                child: _labelValue(
+                  l10n?.routingTileRole ?? 'Role / Authority',
+                  role,
+                  maxLines: 1,
+                ),
+              ),
+            ],
           ),
+          SizedBox(height: 16.toAutoScaledHeight),
+          _labelValue(
+            l10n?.routingTileAction ?? 'Comments & Actions',
+            action,
+            maxLines: 2,
+          ),
+          SizedBox(height: 16.toAutoScaledHeight),
+          _labelValue(l10n?.routingTileStatus ?? 'Status', status, maxLines: 1),
         ],
       ),
+    );
+  }
+
+  Widget _labelValue(String label, String value, {int maxLines = 2}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11.toAutoScaledWidth,
+            fontWeight: FontWeight.w500,
+            color: _CommentsRoutingStyles.labelColor,
+            height: 1.2,
+          ),
+        ),
+        SizedBox(height: 4.toAutoScaledHeight),
+        Text(
+          value,
+          maxLines: maxLines,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 13.toAutoScaledWidth,
+            fontWeight: FontWeight.w600,
+            color: _CommentsRoutingStyles.valueColor,
+            height: 1.35,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -247,42 +230,6 @@ class AddCommentBox extends StatefulWidget {
   State<AddCommentBox> createState() => _AddCommentBoxState();
 }
 
-class _AttachmentPreview extends StatelessWidget {
-  final Map<String, dynamic> file;
-  final VoidCallback? onRemove;
-
-  const _AttachmentPreview({required this.file, this.onRemove});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF3F8FF),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: const Color(0xFFD6E4FF)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.attach_file),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              file['file_name'] ?? 'File',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          InkWell(
-            onTap: onRemove,
-            child: const Icon(Icons.close, color: const Color(0xFFC02211)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _AddCommentBoxState extends State<AddCommentBox> {
   bool isCommentMode = false;
   Widget _actionButton(
@@ -295,59 +242,360 @@ class _AddCommentBoxState extends State<AddCommentBox> {
 
     return ElevatedButton(
       onPressed: disabled ? null : onTap,
-
       style: ButtonStyle(
-        minimumSize: WidgetStateProperty.all(
-          Size(96.toAutoScaledWidth, 32.toAutoScaledHeight),
-        ),
-
+        minimumSize: WidgetStateProperty.all(Size(0, 36.toAutoScaledHeight)),
         padding: WidgetStateProperty.all(
           EdgeInsets.symmetric(
-            horizontal: 10.toAutoScaledWidth,
-            vertical: 4.toAutoScaledHeight,
+            horizontal: 14.toAutoScaledWidth,
+            vertical: 8.toAutoScaledHeight,
           ),
         ),
-
         backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
           if (states.contains(WidgetState.disabled)) {
-            return color.withOpacity(0.6);
+            return color.withValues(alpha: 0.6);
           }
-
           return color;
         }),
-
         elevation: WidgetStateProperty.all(0),
-
         shape: WidgetStateProperty.all(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
           ),
         ),
       ),
-
       child: Row(
         mainAxisSize: MainAxisSize.min,
-
         children: [
-          /// =========================================
-          /// ICON
-          /// =========================================
-          if (icon != null) ...[icon, 5.toHorizontalSizedBox],
-
-          /// =========================================
-          /// TEXT
-          /// =========================================
+          if (icon != null) ...[icon, SizedBox(width: 6.toAutoScaledWidth)],
           Text(
             text,
-
             style: TextStyle(
-              color: Colors.white.withOpacity(disabled ? 0.7 : 1),
-
-              fontSize: 14.toAutoScaledWidth,
+              color: Colors.white.withValues(alpha: disabled ? 0.7 : 1),
+              fontSize: 13.toAutoScaledWidth,
               fontWeight: FontWeight.w600,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _needMoreInfoTriggerButton(DashboardL10n l10n) {
+    return Material(
+      color: _CommentsRoutingStyles.needMoreInfoGreen,
+      borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => setState(() => isCommentMode = true),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 14.toAutoScaledWidth,
+            vertical: 8.toAutoScaledHeight,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                widget.needMoreInfoLabel ?? l10n.needMoreInfo,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13.toAutoScaledWidth,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(width: 6.toAutoScaledWidth),
+              Icon(Icons.add, color: Colors.white, size: 16.toAutoScaledWidth),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAttachFileButton(DashboardL10n l10n) {
+    return OutlinedButton(
+      onPressed: widget.onAttach,
+      style: OutlinedButton.styleFrom(
+        minimumSize: Size(0, 40.toAutoScaledHeight),
+        padding: EdgeInsets.symmetric(
+          horizontal: 12.toAutoScaledWidth,
+          vertical: 8.toAutoScaledHeight,
+        ),
+        side: const BorderSide(color: _CommentsRoutingStyles.borderColor),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+        ),
+        foregroundColor: const Color(0xFF374151),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.attach_file, size: 16.toAutoScaledWidth),
+          SizedBox(width: 6.toAutoScaledWidth),
+          Text(
+            l10n.attachFile,
+            style: TextStyle(
+              fontSize: 12.toAutoScaledWidth,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCancelButton(DashboardL10n l10n) {
+    return OutlinedButton(
+      onPressed: () {
+        widget.controller.clear();
+        setState(() => isCommentMode = false);
+      },
+      style: OutlinedButton.styleFrom(
+        minimumSize: Size(0, 36.toAutoScaledHeight),
+        padding: EdgeInsets.symmetric(
+          horizontal: 12.toAutoScaledWidth,
+          vertical: 8.toAutoScaledHeight,
+        ),
+        side: const BorderSide(color: _CommentsRoutingStyles.borderColor),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+        ),
+        foregroundColor: const Color(0xFF6B7280),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.close, size: 16.toAutoScaledWidth),
+          SizedBox(width: 6.toAutoScaledWidth),
+          Text(
+            l10n.transportFormCancel,
+            style: TextStyle(
+              fontSize: 13.toAutoScaledWidth,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSendButton(DashboardL10n l10n, bool canSend) {
+    return ElevatedButton(
+      onPressed: canSend
+          ? () async {
+              await widget.onSend?.call();
+              widget.controller.clear();
+              setState(() => isCommentMode = false);
+            }
+          : null,
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size(0, 36.toAutoScaledHeight),
+        padding: EdgeInsets.symmetric(
+          horizontal: 14.toAutoScaledWidth,
+          vertical: 8.toAutoScaledHeight,
+        ),
+        backgroundColor: _CommentsRoutingStyles.needMoreInfoGreen,
+        disabledBackgroundColor: _CommentsRoutingStyles.needMoreInfoGreen
+            .withValues(alpha: 0.45),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+        ),
+        foregroundColor: Colors.white,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.send, size: 16.toAutoScaledWidth),
+          SizedBox(width: 6.toAutoScaledWidth),
+          Text(
+            'Send',
+            style: TextStyle(
+              fontSize: 13.toAutoScaledWidth,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExpandedNeedMoreInfoBox(DashboardL10n l10n) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      alignment: Alignment.topCenter,
+      child: Container(
+        width: double.infinity,
+        constraints: BoxConstraints(minHeight: 175.toAutoScaledHeight),
+        padding: EdgeInsets.all(12.toAutoScaledWidth),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+          border: Border.all(
+            color: _CommentsRoutingStyles.borderColor,
+            width: 1,
+          ),
+        ),
+        child: ValueListenableBuilder<TextEditingValue>(
+          valueListenable: widget.controller,
+          builder: (_, value, __) {
+            final hasText = value.text.trim().isNotEmpty;
+            final hasAttachment = widget.attachments.isNotEmpty;
+            final canSend = hasText || hasAttachment;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  widget.needMoreInfoLabel ?? l10n.needMoreInfo,
+                  style: TextStyle(
+                    fontSize: 14.toAutoScaledWidth,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 12.toAutoScaledHeight),
+                Text(
+                  l10n.transportCommentsOptional,
+                  style: TextStyle(
+                    fontSize: 11.toAutoScaledWidth,
+                    fontWeight: FontWeight.w500,
+                    color: _CommentsRoutingStyles.labelColor,
+                  ),
+                ),
+                SizedBox(height: 8.toAutoScaledHeight),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 40.toAutoScaledHeight,
+                        decoration: BoxDecoration(
+                          color: _CommentsRoutingStyles.fieldFill,
+                          borderRadius: BorderRadius.circular(
+                            4.toAutoScaledWidth,
+                          ),
+                          border: Border.all(
+                            color: _CommentsRoutingStyles.borderColor,
+                          ),
+                        ),
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.toAutoScaledWidth,
+                        ),
+                        child: TextField(
+                          controller: widget.controller,
+                          minLines: 1,
+                          maxLines: 1,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            hintText:
+                                widget.commentHint ??
+                                l10n.routingAddCommentHint,
+                            hintStyle: TextStyle(
+                              fontSize: 13.toAutoScaledWidth,
+                              color: const Color(0xFF9CA3AF),
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          style: TextStyle(
+                            fontSize: 13.toAutoScaledWidth,
+                            color: _CommentsRoutingStyles.valueColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8.toAutoScaledWidth),
+                    _buildAttachFileButton(l10n),
+                  ],
+                ),
+                if (widget.attachments.isNotEmpty) ...[
+                  SizedBox(height: 8.toAutoScaledHeight),
+                  _buildAttachmentsPreview(),
+                ],
+                SizedBox(height: 12.toAutoScaledHeight),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    _buildCancelButton(l10n),
+                    SizedBox(width: 8.toAutoScaledWidth),
+                    _buildSendButton(l10n, canSend),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSimpleCommentInput(DashboardL10n l10n) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: 12.toAutoScaledWidth,
+        vertical: 8.toAutoScaledHeight,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
+        border: Border.all(color: _CommentsRoutingStyles.borderColor),
+      ),
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: widget.controller,
+        builder: (_, value, __) {
+          final hasText = value.text.trim().isNotEmpty;
+          final hasAttachment = widget.attachments.isNotEmpty;
+          final canSend = hasText || hasAttachment;
+
+          return Row(
+            children: [
+              IconButton(
+                onPressed: widget.onAttach,
+                icon: Icon(Icons.attach_file, size: 20.toAutoScaledWidth),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+              SizedBox(width: 8.toAutoScaledWidth),
+              Expanded(
+                child: TextField(
+                  controller: widget.controller,
+                  minLines: 1,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: widget.commentHint ?? l10n.routingAddCommentHint,
+                    border: InputBorder.none,
+                    isDense: true,
+                    hintStyle: TextStyle(
+                      fontSize: 13.toAutoScaledWidth,
+                      color: const Color(0xFF9CA3AF),
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: canSend
+                    ? () async {
+                        await widget.onSend?.call();
+                        widget.controller.clear();
+                        setState(() => isCommentMode = false);
+                      }
+                    : null,
+                icon: Icon(
+                  Icons.send,
+                  color: canSend ? Colors.blue : Colors.grey,
+                  size: 20.toAutoScaledWidth,
+                ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -417,27 +665,25 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           children: [
             _actionButton(
               l10n.commentButtonApprove,
-              const Color(0xFF0D652D),
+              _CommentsRoutingStyles.approveGreen,
               () async {
                 await widget.onApprove?.call();
               },
               icon: SvgPicture.asset(
                 'assets/icons/check_circle_24dp_white.svg',
-
                 width: 18.toAutoScaledWidth,
                 height: 18.toAutoScaledHeight,
               ),
             ),
-            10.toHorizontalSizedBox,
+            SizedBox(width: 8.toAutoScaledWidth),
             _actionButton(
               l10n.commentButtonReject,
-              const Color(0xFFC02211),
+              _CommentsRoutingStyles.rejectRed,
               () async {
                 await widget.onReject?.call();
               },
               icon: SvgPicture.asset(
                 'assets/icons/close_24dp_white.svg',
-
                 width: 18.toAutoScaledWidth,
                 height: 18.toAutoScaledHeight,
               ),
@@ -650,11 +896,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           const SizedBox(width: 8),
           InkWell(
             onTap: widget.onRemove,
-            child: const Icon(
-              Icons.close,
-              size: 18,
-              color: const Color(0xFFC02211),
-            ),
+            child: const Icon(Icons.close, size: 18, color: Color(0xFFC02211)),
           ),
         ],
       ),
@@ -663,116 +905,70 @@ class _AddCommentBoxState extends State<AddCommentBox> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = KAppX.globalProvider.read(KAppX.theme.current).themeBox;
     final l10n = DashboardL10n.of(context);
     final bool isFromActionItems = widget.from.toLowerCase() == 'action items';
 
     final bool isShowButtons =
         widget.showButtons && !isCommentMode && isFromActionItems;
     final bool isShowCommentBox = !widget.showButtons || isCommentMode;
-
+    final bool isExpandedNeedMoreInfo =
+        widget.showButtons && isCommentMode && isShowCommentBox;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        /// COMMENT INPUT
-        if (isShowCommentBox)
-          Card(
-            color: theme.colors.onPrimary,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-              side: const BorderSide(color: Color(0xFFEAEAEF)),
+        // Expanded Need More Info UI (NO OUTER BOX)
+        if (isExpandedNeedMoreInfo) ...[
+          _buildExpandedNeedMoreInfoBox(l10n),
+
+          if (isShowButtons) ...[
+            SizedBox(height: 12.toAutoScaledHeight),
+
+            Align(
+              alignment: Alignment.centerRight,
+              child: buildActionButtons(context, widget.actionType),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: ValueListenableBuilder<TextEditingValue>(
-                valueListenable: widget.controller,
-                builder: (_, value, __) {
-                  final hasText = value.text.trim().isNotEmpty;
-                  final hasAttachment = widget.attachments.isNotEmpty;
+          ],
+        ],
 
-                  final canSend = hasText || hasAttachment;
+        // Normal Comment Input
+        if (isShowCommentBox && !widget.showButtons)
+          _buildSimpleCommentInput(l10n),
 
-                  return Row(
-                    children: [
-                      IconButton(
-                        onPressed: widget.onAttach,
-                        icon: const Icon(Icons.attach_file),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: widget.controller,
-                          minLines: 1,
-                          maxLines: 4,
-                          decoration: InputDecoration(
-                            hintText:
-                                widget.commentHint ??
-                                l10n.routingAddCommentHint,
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
-                      if (widget.showButtons && isCommentMode)
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            color: const Color(0xFFC02211),
-                          ),
-                          onPressed: () {
-                            widget.controller.clear();
-                            setState(() => isCommentMode = false);
-                          },
-                        ),
-                      IconButton(
-                        onPressed: canSend
-                            ? () async {
-                                await widget.onSend
-                                    ?.call(); // ✅ WAIT until send finishes
-                                widget.controller.clear(); // ✅ clear AFTER send
-                                setState(() => isCommentMode = false);
-                              }
-                            : null,
-                        icon: Icon(
-                          Icons.send,
-                          color: canSend ? Colors.blue : Colors.grey,
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+        // Collapsed State Box ONLY
+        if (widget.showButtons && !isCommentMode)
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(12.toAutoScaledWidth),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F8F8),
+              borderRadius: BorderRadius.circular(6.toAutoScaledWidth),
+              border: Border.all(color: const Color(0xFFD9D9D9), width: 1),
             ),
-          ),
-
-        /// NEED MORE INFO
-        if (widget.showButtons && !isCommentMode) ...[
-          6.toVerticalSizedBox,
-          InkWell(
-            onTap: () => setState(() => isCommentMode = true),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline, size: 18, color: Colors.blue),
-                SizedBox(width: 6),
-                Text(
-                  widget.needMoreInfoLabel ?? l10n.needMoreInfo,
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: _needMoreInfoTriggerButton(l10n),
+                ),
+
+                SizedBox(height: 16.toAutoScaledHeight),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: buildActionButtons(context, widget.actionType),
                 ),
               ],
             ),
           ),
-        ],
 
-        if (widget.attachments.isNotEmpty) ...[
-          6.toVerticalSizedBox,
+        // Attachments Preview
+        if (widget.attachments.isNotEmpty &&
+            !(widget.showButtons && isCommentMode)) ...[
+          SizedBox(height: 8.toAutoScaledHeight),
           _buildAttachmentsPreview(),
         ],
-
-        10.toVerticalSizedBox,
-
-        if (isShowButtons) buildActionButtons(context, widget.actionType),
       ],
     );
   }
@@ -790,47 +986,76 @@ class CommentsRoutingOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = KAppX.globalProvider.read(KAppX.theme.current).themeBox;
     final l10n = DashboardL10n.of(context);
 
-    return Card(
-      color: theme.colors.onPrimary,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(11)),
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.history, color: Colors.black87, size: 18),
-                const SizedBox(width: 8),
-                Text(
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(12.toAutoScaledWidth),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
+        border: Border.all(color: _CommentsRoutingStyles.borderColor, width: 1),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.history,
+                color: Colors.black87,
+                size: 18.toAutoScaledWidth,
+              ),
+              SizedBox(width: 8.toAutoScaledWidth),
+              Expanded(
+                child: Text(
                   l10n.commentsRoutingOverviewTitle,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    fontSize: theme.fontSizes.s16,
+                    fontSize: 16.toAutoScaledWidth,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            const Divider(),
-
-            ...entries.map((entry) => CommentEntry(data: entry)),
-
-            AddCommentBox(
-              controller: controller,
-              actionType: ActionButtonsType.none,
-              attachments: [],
-              onAttach: () async {},
-              onSend: () async {},
-              onClose: () async {},
-              onReject: () async {},
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8.toAutoScaledHeight),
+          SizedBox(
+            width: double.infinity,
+            height: 336.toAutoScaledHeight,
+            child: entries.isEmpty
+                ? Center(
+                    child: Text(
+                      l10n.noCommentsYet,
+                      style: TextStyle(
+                        color: Colors.black38,
+                        fontSize: 13.toAutoScaledWidth,
+                      ),
+                    ),
+                  )
+                : ListView.separated(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: entries.length,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 2.toAutoScaledWidth,
+                    ),
+                    separatorBuilder: (_, __) =>
+                        SizedBox(height: 8.toAutoScaledHeight),
+                    itemBuilder: (_, index) =>
+                        CommentEntry(data: entries[index], l10n: l10n),
+                  ),
+          ),
+          SizedBox(height: 8.toAutoScaledHeight),
+          AddCommentBox(
+            controller: controller,
+            actionType: ActionButtonsType.none,
+            attachments: [],
+            onAttach: () async {},
+            onSend: () async {},
+            onClose: () async {},
+            onReject: () async {},
+          ),
+        ],
       ),
     );
   }

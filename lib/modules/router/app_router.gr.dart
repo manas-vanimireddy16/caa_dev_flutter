@@ -4724,93 +4724,6 @@ class PaymentofCashAllowanceForLeaveDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i37.PaymentofCashAllowanceForLeaveNewRequestScreen]
-class PaymentofCashAllowanceForLeaveNewRequestRoute
-    extends
-        _i84.PageRouteInfo<PaymentofCashAllowanceForLeaveNewRequestRouteArgs> {
-  PaymentofCashAllowanceForLeaveNewRequestRoute({
-    _i85.Key? key,
-    required int serviceId,
-    required int subServiceId,
-    required _i86.Service service,
-    required _i86.SubService subService,
-    List<_i84.PageRouteInfo>? children,
-  }) : super(
-         PaymentofCashAllowanceForLeaveNewRequestRoute.name,
-         args: PaymentofCashAllowanceForLeaveNewRequestRouteArgs(
-           key: key,
-           serviceId: serviceId,
-           subServiceId: subServiceId,
-           service: service,
-           subService: subService,
-         ),
-         initialChildren: children,
-       );
-
-  static const String name = 'PaymentofCashAllowanceForLeaveNewRequestRoute';
-
-  static _i84.PageInfo page = _i84.PageInfo(
-    name,
-    builder: (data) {
-      final args = data
-          .argsAs<PaymentofCashAllowanceForLeaveNewRequestRouteArgs>();
-      return _i37.PaymentofCashAllowanceForLeaveNewRequestScreen(
-        key: args.key,
-        serviceId: args.serviceId,
-        subServiceId: args.subServiceId,
-        service: args.service,
-        subService: args.subService,
-      );
-    },
-  );
-}
-
-class PaymentofCashAllowanceForLeaveNewRequestRouteArgs {
-  const PaymentofCashAllowanceForLeaveNewRequestRouteArgs({
-    this.key,
-    required this.serviceId,
-    required this.subServiceId,
-    required this.service,
-    required this.subService,
-  });
-
-  final _i85.Key? key;
-
-  final int serviceId;
-
-  final int subServiceId;
-
-  final _i86.Service service;
-
-  final _i86.SubService subService;
-
-  @override
-  String toString() {
-    return 'PaymentofCashAllowanceForLeaveNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! PaymentofCashAllowanceForLeaveNewRequestRouteArgs)
-      return false;
-    return key == other.key &&
-        serviceId == other.serviceId &&
-        subServiceId == other.subServiceId &&
-        service == other.service &&
-        subService == other.subService;
-  }
-
-  @override
-  int get hashCode =>
-      key.hashCode ^
-      serviceId.hashCode ^
-      subServiceId.hashCode ^
-      service.hashCode ^
-      subService.hashCode;
-}
-
-/// generated route for
 /// [_i37.PaymentofCashAllowanceForLeaveScreen]
 class PaymentofCashAllowanceForLeaveRoute
     extends _i84.PageRouteInfo<PaymentofCashAllowanceForLeaveRouteArgs> {
@@ -4880,7 +4793,7 @@ class PaymentofCashAllowanceForLeaveRouteArgs {
 class PaymentofShiftAllowanceDetailsRoute
     extends _i84.PageRouteInfo<PaymentofShiftAllowanceDetailsRouteArgs> {
   PaymentofShiftAllowanceDetailsRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required int id,
     required int serviceId,
     required int subServiceId,
@@ -4932,7 +4845,7 @@ class PaymentofShiftAllowanceDetailsRouteArgs {
     this.from = '',
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final int id;
 
@@ -4976,95 +4889,11 @@ class PaymentofShiftAllowanceDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i38.PaymentofShiftAllowanceNewRequestScreen]
-class PaymentofShiftAllowanceNewRequestRoute
-    extends _i84.PageRouteInfo<PaymentofShiftAllowanceNewRequestRouteArgs> {
-  PaymentofShiftAllowanceNewRequestRoute({
-    _i87.Key? key,
-    required int serviceId,
-    required int subServiceId,
-    required _i86.Service service,
-    required _i86.SubService subService,
-    List<_i84.PageRouteInfo>? children,
-  }) : super(
-         PaymentofShiftAllowanceNewRequestRoute.name,
-         args: PaymentofShiftAllowanceNewRequestRouteArgs(
-           key: key,
-           serviceId: serviceId,
-           subServiceId: subServiceId,
-           service: service,
-           subService: subService,
-         ),
-         initialChildren: children,
-       );
-
-  static const String name = 'PaymentofShiftAllowanceNewRequestRoute';
-
-  static _i84.PageInfo page = _i84.PageInfo(
-    name,
-    builder: (data) {
-      final args = data.argsAs<PaymentofShiftAllowanceNewRequestRouteArgs>();
-      return _i38.PaymentofShiftAllowanceNewRequestScreen(
-        key: args.key,
-        serviceId: args.serviceId,
-        subServiceId: args.subServiceId,
-        service: args.service,
-        subService: args.subService,
-      );
-    },
-  );
-}
-
-class PaymentofShiftAllowanceNewRequestRouteArgs {
-  const PaymentofShiftAllowanceNewRequestRouteArgs({
-    this.key,
-    required this.serviceId,
-    required this.subServiceId,
-    required this.service,
-    required this.subService,
-  });
-
-  final _i87.Key? key;
-
-  final int serviceId;
-
-  final int subServiceId;
-
-  final _i86.Service service;
-
-  final _i86.SubService subService;
-
-  @override
-  String toString() {
-    return 'PaymentofShiftAllowanceNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! PaymentofShiftAllowanceNewRequestRouteArgs) return false;
-    return key == other.key &&
-        serviceId == other.serviceId &&
-        subServiceId == other.subServiceId &&
-        service == other.service &&
-        subService == other.subService;
-  }
-
-  @override
-  int get hashCode =>
-      key.hashCode ^
-      serviceId.hashCode ^
-      subServiceId.hashCode ^
-      service.hashCode ^
-      subService.hashCode;
-}
-
-/// generated route for
 /// [_i38.PaymentofShiftAllowanceScreen]
 class PaymentofShiftAllowanceRoute
     extends _i84.PageRouteInfo<PaymentofShiftAllowanceRouteArgs> {
   PaymentofShiftAllowanceRoute({
-    _i87.Key? key,
+    _i85.Key? key,
     required _i86.Service service,
     required _i86.SubService subService,
     List<_i84.PageRouteInfo>? children,
@@ -5100,7 +4929,7 @@ class PaymentofShiftAllowanceRouteArgs {
     required this.subService,
   });
 
-  final _i87.Key? key;
+  final _i85.Key? key;
 
   final _i86.Service service;
 

@@ -1518,6 +1518,8 @@ class RequestModel {
   final String? arrivalDepartureDatetime;
 
   final String? specialInstructions;
+  final String? allowanceValue;
+
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1688,6 +1690,7 @@ class RequestModel {
     this.remarks,
     this.employeesDetails,
     this.airTicketDetails,
+    this.allowanceValue,
 
     this.eventLocation,
     this.eventDetails,
@@ -1997,6 +2000,7 @@ class RequestModel {
       expirationDate: json["expiration_date"],
       attachmentUrl: json["attachment_url"],
       isDeleted: json["is_deleted"],
+      allowanceValue: json['allowance_value'] as String?,
 
       assignedToUserId: json["assigned_to_user_id"],
       assignedAt: json["assigned_at"],

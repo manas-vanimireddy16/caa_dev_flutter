@@ -46,6 +46,7 @@ import 'package:code_setup/presentation/screens/training_and_development/models/
 import 'package:code_setup/repository/hr_service/assignment_decision/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/promotions/domain/domain.dart';
 import 'package:code_setup/repository/security_access/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;

@@ -1411,7 +1411,7 @@ class ApiEndPoint {
 
   /// Send chat message (POST)
   static String paymentForShiftAllowanceSendChatById(int requestId) =>
-      '/v1/hr-service/shift-allowance/requests/$requestId/chats';
+      '/v1/hr-service/shift-allowance-leave/requests/$requestId/chat';
 
   /// Get chats (GET)
   static String paymentForShiftAllowanceChatsById(int requestId) =>
@@ -1421,7 +1421,7 @@ class ApiEndPoint {
 
   /// Upload attachment for request (POST)
   static String paymentForShiftAllowanceSendAttachmentById(int requestId) =>
-      '/v1/hr-service/shift-allowance/requests/$requestId/attachments';
+      '/v1/hr-service/shift-allowance/requests/$requestId/attachment';
 
   /// Get/Delete attachment by attachment ID
   static String paymentForShiftAllowanceAttachmentById(int attachmentId) =>

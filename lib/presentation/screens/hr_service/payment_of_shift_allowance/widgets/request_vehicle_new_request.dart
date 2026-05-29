@@ -1,14 +1,14 @@
 // part of '../view.dart';
 
 // @RoutePage()
-// class PaymentofCashAllowanceForLeaveNewRequestScreen
+// class RequestForVehicleMaintenanceNewRequestScreen
 //     extends ConsumerStatefulWidget {
 //   final int serviceId;
 //   final int subServiceId;
 //   final Service service;
 //   final SubService subService;
 
-//   const PaymentofCashAllowanceForLeaveNewRequestScreen({
+//   const RequestForVehicleMaintenanceNewRequestScreen({
 //     super.key,
 //     required this.serviceId,
 //     required this.subServiceId,
@@ -17,12 +17,12 @@
 //   });
 
 //   @override
-//   ConsumerState<PaymentofCashAllowanceForLeaveNewRequestScreen> createState() =>
-//       _PaymentofCashAllowanceForLeaveNewRequestScreenState();
+//   ConsumerState<RequestForVehicleMaintenanceNewRequestScreen> createState() =>
+//       _RequestForVehicleMaintenanceNewRequestScreenState();
 // }
 
-// class _PaymentofCashAllowanceForLeaveNewRequestScreenState
-//     extends ConsumerState<PaymentofCashAllowanceForLeaveNewRequestScreen> {
+// class _RequestForVehicleMaintenanceNewRequestScreenState
+//     extends ConsumerState<RequestForVehicleMaintenanceNewRequestScreen> {
 //   late _VSControllerParams _providerArgs;
 
 //   @override
@@ -34,20 +34,18 @@
 //       service: widget.service,
 //       subService: widget.subService,
 //     );
-//     Future.microtask(() {
-//       ref.read(_vsProvider(_providerArgs).notifier).fetchUsers();
-//     });
+//     // Future.microtask(() {
+//     //   ref.read(_vsProvider(_providerArgs).notifier).initialize();
+//     // });
 //   }
 
 //   @override
 //   Widget build(BuildContext context) {
-//     /// Watch state only if needed
-//     final state = ref.watch(_vsProvider(_providerArgs));
 //     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+//     final l10n = DashboardL10n.of(context);
 
 //     return KScaffold(
 //       backgroundColor: Colors.white,
-//       // appBar: KAppBar(title: Text('Mission Transfer Request')),
 
 //       /// ✅ DynamicForm MUST be root-level in a screen
 //       body: ProviderScope(
@@ -55,9 +53,9 @@
 //           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
 //         ],
 //         child: DynamicForm(
-//           title: 'Performance Management',
+//           title: l10n.vehicleMaintenanceNewRequest,
 //           stepTitles: const [''],
-//           steps: [controller.cashAllowanceLeaveFields],
+//           steps: [controller.buildVehicleMaintenanceFields(l10n)],
 
 //           /// ⭐ VERY IMPORTANT
 //           // enableSubmitWhen: (values) {

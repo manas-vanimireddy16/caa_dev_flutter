@@ -51,6 +51,7 @@ import 'package:code_setup/repository/training_and_development/annual_training_p
 import 'package:code_setup/repository/training_and_development/request_for_study_leave/domain/domain.dart';
 import 'package:code_setup/repository/training_and_development/request_for_training_room_booking/domain/domain.dart';
 import 'package:code_setup/repository/training_and_development/request_training/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;

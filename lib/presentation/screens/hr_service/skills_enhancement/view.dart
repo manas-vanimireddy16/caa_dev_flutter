@@ -51,6 +51,7 @@ import 'package:code_setup/repository/hr_service/promotions/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/required_new_resource/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/skills_enhancement/domain/domain.dart';
 import 'package:code_setup/repository/security_access/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;

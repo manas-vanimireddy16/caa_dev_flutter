@@ -373,21 +373,20 @@ class AppRouter extends RootStackRouter {
       page: TransferFromOneJobtoAnotherJobNatureDetailsRoute.page,
       path: RouteNames.transferFromOneJobtoAnotherJobNatureDetails,
     ),
-    AutoRoute(
-      page: PaymentofShiftAllowanceNewRequestRoute.page,
-      path: RouteNames.paymentofShiftAllowanceNewRequest,
-    ),
 
+    // AutoRoute(
+    //   page: PaymentofShiftAllowanceNewRequestRoute.page,
+    //   path: RouteNames.paymentofShiftAllowanceNewRequest,
+    // ),
     AutoRoute(
       page: PaymentofShiftAllowanceDetailsRoute.page,
       path: RouteNames.paymentofShiftAllowanceDetails,
     ),
 
-    AutoRoute(
-      page: PaymentofCashAllowanceForLeaveNewRequestRoute.page,
-      path: RouteNames.paymentofCashAllowanceForLeaveNewRequest,
-    ),
-
+    // AutoRoute(
+    //   page: PaymentofCashAllowanceForLeaveNewRequestRoute.page,
+    //   path: RouteNames.paymentofCashAllowanceForLeaveNewRequest,
+    // ),
     AutoRoute(
       page: PaymentofCashAllowanceForLeaveDetailsRoute.page,
       path: RouteNames.paymentofCashAllowanceForLeaveDetails,

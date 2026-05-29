@@ -256,7 +256,7 @@ class _VSController extends StateNotifier<_ViewState> {
     searchController = TextEditingController();
     fetchKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
@@ -445,16 +445,16 @@ class _VSController extends StateNotifier<_ViewState> {
     ]);
   }
 
-  void openNewRequestForm() {
-    KAppX.router.push(
-      PaymentofCashAllowanceForLeaveNewRequestRoute(
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
-        service: service,
-        subService: subService,
-      ),
-    );
-  }
+  // void openNewRequestForm() {
+  //   KAppX.router.push(
+  //     PaymentofCashAllowanceForLeaveNewRequestRoute(
+  //       serviceId: service.id ?? 0,
+  //       subServiceId: subService.id ?? 0,
+  //       service: service,
+  //       subService: subService,
+  //     ),
+  //   );
+  // }
 
   final paymentofCashAllowanceForLeaveInstance =
       PaymentofCashAllowanceForLeaveRepository();
@@ -1098,9 +1098,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchActionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1456,7 +1456,7 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       fetchActionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -1585,9 +1585,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void _refreshDashboard() {
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests();

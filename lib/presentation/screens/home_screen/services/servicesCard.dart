@@ -2,6 +2,234 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 
+enum ServicesListFilter { all, myServices }
+
+class ServicesSearchField extends StatefulWidget {
+  final String initialValue;
+  final ValueChanged<String> onChanged;
+  final String hintText;
+
+  const ServicesSearchField({
+    super.key,
+    required this.initialValue,
+    required this.onChanged,
+    required this.hintText,
+  });
+
+  @override
+  State<ServicesSearchField> createState() => _ServicesSearchFieldState();
+}
+
+class _ServicesSearchFieldState extends State<ServicesSearchField> {
+  late final TextEditingController _controller;
+
+  static const _borderColor = Color(0xFFE5E7EB);
+  static const _hintColor = Color(0xFF9CA3AF);
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void didUpdateWidget(covariant ServicesSearchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialValue != widget.initialValue &&
+        widget.initialValue != _controller.text) {
+      _controller.text = widget.initialValue;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      onChanged: widget.onChanged,
+      decoration: InputDecoration(
+        hintText: widget.hintText,
+        hintStyle: TextStyle(
+          fontSize: 14.toAutoScaledWidth,
+          fontWeight: FontWeight.w400,
+          color: _hintColor,
+        ),
+        prefixIcon: Icon(
+          Icons.search,
+          color: _hintColor,
+          size: 22.toAutoScaledWidth,
+        ),
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 12.toAutoScaledHeight,
+          horizontal: 12.toAutoScaledWidth,
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
+          borderSide: const BorderSide(color: _borderColor, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
+          borderSide: BorderSide(
+            color: Colors.black.withValues(alpha: 0.35),
+            width: 1,
+          ),
+        ),
+      ),
+      style: TextStyle(fontSize: 14.toAutoScaledWidth, color: Colors.black87),
+    );
+  }
+}
+
+class ServicesFilterToggle extends StatelessWidget {
+  final ServicesListFilter selected;
+  final ValueChanged<ServicesListFilter> onChanged;
+  final String allServicesLabel;
+  final String myServicesLabel;
+
+  const ServicesFilterToggle({
+    super.key,
+    required this.selected,
+    required this.onChanged,
+    required this.allServicesLabel,
+    required this.myServicesLabel,
+  });
+
+  static const _activeBackground = Colors.black;
+  static const _inactiveBorder = Color(0xFFE5E7EB);
+  static const _inactiveText = Colors.black87;
+
+  static const _barHeight = 38.0;
+  static const _buttonHeight = 38.0;
+  static const _gap = 16.0;
+  static const _buttonRadius = 4.0;
+  static const _buttonPaddingH = 10.0;
+  static const _buttonPaddingV = 7.0;
+  static const _iconGap = 6.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: _barHeight.toAutoScaledHeight,
+      child: Row(
+        children: [
+          Expanded(
+            child: _SegmentButton(
+              height: _buttonHeight.toAutoScaledHeight,
+              radius: _buttonRadius.toAutoScaledWidth,
+              paddingH: _buttonPaddingH.toAutoScaledWidth,
+              paddingV: _buttonPaddingV.toAutoScaledHeight,
+              iconGap: _iconGap.toAutoScaledWidth,
+              label: allServicesLabel,
+              icon: Icons.grid_view_rounded,
+              isSelected: selected == ServicesListFilter.all,
+              onTap: () => onChanged(ServicesListFilter.all),
+            ),
+          ),
+          SizedBox(width: _gap.toAutoScaledWidth),
+          Expanded(
+            child: _SegmentButton(
+              height: _buttonHeight.toAutoScaledHeight,
+              radius: _buttonRadius.toAutoScaledWidth,
+              paddingH: _buttonPaddingH.toAutoScaledWidth,
+              paddingV: _buttonPaddingV.toAutoScaledHeight,
+              iconGap: _iconGap.toAutoScaledWidth,
+              label: myServicesLabel,
+              icon: Icons.bookmark_border,
+              isSelected: selected == ServicesListFilter.myServices,
+              onTap: () => onChanged(ServicesListFilter.myServices),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SegmentButton extends StatelessWidget {
+  final double height;
+  final double radius;
+  final double paddingH;
+  final double paddingV;
+  final double iconGap;
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _SegmentButton({
+    required this.height,
+    required this.radius,
+    required this.paddingH,
+    required this.paddingV,
+    required this.iconGap,
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fg = isSelected ? Colors.white : ServicesFilterToggle._inactiveText;
+    final bg = isSelected
+        ? ServicesFilterToggle._activeBackground
+        : Colors.white;
+    final border = isSelected
+        ? ServicesFilterToggle._activeBackground
+        : ServicesFilterToggle._inactiveBorder;
+
+    return Material(
+      color: bg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radius),
+        side: BorderSide(color: border, width: 1),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: SizedBox(
+          height: height,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              paddingH,
+              paddingV,
+              paddingH,
+              paddingV,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 18.toAutoScaledWidth, color: fg),
+                SizedBox(width: iconGap),
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13.toAutoScaledWidth,
+                      fontWeight: FontWeight.w600,
+                      color: fg,
+                      height: 1.2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class CustomInfoCard extends StatefulWidget {
   final String title;
   final String subtitle;
@@ -44,6 +272,8 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
       padding: EdgeInsets.only(bottom: 12.toAutoScaledHeight),
       child: Material(
         color: Colors.white,
+        elevation: 0,
+        shadowColor: Colors.black.withValues(alpha: 0.04),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14.toAutoScaledWidth),
           side: const BorderSide(color: _borderColor, width: 1),
@@ -57,7 +287,7 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       width: 40.toAutoScaledWidth,
@@ -72,36 +302,29 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
                       child: Icon(
                         Icons.grid_view_rounded,
                         color: Colors.white,
-                        size: 24.toAutoScaledWidth,
+                        size: 22.toAutoScaledWidth,
                       ),
                     ),
                     SizedBox(width: 12.toAutoScaledWidth),
                     Expanded(
-                      child: Text(
-                        widget.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 16.toAutoScaledWidth,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                          height: 1.25,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 2.toAutoScaledHeight),
+                        child: Text(
+                          widget.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16.toAutoScaledWidth,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                            height: 1.25,
+                          ),
                         ),
                       ),
                     ),
-                    GestureDetector(
+                    _BookmarkToggleButton(
+                      isBookmarked: widget.isBookmarked,
                       onTap: widget.onBookmarkToggle,
-                      behavior: HitTestBehavior.opaque,
-                      child: Padding(
-                        padding: EdgeInsets.all(4.toAutoScaledWidth),
-                        child: Icon(
-                          widget.isBookmarked
-                              ? Icons.bookmark
-                              : Icons.bookmark_border,
-                          color: Colors.black87,
-                          size: 22.toAutoScaledWidth,
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -169,6 +392,76 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BookmarkToggleButton extends StatefulWidget {
+  final bool isBookmarked;
+  final VoidCallback? onTap;
+
+  const _BookmarkToggleButton({required this.isBookmarked, this.onTap});
+
+  @override
+  State<_BookmarkToggleButton> createState() => _BookmarkToggleButtonState();
+}
+
+class _BookmarkToggleButtonState extends State<_BookmarkToggleButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 120),
+    );
+    _scaleAnimation = Tween<double>(begin: 1, end: 0.88).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleTap() async {
+    if (widget.onTap == null) return;
+    await _scaleController.forward();
+    await _scaleController.reverse();
+    widget.onTap!();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _handleTap,
+      behavior: HitTestBehavior.opaque,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 4.toAutoScaledWidth,
+            top: 2.toAutoScaledHeight,
+          ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 180),
+            transitionBuilder: (child, animation) {
+              return ScaleTransition(scale: animation, child: child);
+            },
+            child: Icon(
+              widget.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+              key: ValueKey(widget.isBookmarked),
+              color: Colors.black87,
+              size: 22.toAutoScaledWidth,
             ),
           ),
         ),

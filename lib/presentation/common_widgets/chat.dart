@@ -55,90 +55,98 @@ class CommentsCard extends StatelessWidget {
     this.l10n,
   });
 
+  static const _borderColor = Color(0xFFE5E7EB);
+
   @override
   Widget build(BuildContext context) {
     final theme = KAppX.globalProvider.read(KAppX.theme.current).themeBox;
 
-    return Card(
-      color: Colors.white,
-      elevation: 2,
-      shadowColor: Colors.black12,
-      margin: const EdgeInsets.all(12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFFDDDDDD), width: 1.2),
+    // Must stay scroll-view safe: no Flexible/Expanded — parent is
+    // SingleChildScrollView > Column in request detail screens.
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 12.toAutoScaledWidth),
+      padding: EdgeInsets.all(12.toAutoScaledWidth),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
+        border: Border.all(color: _borderColor, width: 1),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// Header
-            Row(
-              children: [
-                const Icon(Icons.history, size: 20, color: Colors.black87),
-                const SizedBox(width: 8),
-                Text(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.history,
+                size: 18.toAutoScaledWidth,
+                color: Colors.black87,
+              ),
+              SizedBox(width: 8.toAutoScaledWidth),
+              Expanded(
+                child: Text(
                   l10n?.commentsRoutingOverviewTitle ??
                       'Comments / Routing Overview',
                   style: TextStyle(
                     fontSize: theme.fontSizes.s16,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                     color: Colors.black87,
                   ),
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-            const Divider(),
-
-            /// Chat list (scrollable)
-            SizedBox(
-              height: 320,
-              child: entries.isEmpty
-                  ? Center(
-                      child: Text(
-                        l10n?.noCommentsYet ?? 'No comments yet',
-                        style: const TextStyle(color: Colors.black38),
+              ),
+            ],
+          ),
+          SizedBox(height: 8.toAutoScaledHeight),
+          SizedBox(
+            width: double.infinity,
+            height: 336.toAutoScaledHeight,
+            child: entries.isEmpty
+                ? Center(
+                    child: Text(
+                      l10n?.noCommentsYet ?? 'No comments yet',
+                      style: TextStyle(
+                        color: Colors.black38,
+                        fontSize: 13.toAutoScaledWidth,
                       ),
-                    )
-                  : ListView.separated(
-                      itemCount: entries.length,
-                      padding: const EdgeInsets.only(bottom: 12),
-                      separatorBuilder: (_, __) => const SizedBox(height: 6),
-                      itemBuilder: (_, index) =>
-                          CommentEntry(data: entries[index], l10n: l10n),
                     ),
-            ),
-
-            14.toVerticalSizedBox,
-
-            /// Input + Approve/Reject
-            AddCommentBox(
-              from: from,
-              source: source,
-              showButtons: showButtons,
-              controller: controller,
-              onSend: onSend,
-              attachments: attachments,
-              onAttach: onAttach,
-              onRemove: onRemove,
-              onClose: onClose,
-              onReject: onReject,
-              onAssign: onAssign,
-              onReassign: onReassign,
-              actionType: actionType,
-              onApprove: onApprove,
-              onReplace: onReplace,
-              buttonsDisabled: buttonsDisabled,
-              onInProgress: onInProgress,
-              onComplete: onComplete,
-              commentHint: l10n?.routingAddCommentHint,
-              needMoreInfoLabel: l10n?.needMoreInfo,
-            ),
-          ],
-        ),
+                  )
+                : ListView.separated(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: entries.length,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 2.toAutoScaledWidth,
+                    ),
+                    separatorBuilder: (_, __) =>
+                        SizedBox(height: 8.toAutoScaledHeight),
+                    itemBuilder: (_, index) =>
+                        CommentEntry(data: entries[index], l10n: l10n),
+                  ),
+          ),
+          SizedBox(height: 8.toAutoScaledHeight),
+          AddCommentBox(
+            from: from,
+            source: source,
+            showButtons: showButtons,
+            controller: controller,
+            onSend: onSend,
+            attachments: attachments,
+            onAttach: onAttach,
+            onRemove: onRemove,
+            onClose: onClose,
+            onReject: onReject,
+            onAssign: onAssign,
+            onReassign: onReassign,
+            actionType: actionType,
+            onApprove: onApprove,
+            onReplace: onReplace,
+            buttonsDisabled: buttonsDisabled,
+            onInProgress: onInProgress,
+            onComplete: onComplete,
+            commentHint: l10n?.routingAddCommentHint,
+            needMoreInfoLabel: l10n?.needMoreInfo,
+          ),
+        ],
       ),
     );
   }
