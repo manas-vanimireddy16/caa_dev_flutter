@@ -430,8 +430,8 @@ class AppealAgainstAdministrativeDecisionsRepositoryImple
     try {
       if (client != null) {
         final Map<String, dynamic> queryParams = {
-          'offset': offset,
-          'limit': limit,
+          // 'offset': offset,
+          // 'limit': limit,
         };
 
         if (searchText.isNotEmpty) {
@@ -479,8 +479,8 @@ class AppealAgainstAdministrativeDecisionsRepositoryImple
       final client = await KAppX.network.secureClient();
       if (client != null) {
         final queryParams = {
-          'offset': offset.toString(),
-          'limit': "2", //limit.toString(),
+          // 'offset': offset.toString(),
+          // 'limit': "2", //limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
           'service_id': serviceId,

@@ -46,7 +46,6 @@ import 'package:code_setup/presentation/screens/hr_service/models/trend_breakdow
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/vehicle_maintenance_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';

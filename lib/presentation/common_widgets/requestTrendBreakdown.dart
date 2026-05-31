@@ -368,14 +368,15 @@ class RequestTrendBreakdownCard extends StatelessWidget {
         .read(KAppX.theme.current)
         .themeBox;
     return Card(
+      margin: EdgeInsets.zero,
       color: currentTheme.colors.onPrimary,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(4),
         side: BorderSide(color: const Color(0xFFE5E7EB), width: 1),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

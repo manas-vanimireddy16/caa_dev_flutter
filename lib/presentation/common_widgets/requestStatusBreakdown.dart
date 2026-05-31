@@ -44,14 +44,15 @@ class RequestStatusBreakdownCard extends StatelessWidget {
         .themeBox;
     final chartSections = data;
     return Card(
+      margin: EdgeInsets.zero,
       elevation: 0,
       color: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(4),
         side: const BorderSide(color: Color(0xFFE5E7EB), width: 1),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

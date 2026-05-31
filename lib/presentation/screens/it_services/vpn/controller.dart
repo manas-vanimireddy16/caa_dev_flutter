@@ -1770,7 +1770,7 @@ Violation of this policy may result in:
       return ActionButtonsType.assignCloseReject;
     } else if (level != null) {
       debugPrint('this user can approve and reject');
-      return ActionButtonsType.approveReject;
+      return ActionButtonsType.closeReject;
     }
 
     return ActionButtonsType.none;

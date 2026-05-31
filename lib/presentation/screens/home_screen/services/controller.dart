@@ -397,6 +397,24 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
+      case 'CAA069':
+        KAppX.router.push(
+          AnnualIncrementRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+
+      /// Legal Services
+      case 'CAA029':
+        KAppX.router.push(
+          AppealAgainstAdministrativeDecisionsRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
 
       default:
         debugPrint('No route found for $name');

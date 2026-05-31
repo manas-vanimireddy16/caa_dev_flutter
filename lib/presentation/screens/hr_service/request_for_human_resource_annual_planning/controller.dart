@@ -387,14 +387,26 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.kpiData.data?.toJson(),
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.approvalKpiData.data?.toJson(),
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+          ? requestStatsList(titleForKey)
+          : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -518,6 +530,20 @@ class _VSController extends StateNotifier<_ViewState> {
     }
 
     return department ?? '-';
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
   }
 
   Future<void> openRequestDetails(

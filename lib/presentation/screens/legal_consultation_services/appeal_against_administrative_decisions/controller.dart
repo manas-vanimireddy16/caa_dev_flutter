@@ -31,6 +31,8 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
+  final bool isRequestLoading;
+  final bool isRequestDetailsLoading;
 
   final List<FileUploadItem> selectedFileUrl;
   final List<Map<String, dynamic>> attachments;
@@ -78,6 +80,8 @@ class _ViewState {
 
   _ViewState({
     required this.isLoading,
+    required this.isRequestLoading,
+    required this.isRequestDetailsLoading,
     required this.selectedFileUrl,
     required this.attachments,
     required this.kpiData,
@@ -103,6 +107,8 @@ class _ViewState {
   _ViewState.init()
     : this(
         isLoading: false,
+        isRequestLoading: false,
+        isRequestDetailsLoading: false,
         selectedFileUrl: [],
         attachments: [],
         kpiData: KPIResponse(),
@@ -127,6 +133,8 @@ class _ViewState {
 
   _ViewState copyWith({
     bool? isLoading,
+    bool? isRequestLoading,
+    bool? isRequestDetailsLoading,
     int? threatType,
     String? selectedPriority,
     String? visitorChecks,
@@ -191,6 +199,9 @@ class _ViewState {
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
+      isRequestDetailsLoading:
+          isRequestDetailsLoading ?? this.isRequestDetailsLoading,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
@@ -237,8 +248,9 @@ class _VSController extends StateNotifier<_ViewState> {
     searchController = TextEditingController();
     fetchKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalKpi();
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
@@ -338,6 +350,20 @@ class _VSController extends StateNotifier<_ViewState> {
         'Approver': _buildDepartmentSection(approverMap),
       },
     };
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name'] ?? '';
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role'] ?? '';
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
   }
 
   Map<String, String> buildRequestInformationData() {
@@ -462,8 +488,10 @@ class _VSController extends StateNotifier<_ViewState> {
     /// DATE
     DynamicField(
       name: 'submission_date',
-      label: 'Date',
+      label: 'Submission Date',
       type: FieldType.date,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
       required: true,
     ),
 
@@ -472,14 +500,16 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'request_title',
       label: 'Title of Complaint',
       type: FieldType.text,
+      placeholder: 'Enter request title (min 5, max 250 characters)',
       required: true,
     ),
 
     /// APPEAL AGAINST
     DynamicField(
       name: 'appeal_against_decision',
-      label: 'Appeal against Decision',
+      label: 'Appeal Against Decision',
       type: FieldType.text,
+      placeholder: 'Enter',
       required: true,
     ),
 
@@ -488,6 +518,7 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'description',
       label: 'Description',
       type: FieldType.text,
+      placeholder: 'Write here (min 5, max 250 characters)',
       required: true,
     ),
 
@@ -507,22 +538,25 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Decision Number',
       type: FieldType.text,
       required: true,
+      placeholder: 'Enter',
     ),
 
     /// DECISION DATE
     DynamicField(
       name: 'decision_date',
-      label: 'Date',
+      label: 'Decision Date',
       type: FieldType.date,
       required: true,
+      placeholder: 'Select',
     ),
 
     /// SUBJECT
     DynamicField(
       name: 'decision_subject',
-      label: 'Subject',
+      label: 'Decision Subject',
       type: FieldType.text,
       required: true,
+      placeholder: 'Enter',
     ),
 
     /// INDIVIDUALS
@@ -530,7 +564,8 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'individuals_involved',
       label: 'Individuals Involved',
       type: FieldType.text,
-      required: true,
+      placeholder: 'Enter',
+      // required: true,
     ),
 
     /// TIME
@@ -538,7 +573,8 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'time',
       label: 'Times',
       type: FieldType.time,
-      required: true,
+      // required: true,
+      placeholder: 'Select',
     ),
 
     /// LOCATION
@@ -546,7 +582,8 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'location',
       label: 'Location',
       type: FieldType.text,
-      required: true,
+      // required: true,
+      placeholder: 'Enter',
     ),
 
     /// REQUESTS
@@ -554,7 +591,8 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'requests',
       label: 'Requests',
       type: FieldType.text,
-      required: true,
+      // required: true,
+      placeholder: 'Enter',
     ),
 
     /// EVENTS
@@ -563,21 +601,22 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Events',
       type: FieldType.text,
       required: true,
+      placeholder: 'Enter',
     ),
 
     /// EXTRA DETAILS
-    DynamicField(
-      name: 'grievance_details',
-      label: 'Any Other Details Related to the Grievance',
-      type: FieldType.text,
-      required: true,
-    ),
+    // DynamicField(
+    //   name: 'grievance_details',
+    //   label: 'Any Other Details Related to the Grievance',
+    //   type: FieldType.text,
+    //   required: true,
+    // ),
   ];
   List<DynamicField> get appealStepThreeFields => [
     /// NAME (DROPDOWN)
     DynamicField(
       name: 'grievant_name',
-      label: 'Name',
+      label: 'Grievant Name',
       type: FieldType.select,
       options: state.usersList
           .map(
@@ -600,24 +639,27 @@ class _VSController extends StateNotifier<_ViewState> {
           'grievant_section': selectedUser.section?.sectionName,
         });
       },
+      placeholder: 'Select Employee',
     ),
 
     /// EMPLOYEE NUMBER
     DynamicField(
       name: 'grievant_employee_number',
-      label: 'Employee Number',
+      label: 'Grievant Employee Number',
       type: FieldType.text,
       required: true,
       disabled: true,
+      placeholder: 'Enter',
     ),
 
     /// DIRECTORATE
     DynamicField(
       name: 'grievant_directorate',
-      label: 'Directorate',
+      label: 'Grievant Directorate',
       type: FieldType.text,
       required: true,
       disabled: true,
+      placeholder: 'Enter',
     ),
 
     /// RELATIONSHIP
@@ -625,19 +667,21 @@ class _VSController extends StateNotifier<_ViewState> {
     /// DEPARTMENT
     DynamicField(
       name: 'grievant_department',
-      label: 'Department',
+      label: 'Grievant Department',
       type: FieldType.text,
       required: true,
       disabled: true,
+      placeholder: 'Enter',
     ),
 
     /// SECTION
     DynamicField(
       name: 'grievant_section',
-      label: 'Section',
+      label: 'Grievant Section',
       type: FieldType.text,
       required: true,
       disabled: true,
+      placeholder: 'Enter',
     ),
 
     DynamicField(
@@ -645,13 +689,15 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Grievant Relationship to Matter',
       type: FieldType.text,
       required: true,
+      placeholder: 'Enter',
     ),
 
     DynamicField(
-      name: 'grievant_details',
+      name: 'grievance_details',
       label: 'Grievance Details',
       type: FieldType.text,
       required: true,
+      placeholder: 'Write here(min 5, max 250 characters)',
     ),
 
     /// ATTACHMENT 1
@@ -898,12 +944,12 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isRequestLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
+      // if (isRefresh || status.isNotEmpty) {
+      //   state = state.copyWith(requestData: [], isLoading: false);
+      // }
 
       final requests = await appealAgainstAdministrativeDecisionsInstance
           .getRequests(
@@ -916,9 +962,9 @@ class _VSController extends StateNotifier<_ViewState> {
           );
 
       // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isRequestLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -1079,7 +1125,7 @@ class _VSController extends StateNotifier<_ViewState> {
           "sub_service_id": subServiceId,
           "message": chatController.text.trim(),
           "messageType": hasAttachment ? messageType : 'text',
-          "file_url": hasAttachment ? fileUrl : null,
+          // "file_url": hasAttachment ? fileUrl : null,
           "file_name": hasAttachment ? fileName : null,
           "file_type": hasAttachment ? fileType : null,
           "file_size": hasAttachment ? fileSize : null,
@@ -1094,6 +1140,7 @@ class _VSController extends StateNotifier<_ViewState> {
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
+      fetchRequestDetailsById(requestId);
 
       /// 3️⃣ Clear UI state
       // chatController.clear();
@@ -1128,9 +1175,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchActionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1169,6 +1216,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // 3️⃣ Send request
       await appealAgainstAdministrativeDecisionsInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
+      await fetchApprovalKpi();
       KAppX.router.pop();
       // if (decisionNo != null) {
       KAppX.router.pop();
@@ -1486,7 +1534,7 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       fetchActionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -1621,7 +1669,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .sendAppealAgainstAdministrativeDecisionsNewRequest(payload);
 
       if (response['status'] == 'success') {
-        _refreshDashboard();
+        await _refreshDashboard();
       }
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
@@ -1630,11 +1678,12 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  void _refreshDashboard() {
+  Future<void> _refreshDashboard() async {
+    Future.delayed(Duration(milliseconds: 2000));
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests();

@@ -141,7 +141,7 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
     return KScaffold(
       backgroundColor: Colors.white,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
           /// KPI
           StatSummaryRow(
@@ -149,7 +149,8 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
               (key) => l10n.statTitle(key, isSecurityThreat: true),
             ),
           ),
-          20.toHorizontalSizedBox,
+
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -168,6 +169,8 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
             ),
             breakdown: state.statusBreakdown.data,
           ),
+
+          16.toVerticalSizedBox,
 
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 1

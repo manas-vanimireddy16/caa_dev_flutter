@@ -1,9 +1,6 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import 'package:code_setup/presentation/models/kpi_model.dart';
-import 'package:code_setup/presentation/screens/it_services/salalah/models/kpi.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:flutter/material.dart';
-// part of '../view.dart';
 
 class StatSummaryData {
   final String title;
@@ -23,54 +20,51 @@ class StatSummaryData {
 
 class StatSummaryRow extends StatelessWidget {
   final List<StatSummaryData> stats;
-  // final List<String> counts;
   final double spacing;
   final double runSpacing;
 
   const StatSummaryRow({
     super.key,
     required this.stats,
-    // required this.counts,
-    this.spacing = 12,
-    this.runSpacing = 18,
+    this.spacing = 16,
+    this.runSpacing = 16,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // Try to fit 2 cards per row with spacing, clamp for mobile/large
-          final cardMaxWidth = ((constraints.maxWidth - spacing) / 2)
-              .clamp(120, 180)
-              .toDouble();
+    final rows = <Widget>[];
 
-          return Wrap(
-            spacing: spacing,
-            runSpacing: runSpacing,
-            alignment: WrapAlignment.start, // mirrors in RTL
-            children: stats.map((data) {
-              return StatSummaryCard(data: data, maxWidth: cardMaxWidth);
-            }).toList(),
-          );
-        },
-      ),
+    for (var i = 0; i < stats.length; i += 2) {
+      if (i > 0) {
+        rows.add(SizedBox(height: runSpacing));
+      }
+
+      rows.add(
+        Row(
+          children: [
+            Expanded(child: StatSummaryCard(data: stats[i])),
+            SizedBox(width: spacing),
+            Expanded(
+              child: i + 1 < stats.length
+                  ? StatSummaryCard(data: stats[i + 1])
+                  : const SizedBox(),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: rows,
     );
   }
 }
 
 class StatSummaryCard extends StatelessWidget {
   final StatSummaryData data;
-  final double maxWidth;
-  // final String count;
 
-  const StatSummaryCard({
-    super.key,
-    required this.data,
-    required this.maxWidth,
-    // required this.count,
-  });
+  const StatSummaryCard({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -78,42 +72,41 @@ class StatSummaryCard extends StatelessWidget {
         .read(KAppX.theme.current)
         .themeBox;
 
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minWidth:
-            110.toAutoScaledWidth, // allow smaller cards on very small devices
-        maxWidth: maxWidth,
-      ),
+    final hasDescription = data.description.trim().isNotEmpty;
+
+    return SizedBox(
+      height: 110,
       child: Card(
-        color: currentTheme.colors.onPrimary,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: const Color(0xFFE5E7EB), width: 1),
-        ),
         elevation: 0,
+        color: currentTheme.colors.onPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+          side: const BorderSide(color: Color(0xFFE5E7EB), width: 1),
+        ),
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 12.toAutoScaledWidth,
-            vertical: 12.toAutoScaledHeight,
-          ),
+          padding: const EdgeInsets.all(16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    SizedBox(height: 8),
+
                     Text(
                       data.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                         fontSize: currentTheme.fontSizes.s14,
                       ),
                     ),
-                    const SizedBox(height: 10),
+
+                    const Spacer(),
+
                     Text(
                       data.count,
                       style: Theme.of(context).textTheme.headlineLarge
@@ -122,32 +115,17 @@ class StatSummaryCard extends StatelessWidget {
                             fontSize: currentTheme.fontSizes.s20,
                           ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      data.description,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[400],
-                        fontWeight: FontWeight.w500,
-                        fontSize: currentTheme.fontSizes.s12,
-                      ),
-                    ),
                   ],
                 ),
               ),
-              Padding(
-                padding: EdgeInsetsDirectional.only(start: 9, top: 3),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: data.iconBgColor,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.all(9),
-                  child: Icon(
-                    data.icon,
-                    color: const Color(0xFF23272F),
-                    size: 22,
-                  ),
+
+              Container(
+                padding: const EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  color: data.iconBgColor,
+                  borderRadius: BorderRadius.circular(10),
                 ),
+                child: Icon(data.icon, size: 22),
               ),
             ],
           ),
@@ -156,7 +134,6 @@ class StatSummaryCard extends StatelessWidget {
     );
   }
 }
-
 // /// -----------------------------
 // /// StatSummaryRow dynamically renders cards
 // /// -----------------------------

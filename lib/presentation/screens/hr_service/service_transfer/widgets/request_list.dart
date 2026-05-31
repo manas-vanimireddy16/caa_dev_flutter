@@ -33,8 +33,9 @@ class RequestsPage extends ConsumerWidget {
 
         return RequestCard(
           data: controller.buildRequestCardData(item),
-          fieldLabelBuilder: l10n.fieldLabel,
+          fieldLabelBuilder: l10n.requestDetailsLabel,
           requestIdLabelBuilder: l10n.requestIdLabel,
+          statusLabelBuilder: l10n.statusLabel,
           onTap: () async {
             await controller.openRequestDetails(
               item.base?.id ?? 0,

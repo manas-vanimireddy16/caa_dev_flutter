@@ -81,6 +81,15 @@ class _ServiceTransferDetailsScreenState
 
           final approverId = active?.id;
 
+          Widget employeeSection() => EmployeeInformationCard(
+            l10n: l10n,
+            requestId: requestId?.toString(),
+            status: request?.status,
+            assignedTo: controller.buildAssignedToLabel(approvals),
+            user: createdByUser,
+            labelBuilder: l10n.requestDetailsLabel,
+          );
+
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -95,14 +104,7 @@ class _ServiceTransferDetailsScreenState
 
                 /// ------------ TABS -----------------
                 if (selectedTab == 0) ...[
-                  EmployeeInformationCard(
-                    l10n: l10n,
-                    requestId: requestId?.toString(),
-                    status: request?.status,
-                    assignedTo: controller.buildAssignedToLabel(approvals),
-                    user: createdByUser,
-                    labelBuilder: l10n.requestDetailsLabel,
-                  ),
+                  employeeSection(),
                   CommonRequestDetails(
                     statusInformationTitle: l10n.requestDetailsLabel(
                       'Status Information',
@@ -116,7 +118,8 @@ class _ServiceTransferDetailsScreenState
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
                   ),
-                ] else if (selectedTab == 1)
+                ] else if (selectedTab == 1) ...[
+                  employeeSection(),
                   CommentsCard(
                     from: widget.from,
                     showButtons: actionType != ActionButtonsType.none,
@@ -153,17 +156,20 @@ class _ServiceTransferDetailsScreenState
                         requestId: requestId ?? 0,
                       );
                     },
-                  )
-                else if (selectedTab == 2)
+                  ),
+                ] else if (selectedTab == 2) ...[
+                  employeeSection(),
                   CommonAttachmentsTabContent(
                     attachments: attachments,
                     l10n: l10n,
-                  )
-                else if (selectedTab == 3)
+                  ),
+                ] else if (selectedTab == 3) ...[
+                  employeeSection(),
                   RequestWorkflowTimeline(
                     details: state.requestDetails,
                     l10n: l10n,
                   ),
+                ],
               ],
             ),
           );

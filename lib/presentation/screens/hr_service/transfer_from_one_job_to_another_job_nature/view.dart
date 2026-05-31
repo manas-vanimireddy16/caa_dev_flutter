@@ -10,6 +10,7 @@ import 'package:code_setup/presentation/common_widgets/assign_dialog.dart';
 import 'package:code_setup/presentation/common_widgets/chat.dart';
 import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
 import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
+import 'package:code_setup/presentation/common_widgets/employee_information_card.dart';
 import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
 import 'package:code_setup/presentation/common_widgets/dialog_config.dart';
 import 'package:code_setup/presentation/common_widgets/requestCard.dart';
@@ -38,7 +39,6 @@ import 'package:code_setup/presentation/screens/hr_service/models/employee_model
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/transfer_from_job_to_another.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
@@ -122,6 +122,7 @@ class _TransferFromOneJobtoAnotherJobNatureScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -131,27 +132,33 @@ class _TransferFromOneJobtoAnotherJobNatureScreenState
 
         padding: const EdgeInsets.all(12),
         children: [
-          // KPI Cards
-          StatSummaryRow(stats: controller.currentStats),
+          StatSummaryRow(
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
+          ),
           20.toHorizontalSizedBox,
-
-          /// Status Breakdown
           RequestStatusBreakdownCard(
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
-            onChanged: controller.onStatusFilterChanged,
+            title: l10n.requestsStatusBreakdown,
+            filterLabel: l10n.periodFilterLabels[0],
+            filterLabelList: l10n.periodFilterLabels,
+            centerMetricLabel: l10n.totalRequests,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
+            preserveFilterLabelOnChange: true,
+            onChanged: (value) => controller.onStatusFilterChanged(
+              value != null ? l10n.periodFilterValue(value) : null,
+            ),
             breakdown: state.statusBreakdown.data,
           ),
-
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
-            // selectedYear: controller.currentYear.toString(),
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalRequests,
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,

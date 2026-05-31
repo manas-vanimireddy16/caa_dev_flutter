@@ -50,6 +50,7 @@ import 'package:code_setup/repository/assests_affair/residental_unit_rental/doma
 import 'package:code_setup/repository/hr_service/annual_duty_mission/domain/domain.dart';
 import 'package:code_setup/repository/legal_consultation_services/appeal_against_administrative_decisions/domain/domain.dart';
 import 'package:code_setup/repository/legal_consultation_services/raise_a_legal_complaint/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
@@ -125,11 +126,11 @@ class _AppealAgainstAdministrativeDecisionsScreenState
     return KScaffold(
       backgroundColor: Colors.white,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
           /// KPI
           StatSummaryRow(stats: controller.currentStats),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -140,6 +141,7 @@ class _AppealAgainstAdministrativeDecisionsScreenState
             onChanged: controller.onStatusFilterChanged,
             breakdown: state.statusBreakdown.data,
           ),
+          16.toVerticalSizedBox,
 
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
@@ -153,7 +155,7 @@ class _AppealAgainstAdministrativeDecisionsScreenState
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

@@ -1053,6 +1053,143 @@ class DashboardL10n {
   String get completionDateOptional =>
       _t('Completion Date (Optional)', 'تاريخ الإنجاز (اختياري)');
 
+  String get referenceNumber => _t('Reference Number', 'الرقم المرجعي');
+
+  String get allowanceValue => _t('Allowance Value', 'قيمة البدل');
+
+  String get shiftEndDate => _t('Shift End Date', 'تاريخ نهاية المناوبة');
+
+  String get startTime => _t('Start Time', 'وقت البداية');
+
+  String get endTime => _t('End Time', 'وقت النهاية');
+
+  String get createdBy => _t('Created By', 'تم الإنشاء بواسطة');
+
+  String get createdAt => _t('Created At', 'تاريخ الإنشاء');
+
+  String get updatedBy => _t('Updated By', 'تم التحديث بواسطة');
+
+  String get updatedAt => _t('Updated At', 'تاريخ التحديث');
+
+  String get endOfServiceDate =>
+      _t('End of Service Date', 'تاريخ انتهاء الخدمة');
+
+  String get basicSalary => _t('Basic Salary', 'الراتب الأساسي');
+
+  String get basicSalaryPerDay =>
+      _t('Basic Salary Per Day', 'الراتب الأساسي اليومي');
+
+  String get totalSalaryDue =>
+      _t('Total Salary Due', 'إجمالي المستحقات المالية');
+
+  String get remainingLeaveBalance =>
+      _t('Remaining Leave Balance', 'رصيد الإجازات المتبقي');
+
+  String get jobDescription => _t('Job Description', 'الوصف الوظيفي');
+
+  String get numberOfYearsOfExperience =>
+      _t('Number of Years of Experience', 'عدد سنوات الخبرة');
+
+  String get requiredSkillsExpertise =>
+      _t('Required Skills / Expertise', 'المهارات / الخبرات المطلوبة');
+
+  String get educationRequirement =>
+      _t('Education Requirement', 'المؤهل العلمي المطلوب');
+
+  String get roleTitleOfResource =>
+      _t('Role / Title of Resource', 'الدور / المسمى الوظيفي للوظيفة');
+
+  String get requiredCompetencyPercentage =>
+      _t('Required Competency Percentage', 'نسبة الجدارة المطلوبة');
+
+  String get descriptionSummaryOfSkill =>
+      _t('Description/Summary of Skill', 'وصف/ملخص المهارة');
+
+  String get competencyTitleSkill =>
+      _t('Competency Title | Skill', 'عنوان الجدارة | المهارة');
+
+  String get skillCategory => _t('Skill Category', 'فئة المهارة');
+
+  String get technical => _t('Technical', 'فني');
+
+  String get compliance => _t('Compliance', 'الامتثال');
+
+  String get safety => _t('Safety', 'السلامة');
+
+  String get softSkills => _t('Soft Skills', 'المهارات الشخصية');
+
+  String get productivity => _t('Productivity', 'الإنتاجية');
+
+  String get behavior => _t('Behavior', 'السلوك');
+
+  String get leadership => _t('Leadership', 'القيادة');
+
+  String get emotionalIntelligence =>
+      _t('Emotional Intelligence', 'الذكاء العاطفي');
+
+  String get workExperienceYears =>
+      _t('Work Experience (years)', 'خبرة العمل (بالسنوات)');
+
+  String get skills => _t('Skills', 'المهارات');
+
+  String get currentPosition => _t('Current Position', 'المنصب الحالي');
+
+  String get fromEntity => _t('From Entity', 'جهة الإعارة');
+
+  String get toEntity => _t('To Entity', 'جهة المُعار اليها');
+
+  String get assignedJobPosition =>
+      _t('Assigned Job Position', 'الجهة المُندب إليها');
+
+  String get civilIdCardNumber =>
+      _t('Civil ID Card Number', 'رقم البطاقة المدنية');
+
+  String get currentJobPosition =>
+      _t('Current Job Position', 'المسمى الوظيفي الحالي');
+
+  String get assignedEmployeeName =>
+      _t('Assigned Employee Name', 'اسم الموظف المُعار');
+
+  String get salaryPaymentSource =>
+      _t('Salary Payment Source', 'جهة صرف الراتب');
+
+  String get socialProtectionFund =>
+      _t('Social Protection Fund', 'صندوق الحماية الاجتماعية');
+
+  String get salaryDetails => _t('Salary Details', 'تفاصيل الراتب');
+
+  String get transferredToEntity =>
+      _t('Transferred to Entity', 'الجهة المنقول إليها');
+
+  String get currentEntity => _t('Current Entity', 'الجهة الحالية');
+
+  String get positionTransferredFrom =>
+      _t('Position Transferred from', 'المنصب المنقول منه');
+
+  String get positionTransferredTo =>
+      _t('Position Transferred To', 'المنصب المنقول إليه');
+
+  String get currentJobTitle =>
+      _t('Current Job Title', 'المسمى الوظيفي الحالي');
+
+  String get proposedJobTitle =>
+      _t('Proposed Job Title', 'المسمى الوظيفي المقترح');
+
+  String get currentSalaryGrade =>
+      _t('Current Salary Grade', 'الدرجة الوظيفية الحالية');
+
+  String get proposedSalaryGrade =>
+      _t('Proposed Salary Grade', 'الدرجة الوظيفية المقترحة');
+
+  String get currentBasicSalary =>
+      _t('Current Basic Salary', 'الراتب الأساسي الحالي');
+
+  String get proposedBasicSalary =>
+      _t('Proposed Basic Salary', 'الراتب الأساسي المقترح');
+
+  String get annualPeriodicAllowance =>
+      _t('Annual Periodic Allowance', 'العلاوة الدورية السنوية');
+
   String logisticsDailyEmergencyOption(String en) {
     switch (en) {
       case 'Daily':
@@ -1517,6 +1654,51 @@ class DashboardL10n {
     'Description / Additional Notes (Optional)',
     'الوصف / الملاحظات الإضافية (اختياري)',
   );
+
+  /// Legal Services
+  /// /// Appeal againt
+
+  String get grievanceDetails => _t('Grievance Details', 'تفاصيل الشكوى');
+
+  String get grievantName => _t('Grievant Name', 'اسم مقدم الشكوى');
+
+  String get grievantEmployeeNumber =>
+      _t('Grievant Employee Number', 'رقم موظف مقدم الشكوى');
+
+  String get grievantDirectorate =>
+      _t('Grievant Directorate', 'مديرية مقدم الشكوى');
+
+  String get grievantDepartment =>
+      _t('Grievant Department', 'دائرة مقدم الشكوى');
+
+  String get grievantSection => _t('Grievant Section', 'قسم مقدم الشكوى');
+
+  String get grievantRelationshipToMatter =>
+      _t('Grievant Relationship to Matter', 'علاقة مقدم الشكوى بالموضوع');
+
+  String get location => _t('Location', 'الموقع');
+
+  String get times => _t('Times', 'الأوقات');
+
+  String get requests => _t('Requests', 'الطلبات');
+
+  String get events => _t('Events', 'الاحداث');
+
+  String get individualsInvolved =>
+      _t('Individuals Involved', 'الأشخاص المعنيون');
+
+  String get decisionSubject => _t('Decision Subject', 'موضوع القرار');
+
+  String get decisionDate => _t('Decision Date', 'تاريخ القرار');
+
+  String get decisionNumber => _t('Decision Number', 'رقم القرار');
+
+  String get appealAgainstDecision =>
+      _t('Appeal Against Decision', 'التظلم على القرار');
+
+  String get titleOfComplaint => _t('Title of the Complaint', 'عنوان الشكوى');
+
+  String get submissionDate => _t('Submission Date', 'تاريخ التقديم');
 
   String securityNavTitle(int index) {
     switch (index) {
