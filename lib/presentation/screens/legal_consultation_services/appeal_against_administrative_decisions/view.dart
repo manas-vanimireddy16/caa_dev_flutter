@@ -10,6 +10,7 @@ import 'package:code_setup/presentation/common_widgets/chat.dart';
 import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
 import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
 import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
+import 'package:code_setup/presentation/common_widgets/employee_information_card.dart';
 import 'package:code_setup/presentation/common_widgets/requestCard.dart';
 import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.dart';
 import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';

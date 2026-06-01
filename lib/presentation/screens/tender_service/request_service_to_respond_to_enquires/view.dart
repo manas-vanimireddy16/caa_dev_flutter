@@ -9,6 +9,7 @@ import 'package:code_setup/presentation/common_widgets/chat.dart';
 import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
 import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
 import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
+import 'package:code_setup/presentation/common_widgets/employee_information_card.dart';
 import 'package:code_setup/presentation/common_widgets/requestCard.dart';
 import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.dart';
 import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';
@@ -48,6 +49,7 @@ import 'package:code_setup/presentation/screens/training_and_development/models/
 import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
 import 'package:code_setup/repository/it_services/request_event_support/domain/domain.dart';
 import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
@@ -61,6 +63,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 part 'widgets/request_event_support_new_request.dart';
 part 'controller.dart';
@@ -126,39 +129,47 @@ class _RequestAServiceToRespondToEnquiriesScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
           /// KPI
-          StatSummaryRow(stats: controller.currentStats),
-          20.toHorizontalSizedBox,
+          StatSummaryRow(
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
+          ),
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
+            title: l10n.requestsStatusBreakdown,
+            centerMetricLabel: l10n.totalTickets,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
             onChanged: controller.onStatusFilterChanged,
             breakdown: state.statusBreakdown.data,
           ),
+          16.toVerticalSizedBox,
 
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalTickets,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

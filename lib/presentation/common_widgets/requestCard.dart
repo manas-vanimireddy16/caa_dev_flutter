@@ -337,11 +337,18 @@
 // }
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/common_widgets/statusWidget.dart';
-import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class RequestCard extends StatelessWidget {
+  static const _titleColor = Color(0xFF676767);
+  static const _dataColor = Color(0xFF434347);
+  static const _backgroundColor = Color(0xFFFFFFFF);
+  static const _borderColor = Color(0xFFD8D8D8);
+  static const _cardRadius = 8.0;
+  static const _cardPadding = 24.0;
+  static const _cardGap = 16.0;
+
   final String from;
   final Map<String, dynamic> data;
   final bool isShowClosed;
@@ -363,21 +370,18 @@ class RequestCard extends StatelessWidget {
     this.isShowClosed = false,
   });
 
-  // ✅ NEW: resolve status properly
   String _resolveStatus(dynamic status) {
     if (status == null || status.toString().trim().isEmpty) {
-      return "Draft";
+      return 'Draft';
     }
-
-    final value = status.toString().toLowerCase();
-
+    final value = status.toString();
     return value[0].toUpperCase() + value.substring(1);
   }
 
   String _formatDate(String date) {
     try {
       final parsed = DateTime.parse(date);
-      return DateFormat("dd/MM/yyyy").format(parsed);
+      return DateFormat('dd MMM yyyy').format(parsed);
     } catch (_) {
       return date;
     }
@@ -389,6 +393,10 @@ class RequestCard extends StatelessWidget {
     return v.contains('-') || v.contains('/') || v.contains('T');
   }
 
+  bool _isStatusKey(String key) => key.toLowerCase() == 'status';
+
+  bool _hasStatusKey() => data.keys.any(_isStatusKey);
+
   String _humanizeKey(String key) {
     if (fieldLabelBuilder != null) return fieldLabelBuilder!(key);
     return key
@@ -399,171 +407,159 @@ class RequestCard extends StatelessWidget {
         .join(' ');
   }
 
-  String _requestIdText() {
-    final id = data["id"] ?? data["Request Id"] ?? "-";
-    if (requestIdLabelBuilder != null) {
-      return requestIdLabelBuilder!(id.toString());
+  dynamic _statusRawValue() {
+    for (final entry in data.entries) {
+      if (_isStatusKey(entry.key)) return entry.value;
     }
-    return "Request ID: $id";
+    return null;
   }
 
   String _statusLabel() {
-    final status = _resolveStatus(data["status"]);
+    final status = _resolveStatus(_statusRawValue());
 
-    /// ✅ SHOW CLOSED INSTEAD OF APPROVED
-    if (isShowClosed && status.toLowerCase() == "approved") {
-      return "Closed";
+    if (isShowClosed && status.toLowerCase() == 'approved') {
+      return 'Closed';
     }
 
     return statusLabelBuilder?.call(status) ?? status;
   }
 
-  Card _buildCard({required Widget child}) {
-    return Card(
-      color: const Color(0xFFFDFDFD),
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shadowColor: Colors.black.withOpacity(0.08),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.shade300, width: 1),
-      ),
-      child: Padding(padding: const EdgeInsets.all(16), child: child),
+  List<MapEntry<String, dynamic>> _contentEntries() {
+    return data.entries.where((e) => !_isStatusKey(e.key)).toList();
+  }
+
+  String _displayValue(MapEntry<String, dynamic> entry) {
+    final raw = entry.value;
+    if (raw == null || raw.toString().trim().isEmpty) {
+      return '-';
+    }
+    final text = raw.toString();
+    return _isDateLike(raw) ? _formatDate(text) : text;
+  }
+
+  Widget _buildFieldCell(String key, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _humanizeKey(key),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 12.toAutoScaledWidth,
+            fontWeight: FontWeight.w500,
+            color: _titleColor,
+            height: 1.3,
+          ),
+        ),
+        SizedBox(height: 4.toAutoScaledHeight),
+        Text(
+          value,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 14.toAutoScaledWidth,
+            fontWeight: FontWeight.w600,
+            color: _dataColor,
+            height: 1.35,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDynamicGrid(List<MapEntry<String, dynamic>> entries) {
+    if (entries.isEmpty) return const SizedBox.shrink();
+
+    final rows = <Widget>[];
+
+    for (var i = 0; i < entries.length; i += 2) {
+      if (i > 0) {
+        rows.add(SizedBox(height: _cardGap.toAutoScaledHeight));
+      }
+
+      rows.add(
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _buildFieldCell(
+                entries[i].key,
+                _displayValue(entries[i]),
+              ),
+            ),
+            SizedBox(width: _cardGap.toAutoScaledWidth),
+            Expanded(
+              child: i + 1 < entries.length
+                  ? _buildFieldCell(
+                      entries[i + 1].key,
+                      _displayValue(entries[i + 1]),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: rows,
+    );
+  }
+
+  Widget _buildFooter() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        if (_hasStatusKey())
+          Flexible(
+            child: StatusChip(
+              status: _resolveStatus(_statusRawValue()),
+              displayLabel: _statusLabel(),
+            ),
+          )
+        else
+          const SizedBox.shrink(),
+        Icon(
+          Icons.open_in_new,
+          size: 20.toAutoScaledWidth,
+          color: _dataColor,
+        ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentTheme = KAppX.globalProvider
-        .read(KAppX.theme.current)
-        .themeBox;
+    final entries = _contentEntries();
 
-    /// ✅ GENERIC FALLBACK
-    if (from.isEmpty) {
-      return GestureDetector(
-        onTap: onTap,
-        child: _buildCard(child: _buildGenericUI(currentTheme)),
-      );
-    }
-
-    return GestureDetector(
-      onTap: onTap,
-      child: _buildCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// 🔝 HEADER
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.toAutoScaledHeight),
+      child: Material(
+        color: _backgroundColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(_cardRadius.toAutoScaledWidth),
+          side: const BorderSide(color: _borderColor, width: 1),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.all(_cardPadding.toAutoScaledWidth),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: Text(
-                    _requestIdText(),
-                    style: TextStyle(
-                      fontWeight: currentTheme.fontWeights.wBolder,
-                      fontSize: currentTheme.fontSizes.s16,
-                    ),
-                    textAlign: TextAlign.start,
-                  ),
-                ),
-                StatusChip(
-                  status: _resolveStatus(data["status"]),
-                  displayLabel: _statusLabel(),
-                ),
+                _buildDynamicGrid(entries),
+                if (entries.isNotEmpty || _hasStatusKey())
+                  SizedBox(height: _cardGap.toAutoScaledHeight),
+                _buildFooter(),
               ],
             ),
-            12.toVerticalSizedBox,
-
-            Text(
-              "Request Name: ${data["requestName"] ?? "-"}",
-              style: TextStyle(
-                fontWeight: currentTheme.fontWeights.wBolder,
-                fontSize: currentTheme.fontSizes.s16,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// ✅ GENERIC UI
-  Widget _buildGenericUI(dynamic theme) {
-    final entries = data.entries
-        .where(
-          (e) =>
-              e.value != null &&
-              e.value.toString().isNotEmpty &&
-              e.key.toLowerCase() != 'status' &&
-              !['id', 'request id', 'request_id'].contains(e.key.toLowerCase()),
-        )
-        .toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              _requestIdText(),
-              style: TextStyle(
-                fontWeight: theme.fontWeights.wBolder,
-                fontSize: theme.fontSizes.s16,
-              ),
-              textAlign: TextAlign.start,
-            ),
-            StatusChip(
-              status: _resolveStatus(data["status"]),
-              displayLabel: _statusLabel(),
-            ),
-          ],
-        ),
-        12.toVerticalSizedBox,
-
-        ...entries.map((e) {
-          final value = _isDateLike(e.value)
-              ? _formatDate(e.value.toString())
-              : e.value.toString();
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 6),
-            child: _buildInfoRow(_humanizeKey(e.key), value),
-          );
-        }),
-      ],
-    );
-  }
-
-  Widget _buildInfo(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.black54),
-        ),
-        2.toVerticalSizedBox,
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-      ],
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return RichText(
-      textAlign: TextAlign.start,
-      text: TextSpan(
-        text: "$label: ",
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-        children: [
-          TextSpan(
-            text: value,
-            style: const TextStyle(color: Colors.grey),
           ),
-        ],
+        ),
       ),
     );
   }

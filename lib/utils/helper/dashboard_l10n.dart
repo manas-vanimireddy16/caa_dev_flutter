@@ -637,6 +637,51 @@ class DashboardL10n {
     }
   }
 
+  ///Tender Services
+  String get requestingEntityOrRelevantDepartment => _t(
+    'Requesting Entity or Relevant Department',
+    'الجهة الطالبة أو القسم المعني',
+  );
+
+  String get implementationPeriod => _t('Implementation period', 'مدة التنفيذ');
+
+  String get estimatedCost => _t('Estimated Cost', 'التكلفة التقديرية');
+
+  String get budgetCode => _t('Budget code', 'رمز الميزانية');
+
+  String get tenderOptionCancelledTender =>
+      _t('Cancelled tender', 'مناقصة ملغاة');
+
+  String get tenderOptionRefloatedTender => _t(
+    'Refloated tender (Resubmit previous tender request)',
+    'إعادة طرح مناقصة (إعادة تقديم طلب مناقصة سابق)',
+  );
+
+  String get typeOfRequest => _t('Type of Request', 'نوع الطلب');
+
+  String get titleOfEnquire => _t('Title of Enquire', 'عنوان الاستفسار');
+
+  String get titleOfProject => _t('Title of project', 'عنوان المشروع');
+
+  String get typeOfProject => _t('Type of Project', 'نوع المشروع');
+
+  String get projectCodeBudgetCode =>
+      _t('Project code/budget code', 'رمز المشروع/رمز الميزانية');
+
+  String get companyName => _t('Company Name', 'اسم الشركة');
+
+  String get attachment => _t('Attachment', 'مرفق');
+  String get descriptionPlaceholder =>
+      _t('Write your description', 'اكتب وصفك');
+
+  String get projectCodeBudgetCodePlaceholder =>
+      _t('Project code/budget code', 'رمز المشروع/رمز الميزانية');
+
+  String get titleOfProjectPlaceholder =>
+      _t('Enter Title of Project', 'أدخل عنوان المشروع');
+
+  String get enterProjectCodeBudgetCode =>
+      _t('Enter Project Code/Budget Code', 'أدخل رمز المشروع / رمز الميزانية');
   // Logistics Daily/Emergency
   String get vehicleRequiredFor =>
       _t('Vehicle Required For', 'المركبة المطلوبة لـ');
@@ -650,8 +695,6 @@ class DashboardL10n {
     'Enter request title (min 5, max 250 characters)',
     'أدخل عنوان الطلب (5 أحرف كحد أدنى و250 كحد أقصى)',
   );
-
-  String get typeOfRequest => _t('Type of Request', 'نوع الطلب');
 
   String get purposeOfTravel => _t('Purpose of Travel', 'الغرض من السفر');
 
@@ -1921,6 +1964,16 @@ class DashboardL10n {
         return typeOfMaintenanceDetailsRequired;
       case 'Preferred Maintenance Date':
         return preferredMaintenanceDate;
+      case 'Type Of Enquire':
+        return titleOfEnquire;
+      case 'Budget Code':
+        return budgetCode;
+      case 'Estimated Cost':
+        return estimatedCost;
+      case 'Type of Project':
+        return typeOfProject;
+      case 'Project Code/Budget Code':
+        return projectCodeBudgetCode;
       default:
         return _formatKey(key);
     }
@@ -2452,6 +2505,27 @@ class DashboardL10n {
         return _t('Proposed Basic Salary', 'الراتب الأساسي المقترح');
       case 'Annual Periodic Allowance':
         return _t('Annual Periodic Allowance', 'العلاوة الدورية السنوية');
+
+      case 'Type Of Enquire':
+        return titleOfEnquire;
+
+      case 'Budget Code':
+        return budgetCode;
+
+      case 'Estimated Cost':
+        return estimatedCost;
+
+      case 'Type of Project':
+        return typeOfProject;
+
+      case 'Project Code/Budget Code':
+        return projectCodeBudgetCode;
+
+      case 'Company Name':
+        return companyName;
+
+      case 'Request Type':
+        return typeOfRequest;
 
       default:
         return _formatKey(key);

@@ -200,12 +200,17 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
   void didChangeTabRoute(TabPageRoute previousRoute) {
     super.didChangeTabRoute(previousRoute);
 
-    _loadData();
+    _refreshServicesData();
   }
 
   Future<void> _loadData() async {
     if (_hasLoadedData) return;
     _hasLoadedData = true;
+    await _refreshServicesData();
+  }
+
+  Future<void> _refreshServicesData() async {
+    if (!mounted) return;
 
     final controller = ref.read(servicesProvider.notifier);
     final user = KAppX.globalProvider.read(userProvider);

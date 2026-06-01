@@ -260,14 +260,16 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
-
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
-
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+          ? StatSummaryHelper.buildStatList(
+              state.kpiData.data?.toJson(),
+              titleForKey: titleForKey,
+            )
+          : StatSummaryHelper.buildStatList(
+              state.approvalKpiData.data?.toJson(),
+              titleForKey: titleForKey,
+            );
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -433,11 +435,11 @@ class _VSController extends StateNotifier<_ViewState> {
   final contractServiceInstance = ContractServiceRequestRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  List<DynamicField> get contractServiceFields => [
+  List<DynamicField> buildContractServiceFields(DashboardL10n l10n) => [
     /// ================= TITLE OF PROJECT =================
     DynamicField(
       name: 'title_of_project',
-      label: 'Title of project',
+      label: l10n.titleOfProject,
       type: FieldType.text,
       required: true,
     ),
@@ -445,7 +447,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PROJECT CODE =================
     DynamicField(
       name: 'project_or_budget_code',
-      label: 'Project code/budget code',
+      label: l10n.projectCodeBudgetCode,
       type: FieldType.text,
       required: true,
     ),
@@ -453,7 +455,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
-      label: 'Description',
+      label: l10n.requestDetailsLabel('Description'),
       type: FieldType.textarea,
       required: true,
     ),
@@ -461,7 +463,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= COMPANY NAME =================
     DynamicField(
       name: 'company_name',
-      label: 'Company Name',
+      label: l10n.companyName,
       type: FieldType.text,
       required: true,
     ),
@@ -469,7 +471,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DATE =================
     DynamicField(
       name: 'date_of_submission',
-      label: 'Date',
+      label: l10n.dateOfSubmission,
       type: FieldType.date,
       required: true,
     ),
@@ -477,7 +479,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PHONE =================
     DynamicField(
       name: 'phone',
-      label: 'Phone Number',
+      label: l10n.phoneNumber,
       type: FieldType.number,
       required: true,
     ),
@@ -485,7 +487,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= ATTACHMENTS =================
     DynamicField(
       name: 'attachments',
-      label: 'Attachment',
+      label: l10n.attachment,
       type: FieldType.file,
       required: true,
     ),
@@ -1047,6 +1049,20 @@ class _VSController extends StateNotifier<_ViewState> {
     debugPrint('✅ Allowed: User can act on this approval level');
 
     return true;
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name'] ?? '';
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role'] ?? '';
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
   }
 
   ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {

@@ -9,6 +9,7 @@ import 'package:code_setup/presentation/common_widgets/chat.dart';
 import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
 import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
 import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
+import 'package:code_setup/presentation/common_widgets/employee_information_card.dart';
 import 'package:code_setup/presentation/common_widgets/requestCard.dart';
 import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.dart';
 import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';
@@ -50,6 +51,7 @@ import 'package:code_setup/repository/assests_affair/residental_unit_rental/doma
 import 'package:code_setup/repository/tender_services/contrct_service_request/domain/domain.dart';
 import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
 import 'package:code_setup/repository/tender_services/request_tender_analysis_service/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
@@ -124,6 +126,7 @@ class _ContractServiceRequestScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -131,7 +134,9 @@ class _ContractServiceRequestScreenState
         padding: const EdgeInsets.all(12),
         children: [
           /// KPI
-          StatSummaryRow(stats: controller.currentStats),
+          StatSummaryRow(
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
+          ),
           20.toHorizontalSizedBox,
 
           /// Status Breakdown
@@ -139,7 +144,10 @@ class _ContractServiceRequestScreenState
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
+            title: l10n.requestsStatusBreakdown,
+            centerMetricLabel: l10n.totalTickets,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
             onChanged: controller.onStatusFilterChanged,
             breakdown: state.statusBreakdown.data,
           ),
@@ -149,7 +157,8 @@ class _ContractServiceRequestScreenState
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalTickets,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,

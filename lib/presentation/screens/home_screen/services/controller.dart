@@ -1,10 +1,10 @@
 part of 'view.dart';
 
-final servicesProvider =
-    StateNotifierProvider.autoDispose<_VSController, _ViewState>((ref) {
-      final stateController = _VSController();
-      return stateController;
-    });
+final servicesProvider = StateNotifierProvider<_VSController, _ViewState>((
+  ref,
+) {
+  return _VSController();
+});
 
 class _ViewState {
   final bool isLoading;
@@ -126,26 +126,55 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> fetchUserRoles(int id) async {
+    if (!mounted) return;
     state = state.copyWith(isLoading: true);
 
     try {
       final roles = await _fetchAndStoreRoles(id);
+      if (!mounted) return;
+
       final effectiveRoleId = await _ensureRoleSelected(roles);
+      if (!mounted) return;
+
       final services = _filterServicesByRole(roles, effectiveRoleId);
       state = state.copyWith(services: services, isLoading: false);
     } catch (e) {
       debugPrint('fetchUserRoles error: $e');
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 
   List<Service> _filterServicesByRole(UserRoleResponse roles, int roleId) {
-    final matched = state.userRoles.data?.roleDetails?.firstWhere(
+    final matched = roles.data?.roleDetails?.firstWhere(
       (d) => d.role?.id == roleId,
       orElse: () => RoleDetail(services: []),
     );
 
     return matched?.services ?? [];
+  }
+
+  /// Updates the services list for the active role. Applies cached role
+  /// services immediately, then optionally refreshes from the API.
+  Future<void> syncWithSelectedRole({
+    required RoleDetail role,
+    int? userId,
+  }) async {
+    if (!mounted) return;
+
+    final roleId = role.role?.id ?? 0;
+    final roleName = role.role?.name ?? '';
+    final immediateServices = role.services ?? [];
+
+    state = state.copyWith(
+      services: immediateServices,
+      selectedRole: roleName,
+      isLoading: userId != null && userId != 0,
+    );
+
+    if (userId == null || userId == 0) return;
+    await fetchUserRoles(userId);
   }
 
   Future<int> _ensureRoleSelected(UserRoleResponse roles) async {
@@ -168,6 +197,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final roleId = saved?.roleId;
     final roles = await repo.getUserRoles(id);
 
+    if (!mounted) return roles;
     state = state.copyWith(userRoles: roles);
 
     if (roleId == null || roleId == 0) {
@@ -198,23 +228,27 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> fetchBookmarks() async {
-    if (_isFetchingBookmarks) return;
+    if (_isFetchingBookmarks || !mounted) return;
     _isFetchingBookmarks = true;
 
     final showLoading = state.bookmarkedServiceIds.isEmpty;
-    if (showLoading) {
+    if (showLoading && mounted) {
       state = state.copyWith(isBookmarksLoading: true);
     }
 
     try {
       final bookmarks = await dashboardinstance.getBookmarks();
+      if (!mounted) return;
+
       state = state.copyWith(
         bookmarkedServiceIds: _bookmarkIdsFrom(bookmarks),
         isBookmarksLoading: false,
       );
     } catch (e) {
       debugPrint('fetchBookmarks error: $e');
-      state = state.copyWith(isBookmarksLoading: false);
+      if (mounted) {
+        state = state.copyWith(isBookmarksLoading: false);
+      }
     } finally {
       _isFetchingBookmarks = false;
     }
@@ -410,6 +444,24 @@ class _VSController extends StateNotifier<_ViewState> {
       case 'CAA029':
         KAppX.router.push(
           AppealAgainstAdministrativeDecisionsRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+
+      case 'CAA012':
+        KAppX.router.push(
+          RequestAServiceToRespondToEnquiriesRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+
+      case 'CAA013':
+        KAppX.router.push(
+          RequestTenderAnalysisServiceRoute(
             service: service ?? Service(),
             subService: subService ?? SubService(),
           ),
