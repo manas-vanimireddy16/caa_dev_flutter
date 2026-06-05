@@ -69,23 +69,23 @@ part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
 
 @RoutePage()
-class RequestMaintenanceScreen extends ConsumerStatefulWidget {
+class MaintenanceofExternalServiceScreen extends ConsumerStatefulWidget {
   final Service service;
   final SubService subService;
 
-  const RequestMaintenanceScreen({
+  const MaintenanceofExternalServiceScreen({
     super.key,
     required this.service,
     required this.subService,
   });
 
   @override
-  ConsumerState<RequestMaintenanceScreen> createState() =>
-      _RequestMaintenanceScreenState();
+  ConsumerState<MaintenanceofExternalServiceScreen> createState() =>
+      _MaintenanceofExternalServiceScreenState();
 }
 
-class _RequestMaintenanceScreenState
-    extends ConsumerState<RequestMaintenanceScreen> {
+class _MaintenanceofExternalServiceScreenState
+    extends ConsumerState<MaintenanceofExternalServiceScreen> {
   late FocusNode _focusNode;
   late _VSControllerParams _providerArgs;
   late PageController _pageController;

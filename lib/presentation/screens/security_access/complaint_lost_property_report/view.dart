@@ -60,7 +60,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-part 'widgets/request_to_book_caa_halls_request.dart';
+part 'widgets/complaint_new_request.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
 part 'widgets/request_details_tabs.dart';
@@ -69,23 +69,23 @@ part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
 
 @RoutePage()
-class RequestMaintenanceScreen extends ConsumerStatefulWidget {
+class ComplaintLostPropertyReportScreen extends ConsumerStatefulWidget {
   final Service service;
   final SubService subService;
 
-  const RequestMaintenanceScreen({
+  const ComplaintLostPropertyReportScreen({
     super.key,
     required this.service,
     required this.subService,
   });
 
   @override
-  ConsumerState<RequestMaintenanceScreen> createState() =>
-      _RequestMaintenanceScreenState();
+  ConsumerState<ComplaintLostPropertyReportScreen> createState() =>
+      _ComplaintLostPropertyReportScreenState();
 }
 
-class _RequestMaintenanceScreenState
-    extends ConsumerState<RequestMaintenanceScreen> {
+class _ComplaintLostPropertyReportScreenState
+    extends ConsumerState<ComplaintLostPropertyReportScreen> {
   late FocusNode _focusNode;
   late _VSControllerParams _providerArgs;
   late PageController _pageController;

@@ -1,13 +1,14 @@
 part of '../view.dart';
 
 @RoutePage()
-class RequestMaintenanceNewRequestScreen extends ConsumerStatefulWidget {
+class ComplaintLostPropertyReportNewRequestScreen
+    extends ConsumerStatefulWidget {
   final int serviceId;
   final int subServiceId;
   final Service service;
   final SubService subService;
 
-  const RequestMaintenanceNewRequestScreen({
+  const ComplaintLostPropertyReportNewRequestScreen({
     super.key,
     required this.serviceId,
     required this.subServiceId,
@@ -16,12 +17,12 @@ class RequestMaintenanceNewRequestScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<RequestMaintenanceNewRequestScreen> createState() =>
-      _RequestMaintenanceNewRequestScreenState();
+  ConsumerState<ComplaintLostPropertyReportNewRequestScreen> createState() =>
+      _ComplaintLostPropertyReportNewRequestScreenState();
 }
 
-class _RequestMaintenanceNewRequestScreenState
-    extends ConsumerState<RequestMaintenanceNewRequestScreen> {
+class _ComplaintLostPropertyReportNewRequestScreenState
+    extends ConsumerState<ComplaintLostPropertyReportNewRequestScreen> {
   late _VSControllerParams _providerArgs;
 
   @override

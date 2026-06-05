@@ -126,6 +126,10 @@ class RouteNames {
       '/cyberSecurityRiskManagementNewRequest';
   static const String cyberSecurityRiskManagementDetails =
       '/cyberSecurityRiskManagementDetails';
+  static const String complaintLostPropertyReportNewRequest =
+      '/complaintLostPropertyReportNewRequest';
+  static const String complaintLostPropertyReportRequestDetailsTabScreen =
+      '/complaintLostPropertyReportRequestDetailsTabScreen';
 
   // ───────────────────────────────
   // IT SERVICES
@@ -330,4 +334,14 @@ class RouteNames {
       '/contractServiceRequestDetails';
   static const String contractServiceRequestNewRequest =
       '/contractServiceRequestNewRequest';
+
+  // ---Maintenance ---
+  static const String maintenanceHomeScreen = '/maintenanceHomeScreen';
+  static const String requestMaintenanceDetails = '/requestMaintenanceDetails';
+  static const String requestMaintenanceNewRequest =
+      '/requestMaintenanceNewRequest';
+  static const String maintenanceOfExternalServiceDetails =
+      '/requestForExtensionDetails';
+  static const String maintenanceOfExternalServiceNewRequest =
+      '/maintenanceOfExternalServiceNewRequest';
 }

@@ -64,6 +64,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: RequestForVAPTAndInfrastructureReviewRoute.page),
         AutoRoute(page: RequestForInternalAuditRoute.page),
         AutoRoute(page: CyberSecurityRiskManagementRoute.page),
+        AutoRoute(page: ComplaintLostPropertyReportRoute.page),
       ],
     ),
 
@@ -118,6 +119,45 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: CyberSecurityRiskManagementDetailsRoute.page,
       path: RouteNames.cyberSecurityRiskManagementDetails,
+    ),
+
+    AutoRoute(
+      page: ComplaintLostPropertyReportNewRequestRoute.page,
+      path: RouteNames.complaintLostPropertyReportNewRequest,
+    ),
+
+    AutoRoute(
+      page: ComplaintLostPropertyReportDetailsRoute.page,
+      path: RouteNames.complaintLostPropertyReportRequestDetailsTabScreen,
+    ),
+
+    ///--- MAINTENANCE ---
+    AutoRoute(
+      page: MaintenanceHomeRoute.page,
+      path: RouteNames.maintenanceHomeScreen,
+      children: [
+        AutoRoute(page: RequestMaintenanceRoute.page, initial: true),
+        AutoRoute(page: MaintenanceofExternalServiceRoute.page),
+      ],
+    ),
+
+    AutoRoute(
+      page: RequestMaintenanceDetailsRoute.page,
+      path: RouteNames.requestMaintenanceDetails,
+    ),
+
+    AutoRoute(
+      page: RequestMaintenanceNewRequestRoute.page,
+      path: RouteNames.requestMaintenanceNewRequest,
+    ),
+
+    AutoRoute(
+      page: MaintenanceofExternalServiceDetailsRoute.page,
+      path: RouteNames.maintenanceOfExternalServiceDetails,
+    ),
+    AutoRoute(
+      page: MaintenanceExternalServiceNewRequestRoute.page,
+      path: RouteNames.maintenanceOfExternalServiceNewRequest,
     ),
 
     /// --- IT SERVICES ---

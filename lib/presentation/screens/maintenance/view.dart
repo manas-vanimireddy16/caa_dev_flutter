@@ -40,8 +40,8 @@ part 'widgets/drawer.dart';
 // part 'my_profile_page/widget/my_profile_widget.dart';
 
 @RoutePage()
-class TrainingsandDevelopmentHomeScreen extends ConsumerWidget {
-  const TrainingsandDevelopmentHomeScreen({super.key});
+class MaintenanceHomeScreen extends ConsumerWidget {
+  const MaintenanceHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,11 +53,11 @@ class TrainingsandDevelopmentHomeScreen extends ConsumerWidget {
 
     return AutoTabsRouter.builder(
       routes: [
-        AssignaTasktoEmployeeRoute(
+        RequestMaintenanceRoute(service: Service(), subService: SubService()),
+        MaintenanceofExternalServiceRoute(
           service: Service(),
           subService: SubService(),
         ),
-        FollowUpReportRoute(service: Service(), subService: SubService()),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

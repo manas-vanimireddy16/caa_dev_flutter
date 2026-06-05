@@ -1,14 +1,14 @@
 part of '../view.dart';
 
 @RoutePage()
-class RequestMaintenanceDetailsScreen extends ConsumerStatefulWidget {
+class MaintenanceofExternalServiceDetailsScreen extends ConsumerStatefulWidget {
   final String from;
   final int id;
   final int serviceId;
   final int subServiceId;
   final Service service;
   final SubService subService;
-  const RequestMaintenanceDetailsScreen({
+  const MaintenanceofExternalServiceDetailsScreen({
     super.key,
     required this.id,
     required this.serviceId,
@@ -19,11 +19,12 @@ class RequestMaintenanceDetailsScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState createState() => _RequestMaintenanceDetailsScreenState();
+  ConsumerState createState() =>
+      _MaintenanceofExternalServiceDetailsScreenState();
 }
 
-class _RequestMaintenanceDetailsScreenState
-    extends ConsumerState<RequestMaintenanceDetailsScreen> {
+class _MaintenanceofExternalServiceDetailsScreenState
+    extends ConsumerState<MaintenanceofExternalServiceDetailsScreen> {
   late _VSControllerParams _providerArgs;
 
   @override
