@@ -142,7 +142,10 @@ class _DateFieldWidgetState extends ConsumerState<DateFieldWidget> {
                   );
 
                   if (year != null) {
-                    notifier.updateValue(widget.field.name, year.toString());
+                    final selectedYear = year.toString();
+
+                    notifier.updateValue(widget.field.name, selectedYear);
+                    widget.field.onChanged?.call(selectedYear, ref);
                   }
                 }
 
@@ -176,6 +179,7 @@ class _DateFieldWidgetState extends ConsumerState<DateFieldWidget> {
                         pickedDate.formattedDateAsYearMonthDate;
 
                     notifier.updateValue(widget.field.name, selectedDate);
+                    widget.field.onChanged?.call(selectedDate, ref);
                   }
                 }
               },

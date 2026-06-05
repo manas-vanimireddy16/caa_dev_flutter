@@ -8,6 +8,7 @@ import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
 
 class CommonAttachmentsTabContent extends StatelessWidget {
   final List<AttachmentModel> attachments;
@@ -101,6 +102,21 @@ class _AttachmentFileCardState extends State<_AttachmentFileCard> {
 
   bool get _canDownload => (widget.file.fileUrl ?? '').trim().isNotEmpty;
 
+  bool get _isImage {
+    final lower = _fileName.toLowerCase();
+    return lower.endsWith('.png') ||
+        lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.gif') ||
+        lower.endsWith('.webp');
+  }
+
+  bool get _isPdf {
+    final lower = _fileName.toLowerCase();
+    if (lower.endsWith('.pdf')) return true;
+    return _fileType.toLowerCase() == 'pdf';
+  }
+
   Future<Uint8List?> _fetchBytes() async {
     final fileUrl = widget.file.fileUrl?.trim();
     if (fileUrl == null || fileUrl.isEmpty) return null;
@@ -138,48 +154,61 @@ class _AttachmentFileCardState extends State<_AttachmentFileCard> {
     final bytes = await _fetchBytes();
     if (bytes == null || !mounted) return;
 
-    final lower = _fileName.toLowerCase();
-    final isImage =
-        lower.endsWith('.png') ||
-        lower.endsWith('.jpg') ||
-        lower.endsWith('.jpeg') ||
-        lower.endsWith('.gif') ||
-        lower.endsWith('.webp');
-
-    if (!isImage) {
-      ShowFlutterToast().showFlutterToastFailure(
-        widget.l10n.previewNotAvailable,
+    if (_isImage) {
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => Dialog(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppBar(
+                title: Text(_fileName, overflow: TextOverflow.ellipsis),
+                automaticallyImplyLeading: false,
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(ctx).pop(),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 360,
+                width: double.maxFinite,
+                child: InteractiveViewer(
+                  child: Image.memory(bytes, fit: BoxFit.contain),
+                ),
+              ),
+            ],
+          ),
+        ),
       );
       return;
     }
 
-    if (!mounted) return;
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) => Dialog(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppBar(
+    if (_isPdf) {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (ctx) => Scaffold(
+            appBar: AppBar(
               title: Text(_fileName, overflow: TextOverflow.ellipsis),
-              automaticallyImplyLeading: false,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.of(ctx).pop(),
-                ),
-              ],
             ),
-            SizedBox(
-              height: 360,
-              width: double.maxFinite,
-              child: InteractiveViewer(
-                child: Image.memory(bytes, fit: BoxFit.contain),
-              ),
+            body: PdfPreview(
+              maxPageWidth: 700,
+              canChangePageFormat: false,
+              canChangeOrientation: false,
+              allowPrinting: false,
+              allowSharing: false,
+              pdfFileName: _fileName,
+              build: (_) async => bytes,
             ),
-          ],
+          ),
         ),
-      ),
+      );
+      return;
+    }
+
+    ShowFlutterToast().showFlutterToastFailure(
+      widget.l10n.previewNotAvailable,
     );
   }
 

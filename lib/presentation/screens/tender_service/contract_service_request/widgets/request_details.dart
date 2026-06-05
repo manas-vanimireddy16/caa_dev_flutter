@@ -1,8 +1,7 @@
 part of '../view.dart';
 
 @RoutePage()
-class ContractServiceRequestDetailsScreen
-    extends ConsumerStatefulWidget {
+class ContractServiceRequestDetailsScreen extends ConsumerStatefulWidget {
   final String from;
   final int id;
   final int serviceId;
@@ -20,8 +19,7 @@ class ContractServiceRequestDetailsScreen
   });
 
   @override
-  ConsumerState createState() =>
-      _ContractServiceRequestDetailsScreenState();
+  ConsumerState createState() => _ContractServiceRequestDetailsScreenState();
 }
 
 class _ContractServiceRequestDetailsScreenState
@@ -61,7 +59,7 @@ class _ContractServiceRequestDetailsScreenState
           final state = ref.watch(_vsProvider(_providerArgs));
           final l10n = DashboardL10n.of(context);
 
-          if (state.requestDetails == null || state.isLoading) {
+          if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 

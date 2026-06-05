@@ -67,7 +67,10 @@ class _TimeFieldWidgetState extends ConsumerState<TimeFieldWidget> {
 
     if (!mounted || pickedTime == null) return;
 
-    notifier.updateValue(widget.field.name, _formatTimeForApi(pickedTime));
+    final selectedTime = _formatTimeForApi(pickedTime);
+
+    notifier.updateValue(widget.field.name, selectedTime);
+    widget.field.onChanged?.call(selectedTime, ref);
   }
 
   @override

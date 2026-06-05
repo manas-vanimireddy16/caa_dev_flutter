@@ -668,8 +668,9 @@ class DashboardL10n {
   String get projectCodeBudgetCode =>
       _t('Project code/budget code', 'رمز المشروع/رمز الميزانية');
 
-  String get companyName => _t('Company Name', 'اسم الشركة');
+  String get enterCompanyName => _t('Enter Company Name', 'أدخل اسم الشركة');
 
+  String get companyName => _t('Company Name', 'اسم الشركة');
   String get attachment => _t('Attachment', 'مرفق');
   String get descriptionPlaceholder =>
       _t('Write your description', 'اكتب وصفك');
@@ -775,6 +776,143 @@ class DashboardL10n {
   String get maintenanceType => _t('Maintenance Type', 'نوع الصيانة');
 
   String get vehicleNumber => _t('Vehicle Number', 'رقم المركبة');
+
+  /// Book CAA Halls
+  ///
+  String get expectedNumberOfAttendeesOptional => _t(
+    'Expected Number of Attendees (Optional)',
+    'العدد المتوقع للحضور (اختياري)',
+  );
+
+  String get selectHall => _t('Select Hall', 'اختر القاعة');
+
+  String get typeOfHall => _t('Type of Hall', 'نوع القاعة');
+
+  String get typeOfHallConferenceHall => _t('Conference Hall', 'قاعة مؤتمرات');
+
+  String get typeOfHallMeetingHall => _t('Meeting Hall', 'قاعة اجتماعات');
+
+  String get caaConferenceHall =>
+      _t('CAA Conference Hall', 'قاعة مؤتمرات هيئة الطيران المدني');
+
+  String get caaMeetingHall =>
+      _t('CAA Meeting Hall', 'قاعة اجتماعات هيئة الطيران المدني');
+
+  String get hallName => _t('Hall Name', 'اسم القاعة');
+
+  String get expectedNumberOfAttendees =>
+      _t('Expected Number of Attendees', 'العدد المتوقع للحضور');
+
+  String get purposeOfEvent => _t('Purpose of Event', 'الغرض من الفعالية');
+
+  String get purposeOfEventMeeting =>
+      _t('Purpose of Event / Meeting', 'الغرض من الفعالية / الاجتماع');
+
+  String get purposeOfEventMeetingRequired => _t(
+    'Purpose of Event / Meeting is required',
+    'الغرض من الفعالية / الاجتماع مطلوب',
+  );
+
+  String get typeOfHallRequired =>
+      _t('Type of Hall is required', 'نوع القاعة مطلوب');
+
+  String get startDateRequired =>
+      _t('Start Date is required', 'تاريخ البداية مطلوب');
+
+  String get endDateRequired =>
+      _t('End Date is required', 'تاريخ النهاية مطلوب');
+
+  String get startTimeRequired =>
+      _t('Start Time is required', 'وقت البداية مطلوب');
+
+  String get endTimeRequired => _t('End Time is required', 'وقت النهاية مطلوب');
+
+  String get hallSelectionRequired =>
+      _t('Hall selection is required', 'اختيار القاعة مطلوب');
+
+  String get validAttendeeCountRequired =>
+      _t('Please enter a valid attendee count', 'يرجى إدخال عدد حضور صالح');
+
+  String get subject => _t('Subject', 'الموضوع');
+
+  String get subjectClassification =>
+      _t('Subject Classification', 'تصنيف الموضوع');
+
+  String get topic => _t('Topic', 'الموضوع');
+
+  String get concernedDepartment =>
+      _t('Concerned Department', 'الإدارة المعنية');
+
+  String get dateFrom => _t('Date From', 'التاريخ من');
+
+  String get dateTo => _t('Date To', 'التاريخ إلى');
+
+  String get sentBy => _t('Sent By', 'أرسل بواسطة');
+
+  String get sentDate => _t('Sent Date', 'تاريخ الإرسال');
+
+  String get letterDate => _t('Letter Date', 'تاريخ الخطاب');
+
+  /// Follow-up report
+  String get followUpEnterSentBy => _t('Enter Sent By', 'أدخل اسم المرسل');
+
+  String get followUpSentByRequired =>
+      _t('Sent By is required', 'اسم المرسل مطلوب');
+
+  String get followUpLetterDateRequired =>
+      _t('Letter Date is required', 'تاريخ الخطاب مطلوب');
+
+  String get followUpEnterSubject => _t('Enter Subject', 'أدخل الموضوع');
+
+  String get followUpSubjectRequired =>
+      _t('Subject is required', 'الموضوع مطلوب');
+
+  String get followUpSelectSubjectClassification =>
+      _t('Select Subject Classification', 'اختر تصنيف الموضوع');
+
+  String get followUpSubjectClassificationRequired =>
+      _t('Subject Classification is required', 'تصنيف الموضوع مطلوب');
+
+  String get followUpEnterTopic => _t('Enter Topic', 'أدخل المحور');
+
+  String get followUpTopicRequired => _t('Topic is required', 'المحور مطلوب');
+
+  String get followUpSelectConcernedDepartment =>
+      _t('Select Concerned Department', 'اختر الإدارة المعنية');
+
+  String get followUpConcernedDepartmentRequired =>
+      _t('Concerned Department is required', 'الإدارة المعنية مطلوبة');
+
+  String get followUpDateFromRequired =>
+      _t('Date From is required', 'تاريخ البداية مطلوب');
+
+  String get followUpDateToRequired =>
+      _t('Date To is required', 'تاريخ النهاية مطلوب');
+
+  String get followUpAttachmentRequired =>
+      _t('Attachment is required', 'المرفق مطلوب');
+
+  String get followUpUploadAttachmentRequired => _t(
+    'Please upload at least one attachment',
+    'يرجى رفع مرفق واحد على الأقل',
+  );
+
+  String get followUpUrgent => _t('Urgent', 'عاجل');
+
+  String get followUpVeryUrgent => _t('Very Urgent', 'عاجل جداً');
+
+  String get followUpConfidential => _t('Confidential', 'سري');
+
+  String get followUpDepartmentIt => _t('IT', 'تقنية المعلومات');
+
+  String get followUpDepartmentHr => _t('HR', 'الموارد البشرية');
+
+  String get followUpDepartmentTraining => _t('Training', 'التدريب');
+
+  String get followUpDepartmentFinance => _t('Finance', 'المالية');
+
+  String get followUpDepartmentProjectsMaintenance =>
+      _t('Projects & Maintenance', 'المشاريع والصيانة');
 
   /// IT Services
   /// Salalah
@@ -1950,6 +2088,42 @@ class DashboardL10n {
         return checkInDate;
       case 'Request Submission Date':
         return requestSubmissionDate;
+      case 'Purpose of Event':
+        return purposeOfEvent;
+      case 'Purpose of Event / Meeting':
+        return purposeOfEventMeeting;
+      case 'Sent By':
+        return sentBy;
+      case 'Letter Date':
+        return letterDate;
+      case 'Subject':
+        return subject;
+      case 'Subject Classification':
+        return subjectClassification;
+      case 'Topic':
+        return topic;
+      case 'Concerned Department':
+        return concernedDepartment;
+      case 'Date From':
+        return dateFrom;
+      case 'Date To':
+        return dateTo;
+      case 'Attachments':
+        return attachmentsTabLabel;
+      case 'Type of Hall':
+        return typeOfHall;
+      case 'Select Hall':
+        return selectHall;
+      case 'Hall Name':
+        return hallName;
+      case 'Expected Number of Attendees':
+        return expectedNumberOfAttendees;
+      case 'Expected Number of Attendees (Optional)':
+        return expectedNumberOfAttendeesOptional;
+      case 'Start Time':
+        return startTime;
+      case 'End Time':
+        return endTime;
       case 'Problem':
         return problem;
       case 'Created By':
@@ -2130,6 +2304,51 @@ class DashboardL10n {
 
       case 'End Date':
         return endDate;
+
+      case 'Start Time':
+        return startTime;
+
+      case 'End Time':
+        return endTime;
+
+      case 'Purpose of Event':
+        return purposeOfEvent;
+
+      case 'Purpose of Event / Meeting':
+        return purposeOfEventMeeting;
+      case 'Sent By':
+        return sentBy;
+      case 'Letter Date':
+        return letterDate;
+      case 'Subject':
+        return subject;
+      case 'Subject Classification':
+        return subjectClassification;
+      case 'Topic':
+        return topic;
+      case 'Concerned Department':
+        return concernedDepartment;
+      case 'Date From':
+        return dateFrom;
+      case 'Date To':
+        return dateTo;
+      case 'Attachments':
+        return attachmentsTabLabel;
+
+      case 'Type of Hall':
+        return typeOfHall;
+
+      case 'Select Hall':
+        return selectHall;
+
+      case 'Hall Name':
+        return hallName;
+
+      case 'Expected Number of Attendees':
+        return expectedNumberOfAttendees;
+
+      case 'Expected Number of Attendees (Optional)':
+        return expectedNumberOfAttendeesOptional;
 
       case 'Employee Mail':
         return employeeMail;
@@ -2342,9 +2561,6 @@ class DashboardL10n {
       case 'Employee ID Number':
         return _t('Employee ID Number', 'الرقم الوظيفي');
 
-      case 'Job Title':
-        return _t('Job Title', 'المسمى الوظيفي');
-
       case 'Financial Grade':
         return _t('Financial Grade', 'الدرجة المالية');
 
@@ -2356,15 +2572,6 @@ class DashboardL10n {
 
       case 'Shift End Date':
         return _t('Shift End Date', 'تاريخ نهاية المناوبة');
-
-      case 'Start Time':
-        return _t('Start Time', 'وقت البداية');
-
-      case 'End Time':
-        return _t('End Time', 'وقت النهاية');
-
-      case 'Reason For Request':
-        return _t('Reason For Request', 'سبب الطلب');
 
       case 'Created By':
         return _t('Created By', 'تم الإنشاء بواسطة');
@@ -2523,9 +2730,6 @@ class DashboardL10n {
 
       case 'Company Name':
         return companyName;
-
-      case 'Request Type':
-        return typeOfRequest;
 
       default:
         return _formatKey(key);

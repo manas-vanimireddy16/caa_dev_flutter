@@ -38,13 +38,17 @@ import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_mo
 import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_roles_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_user_model.dart';
 import 'package:code_setup/presentation/screens/legal_consultation_services/models/legal_contract_review_model.dart';
+import 'package:code_setup/presentation/screens/legal_consultation_services/widgets/workflow_widget.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
 import 'package:code_setup/repository/legal_consultation_services/legal_consultation_and_review_of_administrative_decisions/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
@@ -65,6 +69,7 @@ part 'widgets/request_details_tabs.dart';
 part 'widgets/request_list.dart';
 part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
+part 'widgets/assign_user.dart';
 
 @RoutePage()
 class LegalConsultationandReviewofAdministrativeDecisionsScreen

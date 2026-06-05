@@ -383,6 +383,14 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
+      case 'CAA065':
+        KAppX.router.push(
+          FollowUpReportRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       case 'CAA004':
         KAppX.router.push(
           MuscatDashboard(
@@ -449,6 +457,14 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
+      case 'CAA027':
+        KAppX.router.push(
+          LegalConsultationandReviewofAdministrativeDecisionsRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
 
       case 'CAA012':
         KAppX.router.push(
@@ -462,6 +478,22 @@ class _VSController extends StateNotifier<_ViewState> {
       case 'CAA013':
         KAppX.router.push(
           RequestTenderAnalysisServiceRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'CAA014':
+        KAppX.router.push(
+          ContractServiceRequestRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
+      case 'CAA050':
+        KAppX.router.push(
+          RequestToBookCAAHallsRoute(
             service: service ?? Service(),
             subService: subService ?? SubService(),
           ),

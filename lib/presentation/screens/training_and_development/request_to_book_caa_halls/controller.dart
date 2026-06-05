@@ -31,6 +31,7 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
+  final bool isRequestLoading;
 
   final List<FileUploadItem> selectedFileUrl;
   final List<Map<String, dynamic>> attachments;
@@ -47,8 +48,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<ContractServiceModel> requestData;
-  final List<ContractServiceModel> actionItems;
+  final List<BookCaaHallRequestModel> requestData;
+  final List<BookCaaHallRequestModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final int approvalId;
@@ -56,7 +57,7 @@ class _ViewState {
   final bool isButtonDisabled;
   final List<ChatMessageModel> chatById;
   final List<AttachmentModel> attachmentsById;
-
+  final List<HallData> availableHalls;
   final List<String> months = [
     'January',
     'February',
@@ -77,6 +78,7 @@ class _ViewState {
 
   _ViewState({
     required this.isLoading,
+    required this.isRequestLoading,
     required this.selectedFileUrl,
     required this.attachments,
     required this.kpiData,
@@ -96,11 +98,13 @@ class _ViewState {
     required this.isButtonDisabled,
     required this.chatById,
     required this.attachmentsById,
+    required this.availableHalls,
   });
 
   _ViewState.init()
     : this(
         isLoading: false,
+        isRequestLoading: false,
         selectedFileUrl: [],
         attachments: [],
         kpiData: KPIResponse(),
@@ -121,10 +125,12 @@ class _ViewState {
         chatById: [],
 
         attachmentsById: [],
+        availableHalls: [],
       );
 
   _ViewState copyWith({
     bool? isLoading,
+    bool? isRequestLoading,
     int? threatType,
     String? selectedPriority,
     String? visitorChecks,
@@ -141,8 +147,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<ContractServiceModel>? requestData,
-    List<ContractServiceModel>? actionItems,
+    List<BookCaaHallRequestModel>? requestData,
+    List<BookCaaHallRequestModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -186,9 +192,11 @@ class _ViewState {
     List<EmployeeList>? selectedUsersList,
     List<ResidentalUnitRentalLocationModel>? unitLocations,
     List<SectionModel>? sections,
+    List<HallData>? availableHalls,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
@@ -209,6 +217,7 @@ class _ViewState {
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
       chatById: chatById ?? this.chatById,
       attachmentsById: attachmentsById ?? this.attachmentsById,
+      availableHalls: availableHalls ?? this.availableHalls,
     );
   }
 }
@@ -234,8 +243,9 @@ class _VSController extends StateNotifier<_ViewState> {
     searchController = TextEditingController();
     fetchKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalKpi();
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
@@ -260,14 +270,16 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
-
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
-
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? StatSummaryHelper.buildStatList(
+          state.kpiData.data?.toJson(),
+          titleForKey: titleForKey,
+        )
+      : StatSummaryHelper.buildStatList(
+          state.approvalKpiData.data?.toJson(),
+          titleForKey: titleForKey,
+        );
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -312,7 +324,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(ContractServiceModel item) {
+  Map<String, String> buildRequestCardData(BookCaaHallRequestModel item) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
@@ -320,7 +332,10 @@ class _VSController extends StateNotifier<_ViewState> {
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
-      'Type of Project': item.titleOfProject ?? 'NA',
+      'Purpose of Event': item.purposeOfEvent ?? 'NA',
+      'Type of Hall': item.typeOfHall ?? 'NA',
+      'Select Hall': item.hall?.name ?? 'NA',
+      // 'Type of Project': item.titleOfProject ?? 'NA',
 
       /// 👇 APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
@@ -339,12 +354,16 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      'Request Submission Date': request?.createdAt.toString() ?? '-',
-      'Type of Project': request?.titleOfProject ?? 'NA',
-      'Project Code/Budget Code': request?.projectCodeBudgetCode ?? 'NA',
-      'Description': request?.description ?? 'NA',
-      'Company Name': request?.companyName ?? 'NA',
-      'Request Type': request?.requestType ?? '-',
+      // 'Request Submission Date':
+      //     formatDate(request?.createdAt.toString()) ?? '-',
+      'Purpose of Event': request?.purposeOfEvent ?? 'NA',
+      'Hall Name': request?.typeOfHall ?? 'NA',
+      'Expected Number of Attendees':
+          request?.noOfAttendees?.toString() ?? 'N/A',
+      'Start Date': request?.startDate ?? 'N/A',
+      'End Date': request?.endDate ?? 'N/A',
+      'Start Time': request?.startTime ?? 'N/A',
+      'End Time': request?.endTime ?? 'N/A',
     };
   }
 
@@ -354,7 +373,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final nextApprover = resolveApproverMap(approvals);
     return {
       "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt.toString()) ?? 'N/A',
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))
@@ -395,7 +414,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      ContractServiceRequestDetailsRoute(
+      RequestToBookCAAHallsDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -421,7 +440,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
     // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      ContractServiceRequestNewRequestRoute(
+      RequestToBookCAAHallsNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -430,64 +449,218 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final contractServiceInstance = ContractServiceRequestRepository();
-  final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
+  final bookcaahallsInstance = CAAHallBookingRepository();
 
-  List<DynamicField> get contractServiceFields => [
-    /// ================= TITLE OF PROJECT =================
+  Future<void> _tryFetchAvailableHalls(WidgetRef ref) async {
+    final formState = ref.read(dynamicFormProvider);
+    final values = formState.values;
+
+    final startDate = values['start_date'];
+    final endDate = values['end_date'];
+    final startTime = values['start_time'];
+    final endTime = values['end_time'];
+    final hallType = values['type_of_hall'];
+
+    if (startDate == null ||
+        endDate == null ||
+        startTime == null ||
+        endTime == null ||
+        hallType == null) {
+      return;
+    }
+
+    await fetchAvailableHalls(
+      startDate: startDate.toString(),
+      endDate: endDate.toString(),
+      startTime: startTime.toString(),
+      endTime: endTime.toString(),
+      hallType: hallType.toString(),
+    );
+  }
+
+  List<DynamicField> buildBookHallServiceFields(DashboardL10n l10n) => [
+    /// ================= PURPOSE OF EVENT / MEETING =================
     DynamicField(
-      name: 'title_of_project',
-      label: 'Title of project',
+      name: 'purpose_of_event',
+      label: l10n.requestDetailsLabel('Purpose of Event / Meeting'),
       type: FieldType.text,
       required: true,
+      placeholder: l10n.enter,
+      validator: (value, values) {
+        final text = value?.toString().trim() ?? '';
+
+        if (text.isEmpty) {
+          return l10n.purposeOfEventMeetingRequired;
+        }
+
+        return null;
+      },
     ),
 
-    /// ================= PROJECT CODE =================
+    /// ================= TYPE OF HALL =================
     DynamicField(
-      name: 'project_or_budget_code',
-      label: 'Project code/budget code',
-      type: FieldType.text,
+      name: 'type_of_hall',
+      label: l10n.requestDetailsLabel('Type of Hall'),
+      type: FieldType.select,
       required: true,
+      placeholder: l10n.select,
+
+      options: [
+        DropdownOption(label: l10n.caaConferenceHall, value: 'Conference Hall'),
+        DropdownOption(label: l10n.caaMeetingHall, value: 'Meeting Hall'),
+      ],
+
+      validator: (value, values) {
+        if (value == null || value.toString().isEmpty) {
+          return l10n.typeOfHallRequired;
+        }
+
+        return null;
+      },
+      onChanged: (value, ref) async {
+        await _tryFetchAvailableHalls(ref);
+      },
     ),
 
-    /// ================= DESCRIPTION =================
+    /// ================= START DATE =================
     DynamicField(
-      name: 'description',
-      label: 'Description',
-      type: FieldType.textarea,
-      required: true,
-    ),
-
-    /// ================= COMPANY NAME =================
-    DynamicField(
-      name: 'company_name',
-      label: 'Company Name',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= DATE =================
-    DynamicField(
-      name: 'date_of_submission',
-      label: 'Date',
+      name: 'start_date',
+      label: l10n.requestDetailsLabel('Start Date'),
       type: FieldType.date,
       required: true,
+      placeholder: 'MM/DD/YYYY',
+
+      validator: (value, values) {
+        if (value == null || value.toString().isEmpty) {
+          return l10n.startDateRequired;
+        }
+
+        return null;
+      },
+      onChanged: (value, ref) async {
+        await _tryFetchAvailableHalls(ref);
+      },
     ),
 
-    /// ================= PHONE =================
+    /// ================= END DATE =================
     DynamicField(
-      name: 'phone',
-      label: 'Phone Number',
-      type: FieldType.number,
+      name: 'end_date',
+      label: l10n.requestDetailsLabel('End Date'),
+      type: FieldType.date,
       required: true,
+      placeholder: 'MM/DD/YYYY',
+
+      validator: (value, values) {
+        if (value == null || value.toString().isEmpty) {
+          return l10n.endDateRequired;
+        }
+
+        return null;
+      },
+      onChanged: (value, ref) async {
+        await _tryFetchAvailableHalls(ref);
+      },
+    ),
+
+    /// ================= START TIME =================
+    DynamicField(
+      name: 'start_time',
+      label: l10n.requestDetailsLabel('Start Time'),
+      type: FieldType.time,
+      required: true,
+      placeholder: 'hh:mm aa',
+
+      validator: (value, values) {
+        if (value == null || value.toString().isEmpty) {
+          return l10n.startTimeRequired;
+        }
+
+        return null;
+      },
+      onChanged: (value, ref) async {
+        await _tryFetchAvailableHalls(ref);
+      },
+    ),
+
+    /// ================= END TIME =================
+    DynamicField(
+      name: 'end_time',
+      label: l10n.requestDetailsLabel('End Time'),
+      type: FieldType.time,
+      required: true,
+      placeholder: 'hh:mm aa',
+
+      validator: (value, values) {
+        if (value == null || value.toString().isEmpty) {
+          return l10n.endTimeRequired;
+        }
+
+        return null;
+      },
+      onChanged: (value, ref) async {
+        await _tryFetchAvailableHalls(ref);
+      },
+    ),
+
+    /// ================= SELECT HALL =================
+    DynamicField(
+      name: 'hall_id',
+      label: l10n.requestDetailsLabel('Select Hall'),
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.select,
+
+      optionsBuilder: (ref) {
+        final state = ref.watch(_vsProvider(params));
+
+        return (state.availableHalls ?? [])
+            .map(
+              (s) =>
+                  DropdownOption(value: s.id.toString(), label: s.name ?? ''),
+            )
+            .toList();
+      },
+
+      validator: (value, values) {
+        if (value == null || value.toString().isEmpty) {
+          return l10n.hallSelectionRequired;
+        }
+
+        return null;
+      },
+    ),
+
+    /// ================= EXPECTED NUMBER OF ATTENDEES =================
+    DynamicField(
+      name: 'expected_attendees',
+      label: l10n.requestDetailsLabel(
+        'Expected Number of Attendees (Optional)',
+      ),
+      type: FieldType.number,
+      required: false,
+      placeholder: l10n.enter,
+
+      validator: (value, values) {
+        final text = value?.toString().trim() ?? '';
+
+        if (text.isNotEmpty) {
+          final number = int.tryParse(text);
+
+          if (number == null || number <= 0) {
+            return l10n.validAttendeeCountRequired;
+          }
+        }
+
+        return null;
+      },
     ),
 
     /// ================= ATTACHMENTS =================
     DynamicField(
       name: 'attachments',
-      label: 'Attachment',
+      label: l10n.attachment,
       type: FieldType.file,
-      required: true,
+      required: false,
     ),
   ];
 
@@ -496,7 +669,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await contractServiceInstance.getRequestsById(
+      final requests = await bookcaahallsInstance.getRequestsById(
         id: id,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -530,7 +703,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await contractServiceInstance.getchatById(id);
+      final requests = await bookcaahallsInstance.getchatById(id);
       if (requests != null) {
         final chats = requests.reversed.toList();
         state = state.copyWith(chatById: chats);
@@ -545,7 +718,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await contractServiceInstance.getAttachmentsById(id);
+      final attachments = await bookcaahallsInstance.getAttachmentsById(id);
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
       }
@@ -560,7 +733,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await contractServiceInstance.getKpiData(
+      final kpis = await bookcaahallsInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -578,7 +751,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await contractServiceInstance.getApprovalTrendBreakdownData(
+      final data = await bookcaahallsInstance.getApprovalTrendBreakdownData(
         period: period,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -597,7 +770,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await contractServiceInstance
+      final statusBreakdown = await bookcaahallsInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -621,12 +794,11 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await contractServiceInstance
-          .getStatusBreakdownData(
-            period: period,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final statusBreakdown = await bookcaahallsInstance.getStatusBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
       if (statusBreakdown != null) {
         state = state.copyWith(
           statusBreakdown: statusBreakdown,
@@ -645,7 +817,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await contractServiceInstance.getTrendBreakdownData(
+      final data = await bookcaahallsInstance.getTrendBreakdownData(
         period: period,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -664,7 +836,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await contractServiceInstance.getApprovalKpiData(
+      final kpis = await bookcaahallsInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
@@ -684,14 +856,14 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isRequestLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
+      // if (isRefresh || status.isNotEmpty) {
+      //   state = state.copyWith(requestData: [], isLoading: false);
+      // }
 
-      final requests = await contractServiceInstance.getRequests(
+      final requests = await bookcaahallsInstance.getRequests(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -701,9 +873,9 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isRequestLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -720,7 +892,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await contractServiceInstance.getActionItems(
+      final items = await bookcaahallsInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -732,6 +904,62 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // No merging needed
       state = state.copyWith(actionItems: items, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  String formatTime(String? time) {
+    if (time == null || time.isEmpty) return '';
+
+    final parts = time.split(':');
+
+    if (parts.length >= 2) {
+      return '${parts[0]}:${parts[1]}';
+    }
+
+    return time;
+  }
+
+  Future<void> fetchAvailableHalls({
+    required String startDate,
+    required String endDate,
+    required String startTime,
+    required String endTime,
+    required String hallType,
+  }) async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      print('Fetching available halls with:');
+      print('Start Date: $startDate');
+      print('End Date: $endDate');
+      print('Start Time: $startTime');
+      print('End Time: $endTime');
+      print('Hall Type: $hallType');
+      if (startDate.isEmpty ||
+          endDate.isEmpty ||
+          startTime.isEmpty ||
+          endTime.isEmpty ||
+          hallType.isEmpty) {
+        return;
+      } else {
+        final halls = await bookcaahallsInstance.getAvailableHalls({
+          'start_date': startDate,
+          'end_date': endDate,
+          'start_time': formatTime(startTime),
+          'end_time': formatTime(endTime),
+          'hall_type': hallType,
+        });
+
+        // print('Available halls response: $halls');
+
+        if (halls != null) {
+          // Process halls data as needed
+          // For example, you might want to update the state with available halls
+          state = state.copyWith(availableHalls: halls, isLoading: false);
+        }
+      }
     } catch (e) {
       state = state.copyWith(isLoading: false);
     }
@@ -816,7 +1044,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await contractServiceInstance.uploadAttachments(
+        final uploadedFiles = await bookcaahallsInstance.uploadAttachments(
           state.attachments,
         );
 
@@ -848,7 +1076,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await contractServiceInstance.sendAttachment(payload, requestId);
+        await bookcaahallsInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -869,7 +1097,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await contractServiceInstance.sendChat(payload, requestId);
+        await bookcaahallsInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -882,42 +1110,6 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrintStack(stackTrace: st);
       rethrow;
     }
-  }
-
-  Future<void> onComplete(int approverId, int requestId) async {
-    try {
-      state = state.copyWith(isLoading: true);
-
-      // 1️⃣ Upload files
-
-      // 2️⃣ Build payload
-      final payload = {
-        "request_id": requestId,
-        "status": "Completed",
-        "comment": '',
-        "approval_id": approverId,
-      };
-
-      debugPrint("✅ Final Payload: $payload");
-
-      // 3️⃣ Send request
-      await contractServiceInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
-      KAppX.router.pop();
-      fetchactionItems();
-      fetchRequests();
-      fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
-      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
-      fetchTrendBreakDown(DateTime.now().year.toString());
-      fetchKpi();
-    } catch (e) {
-      debugPrint('❌ Error submitting request: $e');
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
-    return;
   }
 
   Future<void> onApprove(
@@ -946,14 +1138,15 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await contractServiceInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
+      await bookcaahallsInstance.onApprove(payload);
+      await Future.delayed(Duration(seconds: 2));
       KAppX.router.pop();
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
-      await fetchactionItems();
+      // await fetchactionItems();
       await fetchRequests();
+      await fetchApprovalKpi();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -973,7 +1166,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await contractServiceInstance.onSendInProgress(payload);
+      // await bookcaahallsInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1047,6 +1240,20 @@ class _VSController extends StateNotifier<_ViewState> {
     debugPrint('✅ Allowed: User can act on this approval level');
 
     return true;
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name'] ?? '';
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role'] ?? '';
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
   }
 
   ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
@@ -1265,7 +1472,7 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       fetchactionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -1339,17 +1546,30 @@ class _VSController extends StateNotifier<_ViewState> {
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      /// ⭐ PROJECT DETAILS
-      "title_of_project": values['title_of_project'] ?? "",
-      "description": values['description'] ?? "",
-      "project_or_budget_code": values['project_or_budget_code'] ?? "",
+      /// ⭐ USER DETAILS
+      "req_user_department_id": values['req_user_department_id'],
 
-      /// ⭐ COMPANY
-      "company_name": values['company_name'] ?? "",
+      "req_user_section_id": values['req_user_section_id'],
 
-      /// ⭐ DATE + CONTACT
-      "date_of_submission": values['date_of_submission'] ?? "",
-      "phone": values['phone'] ?? "",
+      /// ⭐ EVENT DETAILS
+      "purpose_of_event": values['purpose_of_event'] ?? "",
+
+      "hall_id": values['hall_id'],
+
+      "type_of_hall": values['type_of_hall'] ?? "",
+
+      /// ⭐ DATE
+      "start_date": values['start_date'] ?? "",
+
+      "end_date": values['end_date'] ?? "",
+
+      /// ⭐ TIME
+      "start_time": values['start_time'] ?? "",
+
+      "end_time": values['end_time'] ?? "",
+
+      /// ⭐ ATTENDEES
+      "no_of_attendees": values['expected_attendees'] ?? 0,
 
       /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
@@ -1373,8 +1593,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await contractServiceInstance
-          .contractServiceCreateRequest(payload);
+      final response = await bookcaahallsInstance.bookCaaHallCreateRequest(
+        payload,
+      );
 
       if (response['status'] == 'success') {
         _refreshDashboard();
@@ -1386,11 +1607,13 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  void _refreshDashboard() {
+  Future<void> _refreshDashboard() async {
+    state = state.copyWith(isRequestLoading: true);
+    await Future.delayed(Duration(seconds: 2));
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests();

@@ -56,6 +56,8 @@ class _ViewState {
   final bool isButtonDisabled;
   final List<ChatMessageModel> chatById;
   final List<AttachmentModel> attachmentsById;
+  final List<SectionModel> sections;
+  final List<DepartmentModel> departments;
 
   final List<String> months = [
     'January',
@@ -71,6 +73,12 @@ class _ViewState {
     'November',
     'December',
   ];
+
+  final UsersResponseModel? usersData;
+  final RolesResponseModel? rolesData;
+  final int? selectedSectionId;
+  final int? selectedRoleId;
+  final int? selectedUserId;
 
   /// FORM KEY
   final formKey = GlobalKey<FormState>();
@@ -96,6 +104,13 @@ class _ViewState {
     required this.isButtonDisabled,
     required this.chatById,
     required this.attachmentsById,
+    required this.usersData,
+    required this.rolesData,
+    required this.selectedSectionId,
+    required this.selectedRoleId,
+    required this.selectedUserId,
+    required this.sections,
+    required this.departments,
   });
 
   _ViewState.init()
@@ -121,6 +136,13 @@ class _ViewState {
         chatById: [],
 
         attachmentsById: [],
+        usersData: null,
+        rolesData: null,
+        selectedSectionId: null,
+        selectedRoleId: null,
+        selectedUserId: null,
+        sections: [],
+        departments: [],
       );
 
   _ViewState copyWith({
@@ -160,7 +182,6 @@ class _ViewState {
     List<ChatMessageModel>? chatById,
     List<Position>? positionsList,
     String? selectedPositionName,
-    int? selectedUserId,
     List<EmployeeList>? usersList,
     String? selectedUserName,
     EmployeeList? selectedUser,
@@ -186,6 +207,11 @@ class _ViewState {
     List<EmployeeList>? selectedUsersList,
     List<ResidentalUnitRentalLocationModel>? unitLocations,
     List<SectionModel>? sections,
+    final UsersResponseModel? usersData,
+    final RolesResponseModel? rolesData,
+    final int? selectedSectionId,
+    final int? selectedRoleId,
+    final int? selectedUserId,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -209,6 +235,13 @@ class _ViewState {
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
       chatById: chatById ?? this.chatById,
       attachmentsById: attachmentsById ?? this.attachmentsById,
+      usersData: usersData ?? this.usersData,
+      rolesData: rolesData ?? this.rolesData,
+      selectedSectionId: selectedSectionId ?? this.selectedSectionId,
+      selectedRoleId: selectedRoleId ?? this.selectedRoleId,
+      selectedUserId: selectedUserId ?? this.selectedUserId,
+      sections: sections ?? this.sections,
+      departments: departments ?? this.departments,
     );
   }
 }
@@ -395,6 +428,7 @@ class _VSController extends StateNotifier<_ViewState> {
     bool fromActionItems = false,
   }) async {
     updateRequestTab(0);
+    fetchDepartments();
 
     await KAppX.router.push(
       LegalConsultationandReviewofAdministrativeDecisionsDetailsRoute(
@@ -663,6 +697,185 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  Future<void> fetchDepartments() async {
+    try {
+      final departments = await legalConsultationandReviewoInstance
+          .getDepartments();
+
+      if (departments != null) {
+        state = state.copyWith(departments: departments);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {}
+  }
+
+  Future<void> fetchSections(int id) async {
+    try {
+      /// ✅ CLEAR OLD SECTIONS FIRST
+      state = state.copyWith(sections: []);
+
+      final sections = await legalConsultationandReviewoInstance.getSections(
+        userDepartmentId: id.toString(),
+      );
+
+      /// ✅ UPDATE NEW SECTIONS
+      state = state.copyWith(sections: sections);
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> onSectionChanged({
+    required int sectionId,
+    required int departmentId,
+  }) async {
+    state = state.copyWith(
+      selectedSectionId: sectionId,
+
+      /// RESET
+      selectedRoleId: null,
+      selectedUserId: null,
+
+      rolesData: null,
+      usersData: null,
+    );
+
+    await fetchRoles(sectionId: sectionId, departmentId: departmentId);
+  }
+
+  void clearSelectedSection() {
+    state = state.copyWith(
+      sections: [],
+      selectedSectionId: null,
+      rolesData: null,
+      usersData: null,
+    );
+  }
+
+  // Future<void> onRoleChanged(int roleId) async {
+  //   state = state.copyWith(
+  //     selectedRoleId: roleId,
+
+  //     /// RESET
+  //     selectedUserId: null,
+  //     usersData: null,
+  //   );
+
+  //   await fetchUsers(sectionId: state.selectedSectionId ?? 0, roleId: roleId,departmentId: departmentId);
+  // }
+
+  void updateSelectedUser(int? userId) {
+    state = state.copyWith(selectedUserId: userId);
+  }
+
+  Future<void> fetchRoles({
+    required int sectionId,
+    required int departmentId,
+  }) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final userInfo = KAppX.globalProvider.read(userInfoProvider);
+      // Clear list only if explicitly refreshing or searching
+      // if (isRefresh || status.isNotEmpty) {
+      //   state = state.copyWith(requestData: [], isLoading: false);
+      // }
+
+      final users = await legalConsultationandReviewoInstance.getRoles(
+        // roleId: roleId,
+        departmentId: departmentId,
+        sectionId: sectionId,
+      );
+
+      // No merging needed
+      state = state.copyWith(rolesData: users, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  Future<void> onAssign(
+    int roleId,
+    int sectionId,
+    int userId,
+    int departmentId,
+  ) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      // 1️⃣ Upload files
+
+      final userData = KAppX.globalProvider.read(userInfoProvider);
+      final active = getActiveApprovalLevel(
+        state.requestDetails.approvalDetails ?? [],
+      );
+      final approvalId = active?.id ?? 0;
+
+      // 2️⃣ Build payload
+      final payload = {
+        "request_id": state.requestDetails?.id,
+        "approval_id": approvalId,
+        "status": "Approved",
+        "comment": "",
+
+        /// REASSIGN
+        "reassign_approver_user_id": userId,
+        "reassign_delegate_user_id": null,
+
+        "reassign_department_id": userData?.data?.department?.id,
+        "reassign_section_id": sectionId,
+        "reassign_approver_role_id": roleId,
+
+        "routing_branch": "REASSIGN",
+        "routingBranch": "REASSIGN",
+      };
+
+      debugPrint("✅ Final Payload: $payload");
+
+      // 3️⃣ Send request
+      await legalConsultationandReviewoInstance.onAssign(payload);
+      KAppX.router.pop();
+      fetchApprovalKpi();
+      // await fetchActionItems();
+      // await fetchRequests();
+      fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
+    } catch (e) {
+      debugPrint('❌ Error submitting request: $e');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchUsers({
+    required int sectionId,
+    required int roleId,
+    required int departmentId,
+  }) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final userInfo = KAppX.globalProvider.read(userInfoProvider);
+      // Clear list only if explicitly refreshing or searching
+      // if (isRefresh || status.isNotEmpty) {
+      //   state = state.copyWith(requestData: [], isLoading: false);
+      // }
+
+      final users = await legalConsultationandReviewoInstance.getUsersList(
+        roleId: roleId,
+        departmentId: departmentId,
+        sectionId: sectionId,
+      );
+
+      // No merging needed
+      state = state.copyWith(usersData: users, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
   Future<void> fetchRequests({
     bool isRefresh = false,
     String searchText = '',
@@ -742,6 +955,95 @@ class _VSController extends StateNotifier<_ViewState> {
     }
 
     return false;
+  }
+
+  Future<void> showAllocateUserDialog(BuildContext context) async {
+    final l10n = DashboardL10n.of(context);
+
+    await resetAllocateDialog();
+
+    KAppX.extendedRouter.dialog.showKDialog(
+      barrierDismissible: false,
+      builder: (_) {
+        return Dialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
+
+          child: Container(
+            width: 650,
+
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+            ),
+
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                /// HEADER
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
+
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Allocate User",
+
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+
+                      InkWell(
+                        borderRadius: BorderRadius.circular(30),
+
+                        onTap: () => KAppX.router.pop(),
+
+                        child: const Padding(
+                          padding: EdgeInsets.all(6),
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const Divider(height: 1),
+
+                /// BODY
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      top: 20,
+                      bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                    ),
+
+                    child: AssignUser(
+                      service: service,
+                      subService: subService,
+                      onSuccess: () {},
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void showApprovalCommentDialog({
@@ -1107,6 +1409,9 @@ class _VSController extends StateNotifier<_ViewState> {
     if (isManager == true) {
       debugPrint('this user can only approve');
       return ActionButtonsType.assignReject;
+    } else if (level.level == 2) {
+      debugPrint('this user can approve and reject');
+      return ActionButtonsType.assignApproveReject;
     } else if (level != null) {
       debugPrint('this user can approve and reject');
       return ActionButtonsType.approveReject;
@@ -1262,9 +1567,20 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(selectedFileUrl: urls);
   }
 
-  void refreshUI() {
-    // triggers rebuild in UI
-    state = state.copyWith(isLoading: false);
+  Future<void> resetAllocateDialog() async {
+    state = state.copyWith(
+      rolesData: null,
+
+      sections: [],
+
+      usersData: null,
+
+      selectedSectionId: null,
+      selectedRoleId: null,
+      selectedUserId: null,
+    );
+
+    print('✅ Allocate Dialog Reset');
   }
 
   Future<void> pickFile() async {

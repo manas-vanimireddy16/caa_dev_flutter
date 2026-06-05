@@ -69,6 +69,10 @@ class TrainingandDevelopmentHomeScreen extends ConsumerWidget {
           service: Service(),
           subService: SubService(),
         ),
+        RequestToBookCAAHallsRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

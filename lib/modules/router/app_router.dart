@@ -448,6 +448,7 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.trainingsanddevelopmentHomeScreen,
       children: [
         AutoRoute(page: AssignaTasktoEmployeeRoute.page, initial: true),
+        AutoRoute(page: FollowUpReportRoute.page),
       ],
     ),
 
@@ -458,6 +459,14 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: AssignaTasktoEmployeeDetailsRoute.page,
       path: RouteNames.trainingsanddevelopmentDetails,
+    ),
+    AutoRoute(
+      page: FollowUpReportNewRequestRoute.page,
+      path: RouteNames.followUpReportNewRequest,
+    ),
+    AutoRoute(
+      page: FollowUpReportDetailsRoute.page,
+      path: RouteNames.followUpReportDetails,
     ),
 
     /// --- ASSET AFFAIRS ---

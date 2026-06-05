@@ -852,6 +852,82 @@ class ApiEndPoint {
       '/v1/it-service/assign-tasks-emp/request/$id';
 
   /// ------------------------------------------------------------
+  /// Request to Book CAA Halls
+  /// ------------------------------------------------------------
+
+  /// Create Hall Request
+  static const String bookCaaHallSendRequest = '/v1/hr-service/hall/request';
+
+  /// Get My Requests
+  static const String bookCaaHallGetRequests = '/v1/hr-service/hall/requests';
+
+  /// Get Approval Requests
+  static const String bookCaaHallGetActionItems =
+      '/v1/hr-service/hall/requests/for-approval';
+
+  /// Get Request By ID
+  static String bookCaaHallRequestById(int requestId) =>
+      '/v1/hr-service/hall/request/$requestId';
+
+  /// ===================== AVAILABLE HALL APIs =====================
+
+  /// Get Available Halls
+  static const String bookCaaHallAvailableHalls =
+      '/v1/hr-service/hall/halls/available';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send Chat
+  static String bookCaaHallSendChatById(int requestId) =>
+      '/v1/hr-service/hall/request/$requestId/chat';
+
+  /// Get Chats
+  static String bookCaaHallChatsById(int requestId) =>
+      '/v1/hr-service/hall/request/$requestId/chats';
+
+  static String bookCaaHallApprove = '/v1/hr-service/hall/request/approve';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Send Attachment
+  static String bookCaaHallSendAttachmentById(int requestId) =>
+      '/v1/hr-service/hall/request/$requestId/attachment';
+
+  /// Get Attachments
+  static String bookCaaHallAttachmentsById(int requestId) =>
+      '/v1/hr-service/hall/request/$requestId/attachments';
+
+  /// ===================== KPI APIs =====================
+
+  /// Request KPI Cards
+  static const String bookCaaHallKpiCards =
+      '/v1/hr-service/hall/analytics/kpi-cards';
+
+  /// Approval KPI Cards
+  static const String bookCaaHallApprovalKpiCards =
+      '/v1/hr-service/hall/analytics/approvals/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN APIs =====================
+
+  /// Request Status Breakdown
+  static const String bookCaaHallStatusBreakdown =
+      '/v1/hr-service/hall/analytics/status-breakdown';
+
+  /// Approval Status Breakdown
+  static const String bookCaaHallApprovalStatusBreakdown =
+      '/v1/hr-service/hall/analytics/approvals/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN APIs =====================
+
+  /// Request Trend Breakdown
+  static const String bookCaaHallTrendBreakdown =
+      '/v1/hr-service/hall/analytics/trend-breakdown';
+
+  /// Approval Trend Breakdown
+  static const String bookCaaHallApprovalTrendBreakdown =
+      '/v1/hr-service/hall/analytics/approvals/trend-breakdown';
+
+  /// ------------------------------------------------------------
   /// Assign Task to Employee – Approval Analytics
   /// ------------------------------------------------------------
 
@@ -873,6 +949,80 @@ class ApiEndPoint {
       '/v1/it-service/assign-tasks-emp/request/$id/status';
   static const String assignTaskComplete =
       '/v1/it-service/assign-tasks-emp/request/approve';
+
+  /// followup reports
+  ///
+  /// ===================== FOLLOW UP REPORT APIs =====================
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Create Follow Up Report Request
+  static const String followUpReportSendRequest =
+      '/v1/asset-affairs-service/follow-up-report/request';
+
+  /// Get My Requests
+  static const String followUpReportGetRequests =
+      '/v1/asset-affairs-service/follow-up-report/requests';
+
+  /// Get Approval Requests
+  static const String followUpReportGetActionItems =
+      '/v1/asset-affairs-service/follow-up-report/requests/for-approval';
+
+  /// Get Request By ID
+  static String followUpReportRequestById(int requestId) =>
+      '/v1/asset-affairs-service/follow-up-report/request/$requestId';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send Chat
+  static String followUpReportSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/follow-up-report/request/$requestId/chat';
+
+  /// Get Chats
+  static String followUpReportChatsById(int requestId) =>
+      '/v1/asset-affairs-service/follow-up-report/request/$requestId/chats';
+
+  /// ===================== KPI APIs =====================
+
+  /// Request KPI Cards
+  static const String followUpReportKpiCards =
+      '/v1/asset-affairs-service/follow-up-report/analytics/kpi-cards';
+
+  /// Approval KPI Cards
+  static const String followUpReportApprovalKpiCards =
+      '/v1/asset-affairs-service/follow-up-report/analytics/approvals/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN APIs =====================
+
+  /// Request Status Breakdown
+  static const String followUpReportStatusBreakdown =
+      '/v1/asset-affairs-service/follow-up-report/analytics/status-breakdown';
+
+  /// Approval Status Breakdown
+  static const String followUpReportApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/follow-up-report/analytics/approvals/status-breakdown';
+  static String followUpReportApprove =
+      '/v1/asset-affairs-service/follow-up-report/approve';
+
+  /// ===================== TREND BREAKDOWN APIs =====================
+
+  /// Request Trend Breakdown
+  static const String followUpReportTrendBreakdown =
+      '/v1/asset-affairs-service/follow-up-report/analytics/trend-breakdown';
+
+  /// Approval Trend Breakdown
+  static const String followUpReportApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/follow-up-report/analytics/approvals/trend-breakdown';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Send Attachment
+  static String followUpReportSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/follow-up-report/request/$requestId/attachment';
+
+  /// Get Attachments
+  static String followUpReportAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/follow-up-report/request/$requestId/attachments';
 
   /// ===================== DUTY MISSION APIs =====================
 
@@ -2955,6 +3105,9 @@ class ApiEndPoint {
   /// Send Request (Create Request)
   static const String legalConsultationSendRequest =
       '/v1/asset-affairs-service/legal-consultation-review/request';
+
+  static const String legalConsultationAdministrativeApprove =
+      '/v1/asset-affairs-service/legal-consultation-review/approve';
 
   /// Get my requests
   static const String legalConsultationGetRequests =

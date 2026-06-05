@@ -1,13 +1,13 @@
 part of '../view.dart';
 
 @RoutePage()
-class RequestToBookCAAHallsNewRequestScreen extends ConsumerStatefulWidget {
+class FollowUpReportNewRequestScreen extends ConsumerStatefulWidget {
   final int serviceId;
   final int subServiceId;
   final Service service;
   final SubService subService;
 
-  const RequestToBookCAAHallsNewRequestScreen({
+  const FollowUpReportNewRequestScreen({
     super.key,
     required this.serviceId,
     required this.subServiceId,
@@ -16,12 +16,12 @@ class RequestToBookCAAHallsNewRequestScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<RequestToBookCAAHallsNewRequestScreen> createState() =>
-      _RequestToBookCAAHallsNewRequestScreenState();
+  ConsumerState<FollowUpReportNewRequestScreen> createState() =>
+      _FollowUpReportNewRequestScreenState();
 }
 
-class _RequestToBookCAAHallsNewRequestScreenState
-    extends ConsumerState<RequestToBookCAAHallsNewRequestScreen> {
+class _FollowUpReportNewRequestScreenState
+    extends ConsumerState<FollowUpReportNewRequestScreen> {
   late _VSControllerParams _providerArgs;
 
   @override
@@ -37,13 +37,16 @@ class _RequestToBookCAAHallsNewRequestScreenState
 
   @override
   Widget build(BuildContext context) {
-    /// Watch state only if needed
-    final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
+    final formTitle = l10n.isArabic
+        ? (widget.subService.arabicsubServiceName ??
+              widget.subService.subServiceName ??
+              l10n.createRequest)
+        : (widget.subService.subServiceName ?? l10n.createRequest);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      // appBar: KAppBar(title: Text('Mission Transfer Request')),
 
       /// ✅ DynamicForm MUST be root-level in a screen
       body: ProviderScope(
@@ -51,9 +54,9 @@ class _RequestToBookCAAHallsNewRequestScreenState
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: 'Performance Management',
+          title: formTitle,
           stepTitles: const [''],
-          steps: [controller.contractServiceFields],
+          steps: [controller.buildFollowUpReportFields(l10n)],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

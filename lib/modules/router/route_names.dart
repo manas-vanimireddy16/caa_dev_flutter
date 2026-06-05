@@ -214,6 +214,8 @@ class RouteNames {
       '/decisionAssignmentNewRequest';
   static const String trainingsanddevelopmentDetails =
       '/decisionAssignmentDetails';
+  static const String followUpReportNewRequest = '/followUpReportNewRequest';
+  static const String followUpReportDetails = '/followUpReportDetails';
 
   /// Media Coverage
   static const String mediaCoverageHomeScreen = '/mediaCoverageHomeScreen';

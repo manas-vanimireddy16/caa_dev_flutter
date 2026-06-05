@@ -2,6 +2,8 @@ import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_roles_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_user_model.dart';
 import 'package:code_setup/presentation/screens/legal_consultation_services/models/legal_contract_review_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/repository/legal_consultation_services/legal_consultation_and_review_of_administrative_decisions/data/data.dart';
@@ -79,6 +81,16 @@ abstract class LegalConsultationandReviewofAdministrativeDecisionsRepository {
     required int serviceId,
     required int subServiceId,
   });
-  Future<List<DepartmentModel>> getDepartments();
   Future<List<SectionModel>> getSections({required String? userDepartmentId});
+  Future<UsersResponseModel?> getUsersList({
+    required int departmentId,
+    required int sectionId,
+    required int roleId,
+  });
+  Future<RolesResponseModel?> getRoles({
+    required int departmentId,
+    required int sectionId,
+  });
+  Future<void> onAssign(Map<String, dynamic> payload);
+  Future<List<DepartmentModel>> getDepartments();
 }

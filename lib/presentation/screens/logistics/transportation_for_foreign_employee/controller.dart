@@ -857,7 +857,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   final foreignEmployeeInstance = TransportationForForeignEmployeeRepository();
-  final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
+  // final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
   List<DynamicField> buildTransportationRequestFields(DashboardL10n l10n) => [
     DynamicField(

@@ -833,7 +833,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   final logisticsRequestVehicleInstanceInstance = RequestAVehicleRepository();
-  final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
+  // final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
   List<DynamicField> buildLogisticsVehicleRequestFields(DashboardL10n l10n) => [
     DynamicField(
       name: 'request_type',
