@@ -1,5 +1,6 @@
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,6 +99,7 @@ class _NumberFieldWidgetState extends ConsumerState<NumberFieldWidget> {
 
         hintText: widget.field.placeholder,
         fieldHeadingText: widget.field.label,
+        fieldHeadingTextStyle: DynamicFieldLabelStyle.text,
 
         /// ✅ LIVE ERROR
         errorText: error,

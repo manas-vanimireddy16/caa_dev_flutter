@@ -498,6 +498,27 @@ class _VSController extends StateNotifier<_ViewState> {
             subService: subService ?? SubService(),
           ),
         );
+
+        break;
+      case 'CAA035':
+        KAppX.router.push(
+          RequestMaintenanceRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+
+        break;
+
+      /// complaint a Lost Item
+      case 'CAA025':
+        KAppX.router.push(
+          ComplaintLostPropertyReportRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+
         break;
 
       default:

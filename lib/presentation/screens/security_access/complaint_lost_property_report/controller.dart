@@ -48,8 +48,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<FollowUpReportRequestModel> requestData;
-  final List<FollowUpReportRequestModel> actionItems;
+  final List<ComplaintLostPropertyRequestModel> requestData;
+  final List<ComplaintLostPropertyRequestModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final int approvalId;
@@ -147,8 +147,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<FollowUpReportRequestModel>? requestData,
-    List<FollowUpReportRequestModel>? actionItems,
+    List<ComplaintLostPropertyRequestModel>? requestData,
+    List<ComplaintLostPropertyRequestModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -324,7 +324,9 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(FollowUpReportRequestModel item) {
+  Map<String, String> buildRequestCardData(
+    ComplaintLostPropertyRequestModel item,
+  ) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
@@ -411,7 +413,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      FollowUpReportDetailsRoute(
+      ComplaintLostPropertyReportDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -437,7 +439,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
     // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      FollowUpReportNewRequestRoute(
+      ComplaintLostPropertyReportNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -446,165 +448,92 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final followupReportInstance = FollowUpReportRepository();
-
-  List<DynamicField> buildFollowUpReportFields(DashboardL10n l10n) => [
-    /// ================= SENT BY =================
+  final complaintLostReportInstance = ComplaintLostPropertyRepository();
+  List<DynamicField> buildComplaintLostPropertyFields(DashboardL10n l10n) => [
+    /// ================= DATE OF LOSS =================
     DynamicField(
-      name: 'sent_by',
-      label: l10n.requestDetailsLabel('Sent By'),
-      type: FieldType.text,
-      required: true,
-      placeholder: l10n.followUpEnterSentBy,
-
-      validator: (value, values) {
-        final text = value?.toString().trim() ?? '';
-
-        if (text.isEmpty) {
-          return l10n.followUpSentByRequired;
-        }
-
-        return null;
-      },
-    ),
-
-    /// ================= LETTER DATE =================
-    DynamicField(
-      name: 'letter_date',
-      label: l10n.requestDetailsLabel('Letter Date'),
+      name: 'date_of_loss',
+      label: l10n.requestDetailsLabel('Date of Loss'),
       type: FieldType.date,
       required: true,
       placeholder: 'MM/DD/YYYY',
 
       validator: (value, values) {
         if (value == null || value.toString().isEmpty) {
-          return l10n.followUpLetterDateRequired;
+          return 'Date of loss is required';
         }
 
         return null;
       },
     ),
 
-    /// ================= SUBJECT =================
+    /// ================= TIME OF LOSS =================
     DynamicField(
-      name: 'subject',
-      label: l10n.requestDetailsLabel('Subject'),
+      name: 'time_of_loss',
+      label: l10n.requestDetailsLabel('Time of Loss'),
+      type: FieldType.time,
+      required: true,
+      placeholder: 'hh:mm aa',
+
+      validator: (value, values) {
+        if (value == null || value.toString().isEmpty) {
+          return 'Time of loss is required';
+        }
+
+        return null;
+      },
+    ),
+
+    /// ================= LOCATION WHERE ITEM WAS LOST =================
+    DynamicField(
+      name: 'location_where_item_was_lost',
+      label: l10n.requestDetailsLabel('Location Where Item Was Lost'),
       type: FieldType.text,
       required: true,
-      placeholder: l10n.followUpEnterSubject,
+      placeholder: 'Enter Location Where Item Was Lost',
 
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return l10n.followUpSubjectRequired;
+          return 'Location where item was lost is required';
         }
 
         return null;
       },
     ),
 
-    /// ================= SUBJECT CLASSIFICATION =================
+    /// ================= ITEM DESCRIPTION =================
     DynamicField(
-      name: 'subject_classification',
-      label: l10n.requestDetailsLabel('Subject Classification'),
-      type: FieldType.select,
-      required: true,
-      placeholder: l10n.followUpSelectSubjectClassification,
-
-      options: [
-        DropdownOption(label: l10n.followUpUrgent, value: 'Urgent'),
-        DropdownOption(label: l10n.followUpVeryUrgent, value: 'Very Urgent'),
-        DropdownOption(label: l10n.followUpConfidential, value: 'Confidential'),
-      ],
-
-      validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return l10n.followUpSubjectClassificationRequired;
-        }
-
-        return null;
-      },
-    ),
-
-    /// ================= TOPIC =================
-    DynamicField(
-      name: 'topic',
-      label: l10n.requestDetailsLabel('Topic'),
+      name: 'item_description',
+      label: l10n.requestDetailsLabel('Item Description'),
       type: FieldType.text,
       required: true,
-      placeholder: l10n.followUpEnterTopic,
+      placeholder: 'Enter Item Description',
 
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return l10n.followUpTopicRequired;
+          return 'Item description is required';
         }
 
         return null;
       },
     ),
 
-    /// ================= CONCERNED DEPARTMENT =================
+    /// ================= DESCRIPTION =================
     DynamicField(
-      name: 'concerned_department',
-      label: l10n.requestDetailsLabel('Concerned Department'),
-      type: FieldType.select,
-      required: true,
-      placeholder: l10n.followUpSelectConcernedDepartment,
-
-      options: [
-        DropdownOption(label: l10n.followUpDepartmentIt, value: 'IT'),
-        DropdownOption(label: l10n.followUpDepartmentHr, value: 'HR'),
-        DropdownOption(
-          label: l10n.followUpDepartmentTraining,
-          value: 'Training',
-        ),
-        DropdownOption(label: l10n.followUpDepartmentFinance, value: 'Finance'),
-        DropdownOption(
-          label: l10n.followUpDepartmentProjectsMaintenance,
-          value: 'Projects & Maintenance',
-        ),
-      ],
+      name: 'description',
+      label: l10n.requestDetailsLabel('Description'),
+      type: FieldType.textarea,
+      placeholder: 'Enter Description',
 
       validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return l10n.followUpConcernedDepartmentRequired;
-        }
+        final text = value?.toString().trim() ?? '';
 
-        return null;
-      },
-    ),
-
-    /// ================= DATE FROM =================
-    DynamicField(
-      name: 'date_from',
-      label: l10n.requestDetailsLabel('Date From'),
-      type: FieldType.date,
-      required: true,
-      placeholder: 'MM/DD/YYYY',
-
-      validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return l10n.followUpDateFromRequired;
-        }
-
-        return null;
-      },
-    ),
-
-    /// ================= DATE TO =================
-    DynamicField(
-      name: 'date_to',
-      label: l10n.requestDetailsLabel('Date To'),
-      type: FieldType.date,
-      required: true,
-      placeholder: 'MM/DD/YYYY',
-
-      validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return l10n.followUpDateToRequired;
+        if (text.isNotEmpty && text.length < 5) {
+          return 'Description must be at least 5 characters';
         }
 
         return null;
@@ -620,11 +549,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
       validator: (value, values) {
         if (value == null) {
-          return l10n.followUpAttachmentRequired;
+          return 'Attachment is required';
         }
 
         if (value is List && value.isEmpty) {
-          return l10n.followUpUploadAttachmentRequired;
+          return 'Please upload at least one attachment';
         }
 
         return null;
@@ -637,7 +566,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await followupReportInstance.getRequestsById(
+      final requests = await complaintLostReportInstance.getRequestsById(
         id: id,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -671,7 +600,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await followupReportInstance.getchatById(id);
+      final requests = await complaintLostReportInstance.getchatById(id);
       if (requests != null) {
         final chats = requests.reversed.toList();
         state = state.copyWith(chatById: chats);
@@ -686,7 +615,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await followupReportInstance.getAttachmentsById(id);
+      final attachments = await complaintLostReportInstance.getAttachmentsById(
+        id,
+      );
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
       }
@@ -701,7 +632,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await followupReportInstance.getKpiData(
+      final kpis = await complaintLostReportInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -719,11 +650,12 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await followupReportInstance.getApprovalTrendBreakdownData(
-        period: period,
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
-      );
+      final data = await complaintLostReportInstance
+          .getApprovalTrendBreakdownData(
+            period: period,
+            serviceId: service.id ?? 0,
+            subServiceId: subService.id ?? 0,
+          );
 
       if (data != null) {
         state = state.copyWith(approvalTrendData: data, isLoading: false);
@@ -738,7 +670,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await followupReportInstance
+      final statusBreakdown = await complaintLostReportInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -762,7 +694,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await followupReportInstance
+      final statusBreakdown = await complaintLostReportInstance
           .getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -786,7 +718,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await followupReportInstance.getTrendBreakdownData(
+      final data = await complaintLostReportInstance.getTrendBreakdownData(
         period: period,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -805,7 +737,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await followupReportInstance.getApprovalKpiData(
+      final kpis = await complaintLostReportInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
@@ -832,7 +764,7 @@ class _VSController extends StateNotifier<_ViewState> {
       //   state = state.copyWith(requestData: [], isLoading: false);
       // }
 
-      final requests = await followupReportInstance.getRequests(
+      final requests = await complaintLostReportInstance.getRequests(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -861,7 +793,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await followupReportInstance.getActionItems(
+      final items = await complaintLostReportInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -969,9 +901,8 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await followupReportInstance.uploadAttachments(
-          state.attachments,
-        );
+        final uploadedFiles = await complaintLostReportInstance
+            .uploadAttachments(state.attachments);
 
         if (uploadedFiles.isEmpty) {
           throw Exception("File upload failed");
@@ -1001,7 +932,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await followupReportInstance.sendAttachment(payload, requestId);
+        await complaintLostReportInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -1022,7 +953,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await followupReportInstance.sendChat(payload, requestId);
+        await complaintLostReportInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -1063,7 +994,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await followupReportInstance.onApprove(payload);
+      await complaintLostReportInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 2));
       KAppX.router.pop();
       // if (decisionNo != null) {
@@ -1091,7 +1022,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await followupReportInstance.onSendInProgress(payload);
+      // await complaintLostReportInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1466,40 +1397,33 @@ class _VSController extends StateNotifier<_ViewState> {
     int subServiceId,
     Map<String, dynamic> values,
   ) {
+    final date = values['date_of_loss']?.toString() ?? '';
+
+    final time = values['time_of_loss']?.toString() ?? '';
+    final dateTime = DateTime.parse('$date $time');
+
     return {
-      /// SERVICE
       "service_id": serviceId,
       "sub_service_id": subServiceId,
 
-      /// USER DETAILS
+      "date_time_of_loss": dateTime.toUtc().toIso8601String(),
+
+      "location_where_item_was_lost":
+          values['location_where_item_was_lost'] ?? "",
+
+      "item_description": values['item_description'] ?? "",
+
+      "description": values['description'] ?? "",
+
       "req_user_department_id": values['req_user_department_id'],
 
       "req_user_section_id": values['req_user_section_id'],
 
-      /// LETTER DETAILS
-      "sent_by": values['sent_by'] ?? "",
-
-      "letter_date": values['letter_date'] ?? "",
-
-      "subject": values['subject'] ?? "",
-
-      "subject_classification": values['subject_classification'] ?? "",
-
-      "topic": values['topic'] ?? "",
-
-      "concerned_department": values['concerned_department'] ?? "",
-
-      /// DATE RANGE
-      "date_from": values['date_from'] ?? "",
-
-      "date_to": values['date_to'] ?? "",
-
-      /// ATTACHMENTS
       "attachments": _buildAttachments(values),
     };
   }
 
-  Future<void> submitProjectApprovalRequest(
+  Future<void> submitComplaintLostPropertyRequest(
     int serviceId,
     int subServiceId,
     Map<String, dynamic> values,
@@ -1516,9 +1440,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await followupReportInstance.followUpReportCreateRequest(
-        payload,
-      );
+      final response = await complaintLostReportInstance
+          .complaintLostPropertyCreateRequest(payload);
 
       if (response['status'] == 'success') {
         _refreshDashboard();

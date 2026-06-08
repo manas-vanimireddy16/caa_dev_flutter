@@ -27,6 +27,7 @@ class KRadioGroup<T> extends ConsumerWidget {
   final double horizontalGap;
   final EdgeInsets? padding;
   final String? errorText;
+  final TextStyle? titleStyle;
 
   const KRadioGroup({
     Key? key,
@@ -38,6 +39,7 @@ class KRadioGroup<T> extends ConsumerWidget {
     this.horizontalGap = 24,
     this.padding,
     this.errorText,
+    this.titleStyle,
   }) : super(key: key);
 
   @override
@@ -65,11 +67,13 @@ class KRadioGroup<T> extends ConsumerWidget {
             children: [
               Text(
                 title,
-                style: TextStyle(
-                  fontSize: currentTheme.fontSizes.s12,
-                  fontWeight: currentTheme.fontWeights.wBold,
-                  color: currentTheme.colors.secondary,
-                ),
+                style:
+                    titleStyle ??
+                    TextStyle(
+                      fontSize: currentTheme.fontSizes.s12,
+                      fontWeight: currentTheme.fontWeights.wBold,
+                      color: currentTheme.colors.secondary,
+                    ),
               ),
               if (isRequired) ...[
                 4.toHorizontalSizedBox,

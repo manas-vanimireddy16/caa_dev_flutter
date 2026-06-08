@@ -155,6 +155,7 @@
 
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/dynamic_field.dart';
@@ -244,6 +245,7 @@ class _TextFieldWidgetState extends ConsumerState<TextFieldWidget> {
         enabled: !isDisabled, // 🔥 UPDATED
         hintText: widget.field.placeholder,
         fieldHeadingText: widget.field.label,
+        fieldHeadingTextStyle: DynamicFieldLabelStyle.text,
         errorText: state.errors[widget.field.name],
         isRequired: isRequired,
         onChanged: isDisabled

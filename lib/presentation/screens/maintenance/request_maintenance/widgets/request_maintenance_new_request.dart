@@ -56,7 +56,7 @@ class _RequestMaintenanceNewRequestScreenState
         child: DynamicForm(
           title: formTitle,
           stepTitles: const [''],
-          steps: [controller.buildFollowUpReportFields(l10n)],
+          steps: [controller.buildRequestMaintenanceFields(l10n)],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

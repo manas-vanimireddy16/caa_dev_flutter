@@ -4,11 +4,245 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/repository/common/domain/domain.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
+
+/// Upload File
+const Color uploadFileColor = Color(0xFF26285F);
+
+/// File Drop Here
+const Color fileDropHereColor = Color(0xB01B2B41);
+
+/// Files Text
+const Color filesTextColor = Color(0xFF676767);
+
+class CommonAttachmentsUploadArea extends StatelessWidget {
+  final String? title;
+  final bool isRequired;
+  final bool isUploading;
+  final VoidCallback? onUploadTap;
+  final List<String> allowedExtensions;
+  final int maxFileSizeInMB;
+  final Widget? footer;
+
+  const CommonAttachmentsUploadArea({
+    super.key,
+    this.title,
+    this.isRequired = false,
+    this.isUploading = false,
+    this.onUploadTap,
+    this.allowedExtensions = const ['doc', 'docx', 'pdf', 'png', 'jpeg'],
+    this.maxFileSizeInMB = 10,
+    this.footer,
+  });
+
+  String get _allowedFilesText {
+    final displayExtensions = allowedExtensions
+        .map((ext) => ext.toLowerCase())
+        .where((ext) => ext != 'jpg')
+        .toList();
+
+    return 'You can upload ${displayExtensions.join(', ')} files';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final label = title?.trim().isNotEmpty == true
+        ? title!.trim()
+        : 'Attachments (Optional)';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AppColors.secondaryText,
+            ),
+            children: [
+              if (isRequired)
+                const TextSpan(
+                  text: ' *',
+                  style: TextStyle(color: Colors.red),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        _DashedBorderContainer(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: isUploading ? null : onUploadTap,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8E6EF),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: isUploading
+                            ? const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(
+                                    height: 18,
+                                    width: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: uploadFileColor,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Uploading...',
+                                    style: TextStyle(
+                                      color: uploadFileColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const Text(
+                                'Upload File..',
+                                style: TextStyle(
+                                  color: uploadFileColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    const Icon(
+                      Icons.file_upload_outlined,
+                      size: 22,
+                      color: fileDropHereColor,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Drop file here',
+                      style: TextStyle(
+                        color: fileDropHereColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  _allowedFilesText,
+                  style: const TextStyle(
+                    color: filesTextColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    height: 1.4,
+                  ),
+                ),
+                Text(
+                  "File can't be larger than ${maxFileSizeInMB}MB",
+                  style: const TextStyle(
+                    color: filesTextColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    height: 1.4,
+                  ),
+                ),
+                if (footer != null) ...[const SizedBox(height: 12), footer!],
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DashedBorderContainer extends StatelessWidget {
+  final Widget child;
+
+  const _DashedBorderContainer({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: const _DashedBorderPainter(
+        color: Color(0xFFD0D5DD),
+        strokeWidth: 1.2,
+        radius: 10,
+      ),
+      child: SizedBox(width: double.infinity, child: child),
+    );
+  }
+}
+
+class _DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double radius;
+
+  const _DashedBorderPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.radius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final rect = Rect.fromLTWH(
+      strokeWidth / 2,
+      strokeWidth / 2,
+      size.width - strokeWidth,
+      size.height - strokeWidth,
+    );
+    final rrect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
+    final path = Path()..addRRect(rrect);
+
+    for (final metric in path.computeMetrics()) {
+      const dashWidth = 6.0;
+      const dashSpace = 4.0;
+      var distance = 0.0;
+
+      while (distance < metric.length) {
+        final end = distance + dashWidth;
+        canvas.drawPath(
+          metric.extractPath(distance, end.clamp(0, metric.length)),
+          paint,
+        );
+        distance += dashWidth + dashSpace;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DashedBorderPainter oldDelegate) {
+    return color != oldDelegate.color ||
+        strokeWidth != oldDelegate.strokeWidth ||
+        radius != oldDelegate.radius;
+  }
+}
 
 class CommonAttachmentsTabContent extends StatelessWidget {
   final List<AttachmentModel> attachments;

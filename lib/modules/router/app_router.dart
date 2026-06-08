@@ -64,7 +64,6 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: RequestForVAPTAndInfrastructureReviewRoute.page),
         AutoRoute(page: RequestForInternalAuditRoute.page),
         AutoRoute(page: CyberSecurityRiskManagementRoute.page),
-        AutoRoute(page: ComplaintLostPropertyReportRoute.page),
       ],
     ),
 
@@ -288,6 +287,7 @@ class AppRouter extends RootStackRouter {
       children: [
         AutoRoute(page: AccessCardDashboardRoute.page),
         AutoRoute(page: AccessCardRequestRoute.page),
+        AutoRoute(page: ComplaintLostPropertyReportRoute.page),
       ],
     ),
 

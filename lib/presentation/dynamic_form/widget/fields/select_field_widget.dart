@@ -125,6 +125,7 @@
 // }
 
 import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
 import 'package:flutter/material.dart';
@@ -203,6 +204,7 @@ class SelectFieldWidget extends ConsumerWidget {
           isExpanded: true,
           isRequired: field.required,
           fieldHeadingText: field.label,
+          fieldHeadingTextStyle: DynamicFieldLabelStyle.text,
           value: safeValue,
           items: items,
           hintText: field.placeholder ?? field.label,

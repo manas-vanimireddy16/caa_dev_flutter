@@ -1,5 +1,6 @@
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,7 +29,7 @@ class CheckboxFieldWidget extends ConsumerWidget {
           RichText(
             text: TextSpan(
               text: field.label,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: DynamicFieldLabelStyle.text,
               children: [
                 if (isRequired)
                   const TextSpan(

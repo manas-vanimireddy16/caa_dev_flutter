@@ -1,5 +1,6 @@
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,7 +36,7 @@ class MultiSelectDropdownFieldWidget extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: 6),
               child: Text(
                 field.label,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                style: DynamicFieldLabelStyle.text,
               ),
             ),
 

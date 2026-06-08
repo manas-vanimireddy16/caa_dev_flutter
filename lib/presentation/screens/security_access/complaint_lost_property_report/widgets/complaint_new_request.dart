@@ -57,14 +57,14 @@ class _ComplaintLostPropertyReportNewRequestScreenState
         child: DynamicForm(
           title: formTitle,
           stepTitles: const [''],
-          steps: [controller.buildFollowUpReportFields(l10n)],
+          steps: [controller.buildComplaintLostPropertyFields(l10n)],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {
           //   return state.hrTasks.isNotEmpty;
           // },
           onSubmit: (values) async {
-            await controller.submitProjectApprovalRequest(
+            await controller.submitComplaintLostPropertyRequest(
               widget.serviceId,
               widget.subServiceId,
               values,

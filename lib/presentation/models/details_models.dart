@@ -1526,6 +1526,14 @@ class RequestModel {
   final int? hallId;
   final String? typeOfHall;
 
+  // Request Maintenance
+  final bool? emergencyMaintenanceSupport;
+
+  final String? reasonForMaintenance;
+
+  final String? ifStationSelected;
+  final String? buildingSiteClassification;
+
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1880,6 +1888,11 @@ class RequestModel {
     this.purposeOfEvent,
     this.hallId,
     this.typeOfHall,
+    // Request Maintenance
+    this.emergencyMaintenanceSupport,
+    this.reasonForMaintenance,
+    this.ifStationSelected,
+    this.buildingSiteClassification,
   });
 
   static List<String> parseStringList(dynamic data) {
@@ -2342,6 +2355,11 @@ class RequestModel {
       purposeOfEvent: json['purpose_of_event'],
       hallId: json['hall_id'],
       typeOfHall: json['type_of_hall'],
+      // Request Maintenance
+      emergencyMaintenanceSupport: json['emergency_maintenance_support'],
+      reasonForMaintenance: json['reason_for_maintenance'],
+      ifStationSelected: json['if_station_selected'],
+      buildingSiteClassification: json['building_site_classification'],
     );
   }
 

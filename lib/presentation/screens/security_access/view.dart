@@ -53,6 +53,10 @@ class RequestForAccessHomePage extends ConsumerWidget {
       routes: [
         AccessCardDashboardRoute(),
         AccessCardRequestRoute(service: Service(), subService: SubService()),
+        ComplaintLostPropertyReportRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

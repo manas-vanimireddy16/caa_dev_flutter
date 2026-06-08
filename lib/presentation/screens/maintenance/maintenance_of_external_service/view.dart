@@ -46,7 +46,7 @@ import 'package:code_setup/presentation/screens/task_management/models/follow_up
 import 'package:code_setup/presentation/screens/training_and_development/models/hall_request_data_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/hall_respone_form.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
-import 'package:code_setup/repository/assests_affair/follow_up_report/domain/domain.dart';
+import 'package:code_setup/repository/task_management/follow_up_report/domain/domain.dart';
 import 'package:code_setup/repository/training_and_development/book_caa_hall/domain/domain.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';

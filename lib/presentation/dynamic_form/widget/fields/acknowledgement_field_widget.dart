@@ -1,6 +1,7 @@
 import 'package:code_setup/presentation/dynamic_form/models/acknowledgement_item.dart';
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,7 +22,7 @@ class AcknowledgementFieldWidget extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(field.label ?? '', style: const TextStyle(fontSize: 16)),
+        Text(field.label ?? '', style: DynamicFieldLabelStyle.text),
 
         ...items.map((item) {
           return Row(

@@ -4149,4 +4149,183 @@ class ApiEndPoint {
       '/v1/it-service/logistics/analytics/foreign-approvals/kpi-cards';
   static String foreignEmployeeVehicleAllocate(int requestId) =>
       '/v1/it-service/logistics/foreign-vehicle-request/$requestId/details';
+
+  /// Maintenance APIs
+  /// ===================== SEND REQUEST =====================
+
+  static const String requestMaintenanceSendRequest =
+      '/v1/asset-affairs-service/maintenance/request';
+
+  /// ===================== GET REQUESTS =====================
+
+  static const String requestMaintenanceGetRequests =
+      '/v1/asset-affairs-service/maintenance/requests';
+
+  static const String requestMaintenanceGetAllRequests =
+      '/v1/asset-affairs-service/maintenance/requests/all';
+
+  static const String requestMaintenanceGetActionItems =
+      '/v1/asset-affairs-service/maintenance/requests/for-approval';
+
+  /// ===================== REQUEST DETAILS =====================
+
+  static String requestMaintenanceById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  static String requestMaintenanceUpdateRequest(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId';
+
+  static String requestMaintenanceRequestById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String requestMaintenanceApprove =
+      '/v1/asset-affairs-service/maintenance/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String requestMaintenanceSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/chat';
+
+  static String requestMaintenanceChatsById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/chats';
+
+  static String requestMaintenanceUpdateChat(int chatId) =>
+      '/v1/asset-affairs-service/maintenance/chat/$chatId';
+
+  static String requestMaintenanceDeleteChat(int chatId) =>
+      '/v1/asset-affairs-service/maintenance/chat/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  static String requestMaintenanceSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/attachment';
+
+  static String requestMaintenanceAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/attachments';
+
+  static String requestMaintenanceUpdateAttachment(int attachmentId) =>
+      '/v1/asset-affairs-service/maintenance/attachment/$attachmentId';
+
+  static String requestMaintenanceDeleteAttachment(int attachmentId) =>
+      '/v1/asset-affairs-service/maintenance/attachment/$attachmentId';
+
+  /// ===================== TASK APIs =====================
+
+  static String requestMaintenanceAssignTask(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/assign-task';
+
+  static String requestMaintenanceUpdateTaskStatus(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/task-status';
+
+  static String requestMaintenanceClarification(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/clarification';
+
+  /// ===================== ANALYTICS APIs =====================
+
+  static const String requestMaintenanceKpiCards =
+      '/v1/asset-affairs-service/maintenance/analytics/kpi-cards';
+
+  static const String requestMaintenanceStatusBreakdown =
+      '/v1/asset-affairs-service/maintenance/analytics/status-breakdown';
+
+  static const String requestMaintenanceTrendBreakdown =
+      '/v1/asset-affairs-service/maintenance/analytics/trend-breakdown';
+
+  static const String requestMaintenanceApprovalKpiCards =
+      '/v1/asset-affairs-service/maintenance/analytics/approvals/kpi-cards';
+
+  static const String requestMaintenanceApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/maintenance/analytics/approvals/status-breakdown';
+  static const String requestMaintenanceApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/maintenance/analytics/approvals/trend-breakdown';
+  static const String requestMaintenanceStations =
+      '/v1/user-service/station/all';
+
+  /// Complaint Lost Property APIs
+  /// ===================== SEND REQUEST =====================
+
+  static const String complaintLostPropertySendRequest =
+      '/v1/security-access-service/complaint-lost-property-report/request';
+
+  /// ===================== GET REQUESTS =====================
+
+  static const String complaintLostPropertyGetRequests =
+      '/v1/security-access-service/complaint-lost-property-report/requests';
+
+  static const String complaintLostPropertyGetActionItems =
+      '/v1/security-access-service/complaint-lost-property-report/requests/for-approval';
+
+  /// ===================== REQUEST DETAILS =====================
+
+  static String complaintLostPropertyById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId';
+
+  static String complaintLostPropertyRequestById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String complaintLostPropertyApprove =
+      '/v1/security-access-service/complaint-lost-property-report/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String complaintLostPropertySendChatById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/chat';
+
+  static String complaintLostPropertyChatsById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/chats';
+
+  static String complaintLostPropertyChatById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/chat';
+
+  static String complaintLostPropertyGetChatById(int requestId, int chatId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/chat/$chatId';
+
+  static String complaintLostPropertyDeleteChat(int requestId, int chatId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/chat/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  static String complaintLostPropertySendAttachmentById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/attachment';
+
+  static String complaintLostPropertyAttachmentsById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/attachments';
+
+  static String complaintLostPropertyAttachmentById(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/attachment/$attachmentId';
+
+  static String complaintLostPropertyDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== ANALYTICS APIs =====================
+
+  static const String complaintLostPropertyKpiCards =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/kpi-cards';
+
+  static const String complaintLostPropertyApprovalKpiCards =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/approval-kpi-cards';
+
+  static const String complaintLostPropertyStatusBreakdown =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/status-breakdown';
+
+  static const String complaintLostPropertyTrendBreakdown =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/trend-breakdown';
+
+  static const String complaintLostPropertyApprovalStatusBreakdown =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/approval-status-breakdown';
+
+  static const String complaintLostPropertyApprovalTrendBreakdown =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/approval-trend-breakdown';
 }

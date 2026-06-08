@@ -2,13 +2,15 @@ import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
+import 'package:code_setup/presentation/screens/maintenance/models/request_maintenance.dart';
+import 'package:code_setup/presentation/screens/maintenance/models/station_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/follow_up_request_data_model.dart';
-import 'package:code_setup/repository/assests_affair/follow_up_report/data/data.dart';
+import 'package:code_setup/repository/maintenance/request_maintenance/data/data.dart';
 
-abstract class FollowUpReportRepository {
-  factory FollowUpReportRepository() => FollowUpReportRepositoryImpl();
+abstract class RequestMaintenanceRepository {
+  factory RequestMaintenanceRepository() => RequestMaintenanceRepositoryImpl();
 
-  Future<Map<String, dynamic>> followUpReportCreateRequest(
+  Future<Map<String, dynamic>> requestMaintenanceCreateRequest(
     Map<String, dynamic> payload,
   );
   Future<List<Map<String, dynamic>>> uploadAttachments(
@@ -21,7 +23,7 @@ abstract class FollowUpReportRepository {
   });
   Future<KPIResponse?> getKpiData(int serviceId, int subServiceId);
 
-  Future<List<FollowUpReportRequestModel>> getRequests({
+  Future<List<MaintenanceRequestModel>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -32,7 +34,7 @@ abstract class FollowUpReportRepository {
     String searchText = '',
   });
 
-  Future<List<FollowUpReportRequestModel>> getActionItems({
+  Future<List<MaintenanceRequestModel>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -74,6 +76,5 @@ abstract class FollowUpReportRepository {
     required int serviceId,
     required int subServiceId,
   });
-  Future<List<DepartmentModel>> getDepartments();
-  Future<List<SectionModel>> getSections({required String? userDepartmentId});
+  Future<List<StationModel>> getStations();
 }

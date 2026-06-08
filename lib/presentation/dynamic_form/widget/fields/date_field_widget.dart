@@ -1,4 +1,5 @@
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
@@ -126,6 +127,7 @@ class _DateFieldWidgetState extends ConsumerState<DateFieldWidget> {
         isRequired: widget.field.required,
         hintText: widget.field.placeholder,
         fieldHeadingText: widget.field.label,
+        fieldHeadingTextStyle: DynamicFieldLabelStyle.text,
         errorText: state.errors[widget.field.name],
         suffixIcon: const Icon(Icons.calendar_today),
 

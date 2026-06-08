@@ -278,14 +278,35 @@ class ApprovalCommentDialog extends StatefulWidget {
   /// comment + optional decision number
   final Future<void> Function(String comment, String? decisionNumber) onSubmit;
 
+  /// used when [isToggle] is true; receives dynamic toggle payload
+  final Future<void> Function(
+    String comment,
+    String? decisionNumber,
+    Map<String, dynamic>? togglePayload,
+  )?
+  onSubmitWithTogglePayload;
+
   /// show / hide decision number field
   final bool showDecisionNumber;
+
+  /// show / hide optional toggle (approve flow only)
+  final bool isToggle;
+
+  /// toggle label shown when [isToggle] is true
+  final String? toggleTitle;
+
+  /// dynamic payload key for toggle value
+  final String? togglePayloadKey;
 
   const ApprovalCommentDialog({
     super.key,
     required this.type,
     required this.onSubmit,
+    this.onSubmitWithTogglePayload,
     this.showDecisionNumber = false,
+    this.isToggle = false,
+    this.toggleTitle,
+    this.togglePayloadKey,
   });
 
   @override
@@ -298,6 +319,7 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
   final TextEditingController _decisionController = TextEditingController();
 
   bool _isSubmitting = false;
+  bool _toggleValue = false;
 
   /// =====================================================
   /// TYPES
@@ -308,6 +330,8 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
   bool get _isClose => widget.type == ApprovalDialogType.close;
 
   bool get _isApprove => widget.type == ApprovalDialogType.approve;
+
+  bool get _showToggle => _isApprove && widget.isToggle;
 
   /// COMMENT REQUIRED
   bool get _isCommentRequired => _isReject || _isClose;
@@ -572,6 +596,36 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
                       ),
                     ],
 
+                    if (_showToggle) ...[
+                      16.toVerticalSizedBox,
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.toggleTitle ?? '',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+
+                          Switch(
+                            value: _toggleValue,
+                            activeThumbColor: AppColors.buttonGreen,
+                            onChanged: _isSubmitting
+                                ? null
+                                : (value) {
+                                    setState(() {
+                                      _toggleValue = value;
+                                    });
+                                  },
+                          ),
+                        ],
+                      ),
+                    ],
+
                     16.toVerticalSizedBox,
 
                     /// =============================================
@@ -627,10 +681,31 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
                                     _isSubmitting = true;
                                   });
 
-                                  await widget.onSubmit(
-                                    comment,
-                                    decision.isEmpty ? null : decision,
-                                  );
+                                  Map<String, dynamic>? togglePayload;
+
+                                  if (_showToggle &&
+                                      widget.togglePayloadKey != null) {
+                                    togglePayload = {
+                                      widget.togglePayloadKey!: _toggleValue
+                                          ? 'Yes'
+                                          : 'No',
+                                    };
+                                  }
+
+                                  if (togglePayload != null &&
+                                      widget.onSubmitWithTogglePayload !=
+                                          null) {
+                                    await widget.onSubmitWithTogglePayload!(
+                                      comment,
+                                      decision.isEmpty ? null : decision,
+                                      togglePayload,
+                                    );
+                                  } else {
+                                    await widget.onSubmit(
+                                      comment,
+                                      decision.isEmpty ? null : decision,
+                                    );
+                                  }
 
                                   if (mounted) {
                                     KAppX.router.pop();
