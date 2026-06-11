@@ -288,6 +288,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: AccessCardDashboardRoute.page),
         AutoRoute(page: AccessCardRequestRoute.page),
         AutoRoute(page: ComplaintLostPropertyReportRoute.page),
+        AutoRoute(page: ImportExportMaterialPermissionRoute.page),
       ],
     ),
 
@@ -301,7 +302,20 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.accessCardNewRequest,
     ),
 
-    AutoRoute(page: RequestDetailRoute.page, path: RouteNames.requestDetail),
+    AutoRoute(
+      page: ComplaintLostPropertyReportRoute.page,
+      path: RouteNames.accessCardDetailScreen,
+    ),
+
+    AutoRoute(
+      page: ImportExportMaterialPermissionNewRequestRoute.page,
+      path: RouteNames.importExportPermissionNewRequest,
+    ),
+
+    AutoRoute(
+      page: ImportExportMaterialPermissionNewRequestDetailsRoute.page,
+      path: RouteNames.importExportPermissionDetails,
+    ),
 
     // / --- AVIATION SECURITY FACILITATION ---
     AutoRoute(

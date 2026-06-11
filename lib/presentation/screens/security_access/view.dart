@@ -57,6 +57,10 @@ class RequestForAccessHomePage extends ConsumerWidget {
           service: Service(),
           subService: SubService(),
         ),
+        ImportExportMaterialPermissionRoute(
+          service: Service(),
+          subService: SubService(),
+        ),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

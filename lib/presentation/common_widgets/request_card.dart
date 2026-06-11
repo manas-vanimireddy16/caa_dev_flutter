@@ -84,6 +84,11 @@ class RequestCard extends StatelessWidget {
       return 'Closed';
     }
 
+    // Show Pending when status is In Progress
+    if (status.toLowerCase().replaceAll('_', ' ') == 'in progress') {
+      return 'Pending';
+    }
+
     return statusLabelBuilder?.call(status) ?? status;
   }
 
@@ -169,20 +174,24 @@ class RequestCard extends StatelessWidget {
   }
 
   Widget _buildFooter() {
+    final status = _resolveStatus(_statusRawValue());
+
+    final chipStatus =
+        status.toLowerCase().replaceAll('_', ' ') == 'in progress'
+        ? 'Pending'
+        : status;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (_hasStatusKey())
           Flexible(
-            child: StatusChip(
-              status: _resolveStatus(_statusRawValue()),
-              displayLabel: _statusLabel(),
-            ),
+            child: StatusChip(status: chipStatus, displayLabel: _statusLabel()),
           )
         else
           const SizedBox.shrink(),
-        Icon(Icons.open_in_new, size: 20.toAutoScaledWidth, color: _dataColor),
+        // Icon(Icons.open_in_new, size: 20.toAutoScaledWidth, color: _dataColor),
       ],
     );
   }

@@ -86,6 +86,11 @@ class RouteNames {
       '/accessCardDashboardRequest';
   static const String accessCardNewRequest = '/accessCardNewRequest';
 
+  static const importExportPermissionNewRequest =
+      '/importExportPermissionNewRequest';
+  static const importExportPermissionDetails =
+      '/importExportPermissionNewRequest';
+
   // ───────────────────────────────
   // HOTEL RESERVATION
   // ───────────────────────────────

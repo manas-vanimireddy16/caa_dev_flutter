@@ -81,10 +81,9 @@ class SettingsController extends StateNotifier<SettingsState> {
     if (!context.mounted) return;
 
     final user = KAppX.globalProvider.read(userProvider);
-    await ref.read(servicesProvider.notifier).syncWithSelectedRole(
-      role: role,
-      userId: user?.userId,
-    );
+    await ref
+        .read(servicesProvider.notifier)
+        .syncWithSelectedRole(role: role, userId: user?.userId);
 
     if (!context.mounted) return;
 
@@ -260,6 +259,8 @@ class SettingsController extends StateNotifier<SettingsState> {
       final repo = RolesRepo();
       final userRoles = await repo.getUserRoles(id);
       if (!mounted) return;
+
+      await selectOrStoreRole(userRoles);
 
       state = state.copyWith(userRoles: userRoles);
       await loadSavedRole(userRoles);

@@ -1,8 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
+import 'package:code_setup/modules/domain/models/roles_model.dart';
+import 'package:code_setup/modules/domain/models/selected_role.dart';
+import 'package:code_setup/modules/domain/roles_repo.dart';
+import 'package:code_setup/presentation/common_widgets/request_card.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/screens/home_screen/approvals/common_widgets.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/announcementsModels.dart';
+import 'package:code_setup/presentation/screens/home_screen/dashboard/models/dashboard_requests_approvals.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/userModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/widgets/announcement/announcement.dart';
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
@@ -10,7 +15,9 @@ import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 part 'controller.dart';
+part 'widgets/dashboard_requests_card.dart';
 
 @RoutePage()
 class AnnouncementScreen extends ConsumerWidget {
@@ -53,6 +60,10 @@ class AnnouncementScreen extends ConsumerWidget {
               title: l10n.announcements,
               subtitle: l10n.announcementsSubtext,
             ),
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(11, 0, 11, 16),
+            child: DashboardRequestsCard(),
           ),
         ],
       ),

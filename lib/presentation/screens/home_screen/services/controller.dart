@@ -530,6 +530,15 @@ class _VSController extends StateNotifier<_ViewState> {
         );
 
         break;
+      case 'CAA023':
+        KAppX.router.push(
+          ImportExportMaterialPermissionRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+
+        break;
 
       default:
         debugPrint('No route found for $name');

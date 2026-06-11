@@ -48,8 +48,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<ContractServiceModel> requestData;
-  final List<ContractServiceModel> actionItems;
+  final List<ImportExportMaterialModel> requestData;
+  final List<ImportExportMaterialModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final int approvalId;
@@ -145,8 +145,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<ContractServiceModel>? requestData,
-    List<ContractServiceModel>? actionItems,
+    List<ImportExportMaterialModel>? requestData,
+    List<ImportExportMaterialModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -320,7 +320,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(ContractServiceModel item) {
+  Map<String, String> buildRequestCardData(ImportExportMaterialModel item) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
@@ -328,7 +328,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
-      'Type of Project': item.titleOfProject ?? 'NA',
+      // 'Type of Project': item.titleOfProject ?? 'NA',
 
       /// 👇 APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
@@ -403,7 +403,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      ContractServiceRequestDetailsRoute(
+      ImportExportMaterialPermissionNewRequestDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -429,7 +429,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
     // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      ContractServiceRequestNewRequestRoute(
+      ImportExportMaterialPermissionNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -438,7 +438,7 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final contractServiceInstance = ContractServiceRequestRepository();
+  final ImportExportMaterialInstance = ImportExportPermissionRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
   List<DynamicField> buildPermissionCAA023Fields(DashboardL10n l10n) => [
     /// ================= DATE OF REQUEST =================
@@ -446,6 +446,8 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'date_of_request',
       label: 'Date of Request',
       type: FieldType.date,
+      // initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
       required: true,
       placeholder: 'Select Date',
     ),
@@ -464,6 +466,8 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'requested_material_movement_date',
       label: 'Requested Date of Material Movement',
       type: FieldType.date,
+      // initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
       required: true,
       placeholder: 'MM/DD/YYYY',
     ),
@@ -580,7 +584,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await contractServiceInstance.getRequestsById(
+      final requests = await ImportExportMaterialInstance.getRequestsById(
         id: id,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -614,7 +618,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await contractServiceInstance.getchatById(id);
+      final requests = await ImportExportMaterialInstance.getchatById(id);
       if (requests != null) {
         final chats = requests.reversed.toList();
         state = state.copyWith(chatById: chats);
@@ -629,7 +633,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await contractServiceInstance.getAttachmentsById(id);
+      final attachments = await ImportExportMaterialInstance.getAttachmentsById(
+        id,
+      );
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
       }
@@ -644,7 +650,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await contractServiceInstance.getKpiData(
+      final kpis = await ImportExportMaterialInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -662,11 +668,12 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await contractServiceInstance.getApprovalTrendBreakdownData(
-        period: period,
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
-      );
+      final data =
+          await ImportExportMaterialInstance.getApprovalTrendBreakdownData(
+            period: period,
+            serviceId: service.id ?? 0,
+            subServiceId: subService.id ?? 0,
+          );
 
       if (data != null) {
         state = state.copyWith(approvalTrendData: data, isLoading: false);
@@ -681,8 +688,8 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await contractServiceInstance
-          .getApprovalStatusBreakdownData(
+      final statusBreakdown =
+          await ImportExportMaterialInstance.getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
             subServiceId: subService.id ?? 0,
@@ -705,8 +712,8 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await contractServiceInstance
-          .getStatusBreakdownData(
+      final statusBreakdown =
+          await ImportExportMaterialInstance.getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
             subServiceId: subService.id ?? 0,
@@ -729,7 +736,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await contractServiceInstance.getTrendBreakdownData(
+      final data = await ImportExportMaterialInstance.getTrendBreakdownData(
         period: period,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -748,7 +755,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await contractServiceInstance.getApprovalKpiData(
+      final kpis = await ImportExportMaterialInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
@@ -775,7 +782,7 @@ class _VSController extends StateNotifier<_ViewState> {
       //   state = state.copyWith(requestData: [], isLoading: false);
       // }
 
-      final requests = await contractServiceInstance.getRequests(
+      final requests = await ImportExportMaterialInstance.getRequests(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -804,7 +811,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await contractServiceInstance.getActionItems(
+      final items = await ImportExportMaterialInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -900,9 +907,10 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await contractServiceInstance.uploadAttachments(
-          state.attachments,
-        );
+        final uploadedFiles =
+            await ImportExportMaterialInstance.uploadAttachments(
+              state.attachments,
+            );
 
         if (uploadedFiles.isEmpty) {
           throw Exception("File upload failed");
@@ -932,7 +940,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await contractServiceInstance.sendAttachment(payload, requestId);
+        await ImportExportMaterialInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -953,7 +961,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await contractServiceInstance.sendChat(payload, requestId);
+        await ImportExportMaterialInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -985,7 +993,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await contractServiceInstance.onApprove(payload);
+      await ImportExportMaterialInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       fetchactionItems();
@@ -1030,7 +1038,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await contractServiceInstance.onApprove(payload);
+      await ImportExportMaterialInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
@@ -1058,7 +1066,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await contractServiceInstance.onSendInProgress(payload);
+      // await ImportExportMaterialInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1478,8 +1486,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await contractServiceInstance
-          .contractServiceCreateRequest(payload);
+      final response =
+          await ImportExportMaterialInstance.importExportMaterialCreateRequest(
+            payload,
+          );
 
       if (response['status'] == 'success') {
         _refreshDashboard();

@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/domain/core/network/network.dart';
+import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/models.dart';
 import 'package:code_setup/presentation/models/sections.dart';
 import 'package:code_setup/presentation/models/userIdModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/approvals/model/actionItems.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/announcementsModels.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/bookmarksModel.dart';
+import 'package:code_setup/presentation/screens/home_screen/dashboard/models/dashboard_requests_approvals.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/userModel.dart';
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
 import 'package:code_setup/utils/api_end_point.dart';
@@ -16,9 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 class DashboardRepositoryImplementation implements DashboardRepository {
-  final token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwMTgsImlzX2FkbWluIjpmYWxzZSwiZW1wbG95ZWVfaWQiOiIxNDA0MiIsImVtcGxveWVlX25hbWUiOiJNYW5hcyIsImVtcGxveWVlX2FyYWJpY19uYW1lIjoi2YXZhtmK2LEg2KjZhiDYtdiv2YrZgiDYqNmGINi52YTZiiDYp9mE2KjZhNmI2LTZiiIsInBlcnNvbl90eXBlIjoiQ0FBIiwic2VjdGlvbiI6NjYsInNlY3Rpb25fbmFtZSI6IklUIFN1cHBvcnQiLCJwb3NpdGlvbiI6MjI1LCJwb3NpdGlvbl9uYW1lIjoiQ29tcHV0ZXIgTmV0d29yayBFbmdpbmVlciIsImRlcGFydG1lbnQiOjI1LCJkZXBhcnRtZW50X25hbWUiOiJJbmZvcm1hdGlvbiBUZWNobm9sb2d5IiwiZW1haWwiOiJtYW5hcy52YW5pbWlyZWRkeUBhbW5ldGRpZ2l0YWwuY29tIiwiaWF0IjoxNzU5OTk3Njc5LCJleHAiOjE3NjM1OTc2Nzl9.aMuGbNRTDag8C8IsmPHzgax96e7LQs1w6Ft6z8vm-vs';
-
   @override
   Future<List<Bookmarksmodel>> getBookmarks() async {
     final client = await KAppX.network.secureClient();
@@ -317,29 +318,148 @@ class DashboardRepositoryImplementation implements DashboardRepository {
   }
 
   @override
-  Future<List<ActionItemData>> getActionItems({required int userId}) async {
-    final client = Dio();
+  Future<List<DashboardRequestModel>> getRequestsData({
+    required int offset,
+    required int limit,
+    required List<int> serviceIds,
+    required List<int> subServiceIds,
+    String searchText = '',
+  }) async {
+    final client = await KAppX.network.secureClient();
 
     try {
-      final url =
-          'https://caa.altomouhit.com/v1/it-service/helpdesk/manager/requests/$userId';
-      final response = await client.get(
-        url,
-        options: Options(
-          headers: {'jwt': token, 'Content-Type': 'application/json'},
-        ),
-      );
+      if (client != null) {
+        final Map<String, dynamic> queryParams = {
+          'service_ids': serviceIds.join(','),
+          'sub_service_ids': subServiceIds.join(','),
 
-      if (response.statusCode == 200) {
-        final data = response.data as Map<String, dynamic>;
-        return (data['data'] as List)
-            .map((e) => ActionItemData.fromJson(e as Map<String, dynamic>))
-            .toList();
+          'offset': offset,
+          'limit': limit,
+        };
+
+        if (searchText.isNotEmpty) {
+          queryParams['search_text'] = searchText;
+        }
+
+        final url = ApiEndPoint.dashboardMyRequests;
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          final List<dynamic> list = data['data'];
+
+          return list
+              .map(
+                (e) =>
+                    DashboardRequestModel.fromJson(e as Map<String, dynamic>),
+              )
+              .toList();
+        } else {
+          throw Exception(
+            'Failed to fetch Accommodation Muscat request: ${response.statusCode}',
+          );
+        }
       } else {
-        throw Exception('Failed with status code: ${response.statusCode}');
+        return [];
       }
     } catch (e) {
-      throw Exception('Error in getActionItems: $e');
+      throw Exception("Error fetching Accommodation Muscat request: $e");
+    }
+  }
+
+  @override
+  Future<List<DashboardRequestModel>> getActionItems({
+    required int offset,
+    required int limit,
+    required List<int> serviceIds,
+    required List<int> subServiceIds,
+    String searchText = '',
+  }) async {
+    try {
+      final client = await KAppX.network.secureClient();
+      if (client != null) {
+        final queryParams = {
+          'offset': offset.toString(),
+          'limit': limit.toString(),
+          'service_ids': serviceIds.join(','),
+          'sub_service_ids': subServiceIds.join(','),
+        };
+
+        if (searchText.isNotEmpty) {
+          queryParams['search_text'] = searchText;
+        }
+
+        final response = await client.get(
+          ApiEndPoint.dashboardActionItems,
+          queryParameters: queryParams,
+        );
+
+        if (response.statusCode == 200 && response.data != null) {
+          final data = Map<String, dynamic>.from(response.data);
+
+          final List<dynamic> list = data['data'] ?? [];
+
+          /// Parse each Action Item
+          final actionItems = list
+              .map(
+                (item) => DashboardRequestModel.fromJson(
+                  item as Map<String, dynamic>,
+                ),
+              )
+              .toList();
+
+          return actionItems;
+        } else {
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
+        }
+      }
+
+      /// If client is null
+      return [];
+    } on DioException catch (error) {
+      final message =
+          '${error.response?.data['message']} Accommodation Muscat request';
+      throw ApiException(message);
+    } catch (e) {
+      throw ApiException('${e.toString()} Accommodation Muscat request');
+    }
+  }
+
+  @override
+  Future<KPIResponse?> getApprovalKpiData({
+    required List<int> serviceIds,
+    required List<int> subServiceIds,
+  }) async {
+    String url = ApiEndPoint.dashboardApprovalKpi;
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        // final queryParams = {
+        //   'service_id': serviceId,
+        //   'sub_service_id': subServiceId,
+        // };
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return KPIResponse.fromJson(data);
+        } else {
+          final errorMessage =
+              response.data?['message'] ?? 'Unexpected error occurred';
+          throw ApiException(errorMessage);
+        }
+      }
+      return null;
+    } on DioException catch (error) {
+      log('caught dio error');
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      log('error fetching KPI data $e');
+      throw ApiException(e.toString());
     }
   }
 }

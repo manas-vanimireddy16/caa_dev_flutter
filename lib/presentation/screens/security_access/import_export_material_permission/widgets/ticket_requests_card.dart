@@ -106,7 +106,7 @@ class TicketRequestsCard extends ConsumerWidget {
           ),
           const Divider(height: 1, thickness: 1, color: _borderColor),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 16),
             child: RequestTabs(
               selectedIndex: state.tabIndex,
               actionItemCount: state.approvalKpiData?.data?.pending ?? 0,
@@ -124,7 +124,7 @@ class TicketRequestsCard extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
             child: KTextField(
               focusNode: focusNode,
               hintText: l10n.searchByIdOrName,
@@ -155,7 +155,7 @@ class TicketRequestsCard extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
             child: SizedBox(
               height: 400,
               child: PageView(

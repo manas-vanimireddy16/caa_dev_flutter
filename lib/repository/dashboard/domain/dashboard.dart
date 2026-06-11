@@ -1,9 +1,11 @@
+import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/models.dart';
 import 'package:code_setup/presentation/models/sections.dart';
 import 'package:code_setup/presentation/models/userIdModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/approvals/model/actionItems.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/announcementsModels.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/bookmarksModel.dart';
+import 'package:code_setup/presentation/screens/home_screen/dashboard/models/dashboard_requests_approvals.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/servicesModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/userModel.dart';
 import 'package:code_setup/repository/dashboard/data/dashboardImplementation.dart';
@@ -19,5 +21,22 @@ abstract class DashboardRepository {
   Future<List<SectionResponse>> getSections();
   Future<List<AnnouncementModel>> getModels();
   Future<void> updateBookmark({required int serviceId});
-  Future<List<ActionItemData>> getActionItems({required int userId});
+  Future<List<DashboardRequestModel>> getRequestsData({
+    required int offset,
+    required int limit,
+    required List<int> serviceIds,
+    required List<int> subServiceIds,
+    String searchText = '',
+  });
+  Future<List<DashboardRequestModel>> getActionItems({
+    required int offset,
+    required int limit,
+    required List<int> serviceIds,
+    required List<int> subServiceIds,
+    String searchText = '',
+  });
+  Future<KPIResponse?> getApprovalKpiData({
+    required List<int> serviceIds,
+    required List<int> subServiceIds,
+  });
 }

@@ -30,7 +30,7 @@ final _vsProvider =
     StateNotifierProvider.autoDispose<_VSController, _ViewState>((ref) {
       final stateController = _VSController();
 
-      stateController.fetchActionItems(userId: 12);
+      // stateController.fetchActionItems(userId: 12);
 
       return stateController;
     });
@@ -61,17 +61,17 @@ class _VSController extends StateNotifier<_ViewState> {
 
   final dashboardinstance = DashboardRepository();
 
-  Future<void> fetchActionItems({required int userId}) async {
-    state = state.copyWith(isLoading: true);
+  // Future<void> fetchActionItems({required int userId}) async {
+  //   state = state.copyWith(isLoading: true);
 
-    try {
-      final items = await dashboardinstance.getActionItems(userId: userId);
-      state = state.copyWith(isLoading: false, actionItems: items);
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-      print("Error fetching Action Items: $e");
-    }
-  }
+  //   try {
+  //     final items = await dashboardinstance.getActionItems(userId: userId);
+  //     state = state.copyWith(isLoading: false, actionItems: items);
+  //   } catch (e) {
+  //     state = state.copyWith(isLoading: false);
+  //     print("Error fetching Action Items: $e");
+  //   }
+  // }
 
   @override
   void dispose() {

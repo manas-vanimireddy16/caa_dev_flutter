@@ -31,6 +31,26 @@ class ApiEndPoint {
       '/v1/user-service/master/departments/listing';
   static const String countryList = '/v1/user-service/country-master/list';
 
+  /// Dashboard
+  static const String dashboardActionItems =
+      '/v1/user-service/dashboard/sla/for-approval';
+  static const String dashboardMyRequests =
+      '/v1/user-service/dashboard/sla/my-requests';
+  static const String dashboardKpi =
+      '/v1/user-service/dashboard/sla/my-requests/analytics/kpi';
+  static const String dashboardApprovalKpi =
+      '/v1/user-service/dashboard/sla/for-approval/analytics/kpi';
+
+  static const String dashboardTrendBreakdown =
+      '/v1/user-service/dashboard/sla/my-requests/analytics/trend-breakdown';
+  static const String dashboardStatusBreakdown =
+      '/v1/user-service/dashboard/sla/my-requests/analytics/status-breakdown';
+
+  static const String dashboardApprovalTrendBreakdown =
+      '/v1/user-service/dashboard/sla/my-requests/analytics/trend-breakdown';
+  static const String dashboardApprovalStatusBreakdown =
+      '/v1/user-service/dashboard/sla/my-requests/analytics/status-breakdown';
+
   ///Salalah
   /// Salalah Helpdesk APIs
 
@@ -4384,4 +4404,91 @@ class ApiEndPoint {
 
   static const String complaintLostPropertyApprovalTrendBreakdown =
       '/v1/security-access-service/complaint-lost-property-report/analytics/approval-trend-breakdown';
+
+  /// Import Export Material APIs
+  /// ===================== SEND REQUEST =====================
+
+  static const String importExportMaterialSendRequest =
+      '/v1/security-access-service/import-export-material/request';
+
+  /// ===================== GET REQUESTS =====================
+
+  static const String importExportMaterialGetRequests =
+      '/v1/security-access-service/import-export-material/requests';
+
+  static const String importExportMaterialGetActionItems =
+      '/v1/security-access-service/import-export-material/requests/for-approval';
+
+  /// ===================== REQUEST DETAILS =====================
+
+  static String importExportMaterialById(int requestId) =>
+      '/v1/security-access-service/import-export-material/request/$requestId';
+
+  static String importExportMaterialRequestById(int requestId) =>
+      '/v1/security-access-service/import-export-material/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String importExportMaterialApprove =
+      '/v1/security-access-service/import-export-material/approve';
+
+  static const String importExportMaterialReject =
+      '/v1/security-access-service/import-export-material/reject';
+
+  /// ===================== CHAT APIs =====================
+
+  static String importExportMaterialSendChatById(int requestId) =>
+      '/v1/security-access-service/import-export-material/request/$requestId/chat';
+
+  static String importExportMaterialChatsById(int requestId) =>
+      '/v1/security-access-service/import-export-material/request/$requestId/chats';
+
+  static String importExportMaterialChatById(int requestId) =>
+      '/v1/security-access-service/import-export-material/request/$requestId/chat';
+
+  static String importExportMaterialGetChatById(int requestId, int chatId) =>
+      '/v1/security-access-service/import-export-material/request/$requestId/chat/$chatId';
+
+  static String importExportMaterialDeleteChat(int requestId, int chatId) =>
+      '/v1/security-access-service/import-export-material/request/$requestId/chat/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  static String importExportMaterialSendAttachmentById(int requestId) =>
+      '/v1/security-access-service/import-export-material/request/$requestId/attachment';
+
+  static String importExportMaterialAttachmentsById(int requestId) =>
+      '/v1/security-access-service/import-export-material/request/$requestId/attachments';
+
+  static String importExportMaterialAttachmentById(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/security-access-service/import-export-material/request/$requestId/attachment/$attachmentId';
+
+  static String importExportMaterialDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/security-access-service/import-export-material/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== ANALYTICS APIs =====================
+
+  static const String importExportMaterialKpiCards =
+      '/v1/security-access-service/import-export-material/analytics/kpi-cards';
+
+  static const String importExportMaterialApprovalKpiCards =
+      '/v1/security-access-service/import-export-material/analytics/approval-kpi-cards';
+
+  static const String importExportMaterialStatusBreakdown =
+      '/v1/security-access-service/import-export-material/analytics/status-breakdown';
+
+  static const String importExportMaterialTrendBreakdown =
+      '/v1/security-access-service/import-export-material/analytics/trend-breakdown';
+
+  static const String importExportMaterialApprovalStatusBreakdown =
+      '/v1/security-access-service/import-export-material/analytics/approval-status-breakdown';
+
+  static const String importExportMaterialApprovalTrendBreakdown =
+      '/v1/security-access-service/import-export-material/analytics/approval-trend-breakdown';
 }
