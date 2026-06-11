@@ -6,6 +6,7 @@ import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/models/buttons_enum.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,6 @@ import 'package:flutter_svg/svg.dart';
 
 class _CommentsRoutingStyles {
   static const borderColor = Color(0xFFE5E7EB);
-  static const labelColor = Color(0xFF6B7280);
-  static const valueColor = Color(0xFF111827);
   static const fieldFill = Color(0xFFF3F4F6);
   static const needMoreInfoGreen = Color(0xFF1B5E3B);
   static const approveGreen = Color(0xFF2E9B5F);
@@ -146,26 +145,13 @@ class CommentEntry extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11.toAutoScaledWidth,
-            fontWeight: FontWeight.w500,
-            color: _CommentsRoutingStyles.labelColor,
-            height: 1.2,
-          ),
-        ),
+        Text(label, style: TextStyle(color: AppColors.headingColor)),
         SizedBox(height: 4.toAutoScaledHeight),
         Text(
           value,
           maxLines: maxLines,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 13.toAutoScaledWidth,
-            fontWeight: FontWeight.w600,
-            color: _CommentsRoutingStyles.valueColor,
-            height: 1.35,
-          ),
+          style: TextStyle(color: AppColors.contentColor),
         ),
       ],
     );
@@ -450,20 +436,12 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               children: [
                 Text(
                   widget.needMoreInfoLabel ?? l10n.needMoreInfo,
-                  style: TextStyle(
-                    fontSize: 14.toAutoScaledWidth,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                  ),
+                  style: TextStyle(color: AppColors.mainTitleColor),
                 ),
                 SizedBox(height: 12.toAutoScaledHeight),
                 Text(
                   l10n.transportCommentsOptional,
-                  style: TextStyle(
-                    fontSize: 11.toAutoScaledWidth,
-                    fontWeight: FontWeight.w500,
-                    color: _CommentsRoutingStyles.labelColor,
-                  ),
+                  style: TextStyle(color: AppColors.headingColor),
                 ),
                 SizedBox(height: 8.toAutoScaledHeight),
                 Row(
@@ -494,17 +472,11 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                             hintText:
                                 widget.commentHint ??
                                 l10n.routingAddCommentHint,
-                            hintStyle: TextStyle(
-                              fontSize: 13.toAutoScaledWidth,
-                              color: const Color(0xFF9CA3AF),
-                            ),
+                            hintStyle: TextStyle(color: AppColors.headingColor),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
                           ),
-                          style: TextStyle(
-                            fontSize: 13.toAutoScaledWidth,
-                            color: _CommentsRoutingStyles.valueColor,
-                          ),
+                          style: TextStyle(color: AppColors.contentColor),
                         ),
                       ),
                     ),
@@ -570,11 +542,9 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                     hintText: widget.commentHint ?? l10n.routingAddCommentHint,
                     border: InputBorder.none,
                     isDense: true,
-                    hintStyle: TextStyle(
-                      fontSize: 13.toAutoScaledWidth,
-                      color: const Color(0xFF9CA3AF),
-                    ),
+                    hintStyle: TextStyle(color: AppColors.headingColor),
                   ),
+                  style: TextStyle(color: AppColors.contentColor),
                 ),
               ),
               IconButton(
@@ -890,7 +860,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+              style: TextStyle(color: AppColors.contentColor),
             ),
           ),
           const SizedBox(width: 8),
@@ -1011,10 +981,7 @@ class CommentsRoutingOverview extends StatelessWidget {
               Expanded(
                 child: Text(
                   l10n.commentsRoutingOverviewTitle,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16.toAutoScaledWidth,
-                  ),
+                  style: TextStyle(color: AppColors.mainTitleColor),
                 ),
               ),
             ],
@@ -1027,10 +994,7 @@ class CommentsRoutingOverview extends StatelessWidget {
                 ? Center(
                     child: Text(
                       l10n.noCommentsYet,
-                      style: TextStyle(
-                        color: Colors.black38,
-                        fontSize: 13.toAutoScaledWidth,
-                      ),
+                      style: TextStyle(color: AppColors.contentColor),
                     ),
                   )
                 : ListView.separated(

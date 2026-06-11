@@ -1,4 +1,4 @@
-import 'package:code_setup/presentation/common_widgets/reusable_table_row_model.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/reusable_table_row_model.dart';
 
 sealed class RequestDetailTable {
   const RequestDetailTable();

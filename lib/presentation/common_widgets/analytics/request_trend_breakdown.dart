@@ -332,6 +332,7 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/chart_utils.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -398,7 +399,8 @@ class RequestTrendBreakdownCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: textTheme.labelLarge?.copyWith(
+                    style: TextStyle(
+                      color: AppColors.darkPrimaryTextColor,
                       fontWeight: FontWeight.w600,
                       fontSize: currentTheme.fontSizes.s16,
                     ),

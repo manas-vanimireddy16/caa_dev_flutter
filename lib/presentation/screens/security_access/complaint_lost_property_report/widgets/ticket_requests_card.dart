@@ -35,6 +35,11 @@ class TicketRequestsCard extends ConsumerWidget {
     final state = ref.watch(_vsProvider(providerArgs));
     final controller = ref.read(_vsProvider(providerArgs).notifier);
     final l10n = DashboardL10n.of(context);
+    ref.listen(_vsProvider(providerArgs).select((s) => s.tabIndex), (_, next) {
+      if (pageController.hasClients && pageController.page?.round() != next) {
+        pageController.jumpToPage(next);
+      }
+    });
 
     return Container(
       decoration: BoxDecoration(
@@ -42,7 +47,7 @@ class TicketRequestsCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: _borderColor),
       ),
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: Clip.none,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -92,12 +97,67 @@ class TicketRequestsCard extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4),
-                  child: Icon(
-                    Icons.more_vert,
-                    color: _titleColor,
-                    size: 22,
+                PopupMenuButton<String>(
+                  tooltip: l10n.isArabic ? 'تصفية' : 'Filter',
+                  padding: EdgeInsets.zero,
+                  offset: const Offset(0, 40),
+                  color: Colors.white,
+                  elevation: 8,
+                  shadowColor: Colors.black26,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  constraints: const BoxConstraints(minWidth: 180),
+                  onSelected: controller.onRequestStatusFilterChanged,
+                  itemBuilder: (context) {
+                    return _VSController.requestListStatusFilters.map((status) {
+                      final isSelected =
+                          controller.currentStatusFilter == status;
+                      final label = controller.requestListStatusFilterLabel(
+                        status,
+                        l10n,
+                      );
+
+                      return PopupMenuItem<String>(
+                        value: status,
+                        height: 44,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                label,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  color: isSelected
+                                      ? _listIconColor
+                                      : _titleColor,
+                                ),
+                              ),
+                            ),
+                            if (isSelected)
+                              const Icon(
+                                Icons.check,
+                                size: 18,
+                                color: _listIconColor,
+                              ),
+                          ],
+                        ),
+                      );
+                    }).toList();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Icon(
+                      Icons.more_vert,
+                      color: controller.currentStatusFilter.isNotEmpty
+                          ? _listIconColor
+                          : _titleColor,
+                      size: 22,
+                    ),
                   ),
                 ),
               ],
@@ -153,6 +213,48 @@ class TicketRequestsCard extends ConsumerWidget {
               ),
             ),
           ),
+          if (controller.currentStatusFilter.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _listIconBg,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: _listIconColor.withValues(alpha: 0.25),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.filter_alt_outlined,
+                        size: 16,
+                        color: _listIconColor,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        controller.requestListStatusFilterLabel(
+                          controller.currentStatusFilter,
+                          l10n,
+                        ),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: _listIconColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: SizedBox(

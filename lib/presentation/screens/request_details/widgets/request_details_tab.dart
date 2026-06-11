@@ -1,5 +1,5 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import 'package:code_setup/presentation/common_widgets/cardInfo.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/card_info.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart';
 import 'package:flutter/material.dart';
 

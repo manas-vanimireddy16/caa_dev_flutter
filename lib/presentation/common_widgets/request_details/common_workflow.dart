@@ -294,6 +294,7 @@
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/assets/icons.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -344,11 +345,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
   final RequestDetailData details;
   final DashboardL10n? l10n;
 
-  const RequestWorkflowTimeline({
-    super.key,
-    required this.details,
-    this.l10n,
-  });
+  const RequestWorkflowTimeline({super.key, required this.details, this.l10n});
 
   // ------------------ MAP STATUS ------------------
   WorkflowStepStatus mapStatus(String? s) {
@@ -506,7 +503,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
           children: [
             Text(
               l10n?.requestWorkflowSectionTitle ?? 'Request Workflow',
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+              style: TextStyle(color: AppColors.mainTitleColor),
             ),
             const Divider(height: 24),
             ListView.builder(
@@ -575,40 +572,36 @@ class RequestWorkflowTimeline extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  Text(title, style: TextStyle(color: AppColors.headingColor)),
                   if (showDetails) ...[
                     if (department.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 6),
-                        child: Chip(label: Text(department)),
+                        child: Chip(
+                          label: Text(
+                            department,
+                            style: TextStyle(color: AppColors.contentColor),
+                          ),
+                        ),
                       ),
                     if (showActor) ...[
                       const SizedBox(height: 6),
                       Text(
                         '$actionLabel:',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: TextStyle(color: AppColors.headingColor),
                       ),
-                      Text(actor),
+                      Text(
+                        actor,
+                        style: TextStyle(color: AppColors.contentColor),
+                      ),
                     ],
                     if (empId.isNotEmpty && empId != "-")
-                      Text(employeeLineFor(empId)),
-                    const SizedBox(height: 4),
-                    Text(
-                      date,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
+                      Text(
+                        employeeLineFor(empId),
+                        style: TextStyle(color: AppColors.contentColor),
                       ),
-                    ),
+                    const SizedBox(height: 4),
+                    Text(date, style: TextStyle(color: AppColors.contentColor)),
                   ],
                 ],
               ),

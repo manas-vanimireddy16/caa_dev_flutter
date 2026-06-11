@@ -1,6 +1,6 @@
-import 'package:code_setup/presentation/common_widgets/reusable_expandable_table.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/reusable_expandable_table.dart';
 import 'package:flutter/material.dart';
-import '../models/request_detail_table.dart';
+import '../../models/request_detail_table.dart';
 
 class RequestDetailTableRenderer extends StatelessWidget {
   final RequestDetailTable table;

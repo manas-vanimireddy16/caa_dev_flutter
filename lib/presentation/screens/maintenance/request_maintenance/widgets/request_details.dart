@@ -51,7 +51,12 @@ class _RequestMaintenanceDetailsScreenState
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: Text(l10n.requestDetailScreenTitle)),
+      appBar: KAppBar(
+        title: Text(
+          l10n.requestDetailScreenTitle,
+          style: TextStyle(color: AppColors.mainTitleColor),
+        ),
+      ),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(

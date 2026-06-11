@@ -20,13 +20,14 @@ class TabItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.all(12),
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF26285F) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(
             color: isSelected ? const Color(0xFF26285F) : Colors.grey.shade400,
+            width: 1,
           ),
         ),
         child: Text(

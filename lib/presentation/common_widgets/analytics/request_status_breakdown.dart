@@ -2,6 +2,7 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -84,7 +85,7 @@ class RequestStatusBreakdownCard extends StatelessWidget {
             title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF111827),
+              color: AppColors.darkPrimaryTextColor,
             ),
           ),
         ),
@@ -93,6 +94,7 @@ class RequestStatusBreakdownCard extends StatelessWidget {
           width: 120.toAutoScaledWidth,
           child: KDropdownField<dynamic>(
             value: filterLabel,
+            style: TextStyle(color: AppColors.headingColor),
             // fieldHeadingText: 'New Bank Name *',
             hintText: 'Select',
 
@@ -383,17 +385,17 @@ class _LegendItem extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: const Color(0xFF6B7280),
+            style: TextStyle(
+              color: AppColors.grey50,
               fontSize: currentTheme.fontSizes.s14,
             ),
           ),
         ),
         Text(
           '$value',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF111827),
+            color: AppColors.darkPrimaryTextColor,
             fontSize: currentTheme.fontSizes.s14,
           ),
         ),
@@ -447,25 +449,23 @@ class _FilterDropdown extends StatelessWidget {
 
 Color getStatusColor(String? status) {
   switch (status?.toLowerCase()) {
-    // make it case-insensitive
     case 'pending':
-      return const Color(0xFFFFA726);
+      return AppColors.warningOrange;
     case 'completed':
     case 'closed':
-      return const Color(0xFF0D652D);
     case 'approved':
-      return const Color(0xFF0D652D);
-    case 'expired':
-      return const Color(0xFFC02211);
+      return AppColors.successGreen;
+
     case 'in progress':
-      return Color(0xFFFFB74D);
-    case 'failed':
-      return const Color(0xFFC02211);
+      return AppColors.alertAmber;
+
     case 'rejected':
-      return const Color(0xFFC02211);
+    case 'failed':
+    case 'expired':
+      return AppColors.errorRed;
     case 'assigned':
-      return Color(0xFF1976D2);
+      return AppColors.infoBlue;
     default:
-      return Colors.grey; // default color if status doesn't match
+      return AppColors.disabledGrey; // default color if status doesn't match
   }
 }

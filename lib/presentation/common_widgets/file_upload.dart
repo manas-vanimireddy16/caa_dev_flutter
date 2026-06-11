@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_attachments.dart';
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/models/file_upload_model.dart';
 import 'package:code_setup/repository/authentication/domain.dart';

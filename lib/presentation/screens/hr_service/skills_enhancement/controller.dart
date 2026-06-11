@@ -295,6 +295,41 @@ class _ViewState {
 }
 
 class _VSController extends StateNotifier<_ViewState> {
+  static const List<String> requestListStatusFilters = [
+    '',
+    'Approved',
+    'Pending',
+    'Rejected',
+  ];
+
+  String _myRequestsStatusFilter = '';
+  String _actionItemsStatusFilter = '';
+
+  String get currentStatusFilter =>
+      state.tabIndex == 0 ? _myRequestsStatusFilter : _actionItemsStatusFilter;
+
+  String requestListStatusFilterLabel(String status, DashboardL10n l10n) {
+    if (status.isEmpty) {
+      return l10n.isArabic ? 'الكل' : 'All';
+    }
+    return l10n.statusLabel(status);
+  }
+
+  void onRequestStatusFilterChanged(String status) {
+    final searchText = searchController.text.trim();
+
+    if (state.tabIndex == 0) {
+      _myRequestsStatusFilter = status;
+      state = state.copyWith();
+      fetchRequests(isRefresh: true, searchText: searchText, status: status);
+      return;
+    }
+
+    _actionItemsStatusFilter = status;
+    state = state.copyWith();
+    fetchActionItems(isRefresh: true, searchText: searchText, status: status);
+  }
+
   final Service service;
   final SubService subService;
 
@@ -331,9 +366,17 @@ class _VSController extends StateNotifier<_ViewState> {
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
       if (state.tabIndex == 0) {
-        await fetchRequests(isRefresh: true, searchText: value);
+        await fetchRequests(
+          isRefresh: true,
+          searchText: value,
+          status: _myRequestsStatusFilter,
+        );
       } else {
-        await fetchActionItems(isRefresh: true, searchText: value);
+        await fetchActionItems(
+          isRefresh: true,
+          searchText: value,
+          status: _actionItemsStatusFilter,
+        );
       }
 
       if (currentVersion != _searchVersion) return; // ignore old response
@@ -346,24 +389,22 @@ class _VSController extends StateNotifier<_ViewState> {
       List.generate(6, (index) => (currentYear - index).toString());
   List<StatSummaryData> requestStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.kpiData.data?.toJson(),
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> approverStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.approvalKpiData.data?.toJson(),
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
       state.tabIndex == 0
-          ? requestStatsList(titleForKey)
-          : approverStatsList(titleForKey);
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -1507,14 +1548,16 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateTabIndex(int index) {
+    _myRequestsStatusFilter = '';
+    _actionItemsStatusFilter = '';
     state = state.copyWith(tabIndex: index);
     if (index == 0) {
-      fetchRequests();
+      fetchRequests(status: '');
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchActionItems();
+      fetchActionItems(status: '');
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');

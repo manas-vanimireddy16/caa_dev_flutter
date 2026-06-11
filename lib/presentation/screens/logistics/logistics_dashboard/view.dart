@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/bottomNavigation/index.dart';
-import 'package:code_setup/presentation/common_widgets/requestCard.dart';
+import 'package:code_setup/presentation/common_widgets/request_card.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/screens/logistics/models/all_request_dashboard.dart'

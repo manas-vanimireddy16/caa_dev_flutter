@@ -32,6 +32,7 @@ final _vsProvider = StateNotifierProvider.autoDispose
 class _ViewState {
   final bool isLoading;
   final bool isRequestLoading;
+  final bool isActionItemLoading;
   final bool isRequestDetailsLoading;
 
   final List<FileUploadItem> selectedFileUrl;
@@ -59,6 +60,8 @@ class _ViewState {
   final List<ChatMessageModel> chatById;
   final List<AttachmentModel> attachmentsById;
   final List<EmployeeList> usersList;
+  final String myRequestsStatusFilter;
+  final String actionItemsStatusFilter;
 
   final List<String> months = [
     'January',
@@ -81,6 +84,7 @@ class _ViewState {
   _ViewState({
     required this.isLoading,
     required this.isRequestLoading,
+    required this.isActionItemLoading,
     required this.isRequestDetailsLoading,
     required this.selectedFileUrl,
     required this.attachments,
@@ -102,6 +106,8 @@ class _ViewState {
     required this.chatById,
     required this.attachmentsById,
     required this.usersList,
+    required this.myRequestsStatusFilter,
+    required this.actionItemsStatusFilter,
   });
 
   _ViewState.init()
@@ -129,13 +135,19 @@ class _ViewState {
         chatById: [],
         usersList: [],
         attachmentsById: [],
+        actionItemsStatusFilter: '',
+        myRequestsStatusFilter: '',
+        isActionItemLoading: false,
       );
 
   _ViewState copyWith({
     bool? isLoading,
     bool? isRequestLoading,
+    bool? isActionItemLoading,
     bool? isRequestDetailsLoading,
     int? threatType,
+    String? myRequestsStatusFilter,
+    String? actionItemsStatusFilter,
     String? selectedPriority,
     String? visitorChecks,
     List<String>? servicePreference,
@@ -199,9 +211,14 @@ class _ViewState {
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      isActionItemLoading: isActionItemLoading ?? this.isActionItemLoading,
       isRequestLoading: isRequestLoading ?? this.isRequestLoading,
       isRequestDetailsLoading:
           isRequestDetailsLoading ?? this.isRequestDetailsLoading,
+      actionItemsStatusFilter:
+          actionItemsStatusFilter ?? this.actionItemsStatusFilter,
+      myRequestsStatusFilter:
+          myRequestsStatusFilter ?? this.myRequestsStatusFilter,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
@@ -228,6 +245,12 @@ class _ViewState {
 }
 
 class _VSController extends StateNotifier<_ViewState> {
+  static const List<String> requestListStatusFilters = [
+    '',
+    'Approved',
+    'Pending',
+    'Rejected',
+  ];
   final Service service;
   final SubService subService;
   late final _VSControllerParams params;
@@ -734,6 +757,30 @@ class _VSController extends StateNotifier<_ViewState> {
 
   /// ========================= API CALLS =========================
 
+  String get currentStatusFilter => state.tabIndex == 0
+      ? state.myRequestsStatusFilter
+      : state.actionItemsStatusFilter;
+
+  String requestListStatusFilterLabel(String status, DashboardL10n l10n) {
+    if (status.isEmpty) {
+      return l10n.isArabic ? 'الكل' : 'All';
+    }
+    return l10n.statusLabel(status);
+  }
+
+  void onRequestStatusFilterChanged(String status) {
+    final searchText = searchController.text.trim();
+
+    if (state.tabIndex == 0) {
+      state = state.copyWith(myRequestsStatusFilter: status);
+      fetchRequests(isRefresh: true, searchText: searchText, status: status);
+      return;
+    }
+
+    state = state.copyWith(actionItemsStatusFilter: status);
+    fetchActionItems(isRefresh: true, searchText: searchText, status: status);
+  }
+
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
@@ -974,12 +1021,12 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isActionItemLoading: true);
 
     try {
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(actionItems: [], isLoading: false);
-      }
+      // if (isRefresh || status.isNotEmpty) {
+      //   state = state.copyWith(actionItems: [], isLoading: false);
+      // }
 
       final items = await appealAgainstAdministrativeDecisionsInstance
           .getActionItems(
@@ -993,9 +1040,9 @@ class _VSController extends StateNotifier<_ViewState> {
           );
 
       // No merging needed
-      state = state.copyWith(actionItems: items, isLoading: false);
+      state = state.copyWith(actionItems: items, isActionItemLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isActionItemLoading: false);
     }
   }
 
@@ -1669,6 +1716,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .sendAppealAgainstAdministrativeDecisionsNewRequest(payload);
 
       if (response['status'] == 'success') {
+        state = state.copyWith(isRequestLoading: true);
         await _refreshDashboard();
       }
     } catch (e, st) {
@@ -1683,11 +1731,11 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('weekly');
-    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    // fetchApprovalStatusBreakdown('weekly');
+    // fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests();
-    fetchActionItems();
+    // fetchActionItems();
   }
 
   @override

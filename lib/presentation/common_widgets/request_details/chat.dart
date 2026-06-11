@@ -1,9 +1,9 @@
-import 'package:code_setup/presentation/common_widgets/comment.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/comment.dart';
 import 'package:code_setup/presentation/models/buttons_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
-import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 
 class CommentsCard extends StatelessWidget {
@@ -59,8 +59,6 @@ class CommentsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = KAppX.globalProvider.read(KAppX.theme.current).themeBox;
-
     // Must stay scroll-view safe: no Flexible/Expanded — parent is
     // SingleChildScrollView > Column in request detail screens.
     return Container(
@@ -88,11 +86,7 @@ class CommentsCard extends StatelessWidget {
                 child: Text(
                   l10n?.commentsRoutingOverviewTitle ??
                       'Comments / Routing Overview',
-                  style: TextStyle(
-                    fontSize: theme.fontSizes.s16,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                  ),
+                  style: TextStyle(color: AppColors.mainTitleColor),
                 ),
               ),
             ],
@@ -105,10 +99,7 @@ class CommentsCard extends StatelessWidget {
                 ? Center(
                     child: Text(
                       l10n?.noCommentsYet ?? 'No comments yet',
-                      style: TextStyle(
-                        color: Colors.black38,
-                        fontSize: 13.toAutoScaledWidth,
-                      ),
+                      style: TextStyle(color: AppColors.contentColor),
                     ),
                   )
                 : ListView.separated(

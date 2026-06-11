@@ -2,12 +2,15 @@ part of '../view.dart';
 
 class RequestsPage extends ConsumerWidget {
   final _VSControllerParams providerArgs;
+  final DashboardL10n l10n;
+
   // final bool isActionItem;
 
   const RequestsPage({
     super.key,
     required this.providerArgs,
     // required this.isActionItem,
+    required this.l10n,
   });
 
   @override

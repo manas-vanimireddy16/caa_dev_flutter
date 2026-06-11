@@ -1,5 +1,5 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import 'package:code_setup/presentation/common_widgets/statusWidget.dart';
+import 'package:code_setup/presentation/common_widgets/status_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

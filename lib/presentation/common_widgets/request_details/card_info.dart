@@ -257,7 +257,8 @@
 //     }
 //   }
 // }
-import 'package:code_setup/presentation/screens/home_screen/approvals/widgets/statusWidget.dart';
+import 'package:code_setup/presentation/common_widgets/status_widget.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:flutter/material.dart';
 
 class CardInfo extends StatelessWidget {
@@ -266,8 +267,9 @@ class CardInfo extends StatelessWidget {
   final Map<String, String> info;
   final Widget? customContent;
 
-  /// ✅ NEW
   final String Function(String key)? requestDetailsBuilder;
+  final String Function(String status)? statusLabelBuilder;
+  final bool isShowClosed;
 
   const CardInfo({
     super.key,
@@ -275,21 +277,51 @@ class CardInfo extends StatelessWidget {
     this.subtitle,
     required this.info,
     this.customContent,
-
-    /// ✅ NEW
     this.requestDetailsBuilder,
+    this.statusLabelBuilder,
+    this.isShowClosed = false,
   });
 
-  /// ✅ NEW
   String _label(String key) {
     return requestDetailsBuilder?.call(key) ?? key;
   }
 
+  bool _isStatusKey(String key) {
+    final normalized = key.toLowerCase();
+    return normalized == 'status' || normalized == 'approval status';
+  }
+
+  MapEntry<String, String>? _statusEntry() {
+    for (final entry in info.entries) {
+      if (_isStatusKey(entry.key)) return entry;
+    }
+    return null;
+  }
+
+  String _resolveStatus(String status) {
+    final value = status.trim();
+    if (value.isEmpty) return 'Draft';
+    return value[0].toUpperCase() + value.substring(1);
+  }
+
+  String _statusLabel(String status) {
+    final resolved = _resolveStatus(status);
+
+    if (isShowClosed && resolved.toLowerCase() == 'approved') {
+      return 'Closed';
+    }
+
+    return statusLabelBuilder?.call(resolved) ?? resolved;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final statusEntry = _statusEntry();
+
     // Split grid fields vs long-text fields
     final gridEntries = info.entries.where(
       (e) =>
+          !_isStatusKey(e.key) &&
           e.key.toLowerCase() != "problem statement" &&
           e.key.toLowerCase() != "description",
     );
@@ -322,13 +354,7 @@ class CardInfo extends StatelessWidget {
               children: [
                 Icon(Icons.info_outline, color: Colors.indigo.shade900),
                 const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(title, style: TextStyle(color: AppColors.mainTitleColor)),
               ],
             ),
 
@@ -338,10 +364,7 @@ class CardInfo extends StatelessWidget {
 
             // Optional subtitle
             if (subtitle != null) ...[
-              Text(
-                subtitle!,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
-              ),
+              Text(subtitle!, style: TextStyle(color: AppColors.contentColor)),
               const SizedBox(height: 16),
             ],
 
@@ -358,18 +381,7 @@ class CardInfo extends StatelessWidget {
                           child: InfoTile(
                             title: _label(gridEntries.elementAt(i).key),
                             iconKey: gridEntries.elementAt(i).key,
-                            text:
-                                gridEntries.elementAt(i).key.toLowerCase() ==
-                                    "status"
-                                ? null
-                                : gridEntries.elementAt(i).value,
-                            textWidget:
-                                gridEntries.elementAt(i).key.toLowerCase() ==
-                                    "status"
-                                ? StatusChip(
-                                    status: gridEntries.elementAt(i).value,
-                                  )
-                                : null,
+                            text: gridEntries.elementAt(i).value,
                           ),
                         ),
                       ),
@@ -382,26 +394,7 @@ class CardInfo extends StatelessWidget {
                             child: InfoTile(
                               title: _label(gridEntries.elementAt(i + 1).key),
                               iconKey: gridEntries.elementAt(i + 1).key,
-                              text:
-                                  gridEntries
-                                          .elementAt(i + 1)
-                                          .key
-                                          .toLowerCase() ==
-                                      "status"
-                                  ? null
-                                  : gridEntries.elementAt(i + 1).value,
-                              textWidget:
-                                  gridEntries
-                                          .elementAt(i + 1)
-                                          .key
-                                          .toLowerCase() ==
-                                      "status"
-                                  ? StatusChip(
-                                      status: gridEntries
-                                          .elementAt(i + 1)
-                                          .value,
-                                    )
-                                  : null,
+                              text: gridEntries.elementAt(i + 1).value,
                             ),
                           ),
                         )
@@ -412,17 +405,24 @@ class CardInfo extends StatelessWidget {
               ],
             ),
 
+            if (statusEntry != null) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: StatusChip(
+                  status: _resolveStatus(statusEntry.value),
+                  displayLabel: _statusLabel(statusEntry.value),
+                ),
+              ),
+            ],
+
             const SizedBox(height: 16),
 
             /// ✅ Problem Statement
             if (problemStatement.key.isNotEmpty) ...[
               Text(
                 _label(problemStatement.key),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(color: AppColors.headingColor),
               ),
               const SizedBox(height: 6),
               Container(
@@ -434,7 +434,7 @@ class CardInfo extends StatelessWidget {
                 ),
                 child: Text(
                   problemStatement.value,
-                  style: const TextStyle(fontSize: 14),
+                  style: TextStyle(color: AppColors.contentColor),
                 ),
               ),
               const SizedBox(height: 16),
@@ -450,11 +450,7 @@ class CardInfo extends StatelessWidget {
             if (description.key.isNotEmpty) ...[
               Text(
                 _label(description.key),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(color: AppColors.headingColor),
               ),
               const SizedBox(height: 6),
               Container(
@@ -466,7 +462,7 @@ class CardInfo extends StatelessWidget {
                 ),
                 child: Text(
                   description.value,
-                  style: const TextStyle(fontSize: 14),
+                  style: TextStyle(color: AppColors.contentColor),
                 ),
               ),
             ],
@@ -505,18 +501,12 @@ class InfoTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-              ),
+              Text(title, style: TextStyle(color: AppColors.headingColor)),
               const SizedBox(height: 2),
               textWidget ??
                   Text(
                     text ?? "",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(color: AppColors.contentColor),
                   ),
             ],
           ),

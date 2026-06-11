@@ -1,5 +1,6 @@
-import 'package:code_setup/presentation/common_widgets/statusWidget.dart';
+import 'package:code_setup/presentation/common_widgets/status_widget.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -49,10 +50,10 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
 
     return Card(
       color: Colors.white,
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      margin: const EdgeInsets.all(8), //.fromLTRB(16, 16, 16, 8),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(4),
+        side: BorderSide(color: const Color(0xFFD8D8D8)),
       ),
       elevation: 0,
       child: Column(
@@ -69,17 +70,24 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
                   Expanded(
                     child: Text(
                       widget.l10n.employeeInformationTitle,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: TextStyle(color: AppColors.mainTitleColor),
                     ),
                   ),
-                  Icon(
-                    _expanded
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: Colors.grey.shade700,
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4), // radius
+                      border: Border.all(
+                        color: Color(0xFFD8D8D8),
+                        width: 1, // border width
+                      ),
+                    ),
+                    child: Icon(
+                      _expanded
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      color: const Color(0xFF000000),
+                    ),
                   ),
                 ],
               ),
@@ -215,19 +223,12 @@ class _EmployeeFieldTile extends StatelessWidget {
             children: [
               Text(
                 field.label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(color: AppColors.headingColor),
               ),
               const SizedBox(height: 2),
               Text(
                 field.value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(color: AppColors.contentColor),
               ),
             ],
           ),
@@ -254,14 +255,7 @@ class _StatusRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              Text(label, style: TextStyle(color: AppColors.headingColor)),
               const SizedBox(height: 6),
               StatusChip(status: status),
             ],

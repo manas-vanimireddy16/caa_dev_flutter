@@ -77,12 +77,18 @@ class RequestTabs extends StatelessWidget {
                         right: 0,
                         top: -10,
                         child: Container(
-                          height: 20,
-                          width: 20,
+                          height: 24,
+                          width: 24,
                           alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
+                          decoration: BoxDecoration(
+                            color: AppColors.actionItemCountBadgeColor,
                             shape: BoxShape.circle,
+                            border: Border.all(
+                              color: selectedIndex == 0
+                                  ? AppColors.actionItemCountRequestBorderColor
+                                  : AppColors.actionItemActionBorderColor,
+                              width: 2,
+                            ),
                           ),
                           child: Text(
                             count > 99 ? '99+' : count.toString(),

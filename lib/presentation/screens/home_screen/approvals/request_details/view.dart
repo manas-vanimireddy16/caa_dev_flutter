@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import 'package:code_setup/presentation/common_widgets/cardInfo.dart';
-import 'package:code_setup/presentation/common_widgets/chat.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/card_info.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/chat.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/models/buttons_enum.dart';

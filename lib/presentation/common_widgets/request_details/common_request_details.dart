@@ -1,11 +1,11 @@
-import 'package:code_setup/presentation/common_widgets/request_detail_table_renderer.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/request_detail_table_renderer.dart';
 import 'package:code_setup/presentation/models/allowance_employee.dart';
 import 'package:code_setup/presentation/models/request_detail_table.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/performance_management/widgets/goals_table.dart';
 import 'package:code_setup/presentation/screens/hr_service/request_for_duty_mission/widgets/allowance_table.dart';
 import 'package:flutter/material.dart';
-import 'package:code_setup/presentation/common_widgets/cardInfo.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/card_info.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 
 class CommonRequestDetails extends StatelessWidget {

@@ -259,7 +259,12 @@ class CommonAttachmentsTabContent extends StatelessWidget {
     final labels = l10n ?? DashboardL10n.of(context);
 
     if (attachments.isEmpty) {
-      return Center(child: Text(labels.noAttachmentsAvailable));
+      return Center(
+        child: Text(
+          labels.noAttachmentsAvailable,
+          style: TextStyle(color: AppColors.contentColor),
+        ),
+      );
     }
 
     return Card(
@@ -280,10 +285,7 @@ class CommonAttachmentsTabContent extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   labels.fileListTitle,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: AppColors.mainTitleColor),
                 ),
               ],
             ),
@@ -441,9 +443,7 @@ class _AttachmentFileCardState extends State<_AttachmentFileCard> {
       return;
     }
 
-    ShowFlutterToast().showFlutterToastFailure(
-      widget.l10n.previewNotAvailable,
-    );
+    ShowFlutterToast().showFlutterToastFailure(widget.l10n.previewNotAvailable);
   }
 
   @override
@@ -521,15 +521,9 @@ class _InfoRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-        ),
+        Text(label, style: TextStyle(color: AppColors.headingColor)),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
+        Text(value, style: TextStyle(color: AppColors.contentColor)),
       ],
     );
   }

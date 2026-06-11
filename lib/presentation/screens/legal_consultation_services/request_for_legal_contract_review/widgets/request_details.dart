@@ -59,7 +59,7 @@ class _RequestForLegalContractReviewDetailsScreenState
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));
 
-          if (state.requestDetails == null || state.isLoading) {
+          if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
