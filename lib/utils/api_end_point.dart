@@ -4245,6 +4245,62 @@ class ApiEndPoint {
   static const String requestMaintenanceStations =
       '/v1/user-service/station/all';
 
+  /// Maintenance of External Stations APIs
+  static const String externalMaintenanceSendRequest =
+      '/v1/asset-affairs-service/maintenance-external-stations/request';
+  static const String externalMaintenanceGetRequests =
+      '/v1/asset-affairs-service/maintenance-external-stations/requests';
+  static const String externalMaintenanceGetAllRequests =
+      '/v1/asset-affairs-service/maintenance-external-stations/requests';
+  static const String externalMaintenanceGetActionItems =
+      '/v1/asset-affairs-service/maintenance-external-stations/requests/for-approval';
+  static String externalMaintenanceRequestById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/request/$requestId';
+  static String externalMaintenanceById(int requestId) =>
+      externalMaintenanceRequestById(requestId);
+  static String externalMaintenanceUpdateRequest(int requestId) =>
+      externalMaintenanceRequestById(requestId);
+  static const String externalMaintenanceApprove =
+      '/v1/asset-affairs-service/maintenance-external-stations/approve';
+  static const String externalMaintenanceReject =
+      '/v1/asset-affairs-service/maintenance-external-stations/reject';
+  static String externalMaintenanceSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/request/$requestId/chat';
+  static String externalMaintenanceChatsById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/request/$requestId/chats';
+  static String externalMaintenanceUpdateChat(int chatId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/chat/$chatId';
+  static String externalMaintenanceDeleteChat(int chatId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/chat/$chatId';
+  static String externalMaintenanceSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/request/$requestId/attachment';
+  static String externalMaintenanceAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/request/$requestId/attachments';
+  static String externalMaintenanceUpdateAttachment(int attachmentId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/attachment/$attachmentId';
+  static String externalMaintenanceDeleteAttachment(int attachmentId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/attachment/$attachmentId';
+  static String externalMaintenanceAssignTask(int requestId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/request/$requestId/assign-task';
+  static String externalMaintenanceUpdateTaskStatus(int requestId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/request/$requestId/task-status';
+  static String externalMaintenanceClarification(int requestId) =>
+      '/v1/asset-affairs-service/maintenance-external-stations/request/$requestId/clarification';
+  static const String externalMaintenanceKpiCards =
+      '/v1/asset-affairs-service/maintenance-external-stations/analytics/kpi-cards';
+  static const String externalMaintenanceStatusBreakdown =
+      '/v1/asset-affairs-service/maintenance-external-stations/analytics/status-breakdown';
+  static const String externalMaintenanceTrendBreakdown =
+      '/v1/asset-affairs-service/maintenance-external-stations/analytics/trend-breakdown';
+  static const String externalMaintenanceApprovalKpiCards =
+      '/v1/asset-affairs-service/maintenance-external-stations/analytics/approvals/kpi-cards';
+  static const String externalMaintenanceApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/maintenance-external-stations/analytics/approvals/status-breakdown';
+  static const String externalMaintenanceApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/maintenance-external-stations/analytics/approvals/trend-breakdown';
+  static const String externalMaintenanceStations =
+      '/v1/user-service/station/all';
+
   /// Complaint Lost Property APIs
   /// ===================== SEND REQUEST =====================
 

@@ -48,8 +48,8 @@ class _ViewState {
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<FollowUpReportRequestModel> requestData;
-  final List<FollowUpReportRequestModel> actionItems;
+  final List<MaintenanceRequestModel> requestData;
+  final List<MaintenanceRequestModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final int approvalId;
@@ -147,8 +147,8 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<FollowUpReportRequestModel>? requestData,
-    List<FollowUpReportRequestModel>? actionItems,
+    List<MaintenanceRequestModel>? requestData,
+    List<MaintenanceRequestModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -324,7 +324,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(FollowUpReportRequestModel item) {
+  Map<String, String> buildRequestCardData(MaintenanceRequestModel item) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
@@ -346,21 +346,18 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails.request;
     return {
-      /// ───── RIGHT COLUMN ─────
       "Service Type": request?.service?.name ?? 'N/A',
-
-      /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      // 'Request Submission Date':
-      //     formatDate(request?.createdAt.toString()) ?? '-',
-      'Purpose of Event': request?.purposeOfEvent ?? 'NA',
-      'Hall Name': request?.typeOfHall ?? 'NA',
-      'Expected Number of Attendees':
-          request?.noOfAttendees?.toString() ?? 'N/A',
-      'Start Date': request?.startDate ?? 'N/A',
-      'End Date': request?.endDate ?? 'N/A',
-      'Start Time': request?.startTime ?? 'N/A',
-      'End Time': request?.endTime ?? 'N/A',
+      'External Station Name or Location':
+          request?.externalStationNameOrLocation ?? 'N/A',
+      'Station Category': request?.stationCategory ?? 'N/A',
+      'Type of Issue': request?.typeOfIssue ?? 'N/A',
+      'Detailed Description': request?.detailedDescription ?? 'N/A',
+      'Urgency Level': request?.urgencyLevel ?? 'N/A',
+      'Date of Issue Occurred': request?.dateOfIssueOccurred ?? 'N/A',
+      'Contact Person Name': request?.contactPersonName ?? 'N/A',
+      'Contact Person Number': request?.contactPersonNumber ?? 'N/A',
+      'Contact Person Designation': request?.contactPersonDesignation ?? 'N/A',
     };
   }
 
@@ -411,7 +408,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      FollowUpReportDetailsRoute(
+      MaintenanceofExternalServiceDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -437,7 +434,7 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
     // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
-      FollowUpReportNewRequestRoute(
+      MaintenanceExternalServiceNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -446,186 +443,114 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final followupReportInstance = FollowUpReportRepository();
+  final externalMaintenanceInstance = ExternalMaintenanceRepository();
 
-  List<DynamicField> buildFollowUpReportFields(DashboardL10n l10n) => [
-    /// ================= SENT BY =================
+  List<DynamicField> buildExternalMaintenanceFields(DashboardL10n l10n) => [
     DynamicField(
-      name: 'sent_by',
-      label: l10n.requestDetailsLabel('Sent By'),
+      name: 'external_station_name_or_location',
+      label: l10n.requestDetailsLabel('External Station Name or Location'),
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter Sent By',
-
-      validator: (value, values) {
-        final text = value?.toString().trim() ?? '';
-
-        if (text.isEmpty) {
-          return 'Sent By is required';
-        }
-
-        return null;
-      },
+      placeholder: 'Enter external station name or location',
+      validator: (value, values) => (value?.toString().trim().isEmpty ?? true)
+          ? 'External station name or location is required'
+          : null,
     ),
-
-    /// ================= LETTER DATE =================
     DynamicField(
-      name: 'letter_date',
-      label: l10n.requestDetailsLabel('Letter Date'),
-      type: FieldType.date,
-      required: true,
-      placeholder: 'MM/DD/YYYY',
-
-      validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return 'Letter Date is required';
-        }
-
-        return null;
-      },
-    ),
-
-    /// ================= SUBJECT =================
-    DynamicField(
-      name: 'subject',
-      label: l10n.requestDetailsLabel('Subject'),
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter Subject',
-
-      validator: (value, values) {
-        final text = value?.toString().trim() ?? '';
-
-        if (text.isEmpty) {
-          return 'Subject is required';
-        }
-
-        return null;
-      },
-    ),
-
-    /// ================= SUBJECT CLASSIFICATION =================
-    DynamicField(
-      name: 'subject_classification',
-      label: l10n.requestDetailsLabel('Subject Classification'),
+      name: 'station_category',
+      label: l10n.requestDetailsLabel('Station Category'),
       type: FieldType.select,
       required: true,
-      placeholder: 'Select Subject Classification',
-
+      placeholder: 'Select station category',
       options: [
-        DropdownOption(label: 'Urgent', value: 'Urgent'),
-        DropdownOption(label: 'Very Urgent', value: 'Very Urgent'),
-        DropdownOption(label: 'Confidential', value: 'Confidential'),
-      ],
-
-      validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return 'Subject Classification is required';
-        }
-
-        return null;
-      },
-    ),
-
-    /// ================= TOPIC =================
-    DynamicField(
-      name: 'topic',
-      label: l10n.requestDetailsLabel('Topic'),
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter Topic',
-
-      validator: (value, values) {
-        final text = value?.toString().trim() ?? '';
-
-        if (text.isEmpty) {
-          return 'Topic is required';
-        }
-
-        return null;
-      },
-    ),
-
-    /// ================= CONCERNED DEPARTMENT =================
-    DynamicField(
-      name: 'concerned_department',
-      label: l10n.requestDetailsLabel('Concerned Department'),
-      type: FieldType.select,
-      required: true,
-      placeholder: 'Select Concerned Department',
-
-      options: [
-        DropdownOption(label: 'IT', value: 'IT'),
-        DropdownOption(label: 'HR', value: 'HR'),
+        DropdownOption(label: 'Workshop', value: 'Workshop'),
         DropdownOption(label: 'Training', value: 'Training'),
-        DropdownOption(label: 'Finance', value: 'Finance'),
-        DropdownOption(
-          label: 'Projects & Maintenance',
-          value: 'Projects & Maintenance',
-        ),
+        DropdownOption(label: 'Duty Mission', value: 'Duty Mission'),
+        DropdownOption(label: 'Assignment', value: 'Assignment'),
+        DropdownOption(label: 'Other', value: 'Other'),
       ],
-
-      validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return 'Concerned Department is required';
-        }
-
-        return null;
-      },
     ),
-
-    /// ================= DATE FROM =================
     DynamicField(
-      name: 'date_from',
-      label: l10n.requestDetailsLabel('Date From'),
+      name: 'station_category_other',
+      label: l10n.requestDetailsLabel('Other Station Category'),
+      type: FieldType.text,
+      required: true,
+      visibleWhen: (values) => values['station_category'] == 'Other',
+      placeholder: 'Enter station category',
+    ),
+    DynamicField(
+      name: 'type_of_issue',
+      label: l10n.requestDetailsLabel('Type of Issue'),
+      type: FieldType.select,
+      required: true,
+      placeholder: 'Select type of issue',
+      options: [
+        DropdownOption(label: 'Equipment', value: 'Equipment'),
+        DropdownOption(label: 'Facility', value: 'Facility'),
+        DropdownOption(label: 'Infrastructure', value: 'Infrastructure'),
+        DropdownOption(label: 'Other', value: 'Other'),
+      ],
+    ),
+    DynamicField(
+      name: 'type_of_issue_other',
+      label: l10n.requestDetailsLabel('Other Issue Type'),
+      type: FieldType.text,
+      required: true,
+      visibleWhen: (values) => values['type_of_issue'] == 'Other',
+      placeholder: 'Enter issue type',
+    ),
+    DynamicField(
+      name: 'urgency_level',
+      label: l10n.requestDetailsLabel('Urgency Level'),
+      type: FieldType.select,
+      required: true,
+      placeholder: 'Select urgency level',
+      options: [
+        DropdownOption(label: 'Low', value: 'Low'),
+        DropdownOption(label: 'Medium', value: 'Medium'),
+        DropdownOption(label: 'High', value: 'High'),
+        DropdownOption(label: 'Critical', value: 'Critical'),
+      ],
+    ),
+    DynamicField(
+      name: 'date_of_issue_occurred',
+      label: l10n.requestDetailsLabel('Date of Issue Occurred'),
       type: FieldType.date,
       required: true,
       placeholder: 'MM/DD/YYYY',
-
-      validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return 'Date From is required';
-        }
-
-        return null;
-      },
     ),
-
-    /// ================= DATE TO =================
     DynamicField(
-      name: 'date_to',
-      label: l10n.requestDetailsLabel('Date To'),
-      type: FieldType.date,
+      name: 'contact_person_name',
+      label: l10n.requestDetailsLabel('Contact Person Name'),
+      type: FieldType.text,
       required: true,
-      placeholder: 'MM/DD/YYYY',
-
-      validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return 'Date To is required';
-        }
-
-        return null;
-      },
+      placeholder: 'Enter contact person name',
     ),
-
-    /// ================= ATTACHMENTS =================
+    DynamicField(
+      name: 'contact_person_number',
+      label: l10n.requestDetailsLabel('Contact Person Number'),
+      type: FieldType.text,
+      required: true,
+      placeholder: 'Enter contact person number',
+    ),
+    DynamicField(
+      name: 'contact_person_designation',
+      label: l10n.requestDetailsLabel('Contact Person Designation'),
+      type: FieldType.text,
+      required: true,
+      placeholder: 'Enter contact person designation',
+    ),
+    DynamicField(
+      name: 'detailed_description',
+      label: l10n.requestDetailsLabel('Detailed Description'),
+      type: FieldType.textarea,
+      required: true,
+      placeholder: 'Enter detailed description',
+    ),
     DynamicField(
       name: 'attachments',
-      label: l10n.requestDetailsLabel('Attachments'),
+      label: l10n.requestDetailsLabel('Attachment (Optional)'),
       type: FieldType.file,
-      required: true,
-
-      validator: (value, values) {
-        if (value == null) {
-          return 'Attachment is required';
-        }
-
-        if (value is List && value.isEmpty) {
-          return 'Please upload at least one attachment';
-        }
-
-        return null;
-      },
     ),
   ];
 
@@ -634,7 +559,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await followupReportInstance.getRequestsById(
+      final requests = await externalMaintenanceInstance.getRequestsById(
         id: id,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -668,7 +593,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await followupReportInstance.getchatById(id);
+      final requests = await externalMaintenanceInstance.getchatById(id);
       if (requests != null) {
         final chats = requests.reversed.toList();
         state = state.copyWith(chatById: chats);
@@ -683,7 +608,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await followupReportInstance.getAttachmentsById(id);
+      final attachments = await externalMaintenanceInstance.getAttachmentsById(
+        id,
+      );
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
       }
@@ -698,7 +625,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await followupReportInstance.getKpiData(
+      final kpis = await externalMaintenanceInstance.getKpiData(
         service.id ?? 0,
         subService.id ?? 0,
       );
@@ -716,11 +643,12 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await followupReportInstance.getApprovalTrendBreakdownData(
-        period: period,
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
-      );
+      final data = await externalMaintenanceInstance
+          .getApprovalTrendBreakdownData(
+            period: period,
+            serviceId: service.id ?? 0,
+            subServiceId: subService.id ?? 0,
+          );
 
       if (data != null) {
         state = state.copyWith(approvalTrendData: data, isLoading: false);
@@ -735,7 +663,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await followupReportInstance
+      final statusBreakdown = await externalMaintenanceInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -759,7 +687,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await followupReportInstance
+      final statusBreakdown = await externalMaintenanceInstance
           .getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -783,7 +711,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await followupReportInstance.getTrendBreakdownData(
+      final data = await externalMaintenanceInstance.getTrendBreakdownData(
         period: period,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -802,7 +730,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await followupReportInstance.getApprovalKpiData(
+      final kpis = await externalMaintenanceInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
@@ -829,7 +757,7 @@ class _VSController extends StateNotifier<_ViewState> {
       //   state = state.copyWith(requestData: [], isLoading: false);
       // }
 
-      final requests = await followupReportInstance.getRequests(
+      final requests = await externalMaintenanceInstance.getRequests(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -858,7 +786,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await followupReportInstance.getActionItems(
+      final items = await externalMaintenanceInstance.getActionItems(
         offset: 1,
         limit: 8,
         searchText: searchText,
@@ -966,9 +894,8 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await followupReportInstance.uploadAttachments(
-          state.attachments,
-        );
+        final uploadedFiles = await externalMaintenanceInstance
+            .uploadAttachments(state.attachments);
 
         if (uploadedFiles.isEmpty) {
           throw Exception("File upload failed");
@@ -998,7 +925,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await followupReportInstance.sendAttachment(payload, requestId);
+        await externalMaintenanceInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -1019,7 +946,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await followupReportInstance.sendChat(payload, requestId);
+        await externalMaintenanceInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -1060,7 +987,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await followupReportInstance.onApprove(payload);
+      await externalMaintenanceInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 2));
       KAppX.router.pop();
       // if (decisionNo != null) {
@@ -1088,7 +1015,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await followupReportInstance.onSendInProgress(payload);
+      // await externalMaintenanceInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1463,35 +1390,27 @@ class _VSController extends StateNotifier<_ViewState> {
     int subServiceId,
     Map<String, dynamic> values,
   ) {
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
+
     return {
-      /// SERVICE
       "service_id": serviceId,
       "sub_service_id": subServiceId,
-
-      /// USER DETAILS
-      "req_user_department_id": values['req_user_department_id'],
-
-      "req_user_section_id": values['req_user_section_id'],
-
-      /// LETTER DETAILS
-      "sent_by": values['sent_by'] ?? "",
-
-      "letter_date": values['letter_date'] ?? "",
-
-      "subject": values['subject'] ?? "",
-
-      "subject_classification": values['subject_classification'] ?? "",
-
-      "topic": values['topic'] ?? "",
-
-      "concerned_department": values['concerned_department'] ?? "",
-
-      /// DATE RANGE
-      "date_from": values['date_from'] ?? "",
-
-      "date_to": values['date_to'] ?? "",
-
-      /// ATTACHMENTS
+      "req_user_department_id": selectedRole?.departmentId ?? 0,
+      "req_user_section_id": selectedRole?.sectionId ?? 0,
+      "external_station_name_or_location":
+          values['external_station_name_or_location'] ?? "",
+      "station_category": values['station_category'] == 'Other'
+          ? values['station_category_other'] ?? ""
+          : values['station_category'] ?? "",
+      "type_of_issue": values['type_of_issue'] == 'Other'
+          ? values['type_of_issue_other'] ?? ""
+          : values['type_of_issue'] ?? "",
+      "detailed_description": values['detailed_description'] ?? "",
+      "urgency_level": values['urgency_level'] ?? "",
+      "date_of_issue_occurred": values['date_of_issue_occurred'] ?? "",
+      "contact_person_name": values['contact_person_name'] ?? "",
+      "contact_person_number": values['contact_person_number'] ?? "",
+      "contact_person_designation": values['contact_person_designation'] ?? "",
       "attachments": _buildAttachments(values),
     };
   }
@@ -1513,9 +1432,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await followupReportInstance.followUpReportCreateRequest(
-        payload,
-      );
+      final response = await externalMaintenanceInstance
+          .externalMaintenanceCreateRequest(payload);
 
       if (response['status'] == 'success') {
         _refreshDashboard();

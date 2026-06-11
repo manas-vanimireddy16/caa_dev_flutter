@@ -510,6 +510,16 @@ class _VSController extends StateNotifier<_ViewState> {
 
         break;
 
+      case 'CAA045':
+        KAppX.router.push(
+          MaintenanceofExternalServiceRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+
+        break;
+
       /// complaint a Lost Item
       case 'CAA025':
         KAppX.router.push(
