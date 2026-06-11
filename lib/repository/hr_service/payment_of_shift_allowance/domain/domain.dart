@@ -1,9 +1,12 @@
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
+import 'package:code_setup/presentation/models/master_roles.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/payment_of_shift_allowance_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/temporary_decision.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/request_data_model.dart';
@@ -26,10 +29,13 @@ abstract class PaymentofShiftAllowanceRepository {
     required int serviceId,
     required int subServiceId,
   });
-  Future<KPIResponse?> getKpiData(int serviceId, int subServiceId);
+  Future<KPIResponse?> getKpiData({
+    required int serviceId,
+    required int subServiceId,
+  });
   Future<LocationListResponseModel>? getLocations();
 
-  Future<List<PaymentOfShiftAllowanceRequestModel>> getRequests({
+  Future<List<TemporaryDecision>> getRequests({
     required int offset,
     required int limit,
     required int serviceId,
@@ -40,7 +46,7 @@ abstract class PaymentofShiftAllowanceRepository {
     String searchText = '',
   });
 
-  Future<List<PaymentOfShiftAllowanceRequestModel>> getActionItems({
+  Future<List<TemporaryDecision>> getActionItems({
     required int offset,
     required int limit,
     required int serviceId,
@@ -88,4 +94,8 @@ abstract class PaymentofShiftAllowanceRepository {
     required int sectionId,
     required String roleId,
   });
+
+  Future<List<PendingApprovalUser>> getEngineersList(int id);
+  Future<List<MasterRolesModel>> getRolesList();
+  Future<void> onAssignEngineer(Map<String, dynamic> payload);
 }

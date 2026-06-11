@@ -1,5 +1,6 @@
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,7 +15,7 @@ class ToggleFieldWidget extends ConsumerWidget {
     final notifier = ref.read(dynamicFormProvider.notifier);
 
     return SwitchListTile(
-      title: Text(field.label),
+      title: Text(field.label, style: DynamicFieldLabelStyle.text),
       value: state.values[field.name] ?? false,
       onChanged: field.disabled
           ? null

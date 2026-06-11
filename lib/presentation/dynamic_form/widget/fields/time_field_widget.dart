@@ -1,4 +1,5 @@
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
@@ -67,7 +68,10 @@ class _TimeFieldWidgetState extends ConsumerState<TimeFieldWidget> {
 
     if (!mounted || pickedTime == null) return;
 
-    notifier.updateValue(widget.field.name, _formatTimeForApi(pickedTime));
+    final selectedTime = _formatTimeForApi(pickedTime);
+
+    notifier.updateValue(widget.field.name, selectedTime);
+    widget.field.onChanged?.call(selectedTime, ref);
   }
 
   @override
@@ -91,6 +95,7 @@ class _TimeFieldWidgetState extends ConsumerState<TimeFieldWidget> {
         enabled: !widget.field.disabled,
         hintText: widget.field.placeholder ?? 'Select Time',
         fieldHeadingText: widget.field.label,
+        fieldHeadingTextStyle: DynamicFieldLabelStyle.text,
         errorText: state.errors[widget.field.name],
         suffixIcon: const Icon(Icons.access_time),
         onSuffixTap: _pickTime,

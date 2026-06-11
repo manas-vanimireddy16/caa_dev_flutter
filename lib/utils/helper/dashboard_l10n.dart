@@ -108,14 +108,17 @@ class DashboardL10n {
   String workflowEmployeeIdLine(String id) =>
       _t('Employee ID: $id', 'رقم الموظف: $id');
 
-  String get commentsRoutingOverviewTitle =>
-      _t('Comments & Actions', 'التعليقات / نظرة عامة على');
+  String get commentsRoutingOverviewTitle => _t(
+    'Comments / Routing Overview',
+    'التعليقات / نظرة عامة على مسار الإجراء',
+  );
 
   String get routingTileDateTime => _t('Date / Time', 'التاريخ / الوقت');
 
   String get routingTileRole => _t('Role / Authority', 'الدور / الصلاحية');
 
-  String get routingTileAction => _t('Action', 'الإجراء');
+  String get routingTileAction =>
+      _t('Comments & Actions', 'التعليقات والإجراءات');
 
   String get routingTileStatus => _t('Requested Status', 'الحالة المطلوبة');
 
@@ -634,6 +637,52 @@ class DashboardL10n {
     }
   }
 
+  ///Tender Services
+  String get requestingEntityOrRelevantDepartment => _t(
+    'Requesting Entity or Relevant Department',
+    'الجهة الطالبة أو القسم المعني',
+  );
+
+  String get implementationPeriod => _t('Implementation period', 'مدة التنفيذ');
+
+  String get estimatedCost => _t('Estimated Cost', 'التكلفة التقديرية');
+
+  String get budgetCode => _t('Budget code', 'رمز الميزانية');
+
+  String get tenderOptionCancelledTender =>
+      _t('Cancelled tender', 'مناقصة ملغاة');
+
+  String get tenderOptionRefloatedTender => _t(
+    'Refloated tender (Resubmit previous tender request)',
+    'إعادة طرح مناقصة (إعادة تقديم طلب مناقصة سابق)',
+  );
+
+  String get typeOfRequest => _t('Type of Request', 'نوع الطلب');
+
+  String get titleOfEnquire => _t('Title of Enquire', 'عنوان الاستفسار');
+
+  String get titleOfProject => _t('Title of project', 'عنوان المشروع');
+
+  String get typeOfProject => _t('Type of Project', 'نوع المشروع');
+
+  String get projectCodeBudgetCode =>
+      _t('Project code/budget code', 'رمز المشروع/رمز الميزانية');
+
+  String get enterCompanyName => _t('Enter Company Name', 'أدخل اسم الشركة');
+
+  String get companyName => _t('Company Name', 'اسم الشركة');
+  String get attachment => _t('Attachment', 'مرفق');
+  String get descriptionPlaceholder =>
+      _t('Write your description', 'اكتب وصفك');
+
+  String get projectCodeBudgetCodePlaceholder =>
+      _t('Project code/budget code', 'رمز المشروع/رمز الميزانية');
+
+  String get titleOfProjectPlaceholder =>
+      _t('Enter Title of Project', 'أدخل عنوان المشروع');
+
+  String get enterProjectCodeBudgetCode =>
+      _t('Enter Project Code/Budget Code', 'أدخل رمز المشروع / رمز الميزانية');
   // Logistics Daily/Emergency
   String get vehicleRequiredFor =>
       _t('Vehicle Required For', 'المركبة المطلوبة لـ');
@@ -647,8 +696,6 @@ class DashboardL10n {
     'Enter request title (min 5, max 250 characters)',
     'أدخل عنوان الطلب (5 أحرف كحد أدنى و250 كحد أقصى)',
   );
-
-  String get typeOfRequest => _t('Type of Request', 'نوع الطلب');
 
   String get purposeOfTravel => _t('Purpose of Travel', 'الغرض من السفر');
 
@@ -729,6 +776,143 @@ class DashboardL10n {
   String get maintenanceType => _t('Maintenance Type', 'نوع الصيانة');
 
   String get vehicleNumber => _t('Vehicle Number', 'رقم المركبة');
+
+  /// Book CAA Halls
+  ///
+  String get expectedNumberOfAttendeesOptional => _t(
+    'Expected Number of Attendees (Optional)',
+    'العدد المتوقع للحضور (اختياري)',
+  );
+
+  String get selectHall => _t('Select Hall', 'اختر القاعة');
+
+  String get typeOfHall => _t('Type of Hall', 'نوع القاعة');
+
+  String get typeOfHallConferenceHall => _t('Conference Hall', 'قاعة مؤتمرات');
+
+  String get typeOfHallMeetingHall => _t('Meeting Hall', 'قاعة اجتماعات');
+
+  String get caaConferenceHall =>
+      _t('CAA Conference Hall', 'قاعة مؤتمرات هيئة الطيران المدني');
+
+  String get caaMeetingHall =>
+      _t('CAA Meeting Hall', 'قاعة اجتماعات هيئة الطيران المدني');
+
+  String get hallName => _t('Hall Name', 'اسم القاعة');
+
+  String get expectedNumberOfAttendees =>
+      _t('Expected Number of Attendees', 'العدد المتوقع للحضور');
+
+  String get purposeOfEvent => _t('Purpose of Event', 'الغرض من الفعالية');
+
+  String get purposeOfEventMeeting =>
+      _t('Purpose of Event / Meeting', 'الغرض من الفعالية / الاجتماع');
+
+  String get purposeOfEventMeetingRequired => _t(
+    'Purpose of Event / Meeting is required',
+    'الغرض من الفعالية / الاجتماع مطلوب',
+  );
+
+  String get typeOfHallRequired =>
+      _t('Type of Hall is required', 'نوع القاعة مطلوب');
+
+  String get startDateRequired =>
+      _t('Start Date is required', 'تاريخ البداية مطلوب');
+
+  String get endDateRequired =>
+      _t('End Date is required', 'تاريخ النهاية مطلوب');
+
+  String get startTimeRequired =>
+      _t('Start Time is required', 'وقت البداية مطلوب');
+
+  String get endTimeRequired => _t('End Time is required', 'وقت النهاية مطلوب');
+
+  String get hallSelectionRequired =>
+      _t('Hall selection is required', 'اختيار القاعة مطلوب');
+
+  String get validAttendeeCountRequired =>
+      _t('Please enter a valid attendee count', 'يرجى إدخال عدد حضور صالح');
+
+  String get subject => _t('Subject', 'الموضوع');
+
+  String get subjectClassification =>
+      _t('Subject Classification', 'تصنيف الموضوع');
+
+  String get topic => _t('Topic', 'الموضوع');
+
+  String get concernedDepartment =>
+      _t('Concerned Department', 'الإدارة المعنية');
+
+  String get dateFrom => _t('Date From', 'التاريخ من');
+
+  String get dateTo => _t('Date To', 'التاريخ إلى');
+
+  String get sentBy => _t('Sent By', 'أرسل بواسطة');
+
+  String get sentDate => _t('Sent Date', 'تاريخ الإرسال');
+
+  String get letterDate => _t('Letter Date', 'تاريخ الخطاب');
+
+  /// Follow-up report
+  String get followUpEnterSentBy => _t('Enter Sent By', 'أدخل اسم المرسل');
+
+  String get followUpSentByRequired =>
+      _t('Sent By is required', 'اسم المرسل مطلوب');
+
+  String get followUpLetterDateRequired =>
+      _t('Letter Date is required', 'تاريخ الخطاب مطلوب');
+
+  String get followUpEnterSubject => _t('Enter Subject', 'أدخل الموضوع');
+
+  String get followUpSubjectRequired =>
+      _t('Subject is required', 'الموضوع مطلوب');
+
+  String get followUpSelectSubjectClassification =>
+      _t('Select Subject Classification', 'اختر تصنيف الموضوع');
+
+  String get followUpSubjectClassificationRequired =>
+      _t('Subject Classification is required', 'تصنيف الموضوع مطلوب');
+
+  String get followUpEnterTopic => _t('Enter Topic', 'أدخل المحور');
+
+  String get followUpTopicRequired => _t('Topic is required', 'المحور مطلوب');
+
+  String get followUpSelectConcernedDepartment =>
+      _t('Select Concerned Department', 'اختر الإدارة المعنية');
+
+  String get followUpConcernedDepartmentRequired =>
+      _t('Concerned Department is required', 'الإدارة المعنية مطلوبة');
+
+  String get followUpDateFromRequired =>
+      _t('Date From is required', 'تاريخ البداية مطلوب');
+
+  String get followUpDateToRequired =>
+      _t('Date To is required', 'تاريخ النهاية مطلوب');
+
+  String get followUpAttachmentRequired =>
+      _t('Attachment is required', 'المرفق مطلوب');
+
+  String get followUpUploadAttachmentRequired => _t(
+    'Please upload at least one attachment',
+    'يرجى رفع مرفق واحد على الأقل',
+  );
+
+  String get followUpUrgent => _t('Urgent', 'عاجل');
+
+  String get followUpVeryUrgent => _t('Very Urgent', 'عاجل جداً');
+
+  String get followUpConfidential => _t('Confidential', 'سري');
+
+  String get followUpDepartmentIt => _t('IT', 'تقنية المعلومات');
+
+  String get followUpDepartmentHr => _t('HR', 'الموارد البشرية');
+
+  String get followUpDepartmentTraining => _t('Training', 'التدريب');
+
+  String get followUpDepartmentFinance => _t('Finance', 'المالية');
+
+  String get followUpDepartmentProjectsMaintenance =>
+      _t('Projects & Maintenance', 'المشاريع والصيانة');
 
   /// IT Services
   /// Salalah
@@ -1010,6 +1194,20 @@ class DashboardL10n {
     }
   }
 
+  /// HC Services
+  /// shift allowance
+  String get shiftStartDate => _t('Shift Start Date', 'تاريخ بداية المناوبة');
+
+  String get shiftAllowancePaymentStart =>
+      _t('Shift Allowance Payment Start', 'تاريخ بداية صرف بدل المناوبة');
+
+  String get allowancePercentage => _t('Allowance Percentage', 'نسبة البدل');
+
+  String get employeeName => _t('Employee Name', 'اسم الموظف');
+
+  String get employeeIdNumber => _t('Employee ID Number', 'الرقم الوظيفي');
+
+  String get financialGrade => _t('Financial Grade', 'الدرجة المالية');
   // Assign a task to employee
   String get enterRequestTitle => _t(
     'Enter request title (min 5, max 250 characters)',
@@ -1035,6 +1233,143 @@ class DashboardL10n {
 
   String get completionDateOptional =>
       _t('Completion Date (Optional)', 'تاريخ الإنجاز (اختياري)');
+
+  String get referenceNumber => _t('Reference Number', 'الرقم المرجعي');
+
+  String get allowanceValue => _t('Allowance Value', 'قيمة البدل');
+
+  String get shiftEndDate => _t('Shift End Date', 'تاريخ نهاية المناوبة');
+
+  String get startTime => _t('Start Time', 'وقت البداية');
+
+  String get endTime => _t('End Time', 'وقت النهاية');
+
+  String get createdBy => _t('Created By', 'تم الإنشاء بواسطة');
+
+  String get createdAt => _t('Created At', 'تاريخ الإنشاء');
+
+  String get updatedBy => _t('Updated By', 'تم التحديث بواسطة');
+
+  String get updatedAt => _t('Updated At', 'تاريخ التحديث');
+
+  String get endOfServiceDate =>
+      _t('End of Service Date', 'تاريخ انتهاء الخدمة');
+
+  String get basicSalary => _t('Basic Salary', 'الراتب الأساسي');
+
+  String get basicSalaryPerDay =>
+      _t('Basic Salary Per Day', 'الراتب الأساسي اليومي');
+
+  String get totalSalaryDue =>
+      _t('Total Salary Due', 'إجمالي المستحقات المالية');
+
+  String get remainingLeaveBalance =>
+      _t('Remaining Leave Balance', 'رصيد الإجازات المتبقي');
+
+  String get jobDescription => _t('Job Description', 'الوصف الوظيفي');
+
+  String get numberOfYearsOfExperience =>
+      _t('Number of Years of Experience', 'عدد سنوات الخبرة');
+
+  String get requiredSkillsExpertise =>
+      _t('Required Skills / Expertise', 'المهارات / الخبرات المطلوبة');
+
+  String get educationRequirement =>
+      _t('Education Requirement', 'المؤهل العلمي المطلوب');
+
+  String get roleTitleOfResource =>
+      _t('Role / Title of Resource', 'الدور / المسمى الوظيفي للوظيفة');
+
+  String get requiredCompetencyPercentage =>
+      _t('Required Competency Percentage', 'نسبة الجدارة المطلوبة');
+
+  String get descriptionSummaryOfSkill =>
+      _t('Description/Summary of Skill', 'وصف/ملخص المهارة');
+
+  String get competencyTitleSkill =>
+      _t('Competency Title | Skill', 'عنوان الجدارة | المهارة');
+
+  String get skillCategory => _t('Skill Category', 'فئة المهارة');
+
+  String get technical => _t('Technical', 'فني');
+
+  String get compliance => _t('Compliance', 'الامتثال');
+
+  String get safety => _t('Safety', 'السلامة');
+
+  String get softSkills => _t('Soft Skills', 'المهارات الشخصية');
+
+  String get productivity => _t('Productivity', 'الإنتاجية');
+
+  String get behavior => _t('Behavior', 'السلوك');
+
+  String get leadership => _t('Leadership', 'القيادة');
+
+  String get emotionalIntelligence =>
+      _t('Emotional Intelligence', 'الذكاء العاطفي');
+
+  String get workExperienceYears =>
+      _t('Work Experience (years)', 'خبرة العمل (بالسنوات)');
+
+  String get skills => _t('Skills', 'المهارات');
+
+  String get currentPosition => _t('Current Position', 'المنصب الحالي');
+
+  String get fromEntity => _t('From Entity', 'جهة الإعارة');
+
+  String get toEntity => _t('To Entity', 'جهة المُعار اليها');
+
+  String get assignedJobPosition =>
+      _t('Assigned Job Position', 'الجهة المُندب إليها');
+
+  String get civilIdCardNumber =>
+      _t('Civil ID Card Number', 'رقم البطاقة المدنية');
+
+  String get currentJobPosition =>
+      _t('Current Job Position', 'المسمى الوظيفي الحالي');
+
+  String get assignedEmployeeName =>
+      _t('Assigned Employee Name', 'اسم الموظف المُعار');
+
+  String get salaryPaymentSource =>
+      _t('Salary Payment Source', 'جهة صرف الراتب');
+
+  String get socialProtectionFund =>
+      _t('Social Protection Fund', 'صندوق الحماية الاجتماعية');
+
+  String get salaryDetails => _t('Salary Details', 'تفاصيل الراتب');
+
+  String get transferredToEntity =>
+      _t('Transferred to Entity', 'الجهة المنقول إليها');
+
+  String get currentEntity => _t('Current Entity', 'الجهة الحالية');
+
+  String get positionTransferredFrom =>
+      _t('Position Transferred from', 'المنصب المنقول منه');
+
+  String get positionTransferredTo =>
+      _t('Position Transferred To', 'المنصب المنقول إليه');
+
+  String get currentJobTitle =>
+      _t('Current Job Title', 'المسمى الوظيفي الحالي');
+
+  String get proposedJobTitle =>
+      _t('Proposed Job Title', 'المسمى الوظيفي المقترح');
+
+  String get currentSalaryGrade =>
+      _t('Current Salary Grade', 'الدرجة الوظيفية الحالية');
+
+  String get proposedSalaryGrade =>
+      _t('Proposed Salary Grade', 'الدرجة الوظيفية المقترحة');
+
+  String get currentBasicSalary =>
+      _t('Current Basic Salary', 'الراتب الأساسي الحالي');
+
+  String get proposedBasicSalary =>
+      _t('Proposed Basic Salary', 'الراتب الأساسي المقترح');
+
+  String get annualPeriodicAllowance =>
+      _t('Annual Periodic Allowance', 'العلاوة الدورية السنوية');
 
   String logisticsDailyEmergencyOption(String en) {
     switch (en) {
@@ -1501,6 +1836,51 @@ class DashboardL10n {
     'الوصف / الملاحظات الإضافية (اختياري)',
   );
 
+  /// Legal Services
+  /// /// Appeal againt
+
+  String get grievanceDetails => _t('Grievance Details', 'تفاصيل الشكوى');
+
+  String get grievantName => _t('Grievant Name', 'اسم مقدم الشكوى');
+
+  String get grievantEmployeeNumber =>
+      _t('Grievant Employee Number', 'رقم موظف مقدم الشكوى');
+
+  String get grievantDirectorate =>
+      _t('Grievant Directorate', 'مديرية مقدم الشكوى');
+
+  String get grievantDepartment =>
+      _t('Grievant Department', 'دائرة مقدم الشكوى');
+
+  String get grievantSection => _t('Grievant Section', 'قسم مقدم الشكوى');
+
+  String get grievantRelationshipToMatter =>
+      _t('Grievant Relationship to Matter', 'علاقة مقدم الشكوى بالموضوع');
+
+  String get location => _t('Location', 'الموقع');
+
+  String get times => _t('Times', 'الأوقات');
+
+  String get requests => _t('Requests', 'الطلبات');
+
+  String get events => _t('Events', 'الاحداث');
+
+  String get individualsInvolved =>
+      _t('Individuals Involved', 'الأشخاص المعنيون');
+
+  String get decisionSubject => _t('Decision Subject', 'موضوع القرار');
+
+  String get decisionDate => _t('Decision Date', 'تاريخ القرار');
+
+  String get decisionNumber => _t('Decision Number', 'رقم القرار');
+
+  String get appealAgainstDecision =>
+      _t('Appeal Against Decision', 'التظلم على القرار');
+
+  String get titleOfComplaint => _t('Title of the Complaint', 'عنوان الشكوى');
+
+  String get submissionDate => _t('Submission Date', 'تاريخ التقديم');
+
   String securityNavTitle(int index) {
     switch (index) {
       case 0:
@@ -1708,6 +2088,42 @@ class DashboardL10n {
         return checkInDate;
       case 'Request Submission Date':
         return requestSubmissionDate;
+      case 'Purpose of Event':
+        return purposeOfEvent;
+      case 'Purpose of Event / Meeting':
+        return purposeOfEventMeeting;
+      case 'Sent By':
+        return sentBy;
+      case 'Letter Date':
+        return letterDate;
+      case 'Subject':
+        return subject;
+      case 'Subject Classification':
+        return subjectClassification;
+      case 'Topic':
+        return topic;
+      case 'Concerned Department':
+        return concernedDepartment;
+      case 'Date From':
+        return dateFrom;
+      case 'Date To':
+        return dateTo;
+      case 'Attachments':
+        return attachmentsTabLabel;
+      case 'Type of Hall':
+        return typeOfHall;
+      case 'Select Hall':
+        return selectHall;
+      case 'Hall Name':
+        return hallName;
+      case 'Expected Number of Attendees':
+        return expectedNumberOfAttendees;
+      case 'Expected Number of Attendees (Optional)':
+        return expectedNumberOfAttendeesOptional;
+      case 'Start Time':
+        return startTime;
+      case 'End Time':
+        return endTime;
       case 'Problem':
         return problem;
       case 'Created By':
@@ -1722,6 +2138,16 @@ class DashboardL10n {
         return typeOfMaintenanceDetailsRequired;
       case 'Preferred Maintenance Date':
         return preferredMaintenanceDate;
+      case 'Type Of Enquire':
+        return titleOfEnquire;
+      case 'Budget Code':
+        return budgetCode;
+      case 'Estimated Cost':
+        return estimatedCost;
+      case 'Type of Project':
+        return typeOfProject;
+      case 'Project Code/Budget Code':
+        return projectCodeBudgetCode;
       default:
         return _formatKey(key);
     }
@@ -1878,6 +2304,51 @@ class DashboardL10n {
 
       case 'End Date':
         return endDate;
+
+      case 'Start Time':
+        return startTime;
+
+      case 'End Time':
+        return endTime;
+
+      case 'Purpose of Event':
+        return purposeOfEvent;
+
+      case 'Purpose of Event / Meeting':
+        return purposeOfEventMeeting;
+      case 'Sent By':
+        return sentBy;
+      case 'Letter Date':
+        return letterDate;
+      case 'Subject':
+        return subject;
+      case 'Subject Classification':
+        return subjectClassification;
+      case 'Topic':
+        return topic;
+      case 'Concerned Department':
+        return concernedDepartment;
+      case 'Date From':
+        return dateFrom;
+      case 'Date To':
+        return dateTo;
+      case 'Attachments':
+        return attachmentsTabLabel;
+
+      case 'Type of Hall':
+        return typeOfHall;
+
+      case 'Select Hall':
+        return selectHall;
+
+      case 'Hall Name':
+        return hallName;
+
+      case 'Expected Number of Attendees':
+        return expectedNumberOfAttendees;
+
+      case 'Expected Number of Attendees (Optional)':
+        return expectedNumberOfAttendeesOptional;
 
       case 'Employee Mail':
         return employeeMail;
@@ -2078,6 +2549,187 @@ class DashboardL10n {
 
       case 'Request Type':
         return typeOfRequest;
+      case 'Workflow Execution ID':
+        return _t('Workflow Execution ID', 'معرف تنفيذ سير العمل');
+
+      case 'Reference Number':
+        return _t('Reference Number', 'الرقم المرجعي');
+
+      case 'Employee Name':
+        return _t('Employee Name', 'اسم الموظف');
+
+      case 'Employee ID Number':
+        return _t('Employee ID Number', 'الرقم الوظيفي');
+
+      case 'Financial Grade':
+        return _t('Financial Grade', 'الدرجة المالية');
+
+      case 'Allowance Value':
+        return _t('Allowance Value', 'قيمة البدل');
+
+      case 'Shift Start Date':
+        return _t('Shift Start Date', 'تاريخ بداية المناوبة');
+
+      case 'Shift End Date':
+        return _t('Shift End Date', 'تاريخ نهاية المناوبة');
+
+      case 'Created By':
+        return _t('Created By', 'تم الإنشاء بواسطة');
+
+      case 'Created At':
+        return _t('Created At', 'تاريخ الإنشاء');
+
+      case 'Updated By':
+        return _t('Updated By', 'تم التحديث بواسطة');
+
+      case 'Updated At':
+        return _t('Updated At', 'تاريخ التحديث');
+
+      case 'End of Service Date':
+        return _t('End of Service Date', 'تاريخ انتهاء الخدمة');
+
+      case 'Basic Salary':
+        return _t('Basic Salary', 'الراتب الأساسي');
+
+      case 'Basic Salary Per Day':
+        return _t('Basic Salary Per Day', 'الراتب الأساسي اليومي');
+
+      case 'Total Salary Due':
+        return _t('Total Salary Due', 'إجمالي المستحقات المالية');
+
+      case 'Remaining Leave Balance':
+        return _t('Remaining Leave Balance', 'رصيد الإجازات المتبقي');
+
+      case 'Job Description':
+        return _t('Job Description', 'الوصف الوظيفي');
+
+      case 'Number of Years of Experience':
+        return _t('Number of Years of Experience', 'عدد سنوات الخبرة');
+
+      case 'Required Skills / Expertise':
+        return _t('Required Skills / Expertise', 'المهارات / الخبرات المطلوبة');
+
+      case 'Education Requirement':
+        return _t('Education Requirement', 'المؤهل العلمي المطلوب');
+
+      case 'Role / Title of Resource':
+        return _t('Role / Title of Resource', 'الدور / المسمى الوظيفي للوظيفة');
+      case 'Required Competency Percentage':
+        return _t('Required Competency Percentage', 'نسبة الجدارة المطلوبة');
+
+      case 'Description/Summary of Skill':
+        return _t('Description/Summary of Skill', 'وصف/ملخص المهارة');
+
+      case 'Competency Title | Skill':
+        return _t('Competency Title | Skill', 'عنوان الجدارة | المهارة');
+
+      case 'Skill Category':
+        return _t('Skill Category', 'فئة المهارة');
+
+      case 'Technical':
+        return _t('Technical', 'فني');
+
+      case 'Compliance':
+        return _t('Compliance', 'الامتثال');
+
+      case 'Safety':
+        return _t('Safety', 'السلامة');
+
+      case 'Soft Skills':
+        return _t('Soft Skills', 'المهارات الشخصية');
+      case 'Productivity':
+        return _t('Productivity', 'الإنتاجية');
+
+      case 'Behavior':
+        return _t('Behavior', 'السلوك');
+
+      case 'Leadership':
+        return _t('Leadership', 'القيادة');
+
+      case 'Emotional Intelligence':
+        return _t('Emotional Intelligence', 'الذكاء العاطفي');
+
+      case 'Work Experience (years)':
+        return _t('Work Experience (years)', 'خبرة العمل (بالسنوات)');
+
+      case 'Skills':
+        return _t('Skills', 'المهارات');
+
+      case 'Current Position':
+        return _t('Current Position', 'المنصب الحالي');
+      case 'From Entity':
+        return _t('From Entity', 'جهة الإعارة');
+
+      case 'To Entity':
+        return _t('To Entity', 'جهة المُعار اليها');
+
+      case 'Assigned Job Position':
+        return _t('Assigned Job Position', 'الجهة المُندب إليها');
+
+      case 'Civil ID Card Number':
+        return _t('Civil ID Card Number', 'رقم البطاقة المدنية');
+
+      case 'Current Job Position':
+        return _t('Current Job Position', 'المسمى الوظيفي الحالي');
+
+      case 'Assigned Employee Name':
+        return _t('Assigned Employee Name', 'اسم الموظف المُعار');
+      case 'Salary Payment Source':
+        return _t('Salary Payment Source', 'جهة صرف الراتب');
+
+      case 'Social Protection Fund':
+        return _t('Social Protection Fund', 'صندوق الحماية الاجتماعية');
+      case 'Salary Details':
+        return _t('Salary Details', 'تفاصيل الراتب');
+
+      case 'Transferred to Entity':
+        return _t('Transferred to Entity', 'الجهة المنقول إليها');
+
+      case 'Current Entity':
+        return _t('Current Entity', 'الجهة الحالية');
+
+      case 'Position Transferred from':
+        return _t('Position Transferred from', 'المنصب المنقول منه');
+
+      case 'Position Transferred To':
+        return _t('Position Transferred To', 'المنصب المنقول إليه');
+      case 'Current Job Title':
+        return _t('Current Job Title', 'المسمى الوظيفي الحالي');
+
+      case 'Proposed Job Title':
+        return _t('Proposed Job Title', 'المسمى الوظيفي المقترح');
+
+      case 'Current Salary Grade':
+        return _t('Current Salary Grade', 'الدرجة الوظيفية الحالية');
+
+      case 'Proposed Salary Grade':
+        return _t('Proposed Salary Grade', 'الدرجة الوظيفية المقترحة');
+
+      case 'Current Basic Salary':
+        return _t('Current Basic Salary', 'الراتب الأساسي الحالي');
+
+      case 'Proposed Basic Salary':
+        return _t('Proposed Basic Salary', 'الراتب الأساسي المقترح');
+      case 'Annual Periodic Allowance':
+        return _t('Annual Periodic Allowance', 'العلاوة الدورية السنوية');
+
+      case 'Type Of Enquire':
+        return titleOfEnquire;
+
+      case 'Budget Code':
+        return budgetCode;
+
+      case 'Estimated Cost':
+        return estimatedCost;
+
+      case 'Type of Project':
+        return typeOfProject;
+
+      case 'Project Code/Budget Code':
+        return projectCodeBudgetCode;
+
+      case 'Company Name':
+        return companyName;
 
       default:
         return _formatKey(key);
@@ -2147,6 +2799,13 @@ class DashboardL10n {
   String get servicesMoreInfo => _t('More Info', 'مزيد من المعلومات');
 
   String get servicesLessInfo => _t('Less Info', 'معلومات أقل');
+
+  String get servicesAllServices => _t('All Services', 'جميع الخدمات');
+
+  String get servicesMyServices => _t('My Services', 'خدماتي');
+
+  String get servicesSearchPlaceholder =>
+      _t('Search by Service name', 'البحث باسم الخدمة');
 
   String loginLanguageDisplayName(String code) {
     switch (code) {

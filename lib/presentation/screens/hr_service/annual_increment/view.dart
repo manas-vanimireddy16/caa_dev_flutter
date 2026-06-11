@@ -5,17 +5,19 @@ import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
-import 'package:code_setup/presentation/common_widgets/approval_comment_dialog.dart';
-import 'package:code_setup/presentation/common_widgets/assign_dialog.dart';
-import 'package:code_setup/presentation/common_widgets/chat.dart';
-import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
-import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
-import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/approval_comment_dialog.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/assign_dialog.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/chat.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_attachments.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_request_details.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_workflow.dart';
 import 'package:code_setup/presentation/common_widgets/dialog_config.dart';
-import 'package:code_setup/presentation/common_widgets/requestCard.dart';
-import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.dart';
-import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';
-import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
+import 'package:code_setup/presentation/common_widgets/request_card.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
@@ -113,33 +115,40 @@ class _AnnualIncrementScreenState extends ConsumerState<AnnualIncrementScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
-          /// KPI
-          StatSummaryRow(stats: controller.currentStats),
+          StatSummaryRow(
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
+          ),
           20.toHorizontalSizedBox,
-
-          /// Status Breakdown
           RequestStatusBreakdownCard(
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
-            onChanged: controller.onStatusFilterChanged,
+            title: l10n.requestsStatusBreakdown,
+            filterLabel: l10n.periodFilterLabels[0],
+            filterLabelList: l10n.periodFilterLabels,
+            centerMetricLabel: l10n.totalRequests,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
+            preserveFilterLabelOnChange: true,
+            onChanged: (value) => controller.onStatusFilterChanged(
+              value != null ? l10n.periodFilterValue(value) : null,
+            ),
             breakdown: state.statusBreakdown.data,
           ),
-
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
-            // selectedYear: controller.currentYear.toString(),
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalRequests,
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,

@@ -1,3 +1,4 @@
+import 'package:code_setup/presentation/screens/hr_service/models/temporary_decision.dart';
 import 'package:code_setup/repository/hr_service/temporary_assignment_decision/domain/domain.dart';
 import 'dart:developer';
 import 'dart:io';
@@ -86,9 +87,7 @@ class TemporaryAssignmentDecisionRepoistryImple
   }
 
   @override
-  Future<void> sendAssignmentDecisionRequest(
-    Map<String, dynamic> payload,
-  ) async {
+  Future<void> cRequest(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
     final String url = ApiEndPoint.temporaryAssignmentDecisionNewRequest;
     try {
@@ -219,15 +218,18 @@ class TemporaryAssignmentDecisionRepoistryImple
   }
 
   @override
-  Future<KPIResponse?> getKpiData(int service_id, int sub_service_id) async {
+  Future<KPIResponse?> getKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     String url = ApiEndPoint.temporaryAssignmentDecisionKpiData;
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
         final queryParams = {
-          'service_id': service_id,
-          'sub_service_id': sub_service_id,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
         final response = await client.get(url, queryParameters: queryParams);
 
@@ -310,18 +312,18 @@ class TemporaryAssignmentDecisionRepoistryImple
   // }
 
   @override
-  Future<KPIResponse?> getApprovalKpiData(
-    int service_id,
-    int sub_service_id,
-  ) async {
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     String url = ApiEndPoint.temporaryAssignmentDecisionApprovalKpiData;
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
         final queryParams = {
-          'service_id': service_id,
-          'sub_service_id': sub_service_id,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
         final response = await client.get(url, queryParameters: queryParams);
         if (response.statusCode == 200) {
@@ -345,14 +347,22 @@ class TemporaryAssignmentDecisionRepoistryImple
   }
 
   @override
-  Future<StatusBreakdownModel> getStatusBreakdownData(String period) async {
+  Future<StatusBreakdownModel> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {'time_period': period};
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.secondmentDecisionStatusBreakdown,
+          ApiEndPoint.temporaryAssignmentDecisionStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -377,17 +387,25 @@ class TemporaryAssignmentDecisionRepoistryImple
   }
 
   @override
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period) async {
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {"year": period};
+        final queryParams = {
+          "year": period,
+          "service_id": serviceId,
+          "sub_service_id": subServiceId,
+        };
 
         /// Remove null values
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.secondmentDecisionTrendBreakdown,
+          ApiEndPoint.temporaryAssignmentDecisionTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -412,16 +430,22 @@ class TemporaryAssignmentDecisionRepoistryImple
   }
 
   @override
-  Future<StatusBreakdownModel> getApprovalStatusBreakdownData(
-    String period,
-  ) async {
+  Future<StatusBreakdownModel> getApprovalStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {'time_period': period};
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.airportEntryApprovalStatusBreakdown,
+          ApiEndPoint.temporaryAssignmentDecisionApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -446,19 +470,25 @@ class TemporaryAssignmentDecisionRepoistryImple
   }
 
   @override
-  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(
-    String period,
-  ) async {
+  Future<TrendBreakdownModel> getApprovalTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {"year": period};
+        final queryParams = {
+          "year": period,
+          "service_id": serviceId,
+          "sub_service_id": subServiceId,
+        };
 
         /// Remove null values
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
-          ApiEndPoint.airportEntryApprovalTrendBreakdown,
+          ApiEndPoint.temporaryAssignmentDecisionApprovalTrendBreakdown,
           queryParameters: queryParams,
         );
 
@@ -483,9 +513,11 @@ class TemporaryAssignmentDecisionRepoistryImple
   }
 
   @override
-  Future<List<AssignmentDecision>> getRequests({
+  Future<List<TemporaryDecision>> getRequests({
     required int offset,
     required int limit,
+    required int serviceId,
+    required int subServiceId,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
@@ -497,6 +529,8 @@ class TemporaryAssignmentDecisionRepoistryImple
       if (client != null) {
         final Map<String, dynamic> queryParams = {
           'offset': offset,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
           'limit': limit,
         };
 
@@ -515,9 +549,7 @@ class TemporaryAssignmentDecisionRepoistryImple
           final List<dynamic> list = data['data'];
 
           return list
-              .map(
-                (e) => AssignmentDecision.fromJson(e as Map<String, dynamic>),
-              )
+              .map((e) => TemporaryDecision.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
           throw Exception(
@@ -533,7 +565,9 @@ class TemporaryAssignmentDecisionRepoistryImple
   }
 
   @override
-  Future<List<AssignmentDecision>> getActionItems({
+  Future<List<TemporaryDecision>> getActionItems({
+    required int serviceId,
+    required int subServiceId,
     required int offset,
     required int limit,
     String status = '',
@@ -547,6 +581,8 @@ class TemporaryAssignmentDecisionRepoistryImple
           'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
 
         if (status.isNotEmpty) {
@@ -571,7 +607,7 @@ class TemporaryAssignmentDecisionRepoistryImple
           final actionItems = list
               .map(
                 (item) =>
-                    AssignmentDecision.fromJson(item as Map<String, dynamic>),
+                    TemporaryDecision.fromJson(item as Map<String, dynamic>),
               )
               .toList();
 
@@ -725,13 +761,17 @@ class TemporaryAssignmentDecisionRepoistryImple
   @override
   Future<String> sendChat(Map<String, dynamic> payload, int id) async {
     final client = await KAppX.network.secureClient();
-    final String url = ApiEndPoint.temporaryAssignmentDecisionChatById(id);
+    final String url = ApiEndPoint.temporaryAssignmentDecisionSendChatById(id);
 
     try {
       if (client != null) {
         final response = await client.post(url, data: payload);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('✅ Message sent successfully');
           debugPrint('✅ Message sent successfully');
 
           return response.data["message"] ?? "Success";
@@ -749,6 +789,68 @@ class TemporaryAssignmentDecisionRepoistryImple
     } catch (e) {
       debugPrint('❌ Unexpected error: $e');
       throw e;
+    }
+  }
+
+  @override
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
+    final client = await KAppX.network.secureClient();
+    final String url =
+        ApiEndPoint.temporaryAssignmentDecisionSendAttachmentById(id);
+
+    try {
+      if (client != null) {
+        final response = await client.post(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('✅ Message sent successfully');
+
+          return response.data["message"] ?? "Success";
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          return response.data["message"] ?? "Something went wrong";
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+        return "Something went wrong";
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  @override
+  Future<List<AttachmentModel>> getAttachmentsById({required int id}) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.temporaryAssignmentDecisionAttachmentById(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = AttachmentByIdResponseModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching attachmentById details: $e");
     }
   }
 
@@ -1045,5 +1147,11 @@ class TemporaryAssignmentDecisionRepoistryImple
       log('error failed to Replaced Employee $e');
       throw ApiException(e.toString());
     }
+  }
+
+  @override
+  Future<void> createTemporaryDecisionRequest(Map<String, dynamic> payload) {
+    // TODO: implement createTemporaryDecisionRequest
+    throw UnimplementedError();
   }
 }

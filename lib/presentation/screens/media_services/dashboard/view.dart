@@ -6,10 +6,10 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
-import 'package:code_setup/presentation/common_widgets/RadioButton.dart';
-import 'package:code_setup/presentation/common_widgets/approval_comment_dialog.dart';
-import 'package:code_setup/presentation/common_widgets/requestCard.dart';
-import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
+import 'package:code_setup/presentation/common_widgets/radio_button.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/approval_comment_dialog.dart';
+import 'package:code_setup/presentation/common_widgets/request_card.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';

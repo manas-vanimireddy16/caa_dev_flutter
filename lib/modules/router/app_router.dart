@@ -120,6 +120,45 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.cyberSecurityRiskManagementDetails,
     ),
 
+    AutoRoute(
+      page: ComplaintLostPropertyReportNewRequestRoute.page,
+      path: RouteNames.complaintLostPropertyReportNewRequest,
+    ),
+
+    AutoRoute(
+      page: ComplaintLostPropertyReportDetailsRoute.page,
+      path: RouteNames.complaintLostPropertyReportRequestDetailsTabScreen,
+    ),
+
+    ///--- MAINTENANCE ---
+    AutoRoute(
+      page: MaintenanceHomeRoute.page,
+      path: RouteNames.maintenanceHomeScreen,
+      children: [
+        AutoRoute(page: RequestMaintenanceRoute.page, initial: true),
+        AutoRoute(page: MaintenanceofExternalServiceRoute.page),
+      ],
+    ),
+
+    AutoRoute(
+      page: RequestMaintenanceDetailsRoute.page,
+      path: RouteNames.requestMaintenanceDetails,
+    ),
+
+    AutoRoute(
+      page: RequestMaintenanceNewRequestRoute.page,
+      path: RouteNames.requestMaintenanceNewRequest,
+    ),
+
+    AutoRoute(
+      page: MaintenanceofExternalServiceDetailsRoute.page,
+      path: RouteNames.maintenanceOfExternalServiceDetails,
+    ),
+    AutoRoute(
+      page: MaintenanceExternalServiceNewRequestRoute.page,
+      path: RouteNames.maintenanceOfExternalServiceNewRequest,
+    ),
+
     /// --- IT SERVICES ---
     AutoRoute(
       page: ITServicesHomeRoute.page,
@@ -248,6 +287,7 @@ class AppRouter extends RootStackRouter {
       children: [
         AutoRoute(page: AccessCardDashboardRoute.page),
         AutoRoute(page: AccessCardRequestRoute.page),
+        AutoRoute(page: ComplaintLostPropertyReportRoute.page),
       ],
     ),
 
@@ -312,35 +352,22 @@ class AppRouter extends RootStackRouter {
     ),
 
     AutoRoute(
-      page: NewAssignmentDecisionRoute.page,
-      path: RouteNames.decisionAssignmentNewRequest,
-    ),
-    AutoRoute(
       page: AssignmentDecisionDetailsRoute.page,
       path: RouteNames.decisionAssignmentDetails,
-    ),
-
-    AutoRoute(
-      page: NewSecondmentDecisionRequestRoute.page,
-      path: RouteNames.secondmentDecisionNewRequest,
     ),
 
     AutoRoute(
       page: SecondmentDecisionDetailsRoute.page,
       path: RouteNames.secondmentDecisionDetails,
     ),
-    AutoRoute(
-      page: NewTemporaryAssignmentDecisionRequestRoute.page,
-      path: RouteNames.temporaryAssignmentDecisionNewRequest,
-    ),
 
+    // AutoRoute(
+    //   page: NewTemporaryAssignmentDecisionRequestRoute.page,
+    //   path: RouteNames.temporaryAssignmentDecisionNewRequest,
+    // ),
     AutoRoute(
       page: TemporaryAssignmentDecisionDetailsRoute.page,
       path: RouteNames.temporaryAssignmentDecisionDetails,
-    ),
-    AutoRoute(
-      page: NewServiceTransferRequestRoute.page,
-      path: RouteNames.serviceTransferDecisionNewRequest,
     ),
 
     AutoRoute(
@@ -386,21 +413,20 @@ class AppRouter extends RootStackRouter {
       page: TransferFromOneJobtoAnotherJobNatureDetailsRoute.page,
       path: RouteNames.transferFromOneJobtoAnotherJobNatureDetails,
     ),
-    AutoRoute(
-      page: PaymentofShiftAllowanceNewRequestRoute.page,
-      path: RouteNames.paymentofShiftAllowanceNewRequest,
-    ),
 
+    // AutoRoute(
+    //   page: PaymentofShiftAllowanceNewRequestRoute.page,
+    //   path: RouteNames.paymentofShiftAllowanceNewRequest,
+    // ),
     AutoRoute(
       page: PaymentofShiftAllowanceDetailsRoute.page,
       path: RouteNames.paymentofShiftAllowanceDetails,
     ),
 
-    AutoRoute(
-      page: PaymentofCashAllowanceForLeaveNewRequestRoute.page,
-      path: RouteNames.paymentofCashAllowanceForLeaveNewRequest,
-    ),
-
+    // AutoRoute(
+    //   page: PaymentofCashAllowanceForLeaveNewRequestRoute.page,
+    //   path: RouteNames.paymentofCashAllowanceForLeaveNewRequest,
+    // ),
     AutoRoute(
       page: PaymentofCashAllowanceForLeaveDetailsRoute.page,
       path: RouteNames.paymentofCashAllowanceForLeaveDetails,
@@ -462,6 +488,7 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.trainingsanddevelopmentHomeScreen,
       children: [
         AutoRoute(page: AssignaTasktoEmployeeRoute.page, initial: true),
+        AutoRoute(page: FollowUpReportRoute.page),
       ],
     ),
 
@@ -472,6 +499,14 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: AssignaTasktoEmployeeDetailsRoute.page,
       path: RouteNames.trainingsanddevelopmentDetails,
+    ),
+    AutoRoute(
+      page: FollowUpReportNewRequestRoute.page,
+      path: RouteNames.followUpReportNewRequest,
+    ),
+    AutoRoute(
+      page: FollowUpReportDetailsRoute.page,
+      path: RouteNames.followUpReportDetails,
     ),
 
     /// --- ASSET AFFAIRS ---

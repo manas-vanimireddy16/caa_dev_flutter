@@ -5,15 +5,16 @@ import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
-import 'package:code_setup/presentation/common_widgets/approval_comment_dialog.dart';
-import 'package:code_setup/presentation/common_widgets/chat.dart';
-import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
-import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
-import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
-import 'package:code_setup/presentation/common_widgets/requestCard.dart';
-import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.dart';
-import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';
-import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/approval_comment_dialog.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/chat.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_attachments.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_request_details.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_workflow.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
+import 'package:code_setup/presentation/common_widgets/request_card.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
@@ -50,6 +51,7 @@ import 'package:code_setup/repository/assests_affair/residental_unit_rental/doma
 import 'package:code_setup/repository/hr_service/annual_duty_mission/domain/domain.dart';
 import 'package:code_setup/repository/legal_consultation_services/appeal_against_administrative_decisions/domain/domain.dart';
 import 'package:code_setup/repository/legal_consultation_services/raise_a_legal_complaint/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
@@ -125,11 +127,11 @@ class _AppealAgainstAdministrativeDecisionsScreenState
     return KScaffold(
       backgroundColor: Colors.white,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
           /// KPI
           StatSummaryRow(stats: controller.currentStats),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -140,6 +142,7 @@ class _AppealAgainstAdministrativeDecisionsScreenState
             onChanged: controller.onStatusFilterChanged,
             breakdown: state.statusBreakdown.data,
           ),
+          16.toVerticalSizedBox,
 
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
@@ -153,7 +156,7 @@ class _AppealAgainstAdministrativeDecisionsScreenState
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

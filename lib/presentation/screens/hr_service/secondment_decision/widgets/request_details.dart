@@ -1,20 +1,3 @@
-// import 'package:auto_route/auto_route.dart';
-// import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-// import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-// import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-// import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-// import 'package:code_setup/presentation/screens/approvals/common_widgets.dart';
-// import 'package:code_setup/presentation/screens/logistics/models/logistics_detail_model.dart';
-// import 'package:code_setup/presentation/screens/logistics/view.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/attachments_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_details_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_history_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_tabs.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/workflow_tab.dart';
-// import 'package:code_setup/utils/app_extensions/app_extension.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 part of '../view.dart';
 
 @RoutePage()
@@ -41,14 +24,19 @@ class SecondmentDecisionDetailsScreen extends ConsumerStatefulWidget {
 
 class _SecondmentDecisionDetailsScreenState
     extends ConsumerState<SecondmentDecisionDetailsScreen> {
-  late final ({Service service, SubService subService}) _providerArgs;
+  late _VSControllerParams _providerArgs;
 
   @override
   void initState() {
     super.initState();
-    _providerArgs = (service: widget.service, subService: widget.subService);
 
-    /// Fetch ONLY once
+    /// ✅ Create proper provider params object
+    _providerArgs = _VSControllerParams(
+      service: widget.service,
+      subService: widget.subService,
+    );
+
+    /// ✅ Fetch ONLY once (after init)
     Future.microtask(() {
       ref
           .read(_vsProvider(_providerArgs).notifier)
@@ -59,10 +47,11 @@ class _SecondmentDecisionDetailsScreenState
   @override
   Widget build(BuildContext context) {
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: const Text('Request Detail')),
+      appBar: KAppBar(title: Text(l10n.requestDetailScreenTitle)),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(
@@ -72,13 +61,12 @@ class _SecondmentDecisionDetailsScreenState
           if (state.requestDetails == null || state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          final userInfo = KAppX.globalProvider.read(rolesProvider);
-          final request = state.requestDetails; //state.requestDetails.request;
+
+          final request = state.requestDetails;
+          final createdByUser =
+              request?.createdByUser ?? state.requestDetails.createdByUser;
           final requestId = request?.id;
-          final List<WorkflowDetailModel> workflows =
-              state.requestDetails.workflowDetails ?? [];
-          final List<AttachmentModel> attachments =
-              state.requestDetails.attachments ?? [];
+          final List<AttachmentModel> attachments = state.attachmentsById;
           final chats = state.chatById;
           final List<ApprovalDetailModel> approvals =
               state.requestDetails.approvalDetails ?? [];
@@ -90,35 +78,14 @@ class _SecondmentDecisionDetailsScreenState
             state.requestDetails,
             approvals,
           );
-          final nextApprover = controller.getNextApprovalDetails(approvals);
+
           final approverId = active?.id;
-          // controller.onSelectedApprovalId(approverRoleId ?? 0);
-          // final canApprove = controller.shouldShowApprovalButtons(approvals);
 
           return SingleChildScrollView(
             child: Column(
               children: [
-                /// ----------- Profile Section --------------
-                ProfileCard(
-                  title: "Profile",
-                  subtitle: "User Info",
-                  name: request?.createdByUser?.employeeName ?? '',
-                  avatarUrl: "https://i.pravatar.cc/150?img=3",
-                  isOnline: true,
-                  info: {
-                    "Request ID": (request?.id ?? 0).toString(),
-                    "Customer ID": (request?.userId ?? 0).toString(),
-                    "Job Title/Designation":
-                        request?.createdByUser?.directorate ?? 'N/A',
-                    "Department": request?.createdByUser?.category ?? 'N/A',
-                    "Email": request?.createdByUser?.email ?? 'N/A',
-                    "Phone": request?.createdByUser?.mobile ?? 'N/A',
-                    // "Request Type": request?.requestFor ?? 'N/A',
-                  },
-                ),
-
                 5.toHorizontalSizedBox,
-                RequestTabs(
+                RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
                   subService: widget.subService,
@@ -127,40 +94,38 @@ class _SecondmentDecisionDetailsScreenState
                 const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
-                if (selectedTab == 0)
+                if (selectedTab == 0) ...[
+                  EmployeeInformationCard(
+                    l10n: l10n,
+                    requestId: requestId?.toString(),
+                    status: request?.status,
+                    assignedTo: controller.buildAssignedToLabel(approvals),
+                    user: createdByUser,
+                    labelBuilder: l10n.requestDetailsLabel,
+                  ),
                   CommonRequestDetails(
-                    statusInfo: {
-                      "Request Date": request?.createdAt.toString() ?? 'N/A',
-                      "Status": request?.status ?? "N/A",
-                      "Approver": nextApprover?.approverUser?.email ?? 'N/A',
-
-                      "Assigned To": nextApprover?.approverRole?.name ?? 'N/A',
-                    },
-                    requestInfo: {
-                      'Request For': request?.description ?? 'N/A',
-
-                      'Service Type': request?.service?.name ?? 'N/A',
-                      'Sub Service Type':
-                          request?.subService?.subServiceName ?? 'N/A',
-                      'Description': request?.description ?? 'N/A',
-                    },
-                    technicalInfo: {
-                      'Extension Number':
-                          request?.createdByUser?.extensionNumber.toString() ??
-                          'N/A',
-                    },
-                    // from: 'salalah',
-                    // data: state.requestDetails,
-                  )
-                else if (selectedTab == 1)
+                    statusInformationTitle: l10n.requestDetailsLabel(
+                      'Status Information',
+                    ),
+                    requestInformationTitle: l10n.requestDetailsLabel(
+                      'Request Information',
+                    ),
+                    technicalInformationTitle: l10n.technicalDetailsSection,
+                    requestDetailsLabelBuilder: l10n.requestDetailsLabel,
+                    statusInfo: controller.buildStatusInformation(),
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
+                  ),
+                ] else if (selectedTab == 1)
                   CommentsCard(
                     from: widget.from,
                     showButtons: actionType != ActionButtonsType.none,
-                    actionType: actionType, // ✅ FIX HERE
+                    actionType: actionType,
                     entries: chats,
                     controller: controller.chatController,
                     buttonsDisabled: state.isButtonDisabled,
                     attachments: state.attachments,
+                    l10n: l10n,
                     onAttach: () async {
                       await controller.pickFile();
                     },
@@ -168,12 +133,12 @@ class _SecondmentDecisionDetailsScreenState
                       controller.removeAttachment();
                     },
                     onSend: () async {
-                      controller.sendChatMessage(
+                      await controller.sendChatMessage(
                         serviceId: widget.serviceId,
                         subServiceId: widget.subServiceId,
                       );
                     },
-                    onClose: () async {},
+
                     onApprove: () async {
                       controller.showApprovalCommentDialog(
                         type: ApprovalDialogType.approve,
@@ -188,27 +153,17 @@ class _SecondmentDecisionDetailsScreenState
                         requestId: requestId ?? 0,
                       );
                     },
-                    onAssign: () async {
-                      controller.showAssignEngineerDialog(
-                        requestId: requestId ?? 0,
-                        approverRoleId: active?.approverRoleId ?? 0,
-                        // departmentId: userInfo?.departmentId,
-                        // sectionId: userInfo?.sectionId,
-                      );
-                    }, // You can connect later
-                    onReassign: () async {
-                      controller.showAssignEngineerDialog(
-                        requestId: requestId ?? 0,
-                        approverRoleId: approverId ?? 0,
-                        // departmentId: userInfo?.departmentId,
-                        // sectionId: userInfo?.sectionId,
-                      );
-                    },
                   )
                 else if (selectedTab == 2)
-                  CommonAttachmentsTabContent(attachments: attachments)
+                  CommonAttachmentsTabContent(
+                    attachments: attachments,
+                    l10n: l10n,
+                  )
                 else if (selectedTab == 3)
-                  RequestWorkflowTimeline(details: state.requestDetails),
+                  RequestWorkflowTimeline(
+                    details: state.requestDetails,
+                    l10n: l10n,
+                  ),
               ],
             ),
           );

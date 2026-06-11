@@ -491,7 +491,7 @@ class RespondToEnquiriesRepositoryImpl implements RespondToEnquiriesRepository {
       if (client != null) {
         final queryParams = {
           'offset': offset.toString(),
-          'limit': limit.toString(),
+          'limit': '2',
           'order_by': 'created_at',
           'sort_order': 'DESC',
           'service_id': serviceId,

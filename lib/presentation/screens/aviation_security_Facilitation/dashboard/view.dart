@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import 'package:code_setup/presentation/common_widgets/requestCard.dart';
-import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
+import 'package:code_setup/presentation/common_widgets/request_card.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/models/activity_feed_model.dart';

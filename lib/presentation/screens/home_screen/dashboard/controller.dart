@@ -75,6 +75,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final userModel = await dashboardinstance.getUser(userData?.userId ?? 0);
     final user = userModel;
     print(user.data?.employeeName);
+    print(user.data?.department?.id);
 
     state = state.copyWith(isLoading: false, user: user);
   }

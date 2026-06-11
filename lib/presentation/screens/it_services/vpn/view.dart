@@ -4,16 +4,16 @@ import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
-import 'package:code_setup/presentation/common_widgets/approval_comment_dialog.dart';
-import 'package:code_setup/presentation/common_widgets/chat.dart';
-import 'package:code_setup/presentation/common_widgets/common_attachments.dart';
-import 'package:code_setup/presentation/common_widgets/employee_information_card.dart';
-import 'package:code_setup/presentation/common_widgets/common_request_details.dart';
-import 'package:code_setup/presentation/common_widgets/common_workflow.dart';
-import 'package:code_setup/presentation/common_widgets/requestCard.dart';
-import 'package:code_setup/presentation/common_widgets/requestStatusBreakdown.dart';
-import 'package:code_setup/presentation/common_widgets/requestTrendBreakdown.dart';
-import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/approval_comment_dialog.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/chat.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_attachments.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_request_details.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_workflow.dart';
+import 'package:code_setup/presentation/common_widgets/request_card.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
 import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
@@ -141,7 +141,7 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
     return KScaffold(
       backgroundColor: Colors.white,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
           /// KPI
           StatSummaryRow(
@@ -149,7 +149,8 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
               (key) => l10n.statTitle(key, isSecurityThreat: true),
             ),
           ),
-          20.toHorizontalSizedBox,
+
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -168,6 +169,8 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
             ),
             breakdown: state.statusBreakdown.data,
           ),
+
+          16.toVerticalSizedBox,
 
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 1

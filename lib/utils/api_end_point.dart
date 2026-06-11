@@ -23,6 +23,10 @@ class ApiEndPoint {
 
   static String download(String id) => '/v1/user-service/download/$id';
 
+  static String getBookmarks(String userId) =>
+      '/v1/user-service/service/bookmarks/$userId';
+  static const String updateBookmark = '/v1/user-service/service/bookmark';
+
   static const String departmentsList =
       '/v1/user-service/master/departments/listing';
   static const String countryList = '/v1/user-service/country-master/list';
@@ -593,9 +597,9 @@ class ApiEndPoint {
   static const String assignmentDecisionReject =
       '/v1/hr-service/assignment-decision/reject';
   static const String assignmentDecisionApprovalKpiData =
-      '/v1/hr-service/assignment-decision/analytics/kpi-cards';
-  static const String assignmentDecisionKpiData =
       '/v1/hr-service/assignment-decision/analytics/approval-kpi-cards';
+  static const String assignmentDecisionKpiData =
+      '/v1/hr-service/assignment-decision/analytics/kpi-cards';
   static const String assignmentDecisionEmployeesList =
       '/v1/hr-service/assignment-decision/employees';
   static const String assignmentDecisionEmployeeAssignEmployee =
@@ -607,6 +611,12 @@ class ApiEndPoint {
       '/v1/hr-service/assignment-decision/request/$id/attachments';
   static String assignmentDecisionSendAttachmentById(int id) =>
       '/v1/hr-service/assignment-decision/request/$id/attachment';
+
+  static String assignmentDecisionGetChatsById(int id) =>
+      '/v1/hr-service/assignment-decision/request/$id/chats';
+
+  static String assignmentDecisionSendChatsById(int id) =>
+      '/v1/hr-service/assignment-decision/request/$id/chat';
 
   /// Secondment Decision
   static const String secondmentDecisionUsers = '/v1/hr-service/users';
@@ -667,18 +677,25 @@ class ApiEndPoint {
   static String secondmentDecisionSendAttachmentById(int id) =>
       '/v1/hr-service/secondment-decisions/request/$id/attachment';
 
-  // Temporary Assignment Decision
+  // ===================== Temporary Assignment Decision =====================
+
+  /// Create Request
   static const String temporaryAssignmentDecisionNewRequest =
       '/v1/hr-service/temporary-assignment-decision/request';
 
+  /// Get My Requests
   static const String temporaryAssignmentDecisionRequests =
       '/v1/hr-service/temporary-assignment-decision/requests';
 
+  /// Approval Requests
   static const String temporaryAssignmentDecisionApprovalRequests =
       '/v1/hr-service/temporary-assignment-decision/requests/for-approval';
 
+  /// Request By Id
   static String temporaryAssignmentDecisionRequestById(int id) =>
       '/v1/hr-service/temporary-assignment-decision/request/$id';
+
+  /// ===================== APPROVAL APIs =====================
 
   static const String temporaryAssignmentDecisionApproval =
       '/v1/hr-service/temporary-assignment-decision/approve';
@@ -686,20 +703,37 @@ class ApiEndPoint {
   static const String temporaryAssignmentDecisionReject =
       '/v1/hr-service/temporary-assignment-decision/reject';
 
-  static const String temporaryAssignmentDecisionApprovalKpiData =
+  /// ===================== KPI APIs =====================
+
+  /// Requester KPI
+  static const String temporaryAssignmentDecisionKpiData =
       '/v1/hr-service/temporary-assignment-decision/analytics/kpi-cards';
 
-  static const String temporaryAssignmentDecisionKpiData =
+  /// Approval KPI
+  static const String temporaryAssignmentDecisionApprovalKpiData =
       '/v1/hr-service/temporary-assignment-decision/analytics/approval-kpi-cards';
 
-  static String temporaryAssignmentDecisionStatusBreakdown =
+  /// ===================== STATUS BREAKDOWN =====================
+
+  /// Request Status Breakdown
+  static const String temporaryAssignmentDecisionStatusBreakdown =
       '/v1/hr-service/temporary-assignment-decision/analytics/status-breakdown';
-  static String temporaryAssignmentDecisionTrendBreakdown =
-      '/v1/hr-service/temporary-assignment-decision/analytics/trend-breakdown';
-  static String temporaryAssignmentDecisionApprovalStatusBreakdown =
+
+  /// Approval Status Breakdown
+  static const String temporaryAssignmentDecisionApprovalStatusBreakdown =
       '/v1/hr-service/temporary-assignment-decision/analytics/approval-status-breakdown';
-  static String temporaryAssignmentDecisionApprovalTrendBreakdown =
+
+  /// ===================== TREND BREAKDOWN =====================
+
+  /// Request Trend Breakdown
+  static const String temporaryAssignmentDecisionTrendBreakdown =
+      '/v1/hr-service/temporary-assignment-decision/analytics/trend-breakdown';
+
+  /// Approval Trend Breakdown
+  static const String temporaryAssignmentDecisionApprovalTrendBreakdown =
       '/v1/hr-service/temporary-assignment-decision/analytics/approval-trend-breakdown';
+
+  /// ===================== EMPLOYEE APIs =====================
 
   static const String temporaryAssignmentDecisionEmployeesList =
       '/v1/hr-service/temporary-assignment-decision/employees';
@@ -710,15 +744,23 @@ class ApiEndPoint {
   static const String temporaryAssignmentDecisionReplaceEmployee =
       '/v1/hr-service/temporary-assignment-decision/request/replace-employee';
 
+  /// ===================== CHAT APIs =====================
+
+  /// Get Chats
   static String temporaryAssignmentDecisionChatById(int id) =>
-      '/v1/hr-service/secondment-decisions/request/$id/chats';
+      '/v1/hr-service/temporary-assignment-decision/request/$id/chats';
 
+  /// Send Chat
   static String temporaryAssignmentDecisionSendChatById(int id) =>
-      '/v1/hr-service/secondment-decisions/request/$id/chat';
+      '/v1/hr-service/temporary-assignment-decision/request/$id/chat';
 
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Get Attachments
   static String temporaryAssignmentDecisionAttachmentById(int id) =>
       '/v1/hr-service/temporary-assignment-decision/request/$id/attachments';
 
+  /// Send Attachment
   static String temporaryAssignmentDecisionSendAttachmentById(int id) =>
       '/v1/hr-service/temporary-assignment-decision/request/$id/attachment';
 
@@ -810,6 +852,82 @@ class ApiEndPoint {
       '/v1/it-service/assign-tasks-emp/request/$id';
 
   /// ------------------------------------------------------------
+  /// Request to Book CAA Halls
+  /// ------------------------------------------------------------
+
+  /// Create Hall Request
+  static const String bookCaaHallSendRequest = '/v1/hr-service/hall/request';
+
+  /// Get My Requests
+  static const String bookCaaHallGetRequests = '/v1/hr-service/hall/requests';
+
+  /// Get Approval Requests
+  static const String bookCaaHallGetActionItems =
+      '/v1/hr-service/hall/requests/for-approval';
+
+  /// Get Request By ID
+  static String bookCaaHallRequestById(int requestId) =>
+      '/v1/hr-service/hall/request/$requestId';
+
+  /// ===================== AVAILABLE HALL APIs =====================
+
+  /// Get Available Halls
+  static const String bookCaaHallAvailableHalls =
+      '/v1/hr-service/hall/halls/available';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send Chat
+  static String bookCaaHallSendChatById(int requestId) =>
+      '/v1/hr-service/hall/request/$requestId/chat';
+
+  /// Get Chats
+  static String bookCaaHallChatsById(int requestId) =>
+      '/v1/hr-service/hall/request/$requestId/chats';
+
+  static String bookCaaHallApprove = '/v1/hr-service/hall/request/approve';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Send Attachment
+  static String bookCaaHallSendAttachmentById(int requestId) =>
+      '/v1/hr-service/hall/request/$requestId/attachment';
+
+  /// Get Attachments
+  static String bookCaaHallAttachmentsById(int requestId) =>
+      '/v1/hr-service/hall/request/$requestId/attachments';
+
+  /// ===================== KPI APIs =====================
+
+  /// Request KPI Cards
+  static const String bookCaaHallKpiCards =
+      '/v1/hr-service/hall/analytics/kpi-cards';
+
+  /// Approval KPI Cards
+  static const String bookCaaHallApprovalKpiCards =
+      '/v1/hr-service/hall/analytics/approvals/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN APIs =====================
+
+  /// Request Status Breakdown
+  static const String bookCaaHallStatusBreakdown =
+      '/v1/hr-service/hall/analytics/status-breakdown';
+
+  /// Approval Status Breakdown
+  static const String bookCaaHallApprovalStatusBreakdown =
+      '/v1/hr-service/hall/analytics/approvals/status-breakdown';
+
+  /// ===================== TREND BREAKDOWN APIs =====================
+
+  /// Request Trend Breakdown
+  static const String bookCaaHallTrendBreakdown =
+      '/v1/hr-service/hall/analytics/trend-breakdown';
+
+  /// Approval Trend Breakdown
+  static const String bookCaaHallApprovalTrendBreakdown =
+      '/v1/hr-service/hall/analytics/approvals/trend-breakdown';
+
+  /// ------------------------------------------------------------
   /// Assign Task to Employee – Approval Analytics
   /// ------------------------------------------------------------
 
@@ -831,6 +949,80 @@ class ApiEndPoint {
       '/v1/it-service/assign-tasks-emp/request/$id/status';
   static const String assignTaskComplete =
       '/v1/it-service/assign-tasks-emp/request/approve';
+
+  /// followup reports
+  ///
+  /// ===================== FOLLOW UP REPORT APIs =====================
+
+  /// ===================== REQUEST APIs =====================
+
+  /// Create Follow Up Report Request
+  static const String followUpReportSendRequest =
+      '/v1/asset-affairs-service/follow-up-report/request';
+
+  /// Get My Requests
+  static const String followUpReportGetRequests =
+      '/v1/asset-affairs-service/follow-up-report/requests';
+
+  /// Get Approval Requests
+  static const String followUpReportGetActionItems =
+      '/v1/asset-affairs-service/follow-up-report/requests/for-approval';
+
+  /// Get Request By ID
+  static String followUpReportRequestById(int requestId) =>
+      '/v1/asset-affairs-service/follow-up-report/request/$requestId';
+
+  /// ===================== CHAT APIs =====================
+
+  /// Send Chat
+  static String followUpReportSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/follow-up-report/request/$requestId/chat';
+
+  /// Get Chats
+  static String followUpReportChatsById(int requestId) =>
+      '/v1/asset-affairs-service/follow-up-report/request/$requestId/chats';
+
+  /// ===================== KPI APIs =====================
+
+  /// Request KPI Cards
+  static const String followUpReportKpiCards =
+      '/v1/asset-affairs-service/follow-up-report/analytics/kpi-cards';
+
+  /// Approval KPI Cards
+  static const String followUpReportApprovalKpiCards =
+      '/v1/asset-affairs-service/follow-up-report/analytics/approvals/kpi-cards';
+
+  /// ===================== STATUS BREAKDOWN APIs =====================
+
+  /// Request Status Breakdown
+  static const String followUpReportStatusBreakdown =
+      '/v1/asset-affairs-service/follow-up-report/analytics/status-breakdown';
+
+  /// Approval Status Breakdown
+  static const String followUpReportApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/follow-up-report/analytics/approvals/status-breakdown';
+  static String followUpReportApprove =
+      '/v1/asset-affairs-service/follow-up-report/approve';
+
+  /// ===================== TREND BREAKDOWN APIs =====================
+
+  /// Request Trend Breakdown
+  static const String followUpReportTrendBreakdown =
+      '/v1/asset-affairs-service/follow-up-report/analytics/trend-breakdown';
+
+  /// Approval Trend Breakdown
+  static const String followUpReportApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/follow-up-report/analytics/approvals/trend-breakdown';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  /// Send Attachment
+  static String followUpReportSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/follow-up-report/request/$requestId/attachment';
+
+  /// Get Attachments
+  static String followUpReportAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/follow-up-report/request/$requestId/attachments';
 
   /// ===================== DUTY MISSION APIs =====================
 
@@ -1369,7 +1561,7 @@ class ApiEndPoint {
 
   /// Send chat message (POST)
   static String paymentForShiftAllowanceSendChatById(int requestId) =>
-      '/v1/hr-service/shift-allowance/requests/$requestId/chats';
+      '/v1/hr-service/shift-allowance-leave/requests/$requestId/chat';
 
   /// Get chats (GET)
   static String paymentForShiftAllowanceChatsById(int requestId) =>
@@ -1379,7 +1571,7 @@ class ApiEndPoint {
 
   /// Upload attachment for request (POST)
   static String paymentForShiftAllowanceSendAttachmentById(int requestId) =>
-      '/v1/hr-service/shift-allowance/requests/$requestId/attachments';
+      '/v1/hr-service/shift-allowance/requests/$requestId/attachment';
 
   /// Get/Delete attachment by attachment ID
   static String paymentForShiftAllowanceAttachmentById(int attachmentId) =>
@@ -2914,6 +3106,9 @@ class ApiEndPoint {
   static const String legalConsultationSendRequest =
       '/v1/asset-affairs-service/legal-consultation-review/request';
 
+  static const String legalConsultationAdministrativeApprove =
+      '/v1/asset-affairs-service/legal-consultation-review/approve';
+
   /// Get my requests
   static const String legalConsultationGetRequests =
       '/v1/asset-affairs-service/legal-consultation-review/requests';
@@ -3954,4 +4149,183 @@ class ApiEndPoint {
       '/v1/it-service/logistics/analytics/foreign-approvals/kpi-cards';
   static String foreignEmployeeVehicleAllocate(int requestId) =>
       '/v1/it-service/logistics/foreign-vehicle-request/$requestId/details';
+
+  /// Maintenance APIs
+  /// ===================== SEND REQUEST =====================
+
+  static const String requestMaintenanceSendRequest =
+      '/v1/asset-affairs-service/maintenance/request';
+
+  /// ===================== GET REQUESTS =====================
+
+  static const String requestMaintenanceGetRequests =
+      '/v1/asset-affairs-service/maintenance/requests';
+
+  static const String requestMaintenanceGetAllRequests =
+      '/v1/asset-affairs-service/maintenance/requests/all';
+
+  static const String requestMaintenanceGetActionItems =
+      '/v1/asset-affairs-service/maintenance/requests/for-approval';
+
+  /// ===================== REQUEST DETAILS =====================
+
+  static String requestMaintenanceById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId';
+
+  /// ===================== UPDATE REQUEST =====================
+
+  static String requestMaintenanceUpdateRequest(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId';
+
+  static String requestMaintenanceRequestById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String requestMaintenanceApprove =
+      '/v1/asset-affairs-service/maintenance/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String requestMaintenanceSendChatById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/chat';
+
+  static String requestMaintenanceChatsById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/chats';
+
+  static String requestMaintenanceUpdateChat(int chatId) =>
+      '/v1/asset-affairs-service/maintenance/chat/$chatId';
+
+  static String requestMaintenanceDeleteChat(int chatId) =>
+      '/v1/asset-affairs-service/maintenance/chat/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  static String requestMaintenanceSendAttachmentById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/attachment';
+
+  static String requestMaintenanceAttachmentsById(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/attachments';
+
+  static String requestMaintenanceUpdateAttachment(int attachmentId) =>
+      '/v1/asset-affairs-service/maintenance/attachment/$attachmentId';
+
+  static String requestMaintenanceDeleteAttachment(int attachmentId) =>
+      '/v1/asset-affairs-service/maintenance/attachment/$attachmentId';
+
+  /// ===================== TASK APIs =====================
+
+  static String requestMaintenanceAssignTask(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/assign-task';
+
+  static String requestMaintenanceUpdateTaskStatus(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/task-status';
+
+  static String requestMaintenanceClarification(int requestId) =>
+      '/v1/asset-affairs-service/maintenance/request/$requestId/clarification';
+
+  /// ===================== ANALYTICS APIs =====================
+
+  static const String requestMaintenanceKpiCards =
+      '/v1/asset-affairs-service/maintenance/analytics/kpi-cards';
+
+  static const String requestMaintenanceStatusBreakdown =
+      '/v1/asset-affairs-service/maintenance/analytics/status-breakdown';
+
+  static const String requestMaintenanceTrendBreakdown =
+      '/v1/asset-affairs-service/maintenance/analytics/trend-breakdown';
+
+  static const String requestMaintenanceApprovalKpiCards =
+      '/v1/asset-affairs-service/maintenance/analytics/approvals/kpi-cards';
+
+  static const String requestMaintenanceApprovalStatusBreakdown =
+      '/v1/asset-affairs-service/maintenance/analytics/approvals/status-breakdown';
+  static const String requestMaintenanceApprovalTrendBreakdown =
+      '/v1/asset-affairs-service/maintenance/analytics/approvals/trend-breakdown';
+  static const String requestMaintenanceStations =
+      '/v1/user-service/station/all';
+
+  /// Complaint Lost Property APIs
+  /// ===================== SEND REQUEST =====================
+
+  static const String complaintLostPropertySendRequest =
+      '/v1/security-access-service/complaint-lost-property-report/request';
+
+  /// ===================== GET REQUESTS =====================
+
+  static const String complaintLostPropertyGetRequests =
+      '/v1/security-access-service/complaint-lost-property-report/requests';
+
+  static const String complaintLostPropertyGetActionItems =
+      '/v1/security-access-service/complaint-lost-property-report/requests/for-approval';
+
+  /// ===================== REQUEST DETAILS =====================
+
+  static String complaintLostPropertyById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId';
+
+  static String complaintLostPropertyRequestById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId';
+
+  /// ===================== APPROVE / REJECT =====================
+
+  static const String complaintLostPropertyApprove =
+      '/v1/security-access-service/complaint-lost-property-report/approve';
+
+  /// ===================== CHAT APIs =====================
+
+  static String complaintLostPropertySendChatById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/chat';
+
+  static String complaintLostPropertyChatsById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/chats';
+
+  static String complaintLostPropertyChatById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/chat';
+
+  static String complaintLostPropertyGetChatById(int requestId, int chatId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/chat/$chatId';
+
+  static String complaintLostPropertyDeleteChat(int requestId, int chatId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/chat/$chatId';
+
+  /// ===================== ATTACHMENT APIs =====================
+
+  static String complaintLostPropertySendAttachmentById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/attachment';
+
+  static String complaintLostPropertyAttachmentsById(int requestId) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/attachments';
+
+  static String complaintLostPropertyAttachmentById(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/attachment/$attachmentId';
+
+  static String complaintLostPropertyDeleteAttachment(
+    int requestId,
+    int attachmentId,
+  ) =>
+      '/v1/security-access-service/complaint-lost-property-report/request/$requestId/attachment/$attachmentId';
+
+  /// ===================== ANALYTICS APIs =====================
+
+  static const String complaintLostPropertyKpiCards =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/kpi-cards';
+
+  static const String complaintLostPropertyApprovalKpiCards =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/approval-kpi-cards';
+
+  static const String complaintLostPropertyStatusBreakdown =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/status-breakdown';
+
+  static const String complaintLostPropertyTrendBreakdown =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/trend-breakdown';
+
+  static const String complaintLostPropertyApprovalStatusBreakdown =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/approval-status-breakdown';
+
+  static const String complaintLostPropertyApprovalTrendBreakdown =
+      '/v1/security-access-service/complaint-lost-property-report/analytics/approval-trend-breakdown';
 }

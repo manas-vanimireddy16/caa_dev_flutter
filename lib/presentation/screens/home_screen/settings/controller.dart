@@ -80,15 +80,16 @@ class SettingsController extends StateNotifier<SettingsState> {
 
     if (!context.mounted) return;
 
-    // Switch bottom nav from Settings (2) → Services (1)
+    final user = KAppX.globalProvider.read(userProvider);
+    await ref.read(servicesProvider.notifier).syncWithSelectedRole(
+      role: role,
+      userId: user?.userId,
+    );
+
+    if (!context.mounted) return;
+
     ref.read(bottomNavigatorVsProvider.notifier).onTabChanged(1);
     AutoTabsRouter.of(context).setActiveIndex(1);
-
-    // Re-fetch services for the newly selected role
-    final user = KAppX.globalProvider.read(userProvider);
-    final servicesNotifier = ref.read(servicesProvider.notifier);
-    await servicesNotifier.fetchUserRoles(user?.userId ?? 0);
-    // await servicesNotifier.fetchBookmarks();
 
     debugPrint("🔵 Role changed to: ${role.role?.name}");
   }
@@ -187,6 +188,7 @@ class SettingsController extends StateNotifier<SettingsState> {
   Future<void> loadSavedRole(UserRoleResponse userRoles) async {
     final storage = KAuthCred();
     final saved = await storage.getSelectedRole();
+    if (!mounted) return;
 
     if (saved != null) {
       // find exact matching RoleDetail instance
@@ -251,22 +253,24 @@ class SettingsController extends StateNotifier<SettingsState> {
   }
 
   Future<void> fetchUserRoles(int id) async {
+    if (!mounted) return;
     state = state.copyWith(isLoading: true);
 
     try {
       final repo = RolesRepo();
       final userRoles = await repo.getUserRoles(id);
+      if (!mounted) return;
 
-      // store roles in state
       state = state.copyWith(userRoles: userRoles);
-
-      // load saved role (but do NOT save anything)
       await loadSavedRole(userRoles);
+      if (!mounted) return;
 
       state = state.copyWith(isLoading: false);
     } catch (e) {
       debugPrint("fetchUserRoles error: $e");
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 }

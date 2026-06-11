@@ -1,3 +1,6 @@
+import 'package:code_setup/presentation/screens/hr_service/models/status_breakdown.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/temporary_decision.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/trend_breakdown.dart';
 import 'package:code_setup/repository/hr_service/service_transfer/domain/domain.dart';
 import 'dart:developer';
 import 'dart:io';
@@ -218,15 +221,18 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
   }
 
   @override
-  Future<KPIResponse?> getKpiData(int service_id, int sub_service_id) async {
+  Future<KPIResponse?> getKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     String url = ApiEndPoint.serviceTransferKpiData;
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
         final queryParams = {
-          'service_id': service_id,
-          'sub_service_id': sub_service_id,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
         final response = await client.get(url, queryParameters: queryParams);
 
@@ -309,18 +315,18 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
   // }
 
   @override
-  Future<KPIResponse?> getApprovalKpiData(
-    int service_id,
-    int sub_service_id,
-  ) async {
+  Future<KPIResponse?> getApprovalKpiData({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
     String url = ApiEndPoint.serviceTransferApprovalKpiData;
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
         final queryParams = {
-          'service_id': service_id,
-          'sub_service_id': sub_service_id,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
         };
         final response = await client.get(url, queryParameters: queryParams);
         if (response.statusCode == 200) {
@@ -344,26 +350,38 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
   }
 
   @override
-  Future<StatusBreakdownModel> getStatusBreakdownData(String period) async {
+  Future<ServiceTransferStatus> getStatusBreakdownData({
+    required int serviceId,
+    required int subServiceId,
+    required String period,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
+
       if (client != null) {
-        final queryParams = {'time_period': period};
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+
         queryParams.removeWhere((key, value) => value == null);
+
         final response = await client.get(
-          ApiEndPoint.serviceTransferApprovalStatusBreakdown,
+          ApiEndPoint.serviceTransferStatusBreakdown,
           queryParameters: queryParams,
         );
 
         if (response.statusCode == 200 && response.data != null) {
           final data = Map<String, dynamic>.from(response.data);
-          return StatusBreakdownModel.fromJson(data);
+          return ServiceTransferStatus.fromJson(data);
         } else {
           final errorMessage =
               response.data?['message'] ?? 'Unexpected error occurred';
           throw ApiException(errorMessage);
         }
       }
+
       throw ApiException('Client is null');
     } on DioException catch (error) {
       log('caught error');
@@ -376,13 +394,21 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
   }
 
   @override
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period) async {
+  Future<ServiceTransferTrend> getTrendBreakdownData({
+    required int serviceId,
+    required int subServiceId,
+    required String period,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {"year": period};
 
-        /// Remove null values
+      if (client != null) {
+        final queryParams = {
+          "year": period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
@@ -392,13 +418,14 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
 
         if (response.statusCode == 200 && response.data != null) {
           final data = Map<String, dynamic>.from(response.data);
-          return TrendBreakdownModel.fromJson(data);
+          return ServiceTransferTrend.fromJson(data);
         } else {
           final errorMessage =
               response.data?['message'] ?? 'Unexpected error occurred';
           throw ApiException(errorMessage);
         }
       }
+
       throw ApiException('Client is null');
     } on DioException catch (error) {
       log('caught error');
@@ -411,14 +438,23 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
   }
 
   @override
-  Future<StatusBreakdownModel> getApprovalStatusBreakdownData(
-    String period,
-  ) async {
+  Future<ServiceTransferStatus> getApprovalStatusBreakdownData({
+    required int serviceId,
+    required int subServiceId,
+    required String period,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
+
       if (client != null) {
-        final queryParams = {'time_period': period};
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+
         queryParams.removeWhere((key, value) => value == null);
+
         final response = await client.get(
           ApiEndPoint.serviceTransferApprovalStatusBreakdown,
           queryParameters: queryParams,
@@ -426,34 +462,41 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
 
         if (response.statusCode == 200 && response.data != null) {
           final data = Map<String, dynamic>.from(response.data);
-          return StatusBreakdownModel.fromJson(data);
+          return ServiceTransferStatus.fromJson(data);
         } else {
           final errorMessage =
               response.data?['message'] ?? 'Unexpected error occurred';
           throw ApiException(errorMessage);
         }
       }
+
       throw ApiException('Client is null');
     } on DioException catch (error) {
       log('caught error');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching status breakdown $e');
+      log('error fetching approval status breakdown $e');
       throw ApiException(e.toString());
     }
   }
 
   @override
-  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(
-    String period,
-  ) async {
+  Future<ServiceTransferTrend> getApprovalTrendBreakdownData({
+    required int serviceId,
+    required int subServiceId,
+    required String period,
+  }) async {
     try {
       final client = await KAppX.network.secureClient();
-      if (client != null) {
-        final queryParams = {"year": period};
 
-        /// Remove null values
+      if (client != null) {
+        final queryParams = {
+          "year": period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
+
         queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(
@@ -463,28 +506,31 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
 
         if (response.statusCode == 200 && response.data != null) {
           final data = Map<String, dynamic>.from(response.data);
-          return TrendBreakdownModel.fromJson(data);
+          return ServiceTransferTrend.fromJson(data);
         } else {
           final errorMessage =
               response.data?['message'] ?? 'Unexpected error occurred';
           throw ApiException(errorMessage);
         }
       }
+
       throw ApiException('Client is null');
     } on DioException catch (error) {
       log('caught error');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching trend breakdown $e');
+      log('error fetching approval trend breakdown $e');
       throw ApiException(e.toString());
     }
   }
 
   @override
-  Future<List<AssignmentDecision>> getRequests({
+  Future<List<TemporaryDecision>> getRequests({
     required int offset,
     required int limit,
+    required int serviceId,
+    required int subServiceId,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
@@ -495,8 +541,8 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
     try {
       if (client != null) {
         final Map<String, dynamic> queryParams = {
-          'offset': offset,
-          'limit': limit,
+          // 'offset': offset,
+          // 'limit': limit,
         };
 
         if (searchText.isNotEmpty) {
@@ -514,9 +560,7 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
           final List<dynamic> list = data['data'];
 
           return list
-              .map(
-                (e) => AssignmentDecision.fromJson(e as Map<String, dynamic>),
-              )
+              .map((e) => TemporaryDecision.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
           throw Exception(
@@ -532,18 +576,20 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
   }
 
   @override
-  Future<List<AssignmentDecision>> getActionItems({
+  Future<List<TemporaryDecision>> getActionItems({
     required int offset,
     required int limit,
     String status = '',
     String searchText = '',
+    required int serviceId,
+    required int subServiceId,
   }) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
         final queryParams = {
-          'offset': offset.toString(),
-          'limit': limit.toString(),
+          // 'offset': offset.toString(),
+          // 'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
         };
@@ -570,7 +616,7 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
           final actionItems = list
               .map(
                 (item) =>
-                    AssignmentDecision.fromJson(item as Map<String, dynamic>),
+                    TemporaryDecision.fromJson(item as Map<String, dynamic>),
               )
               .toList();
 
@@ -1074,6 +1120,67 @@ class ServiceTransferRepoistryImple implements ServiceTransferRepoistry {
     } catch (e) {
       log('error failed to Replaced Employee $e');
       throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<AttachmentModel>> getAttachmentsById({required int id}) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.serviceTransferAttachmentById(id);
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> json = response.data;
+
+          /// Convert JSON → Model
+          final result = AttachmentByIdResponseModel.fromJson(json);
+
+          /// Return only `data` (so UI can access sub-objects)
+          return result.data;
+        } else {
+          throw Exception('Failed: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception("Error fetching attachmentById details: $e");
+    }
+  }
+
+  @override
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.serviceTransferSendAttachmentById(id);
+
+    try {
+      if (client != null) {
+        final response = await client.post(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request sent successfully',
+          );
+          debugPrint('✅ Message sent successfully');
+
+          return response.data["message"] ?? "Success";
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          return response.data["message"] ?? "Something went wrong";
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+        return "Something went wrong";
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
     }
   }
 }

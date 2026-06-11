@@ -44,6 +44,10 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
+  final bool isRequestLoading;
+  final bool isActionItemsLoading;
+  final String myRequestsStatusFilter;
+  final String actionItemsStatusFilter;
   final String selectedPriority;
 
   final List<FileUploadItem> selectedFileUrl;
@@ -104,6 +108,10 @@ class _ViewState {
 
   _ViewState({
     required this.isLoading,
+    required this.isRequestLoading,
+    required this.isActionItemsLoading,
+    required this.actionItemsStatusFilter,
+    required this.myRequestsStatusFilter,
     required this.selectedPriority,
     required this.selectedFileUrl,
     required this.attachments,
@@ -141,6 +149,10 @@ class _ViewState {
   _ViewState.init()
     : this(
         isLoading: false,
+        isRequestLoading: false,
+        isActionItemsLoading: false,
+        actionItemsStatusFilter: '',
+        myRequestsStatusFilter: '',
         selectedPriority: '',
         selectedFileUrl: [],
         attachments: [],
@@ -177,6 +189,10 @@ class _ViewState {
 
   _ViewState copyWith({
     bool? isLoading,
+    bool? isRequestLoading,
+    bool? isActionItemsLoading,
+    String? myRequestsStatusFilter,
+    String? actionItemsStatusFilter,
     int? threatType,
     String? selectedPriority,
     String? visitorChecks,
@@ -224,6 +240,12 @@ class _ViewState {
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
+      isActionItemsLoading: isActionItemsLoading ?? this.isActionItemsLoading,
+      myRequestsStatusFilter:
+          myRequestsStatusFilter ?? this.myRequestsStatusFilter,
+      actionItemsStatusFilter:
+          actionItemsStatusFilter ?? this.actionItemsStatusFilter,
       selectedPriority: selectedPriority ?? this.selectedPriority,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
@@ -263,6 +285,12 @@ class _ViewState {
 }
 
 class _VSController extends StateNotifier<_ViewState> {
+  static const List<String> requestListStatusFilters = [
+    '',
+    'Approved',
+    'Pending',
+    'Rejected',
+  ];
   final Service service;
   final SubService subService;
 
@@ -332,12 +360,36 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalKpi();
     // fetchUsers();
     fetchRequests();
-    fetchActionItems();
-    // fetchStatusBreakdown('monthly');
-    // fetchTrendBreakDown(DateTime.now().year.toString());
-    // fetchApprovalStatusBreakdown('monthly');
+    // fetchActionItems();
+    fetchStatusBreakdown('weekly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+    // fetchApprovalStatusBreakdown('weekly');
     // fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchDepartments();
+  }
+
+  String get currentStatusFilter => state.tabIndex == 0
+      ? state.myRequestsStatusFilter
+      : state.actionItemsStatusFilter;
+
+  String requestListStatusFilterLabel(String status, DashboardL10n l10n) {
+    if (status.isEmpty) {
+      return l10n.isArabic ? 'الكل' : 'All';
+    }
+    return l10n.statusLabel(status);
+  }
+
+  void onRequestStatusFilterChanged(String status) {
+    final searchText = searchController.text.trim();
+
+    if (state.tabIndex == 0) {
+      state = state.copyWith(myRequestsStatusFilter: status);
+      fetchRequests(isRefresh: true, searchText: searchText, status: status);
+      return;
+    }
+
+    state = state.copyWith(actionItemsStatusFilter: status);
+    fetchActionItems(isRefresh: true, searchText: searchText, status: status);
   }
 
   void _validateForm() {
@@ -1229,10 +1281,10 @@ class _VSController extends StateNotifier<_ViewState> {
   }) async {
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(requestData: []);
-      }
-
+      // if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
+      //   state = state.copyWith(requestData: []);
+      // }
+      state = state.copyWith(isRequestLoading: true);
       final requests = await requestForCoverageInstance.getRequests(
         offset: 0,
         limit: 8,
@@ -1241,9 +1293,10 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
+      state = state.copyWith(isRequestLoading: false);
     }
   }
 
@@ -1252,12 +1305,12 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isActionItemsLoading: true);
 
     try {
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(actionItems: []);
-      }
+      // if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
+      //   state = state.copyWith(actionItems: []);
+      // }
 
       final items = await requestForCoverageInstance.getActionItems(
         offset: 0,
@@ -1267,9 +1320,9 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(actionItems: items, isLoading: false);
+      state = state.copyWith(actionItems: items, isActionItemsLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isActionItemsLoading: false);
     }
   }
 
@@ -1442,9 +1495,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchActionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1849,14 +1902,15 @@ class _VSController extends StateNotifier<_ViewState> {
       // KAppX.router.pop();
 
       // Refresh dashboards
+      state = state.copyWith(isRequestLoading: true);
+
+      await Future.delayed(Duration(seconds: 2));
       fetchKpi();
-      // fetchStatusBreakdown('monthly');
-      // fetchTrendBreakDown(DateTime.now().year.toString());
-      // fetchApprovalStatusBreakdown('monthly');
-      // fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+      fetchStatusBreakdown('weekly');
+      fetchTrendBreakDown(DateTime.now().year.toString());
+
       fetchApprovalKpi();
       fetchRequests();
-      fetchActionItems();
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
     } finally {

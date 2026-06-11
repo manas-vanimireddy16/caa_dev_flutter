@@ -152,6 +152,10 @@ class _LegalConsultationandReviewofAdministrativeDecisionsDetailsScreenState
                       );
                     },
 
+                    onAssign: () async {
+                      controller.showAllocateUserDialog(context);
+                    },
+
                     onApprove: () async {
                       controller.showApprovalCommentDialog(
                         type: ApprovalDialogType.approve,
@@ -180,7 +184,9 @@ class _LegalConsultationandReviewofAdministrativeDecisionsDetailsScreenState
                 else if (selectedTab == 2)
                   CommonAttachmentsTabContent(attachments: attachments)
                 else if (selectedTab == 3)
-                  RequestWorkflowTimeline(details: state.requestDetails),
+                  LegalServicesRequestWorkflowTimeline(
+                    details: state.requestDetails,
+                  ),
               ],
             ),
           );

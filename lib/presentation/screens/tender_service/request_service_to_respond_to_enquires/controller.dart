@@ -31,6 +31,7 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
+  final bool isRequestLoading;
 
   final List<FileUploadItem> selectedFileUrl;
   final List<Map<String, dynamic>> attachments;
@@ -77,6 +78,7 @@ class _ViewState {
 
   _ViewState({
     required this.isLoading,
+    required this.isRequestLoading,
     required this.selectedFileUrl,
     required this.attachments,
     required this.kpiData,
@@ -118,6 +120,7 @@ class _ViewState {
         requestDetailTab: 0,
         approvalId: 0,
         isButtonDisabled: false,
+        isRequestLoading: false,
         chatById: [],
 
         attachmentsById: [],
@@ -125,6 +128,7 @@ class _ViewState {
 
   _ViewState copyWith({
     bool? isLoading,
+    bool? isRequestLoading,
     int? threatType,
     String? selectedPriority,
     String? visitorChecks,
@@ -189,6 +193,7 @@ class _ViewState {
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
@@ -234,7 +239,8 @@ class _VSController extends StateNotifier<_ViewState> {
     searchController = TextEditingController();
     fetchKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
+    fetchApprovalKpi();
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
@@ -260,14 +266,16 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
-
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
-
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? StatSummaryHelper.buildStatList(
+          state.kpiData.data?.toJson(),
+          titleForKey: titleForKey,
+        )
+      : StatSummaryHelper.buildStatList(
+          state.approvalKpiData.data?.toJson(),
+          titleForKey: titleForKey,
+        );
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -435,26 +443,44 @@ class _VSController extends StateNotifier<_ViewState> {
   final respondToEnquiriesInstance = RespondToEnquiriesRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  List<DynamicField> get requestTenderEnquiriesFields => [
+  List<DynamicField> buildRequestTenderEnquiriesFields(DashboardL10n l10n) => [
     /// ================= TITLE OF ENQUIRY =================
     DynamicField(
       name: 'title_of_enquiry',
-      label: 'Title of Enquiry',
+      label: l10n.titleOfEnquire,
       type: FieldType.text,
+      placeholder: l10n.enterRequestTitleLogistics,
       required: true,
+      validator: (value, values) {
+        final text = value?.toString().trim() ?? '';
+
+        if (text.isEmpty) {
+          return 'Title of Enquire must be at least 5 characters';
+        }
+
+        if (text.length < 5) {
+          return 'Title of Enquire must be at least 5 characters';
+        }
+
+        return null;
+      },
     ),
 
     /// ================= TYPE OF REQUEST =================
     DynamicField(
       name: 'type_of_request',
-      label: 'Type of Request',
+      label: l10n.typeOfRequest,
       type: FieldType.select,
       required: true,
-      options: const [
-        DropdownOption(value: 'cancelled_tender', label: 'Cancelled tender'),
+      placeholder: l10n.select,
+      options: [
+        DropdownOption(
+          value: 'cancelled_tender',
+          label: l10n.tenderOptionCancelledTender,
+        ),
         DropdownOption(
           value: 'refloated_tender',
-          label: 'Refloated tender (Resubmit previous tender request)',
+          label: l10n.tenderOptionRefloatedTender,
         ),
       ],
     ),
@@ -462,61 +488,97 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
-      label: 'Description',
+      label: l10n.requestDetailsLabel('Description'),
       type: FieldType.text,
+      placeholder: l10n.transportSpecialInstructionsPlaceholder,
       required: true,
     ),
 
     /// ================= DATE OF SUBMISSION =================
     DynamicField(
       name: 'date_of_submission',
-      label: 'Date of submission',
+      label: l10n.dateOfSubmission,
+      // initialValue: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      placeholder: l10n.select,
       type: FieldType.date,
       required: true,
+      validator: (value, values) {
+        final text = value?.toString().trim() ?? '';
+
+        if (text.isEmpty) {
+          return 'Description must be at least 5 characters';
+        }
+
+        if (text.length < 5) {
+          return 'Description must be at least 5 characters';
+        }
+
+        return null;
+      },
     ),
     DynamicField(
       name: 'phone_number',
-      label: 'Phone Number',
-      type: FieldType.text,
+      label: l10n.phoneNumber,
+      type: FieldType.number,
+      placeholder: l10n.select,
       required: true,
+      validator: (value, values) {
+        final phone = value?.toString().trim() ?? '';
+
+        if (phone.isEmpty) {
+          return 'Phone Number must be at least 8 characters';
+        }
+
+        if (phone.length != 8) {
+          return 'Phone Number must be exactly 8 characters';
+        }
+
+        return null;
+      },
     ),
 
     /// ================= BUDGET CODE =================
     DynamicField(
       name: 'budget_code',
-      label: 'Budget code',
+      label: l10n.budgetCode,
       type: FieldType.text,
+      placeholder: l10n.enterDescription,
       required: false,
     ),
 
     /// ================= ESTIMATED COST =================
     DynamicField(
       name: 'estimated_cost',
-      label: 'Estimated Cost',
+      label: l10n.estimatedCost,
       type: FieldType.number,
+      placeholder: l10n.select,
       required: false,
     ),
 
     /// ================= IMPLEMENTATION PERIOD =================
     DynamicField(
       name: 'implementation_period',
-      label: 'Implementation period',
+      label: l10n.implementationPeriod,
       type: FieldType.text,
+      placeholder: l10n.select,
       required: false,
     ),
 
     /// ================= REQUESTING ENTITY =================
     DynamicField(
       name: 'requesting_entity',
-      label: 'Requesting Entity or Relevant Department',
+      label: l10n.requestingEntityOrRelevantDepartment,
       type: FieldType.text,
+      placeholder: l10n.select,
       required: false,
     ),
 
     /// ================= ATTACHMENT =================
     DynamicField(
-      name: 'attachment',
-      label: 'Attachment',
+      name: 'attachments',
+      label: l10n.attachment,
       type: FieldType.file,
       required: false,
     ),
@@ -718,12 +780,12 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isRequestLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
+      // if (isRefresh || status.isNotEmpty) {
+      //   state = state.copyWith(requestData: [], isLoading: false);
+      // }
 
       final requests = await respondToEnquiriesInstance.getRequests(
         offset: 1,
@@ -735,9 +797,9 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isRequestLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -940,9 +1002,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchActionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1022,7 +1084,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final user = KAppX.globalProvider.read(userInfoProvider);
 
-    final int userId = int.parse(user!.data!.id!);
+    final int userId = int.parse(user?.data?.id ?? '0');
 
     debugPrint('---------------- APPROVAL CHECK ----------------');
     debugPrint('Logged User ID: $userId');
@@ -1061,18 +1123,18 @@ class _VSController extends StateNotifier<_ViewState> {
 
     /// 4️⃣ Department must match
     if (approval.departmentId != null &&
-        approval.departmentId != selectedRole?.departmentId) {
+        approval.departmentId.toString() != user?.data?.department?.id) {
       debugPrint(
-        '❌ Denied: Department mismatch (${approval.departmentId} != ${selectedRole?.departmentId})',
+        '❌ Denied: Department mismatch (${approval.departmentId} != ${user?.data?.department?.id})',
       );
       return false;
     }
 
     /// 5️⃣ Section must match
     if (approval.sectionId != null &&
-        approval.sectionId != selectedRole?.sectionId) {
+        approval.sectionId.toString() != user?.data?.section?.id) {
       debugPrint(
-        '❌ Denied: Section mismatch (${approval.sectionId} != ${selectedRole?.sectionId})',
+        '❌ Denied: Section mismatch (${approval.sectionId} != ${user?.data?.section?.id})',
       );
       return false;
     }
@@ -1080,6 +1142,20 @@ class _VSController extends StateNotifier<_ViewState> {
     debugPrint('✅ Allowed: User can act on this approval level');
 
     return true;
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name'] ?? '';
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role'] ?? '';
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
   }
 
   ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
@@ -1298,7 +1374,7 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       fetchActionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -1387,7 +1463,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ⭐ FINANCIAL
       "budget_code": values['budget_code'] ?? "",
-      "estimated_cost": values['estimated_cost'],
+      "estimated_cost":
+          (values['estimated_cost'] == null ||
+              values['estimated_cost'].toString().trim().isEmpty)
+          ? null
+          : values['estimated_cost'],
 
       /// ⭐ TIMELINE
       "implementation_period": values['implementation_period'] ?? "",
@@ -1423,6 +1503,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .respondToEnquiriesCreateRequest(payload);
 
       if (response['status'] == 'success') {
+        state = state.copyWith(isRequestLoading: true);
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1432,11 +1513,12 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  void _refreshDashboard() {
+  Future<void> _refreshDashboard() async {
+    await Future.delayed(Duration(seconds: 2));
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests();

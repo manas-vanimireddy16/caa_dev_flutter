@@ -16,8 +16,6 @@ abstract class TransportationForForeignEmployeeRepository {
   factory TransportationForForeignEmployeeRepository() =>
       TransportationForForeignEmployeeRepositoryImpl();
 
-  Future<List<EmployeeList>> getUsers(int departmentId);
-
   Future<Map<String, dynamic>> foreignEmployeeVehicleCreateRequest(
     Map<String, dynamic> payload,
   );
@@ -92,7 +90,5 @@ abstract class TransportationForForeignEmployeeRepository {
     required int serviceId,
     required int subServiceId,
   });
-  Future<List<DepartmentModel>> getDepartments();
-  Future<List<SectionModel>> getSections({required String? userDepartmentId});
   Future<void> onAllocateVehicle(Map<String, dynamic> payload, int requestId);
 }

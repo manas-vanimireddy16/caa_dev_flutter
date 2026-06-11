@@ -1,5 +1,6 @@
 import 'package:code_setup/presentation/common_widgets/radio_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/dynamic_field.dart';
@@ -158,6 +159,7 @@ class RadioFieldWidget extends ConsumerWidget {
             KRadioGroup<String>(
               errorText: state.errors[field.name],
               title: field.label,
+              titleStyle: DynamicFieldLabelStyle.text,
               isRequired: field.required,
 
               options: field.options!

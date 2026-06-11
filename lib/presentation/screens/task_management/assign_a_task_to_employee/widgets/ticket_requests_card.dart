@@ -17,6 +17,11 @@ class TicketRequestsCard extends ConsumerWidget {
     final state = ref.watch(_vsProvider(providerArgs));
     final controller = ref.read(_vsProvider(providerArgs).notifier);
     final l10n = DashboardL10n.of(context);
+    ref.listen(_vsProvider(providerArgs).select((s) => s.tabIndex), (_, next) {
+      if (pageController.hasClients && pageController.page?.round() != next) {
+        pageController.jumpToPage(next);
+      }
+    });
 
     return Card(
       color: Colors.white,

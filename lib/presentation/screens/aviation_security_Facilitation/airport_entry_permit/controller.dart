@@ -51,6 +51,8 @@ class _ViewState {
   final TrendBreakdownModel approvalTrendData;
   final List<AirportPermitRequestModel> requestData;
   final List<AirportPermitRequestModel> actionItems;
+  final String myRequestsStatusFilter;
+  final String actionItemsStatusFilter;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final int approvalId;
@@ -527,6 +529,8 @@ class _ViewState {
     required this.approvalTrendData,
     required this.requestData,
     required this.actionItems,
+    required this.myRequestsStatusFilter,
+    required this.actionItemsStatusFilter,
     required this.requestDetails,
     required this.requestDetailTab,
     required this.approvalId,
@@ -554,6 +558,8 @@ class _ViewState {
         approvalTrendData: TrendBreakdownModel(),
         requestData: [],
         actionItems: [],
+        myRequestsStatusFilter: '',
+        actionItemsStatusFilter: '',
         requestDetails: RequestDetailData(),
         requestDetailTab: 0,
         approvalId: 0,
@@ -588,6 +594,8 @@ class _ViewState {
     int? selectedTab,
     List<AirportPermitRequestModel>? requestData,
     List<AirportPermitRequestModel>? actionItems,
+    String? myRequestsStatusFilter,
+    String? actionItemsStatusFilter,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -652,6 +660,10 @@ class _ViewState {
       approvalTrendData: approvalTrendData ?? this.approvalTrendData,
       requestData: requestData ?? this.requestData,
       actionItems: actionItems ?? this.actionItems,
+      myRequestsStatusFilter:
+          myRequestsStatusFilter ?? this.myRequestsStatusFilter,
+      actionItemsStatusFilter:
+          actionItemsStatusFilter ?? this.actionItemsStatusFilter,
       requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
       approvalId: approvalId ?? this.approvalId,
@@ -664,6 +676,13 @@ class _ViewState {
 }
 
 class _VSController extends StateNotifier<_ViewState> {
+  static const List<String> requestListStatusFilters = [
+    '',
+    'Approved',
+    'Pending',
+    'Rejected',
+  ];
+
   final Service service;
   final SubService subService;
   late final _VSControllerParams params;
@@ -692,15 +711,47 @@ class _VSController extends StateNotifier<_ViewState> {
 
   int _searchVersion = 0;
 
+  String get currentStatusFilter => state.tabIndex == 0
+      ? state.myRequestsStatusFilter
+      : state.actionItemsStatusFilter;
+
+  String requestListStatusFilterLabel(String status, DashboardL10n l10n) {
+    if (status.isEmpty) {
+      return l10n.isArabic ? 'الكل' : 'All';
+    }
+    return l10n.statusLabel(status);
+  }
+
+  void onRequestStatusFilterChanged(String status) {
+    final searchText = searchController.text.trim();
+
+    if (state.tabIndex == 0) {
+      state = state.copyWith(myRequestsStatusFilter: status);
+      fetchRequests(isRefresh: true, searchText: searchText, status: status);
+      return;
+    }
+
+    state = state.copyWith(actionItemsStatusFilter: status);
+    fetchactionItems(isRefresh: true, searchText: searchText, status: status);
+  }
+
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
     final int currentVersion = ++_searchVersion;
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
       if (state.tabIndex == 0) {
-        await fetchRequests(isRefresh: true, searchText: value);
+        await fetchRequests(
+          isRefresh: true,
+          searchText: value,
+          status: state.myRequestsStatusFilter,
+        );
       } else {
-        await fetchactionItems(isRefresh: true, searchText: value);
+        await fetchactionItems(
+          isRefresh: true,
+          searchText: value,
+          status: state.actionItemsStatusFilter,
+        );
       }
 
       if (currentVersion != _searchVersion) return; // ignore old response
@@ -2365,14 +2416,18 @@ If you suspect privacy compromise: Close all tabs and windows you are browsing C
   }
 
   void updateTabIndex(int index) {
-    state = state.copyWith(tabIndex: index);
+    state = state.copyWith(
+      tabIndex: index,
+      myRequestsStatusFilter: index == 0 ? '' : state.myRequestsStatusFilter,
+      actionItemsStatusFilter: index == 1 ? '' : state.actionItemsStatusFilter,
+    );
     if (index == 0) {
-      fetchRequests();
+      fetchRequests(status: '');
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
-      fetchactionItems(isRefresh: true);
+      fetchactionItems(isRefresh: true, status: '');
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());

@@ -57,6 +57,7 @@ class TrainingsandDevelopmentHomeScreen extends ConsumerWidget {
           service: Service(),
           subService: SubService(),
         ),
+        FollowUpReportRoute(service: Service(), subService: SubService()),
       ],
       // 👇 CORRECT builder signature for AutoTabsRouter.builder
       builder: (tabsContext, children, tabsRouter) {

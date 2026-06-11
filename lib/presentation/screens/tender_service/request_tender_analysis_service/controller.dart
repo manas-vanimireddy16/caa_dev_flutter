@@ -31,7 +31,7 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
-
+  final bool isRequestLoading;
   final List<FileUploadItem> selectedFileUrl;
   final List<Map<String, dynamic>> attachments;
 
@@ -77,6 +77,7 @@ class _ViewState {
 
   _ViewState({
     required this.isLoading,
+    required this.isRequestLoading,
     required this.selectedFileUrl,
     required this.attachments,
     required this.kpiData,
@@ -101,6 +102,7 @@ class _ViewState {
   _ViewState.init()
     : this(
         isLoading: false,
+        isRequestLoading: false,
         selectedFileUrl: [],
         attachments: [],
         kpiData: KPIResponse(),
@@ -125,6 +127,7 @@ class _ViewState {
 
   _ViewState copyWith({
     bool? isLoading,
+    bool? isRequestLoading,
     int? threatType,
     String? selectedPriority,
     String? visitorChecks,
@@ -189,6 +192,7 @@ class _ViewState {
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
       attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
@@ -234,7 +238,8 @@ class _VSController extends StateNotifier<_ViewState> {
     searchController = TextEditingController();
     fetchKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
+    fetchApprovalKpi();
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
@@ -260,14 +265,16 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
-
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
-
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? StatSummaryHelper.buildStatList(
+          state.kpiData.data?.toJson(),
+          titleForKey: titleForKey,
+        )
+      : StatSummaryHelper.buildStatList(
+          state.approvalKpiData.data?.toJson(),
+          titleForKey: titleForKey,
+        );
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -434,51 +441,110 @@ class _VSController extends StateNotifier<_ViewState> {
       RequestForTenderAnalysisServiceRepository();
   final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
 
-  List<DynamicField> get tenderAnalysisFields => [
+  List<DynamicField> buildTenderAnalysisFields(DashboardL10n l10n) => [
     /// ================= TITLE OF PROJECT =================
     DynamicField(
       name: 'title_of_project',
-      label: 'Title of project',
+      label: l10n.titleOfProject,
       type: FieldType.text,
+      placeholder: l10n.titleOfProjectPlaceholder,
       required: true,
+      validator: (value, values) {
+        final text = value?.toString().trim() ?? '';
+
+        if (text.isEmpty) {
+          return 'Title of project is required';
+        }
+
+        // if (phone.length != 8) {
+        //   return 'Phone Number must be exactly 8 characters';
+        // }
+
+        return null;
+      },
     ),
 
     /// ================= PROJECT CODE =================
     DynamicField(
       name: 'project_code_budget_code',
-      label: 'Project code/budget code',
+      label: l10n.projectCodeBudgetCode,
       type: FieldType.text,
+      placeholder: l10n.projectCodeBudgetCodePlaceholder,
       required: true,
+      validator: (value, values) {
+        final text = value?.toString().trim() ?? '';
+
+        if (text.isEmpty) {
+          return 'Project code/budget code is required';
+        }
+
+        // if (phone.length != 8) {
+        //   return 'Phone Number must be exactly 8 characters';
+        // }
+
+        return null;
+      },
     ),
 
     /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
-      label: 'Description',
-      type: FieldType.textarea, // 🔥 use textarea for UI match
+      label: l10n.requestDetailsLabel('Description'),
+      type: FieldType.textarea,
+      placeholder: l10n.descriptionPlaceholder,
+      validator: (value, values) {
+        final text = value?.toString().trim() ?? '';
+
+        if (text.isEmpty) {
+          return 'Description must be at least 10 characters';
+        }
+
+        // if (phone.length != 8) {
+        //   return 'Phone Number must be exactly 8 characters';
+        // }
+
+        return null;
+      },
       required: true,
     ),
 
     /// ================= DATE =================
     DynamicField(
       name: 'date_of_submission',
-      label: 'Date of submission',
+      label: l10n.dateOfSubmission,
       type: FieldType.date,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      placeholder: l10n.select,
       required: true,
     ),
 
     /// ================= PHONE =================
     DynamicField(
       name: 'phone',
-      label: 'Phone Number',
+      label: l10n.phoneNumber,
       type: FieldType.number,
+      placeholder: l10n.enterPhoneNumber,
       required: true,
+      validator: (value, values) {
+        final phone = value?.toString().trim() ?? '';
+
+        if (phone.isEmpty) {
+          return 'Phone Number must be at least 8 characters';
+        }
+
+        if (phone.length != 8) {
+          return 'Phone Number must be exactly 8 characters';
+        }
+
+        return null;
+      },
     ),
 
     /// ================= ATTACHMENT =================
     DynamicField(
       name: 'attachments',
-      label: 'Attachment',
+      label: l10n.attachment,
       type: FieldType.file,
       required: true,
     ),
@@ -683,12 +749,12 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isRequestLoading: true);
     try {
       // Clear list only if explicitly refreshing or searching
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(requestData: [], isLoading: false);
-      }
+      // if (isRefresh || status.isNotEmpty) {
+      //   state = state.copyWith(requestData: [], isLoading: false);
+      // }
 
       final requests = await requestForTenderAnalysisServiceInstance
           .getRequests(
@@ -701,9 +767,9 @@ class _VSController extends StateNotifier<_ViewState> {
           );
 
       // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isRequestLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -913,9 +979,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchactionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -953,13 +1019,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // 3️⃣ Send request
       await requestForTenderAnalysisServiceInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
+      // await Future.delayed(Duration(seconds: 3));
+      state = state.copyWith(isRequestLoading: true);
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      _refreshDashboard();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1053,6 +1119,20 @@ class _VSController extends StateNotifier<_ViewState> {
     debugPrint('✅ Allowed: User can act on this approval level');
 
     return true;
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name'] ?? '';
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role'] ?? '';
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
   }
 
   ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
@@ -1271,7 +1351,7 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       fetchactionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -1380,6 +1460,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .requestForTenderAnalysisServiceCreateRequest(payload);
 
       if (response['status'] == 'success') {
+        state = state.copyWith(isRequestLoading: true);
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1389,11 +1470,12 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  void _refreshDashboard() {
+  Future<void> _refreshDashboard() async {
+    await Future.delayed(Duration(seconds: 2));
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests();

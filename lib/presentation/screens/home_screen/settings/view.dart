@@ -46,174 +46,197 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: ListView(
-            children: [
-              // --------- Theme ----------
-
-              // Container(
-              //   padding: const EdgeInsets.symmetric(
-              //     horizontal: 12,
-              //     vertical: 12,
-              //   ),
-              //   decoration: BoxDecoration(
-              //     color: Colors.grey.shade50,
-              //     borderRadius: BorderRadius.circular(12),
-              //     border: Border.all(color: Colors.grey.shade200),
-              //   ),
-              //   child: Row(
-              //     children: [
-              //       Icon(
-              //         Icons.brightness_6_rounded,
-              //         color: Colors.grey.shade700,
-              //       ),
-              //       const SizedBox(width: 12),
-              //       Expanded(
-              //         child: Column(
-              //           crossAxisAlignment: CrossAxisAlignment.start,
-              //           children: [
-              //             Text(
-              //               'Theme',
-              //               style: TextStyle(
-              //                 fontSize: currentTheme.fontSizes.s14,
-              //                 fontWeight: FontWeight.w600,
-              //               ),
-              //             ),
-              //             const SizedBox(height: 2),
-              //             Text(
-              //               state.isDarkMode
-              //                   ? 'Dark mode is enabled'
-              //                   : 'Light mode is enabled',
-              //               style: TextStyle(
-              //                 fontSize: currentTheme.fontSizes.s12,
-              //                 color: Colors.grey.shade600,
-              //               ),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //       Switch.adaptive(
-              //         value: state.isDarkMode,
-              //         onChanged: controller.onToggleTheme,
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              24.toVerticalSizedBox,
-
-              // --------- Role ----------
-              Text(
-                l10n.accountSectionTitle,
-                style: TextStyle(
-                  fontSize: currentTheme.fontSizes.s14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade700,
+        child: ColoredBox(
+          color: const Color(0xFFF3F4F6),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: ListView(
+              children: [
+                _SettingsSectionCard(
+                  icon: Icons.language_outlined,
+                  title: 'Language Selection',
+                  child: KDropdownField<LanguageItem>(
+                    value: state.selectedLanguage,
+                    hintText: 'Select Language',
+                    isExpanded: true,
+                    backgroundColor: Colors.white,
+                    borderColor: const Color(0xFFD0D5DD),
+                    borderRadius: BorderRadius.circular(8),
+                    style: const TextStyle(
+                      color: AppColors.dropdownText,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    iconEnabledColor: AppColors.dropdownText,
+                    items: state.languageList
+                        .map<KDropdownItem<LanguageItem>>(
+                          (lang) => KDropdownItem<LanguageItem>(
+                            value: lang,
+                            child: Text(
+                              lang.name,
+                              style: const TextStyle(
+                                color: AppColors.dropdownText,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) {
+                      if (v != null) {
+                        controller.onSelectLanguage(v);
+                      }
+                    },
+                  ),
                 ),
-              ),
-              8.toVerticalSizedBox,
-              KDropdownField<RoleDetail>(
-                value: state.selectedRole,
-                fieldHeadingText: l10n.selectRole,
-                hintText: l10n.chooseActiveRoleHint,
-                items: (state.userRoles.data?.roleDetails ?? [])
-                    .map<KDropdownItem<RoleDetail>>(
-                      (role) => KDropdownItem<RoleDetail>(
-                        value: role,
-                        child: Text(role.role?.name ?? ''),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (v) {
-                  if (v != null) {
-                    controller.onSelectRole(v, context);
-                  }
-                },
-              ),
 
-              16.toVerticalSizedBox,
+                16.toVerticalSizedBox,
 
-              // --------- Language ----------
-              KDropdownField<LanguageItem>(
-                value: state.selectedLanguage,
-                fieldHeadingText: l10n.languageLabel,
-                hintText: l10n.selectLanguageHint,
-                items: state.languageList
-                    .map<KDropdownItem<LanguageItem>>(
-                      (lang) => KDropdownItem<LanguageItem>(
-                        value: lang,
-                        child: Text(lang.name),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (v) {
-                  if (v != null) {
-                    controller.onSelectLanguage(v);
-                  }
-                },
-              ),
+                _SettingsSectionCard(
+                  icon: Icons.person_outline,
+                  title: 'Role Selection',
+                  child: KDropdownField<RoleDetail>(
+                    value: state.selectedRole,
+                    hintText: l10n.chooseActiveRoleHint,
+                    isExpanded: true,
+                    backgroundColor: Colors.white,
+                    borderColor: const Color(0xFFD0D5DD),
+                    borderRadius: BorderRadius.circular(8),
+                    style: const TextStyle(
+                      color: AppColors.dropdownText,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    iconEnabledColor: AppColors.dropdownText,
+                    items: (state.userRoles.data?.roleDetails ?? [])
+                        .map<KDropdownItem<RoleDetail>>(
+                          (role) => KDropdownItem<RoleDetail>(
+                            value: role,
+                            child: Text(
+                              role.role?.name ?? '',
+                              style: const TextStyle(
+                                color: AppColors.dropdownText,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) {
+                      if (v != null) {
+                        controller.onSelectRole(v, context);
+                      }
+                    },
+                  ),
+                ),
 
-              32.toVerticalSizedBox,
+                24.toVerticalSizedBox,
 
-              // --------- Logout ----------
-              8.toVerticalSizedBox,
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
+                _SettingsActionButton(
+                  label: state.isLoggingOut ? 'Logging out...' : 'Logout',
                   onPressed: state.isLoggingOut
                       ? null
                       : () => controller.onLogoutPressed(context),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 14,
-                      horizontal: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: const Icon(Icons.logout_rounded),
-                  label: Text(
-                    state.isLoggingOut ? 'Logging out...' : 'Logout',
-                    style: TextStyle(
-                      fontSize: currentTheme.fontSizes.s14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                 ),
-              ),
-              20.toVerticalSizedBox,
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
+
+                12.toVerticalSizedBox,
+
+                _SettingsActionButton(
+                  label: state.isLoggingOut
+                      ? 'Logging out...'
+                      : 'Logout with JWT',
                   onPressed: state.isLoggingOut
                       ? null
-                      : () => controller.logoutJwt(),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 14,
-                      horizontal: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: const Icon(Icons.logout_rounded),
-                  label: Text(
-                    state.isLoggingOut ? 'Logging out...' : 'Logout with jwt',
-                    style: TextStyle(
-                      fontSize: currentTheme.fontSizes.s14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                      : controller.logoutJwt,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsSectionCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Widget child;
+
+  const _SettingsSectionCard({
+    required this.icon,
+    required this.title,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 22, color: AppColors.dropdownHeadingText),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.dropdownHeadingText,
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 12),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _SettingsActionButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+
+  const _SettingsActionButton({required this.label, this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.primaryBlue,
+          foregroundColor: AppColors.loginText,
+          disabledBackgroundColor: AppColors.primaryBlue.withValues(alpha: 0.6),
+          disabledForegroundColor: AppColors.loginText,
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.logout_rounded, size: 20),
+          ],
         ),
       ),
     );

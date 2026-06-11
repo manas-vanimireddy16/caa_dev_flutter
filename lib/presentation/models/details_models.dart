@@ -384,6 +384,7 @@ class RequestDetailData {
   final String? locationOfEvent;
   final String? typeOfEvent;
   final int? eventDepartmentId;
+
   RequestDetailData({
     this.request,
     this.risk,
@@ -1517,6 +1518,22 @@ class RequestModel {
   final String? arrivalDepartureDatetime;
 
   final String? specialInstructions;
+  final String? allowanceValue;
+
+  //book CAA halls
+
+  final String? purposeOfEvent;
+  final int? hallId;
+  final String? typeOfHall;
+
+  // Request Maintenance
+  final bool? emergencyMaintenanceSupport;
+
+  final String? reasonForMaintenance;
+
+  final String? ifStationSelected;
+  final String? buildingSiteClassification;
+
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1687,6 +1704,7 @@ class RequestModel {
     this.remarks,
     this.employeesDetails,
     this.airTicketDetails,
+    this.allowanceValue,
 
     this.eventLocation,
     this.eventDetails,
@@ -1866,6 +1884,15 @@ class RequestModel {
     this.destinationCity,
     this.arrivalDepartureDatetime,
     this.specialInstructions,
+    // Book CAA Halls
+    this.purposeOfEvent,
+    this.hallId,
+    this.typeOfHall,
+    // Request Maintenance
+    this.emergencyMaintenanceSupport,
+    this.reasonForMaintenance,
+    this.ifStationSelected,
+    this.buildingSiteClassification,
   });
 
   static List<String> parseStringList(dynamic data) {
@@ -1996,6 +2023,7 @@ class RequestModel {
       expirationDate: json["expiration_date"],
       attachmentUrl: json["attachment_url"],
       isDeleted: json["is_deleted"],
+      allowanceValue: json['allowance_value'] as String?,
 
       assignedToUserId: json["assigned_to_user_id"],
       assignedAt: json["assigned_at"],
@@ -2322,6 +2350,16 @@ class RequestModel {
       arrivalDepartureDatetime: json['arrival_departure_datetime'],
 
       specialInstructions: json['special_instructions'],
+
+      // Book CAA Halls
+      purposeOfEvent: json['purpose_of_event'],
+      hallId: json['hall_id'],
+      typeOfHall: json['type_of_hall'],
+      // Request Maintenance
+      emergencyMaintenanceSupport: json['emergency_maintenance_support'],
+      reasonForMaintenance: json['reason_for_maintenance'],
+      ifStationSelected: json['if_station_selected'],
+      buildingSiteClassification: json['building_site_classification'],
     );
   }
 
@@ -2994,14 +3032,28 @@ class WorkflowDetailModel {
   final int? serviceId;
   final int? subServiceId;
 
+  final int? workflowDefinitionId;
+  final int? currentLevel;
+  final int? stepOrder;
+
   final String? content;
   final String? status;
   final int? order;
+
+  // -------- OLD IDs --------
+  final int? userId;
+  final int? roleId;
+  final int? departmentId;
+  final int? sectionId;
 
   // -------- Workflow specific --------
   final int? approverRoleId;
   final int? approverUserId;
   final int? approvedBy;
+
+  // // -------- NEW --------
+  // final dynamic workflowData;
+  // final List<dynamic>? jsonIgnore;
 
   // -------- Audit --------
   final int? createdBy;
@@ -3025,12 +3077,21 @@ class WorkflowDetailModel {
     this.requestId,
     this.serviceId,
     this.subServiceId,
+    this.workflowDefinitionId,
+    this.currentLevel,
+    this.stepOrder,
     this.content,
     this.status,
     this.order,
+    this.userId,
+    this.roleId,
+    this.departmentId,
+    this.sectionId,
     this.approverRoleId,
     this.approverUserId,
     this.approvedBy,
+    // this.workflowData,
+    // this.jsonIgnore,
     this.createdBy,
     this.createdAt,
     this.updatedBy,
@@ -3050,20 +3111,39 @@ class WorkflowDetailModel {
       requestId: json['request_id'] as int?,
       serviceId: json['service_id'] as int?,
       subServiceId: json['sub_service_id'] as int?,
+
+      workflowDefinitionId: json['workflow_definition_id'] as int?,
+      currentLevel: json['current_level'] as int?,
+      stepOrder: json['step_order'] as int?,
+
       content: json['content'] as String?,
       status: json['status'] as String?,
       order: json['order'] as int?,
 
+      // -------- OLD IDs --------
+      userId: json['user_id'] as int?,
+      roleId: json['role_id'] as int?,
+      departmentId: json['department_id'] as int?,
+      sectionId: json['section_id'] as int?,
+
+      // -------- Workflow specific --------
       approverRoleId: json['approver_role_id'] as int?,
       approverUserId: json['approver_user_id'] as int?,
       approvedBy: json['approved_by'] as int?,
 
+      // -------- NEW --------
+      // workflowData: json['workflow_data'],
+      // jsonIgnore: json['jsonIgnore'] != null
+      //     ? List<dynamic>.from(json['jsonIgnore'])
+      //     : null,
+
+      // -------- Audit --------
       createdBy: json['created_by'] as int?,
       createdAt: json['created_at'] as String?,
       updatedBy: json['updated_by'] as int?,
       updatedAt: json['updated_at'] as String?,
 
-      // 🔥 NEW
+      // -------- NEW --------
       approvedByUser: json['approved_by_user'] != null
           ? UserModel.fromJson(json['approved_by_user'])
           : null,
@@ -3072,7 +3152,7 @@ class WorkflowDetailModel {
           ? RoleModel.fromJson(json['approver_role'])
           : null,
 
-      // 🔁 OLD (fallback)
+      // -------- OLD --------
       user: json['user'] != null ? UserModel.fromJson(json['user']) : null,
 
       role: json['role'] != null ? RoleModel.fromJson(json['role']) : null,
@@ -3086,22 +3166,48 @@ class WorkflowDetailModel {
           : null,
     );
   }
+
   Map<String, dynamic> toJson() => {
     'is_deleted': isDeleted,
     'id': id,
     'request_id': requestId,
     'service_id': serviceId,
     'sub_service_id': subServiceId,
+
+    'workflow_definition_id': workflowDefinitionId,
+    'current_level': currentLevel,
+    'step_order': stepOrder,
+
     'content': content,
     'status': status,
-    // 'user_id': userId,
-    // 'role_id': roleId,
-    // 'department_id': departmentId,
-    // 'section_id': sectionId,
+    'order': order,
+
+    // -------- OLD IDs --------
+    'user_id': userId,
+    'role_id': roleId,
+    'department_id': departmentId,
+    'section_id': sectionId,
+
+    // -------- Workflow specific --------
+    'approver_role_id': approverRoleId,
+    'approver_user_id': approverUserId,
+    'approved_by': approvedBy,
+
+    // -------- NEW --------
+    // 'workflow_data': workflowData,
+    // 'jsonIgnore': jsonIgnore,
+
+    // -------- Audit --------
     'created_by': createdBy,
     'created_at': createdAt,
     'updated_by': updatedBy,
     'updated_at': updatedAt,
+
+    // -------- NEW --------
+    'approved_by_user': approvedByUser?.toJson(),
+    'approver_role': approverRole?.toJson(),
+
+    // -------- OLD --------
     'user': user?.toJson(),
     'role': role?.toJson(),
     'department': department?.toJson(),

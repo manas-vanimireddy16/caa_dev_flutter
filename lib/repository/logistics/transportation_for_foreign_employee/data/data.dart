@@ -25,45 +25,6 @@ import 'package:http_parser/http_parser.dart';
 class TransportationForForeignEmployeeRepositoryImpl
     implements TransportationForForeignEmployeeRepository {
   @override
-  Future<List<EmployeeList>> getUsers(int departmentId) async {
-    final client = await KAppX.network.secureClient();
-    if (client == null) {
-      throw Exception("HTTP client not initialized");
-    }
-
-    try {
-      final response = await client.get(
-        ApiEndPoint.assignTaskToEmployeeUsersList(departmentId),
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = response.data as Map<String, dynamic>;
-
-        // 🔴 IMPORTANT: data['data'] is [ List<Employee>, totalCount ]
-        final List<dynamic> rawData = data['data'] as List<dynamic>? ?? [];
-
-        // rawData[0] contains the actual employee list
-        final List<dynamic> employeeList =
-            rawData.isNotEmpty && rawData[0] is List
-            ? rawData[0] as List<dynamic>
-            : [];
-
-        return employeeList
-            .map((e) => EmployeeList.fromJson(e as Map<String, dynamic>))
-            .toList();
-      }
-
-      throw Exception(
-        'Failed to fetch positions request for coverage: ${response.statusCode}',
-      );
-    } catch (e, st) {
-      debugPrint('getUsers error: $e');
-      debugPrintStack(stackTrace: st);
-      throw Exception("Error fetching positions request for coverage");
-    }
-  }
-
-  @override
   Future<Map<String, dynamic>> foreignEmployeeVehicleCreateRequest(
     Map<String, dynamic> payload,
   ) async {
@@ -748,65 +709,6 @@ class TransportationForForeignEmployeeRepositoryImpl
       }
     } catch (e) {
       throw Exception("Error fetching request details: $e");
-    }
-  }
-
-  @override
-  Future<List<DepartmentModel>> getDepartments() async {
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final url = ApiEndPoint.departmentsList;
-        final queryParams = {'offset': 1, 'limit': 1000};
-        final response = await client.get(url, queryParameters: queryParams);
-
-        if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          return (data['data'] as List)
-              .map((e) => DepartmentModel.fromJson(e as Map<String, dynamic>))
-              .toList();
-        } else {
-          throw Exception('Failed with status code: ${response.statusCode}');
-        }
-      } else {
-        return [];
-      }
-    } catch (e) {
-      throw Exception('Error in getActionItems: $e');
-    }
-  }
-
-  @override
-  Future<List<SectionModel>> getSections({
-    required String? userDepartmentId,
-  }) async {
-    final client = await KAppX.network.secureClient();
-
-    try {
-      if (client != null) {
-        final queryParams = {
-          'offset': 1,
-          'limit': 1000,
-          'department_id': userDepartmentId,
-        };
-        final url = ApiEndPoint.sections;
-
-        final response = await client.get(url, queryParameters: queryParams);
-
-        if (response.statusCode == 200) {
-          final data = response.data as Map<String, dynamic>;
-          return (data['data'] as List)
-              .map((e) => SectionModel.fromJson(e as Map<String, dynamic>))
-              .toList();
-        } else {
-          throw Exception('Failed with status code: ${response.statusCode}');
-        }
-      } else {
-        return [];
-      }
-    } catch (e) {
-      throw Exception('Error in getActionItems: $e');
     }
   }
 

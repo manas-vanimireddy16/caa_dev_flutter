@@ -4,6 +4,7 @@ import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/roles_repo.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
+import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/bookmarksModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/services/servicesCard.dart';
@@ -177,6 +178,17 @@ class ServicesScreen extends ConsumerStatefulWidget {
 
 class _ServicesScreenState extends ConsumerState<ServicesScreen>
     with AutoRouteAwareStateMixin<ServicesScreen> {
+  bool _hasLoadedData = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _loadData();
+    });
+  }
+
   @override
   void didInitTabRoute(TabPageRoute? previousRoute) {
     super.didInitTabRoute(previousRoute);
@@ -188,16 +200,24 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
   void didChangeTabRoute(TabPageRoute previousRoute) {
     super.didChangeTabRoute(previousRoute);
 
-    _loadData();
+    _refreshServicesData();
   }
 
   Future<void> _loadData() async {
+    if (_hasLoadedData) return;
+    _hasLoadedData = true;
+    await _refreshServicesData();
+  }
+
+  Future<void> _refreshServicesData() async {
+    if (!mounted) return;
+
     final controller = ref.read(servicesProvider.notifier);
     final user = KAppX.globalProvider.read(userProvider);
 
     await Future.wait([
       controller.fetchUserRoles(user?.userId ?? 0),
-      // controller.fetchBookmarks(), // disabled while Bookmark tab is commented out
+      controller.fetchBookmarks(),
     ]);
   }
 
@@ -231,111 +251,169 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
 
       body: RefreshIndicator(
         onRefresh: () async {
-          await controller.fetchUserRoles(user?.userId ?? 0);
+          _hasLoadedData = false;
+          await Future.wait([
+            controller.fetchUserRoles(user?.userId ?? 0),
+            controller.fetchBookmarks(),
+          ]);
+          _hasLoadedData = true;
         },
-
         child: Builder(
           builder: (context) {
-            final services = state.services ?? [];
+            final isInitialLoading =
+                state.isLoading && (state.services?.isEmpty ?? true);
+            final services = controller.filteredServices(isArabic: isArabic);
+            final listFilter = ref.watch(
+              servicesProvider.select((s) => s.listFilter),
+            );
+            final searchQuery = ref.watch(
+              servicesProvider.select((s) => s.searchQuery),
+            );
 
-            return services.isEmpty
-                ? ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
+            if (isInitialLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-                    children: const [
-                      SizedBox(height: 200),
-
-                      Center(
-                        child: Text(
-                          'No services available',
-
-                          style: TextStyle(color: Colors.grey),
+            return CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ServicesSearchField(
+                          initialValue: searchQuery,
+                          hintText: l10n.servicesSearchPlaceholder,
+                          onChanged: controller.setSearchQuery,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        ServicesFilterToggle(
+                          selected: listFilter,
+                          onChanged: controller.setListFilter,
+                          allServicesLabel: l10n.servicesAllServices,
+                          myServicesLabel: l10n.servicesMyServices,
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                ),
+                if (state.isBookmarksLoading && services.isEmpty)
+                  const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(child: CircularProgressIndicator()),
                   )
-                : ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-
-                    itemCount: services.length,
-
-                    itemBuilder: (context, index) {
-                      final data = services[index];
-
-                      final title = isArabic
-                          ? (data.arabicName?.trim().isNotEmpty == true
-                                ? data.arabicName!
-                                : data.name ?? 'No Name')
-                          : (data.name ?? 'No Name');
-
-                      final subtitle = isArabic
-                          ? (data.arabicDescription?.trim().isNotEmpty == true
-                                ? data.arabicDescription!
-                                : data.description ?? 'No Description')
-                          : (data.description ?? 'No Description');
-
-                      final subServiceLabels = data.subservices
-                              ?.map((s) {
-                                if (isArabic) {
-                                  return s.arabicsubServiceName
-                                              ?.trim()
-                                              .isNotEmpty ==
-                                          true
-                                      ? s.arabicsubServiceName!
-                                      : s.subServiceName ?? 'Unnamed';
-                                }
-                                return s.subServiceName ?? 'Unnamed';
-                              })
-                              .toList() ??
-                          [];
-
-                      return CustomInfoCard(
-                        title: title,
-                        subtitle: subtitle,
-                        iconBackgroundColor: serviceCardIconColorForIndex(
-                          index,
-                        ),
-                        subServices: subServiceLabels,
-                        isBookmarked: false,
-                        onBookmarkToggle: () {
-                          controller.updateBookmark(
-                            userId: user?.userId ?? 0,
-                            serviceId: data.id ?? 0,
-                          );
-                        },
-                        onCardTap: () {
-                          controller.navigateToRoute(
-                            name: data.name ?? '',
-                            service: data,
-                          );
-                        },
-                        onSubServiceTap: (subName) {
-                          SubService? matched;
-                          for (final s in data.subservices ?? <SubService>[]) {
-                            final en = s.subServiceName ?? '';
-                            final ar = s.arabicsubServiceName ?? '';
-                            if (en == subName || ar == subName) {
-                              matched = s;
-                              break;
-                            }
-                          }
-
-                          if (matched != null) {
-                            controller.navigateToRoute(
-                              name: matched.code ?? '',
-                              service: data,
-                              subService: matched,
-                            );
-                          }
-                        },
-                      );
-                    },
-                  );
+                else if (services.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(
+                      child: Text(
+                        listFilter == ServicesListFilter.myServices
+                            ? l10n.noDataFound
+                            : 'No services available',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final data = services[index];
+                        return _ServiceListCard(
+                          service: data,
+                          listIndex: index,
+                          isArabic: isArabic,
+                        );
+                      }, childCount: services.length),
+                    ),
+                  ),
+              ],
+            );
           },
         ),
       ),
+    );
+  }
+}
+
+class _ServiceListCard extends ConsumerWidget {
+  final Service service;
+  final int listIndex;
+  final bool isArabic;
+
+  const _ServiceListCard({
+    required this.service,
+    required this.listIndex,
+    required this.isArabic,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final serviceId = service.id ?? 0;
+    final isBookmarked = ref.watch(
+      servicesProvider.select(
+        (s) => s.bookmarkedServiceIds.contains(serviceId),
+      ),
+    );
+    final controller = ref.read(servicesProvider.notifier);
+
+    final title = isArabic
+        ? (service.arabicName?.trim().isNotEmpty == true
+              ? service.arabicName!
+              : service.name ?? 'No Name')
+        : (service.name ?? 'No Name');
+
+    final subtitle = isArabic
+        ? (service.arabicDescription?.trim().isNotEmpty == true
+              ? service.arabicDescription!
+              : service.description ?? 'No Description')
+        : (service.description ?? 'No Description');
+
+    final subServiceLabels =
+        service.subservices?.map((s) {
+          if (isArabic) {
+            return s.arabicsubServiceName?.trim().isNotEmpty == true
+                ? s.arabicsubServiceName!
+                : s.subServiceName ?? 'Unnamed';
+          }
+          return s.subServiceName ?? 'Unnamed';
+        }).toList() ??
+        [];
+
+    return CustomInfoCard(
+      key: ValueKey(serviceId),
+      title: title,
+      subtitle: subtitle,
+      iconBackgroundColor: serviceCardIconColorForIndex(listIndex),
+      subServices: subServiceLabels,
+      isBookmarked: isBookmarked,
+      onBookmarkToggle: () => controller.toggleBookmark(serviceId),
+      onCardTap: () {
+        controller.navigateToRoute(name: service.name ?? '', service: service);
+      },
+      onSubServiceTap: (subName) {
+        SubService? matched;
+        for (final s in service.subservices ?? <SubService>[]) {
+          final en = s.subServiceName ?? '';
+          final ar = s.arabicsubServiceName ?? '';
+          if (en == subName || ar == subName) {
+            matched = s;
+            break;
+          }
+        }
+
+        if (matched != null) {
+          controller.navigateToRoute(
+            name: matched.code ?? '',
+            service: service,
+            subService: matched,
+          );
+        }
+      },
     );
   }
 }

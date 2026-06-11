@@ -47,17 +47,19 @@ class _RequestToBookCAAHallsDetailsScreenState
   @override
   Widget build(BuildContext context) {
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: const Text('Request Detail')),
+      appBar: KAppBar(title: Text(l10n.requestDetailScreenTitle)),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));
+          final l10n = DashboardL10n.of(context);
 
-          if (state.requestDetails == null || state.isLoading) {
+          if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -71,6 +73,9 @@ class _RequestToBookCAAHallsDetailsScreenState
           final List<ApprovalDetailModel> approvals =
               state.requestDetails.approvalDetails ?? [];
           final selectedTab = state.requestDetailTab;
+
+          final createdByUser =
+              request?.createdByUser ?? state.requestDetails.createdByUser;
           final active = controller.getActiveApprovalLevel(
             state.requestDetails.approvalDetails ?? [],
           );
@@ -88,24 +93,6 @@ class _RequestToBookCAAHallsDetailsScreenState
             child: Column(
               children: [
                 /// ----------- Profile Section --------------
-                ProfileCard(
-                  title: "Profile",
-                  subtitle: "User Info",
-                  name: request?.createdByUser?.employeeName ?? '',
-                  avatarUrl: "https://i.pravatar.cc/150?img=3",
-                  isOnline: true,
-                  info: {
-                    "Request ID": (request?.id ?? 0).toString(),
-                    "Customer ID": (request?.userId ?? 0).toString(),
-                    "Job Title/Designation":
-                        request?.createdByUser?.directorate ?? 'N/A',
-                    "Department": request?.createdByUser?.category ?? 'N/A',
-                    "Email": request?.createdByUser?.email ?? 'N/A',
-                    "Phone": request?.createdByUser?.mobile ?? 'N/A',
-                    // "Request Type": request?.requestFor ?? 'N/A',
-                  },
-                ),
-
                 5.toHorizontalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
@@ -116,15 +103,39 @@ class _RequestToBookCAAHallsDetailsScreenState
                 const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
-                if (selectedTab == 0)
+                if (selectedTab == 0) ...[
+                  EmployeeInformationCard(
+                    l10n: l10n,
+                    requestId: requestId?.toString(),
+                    status: request?.status,
+                    assignedTo: controller.buildAssignedToLabel(approvals),
+                    user: createdByUser,
+                    labelBuilder: l10n.requestDetailsLabel,
+                  ),
                   CommonRequestDetails(
+                    statusInformationTitle: l10n.requestDetailsLabel(
+                      'Status Information',
+                    ),
+                    requestInformationTitle: l10n.requestDetailsLabel(
+                      'Request Information',
+                    ),
+                    technicalInformationTitle: l10n.technicalDetailsSection,
+                    requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: controller.buildStatusInformation(),
 
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
                     // table: controller.mapAccommodationTableForDetails(),
-                  )
-                else if (selectedTab == 1)
+                  ),
+                ] else if (selectedTab == 1) ...[
+                  EmployeeInformationCard(
+                    l10n: l10n,
+                    requestId: requestId?.toString(),
+                    status: request?.status,
+                    assignedTo: controller.buildAssignedToLabel(approvals),
+                    user: createdByUser,
+                    labelBuilder: l10n.requestDetailsLabel,
+                  ),
                   CommentsCard(
                     from: widget.from,
                     showButtons: actionType != ActionButtonsType.none,
@@ -170,11 +181,28 @@ class _RequestToBookCAAHallsDetailsScreenState
                       //   'Rejected',
                       // );
                     },
-                  )
-                else if (selectedTab == 2)
-                  CommonAttachmentsTabContent(attachments: attachments)
-                else if (selectedTab == 3)
+                  ),
+                ] else if (selectedTab == 2) ...[
+                  EmployeeInformationCard(
+                    l10n: l10n,
+                    requestId: requestId?.toString(),
+                    status: request?.status,
+                    assignedTo: controller.buildAssignedToLabel(approvals),
+                    user: createdByUser,
+                    labelBuilder: l10n.requestDetailsLabel,
+                  ),
+                  CommonAttachmentsTabContent(attachments: attachments),
+                ] else if (selectedTab == 3) ...[
+                  EmployeeInformationCard(
+                    l10n: l10n,
+                    requestId: requestId?.toString(),
+                    status: request?.status,
+                    assignedTo: controller.buildAssignedToLabel(approvals),
+                    user: createdByUser,
+                    labelBuilder: l10n.requestDetailsLabel,
+                  ),
                   RequestWorkflowTimeline(details: state.requestDetails),
+                ],
               ],
             ),
           );

@@ -1,4 +1,6 @@
-import 'package:code_setup/presentation/common_widgets/statSummaryData.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
+import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 
 class StatSummaryHelper {
@@ -49,6 +51,7 @@ class StatSummaryHelper {
             description: "",
             icon: getIcon(key),
             iconBgColor: getColor(key),
+            iconColor: getIconColor(key),
           );
         })
         .toList();
@@ -68,67 +71,127 @@ class StatSummaryHelper {
     );
   }
 
-  static IconData getIcon(String key) {
+  static String getIcon(String key) {
     switch (key) {
       case 'total_requests':
-        return Icons.assignment_outlined;
-
-      case 'assigned':
-        return Icons.task_alt_outlined;
-
-      case 'in_progress':
-        return Icons.timelapse_outlined;
-
-      case 'completed':
-        return Icons.check_circle_outline;
+        return AppIcons.kpiTotalRequests;
 
       case 'approved':
       case 'closed':
-        return Icons.check_circle_outline;
+        return AppIcons.kpiApproved;
 
       case 'pending':
-        return Icons.pending_actions_outlined;
+        return AppIcons.kpiPending;
 
       case 'rejected':
-        return Icons.cancel_outlined;
-
-      case 'expired':
-        return Icons.timer_off_outlined;
+        return AppIcons.kpiRejected;
 
       default:
-        return Icons.insert_chart_outlined;
+        return AppIcons.kpiTotalRequests;
     }
   }
 
   static Color getColor(String key) {
     switch (key) {
       case 'total_requests':
-        return const Color(0xFFF3F4F6);
-
-      case 'assigned':
-        return const Color(0xFFE3F2FD);
-
-      case 'in_progress':
-        return const Color(0xFFFFF8E1);
-
-      case 'completed':
-        return const Color(0xFFE8F5E9);
+        return AppColors.totalRequestsBGColor;
 
       case 'approved':
       case 'closed':
-        return const Color(0xFFE8F5E9);
+        return AppColors.approvedBGColor;
 
       case 'pending':
-        return const Color(0xFFFFF8E1);
+        return AppColors.pendingBGColor;
 
       case 'rejected':
-        return const Color(0xFFFFEBEE);
-
-      case 'expired':
-        return const Color(0xFFF3E5F5);
+        return AppColors.rejectedBGColor;
 
       default:
-        return const Color(0xFFE3F2FD);
+        return AppColors.totalRequestsBGColor;
     }
   }
+
+  static Color getIconColor(String key) {
+    switch (key) {
+      case 'total_requests':
+        return AppColors.totalRequestsIconColor;
+
+      case 'approved':
+      case 'closed':
+        return AppColors.approvedIconColor;
+
+      case 'pending':
+        return AppColors.pendingIconColor;
+
+      case 'rejected':
+        return AppColors.rejectedIconColor;
+
+      default:
+        return AppColors.totalRequestsIconColor;
+    }
+  }
+
+  // static IconData getIcon(String key) {
+  //   switch (key) {
+  //     case 'total_requests':
+  //       return Icons.assignment_outlined;
+
+  //     case 'assigned':
+  //       return Icons.task_alt_outlined;
+
+  //     case 'in_progress':
+  //       return Icons.timelapse_outlined;
+
+  //     case 'completed':
+  //       return Icons.check_circle_outline;
+
+  //     case 'approved':
+  //     case 'closed':
+  //       return Icons.check_circle_outline;
+
+  //     case 'pending':
+  //       return Icons.pending_actions_outlined;
+
+  //     case 'rejected':
+  //       return Icons.cancel_outlined;
+
+  //     case 'expired':
+  //       return Icons.timer_off_outlined;
+
+  //     default:
+  //       return Icons.insert_chart_outlined;
+  //   }
+  // }
+
+  // static Color getColor(String key) {
+  //   switch (key) {
+  //     case 'total_requests':
+  //       return const Color(0xFFF3F4F6);
+
+  //     case 'assigned':
+  //       return const Color(0xFFE3F2FD);
+
+  //     case 'in_progress':
+  //       return const Color(0xFFFFF8E1);
+
+  //     case 'completed':
+  //       return const Color(0xFFE8F5E9);
+
+  //     case 'approved':
+  //     case 'closed':
+  //       return const Color(0xFFE8F5E9);
+
+  //     case 'pending':
+  //       return const Color(0xFFFFF8E1);
+
+  //     case 'rejected':
+  //       return const Color(0xFFFFEBEE);
+
+  //     case 'expired':
+  //       return const Color(0xFFF3E5F5);
+
+  //     default:
+  //       return const Color(0xFFE3F2FD);
+  //   }
+  // }
 }

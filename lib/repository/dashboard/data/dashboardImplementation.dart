@@ -1,3 +1,4 @@
+import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/domain/core/network/network.dart';
 import 'package:code_setup/presentation/models/models.dart';
 import 'package:code_setup/presentation/models/sections.dart';
@@ -11,6 +12,7 @@ import 'package:code_setup/utils/api_end_point.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 class DashboardRepositoryImplementation implements DashboardRepository {
@@ -19,15 +21,19 @@ class DashboardRepositoryImplementation implements DashboardRepository {
 
   @override
   Future<List<Bookmarksmodel>> getBookmarks() async {
+    final client = await KAppX.network.secureClient();
+
     try {
-      final client = await KAppX.network.secureClient();
       if (client != null) {
-        const url =
-            'https://caa.altomouhit.com/v1/user-service/service/bookmarks/69';
+        final userInfo = KAppX.globalProvider.read(userInfoProvider);
+        final String userId = userInfo?.data?.id ?? '0';
+        final String url = ApiEndPoint.getBookmarks(userId);
 
         final response = await client.get(url);
 
         if (response.statusCode == 200 && response.data != null) {
+          debugPrint('✅ Bookmarks fetched successfully');
+
           final data = Map<String, dynamic>.from(response.data);
 
           final list = data['data'] as List<dynamic>? ?? [];
@@ -38,21 +44,29 @@ class DashboardRepositoryImplementation implements DashboardRepository {
               )
               .toList();
         } else {
-          final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
-          throw ApiException(errorMessage);
-        }
-      }
+          debugPrint('⚠️ Failed to fetch bookmarks: ${response.statusCode}');
 
-      return [];
-    } on DioException catch (error) {
-      final message = error.response?.data['message'] ?? error.message;
+          throw ApiException(
+            response.data?['message'] ?? 'Something went wrong',
+          );
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot fetch bookmarks');
+
+        return [];
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+
+      final message = e.response?.data['message'] ?? e.message;
+
       throw ApiException(message);
     } catch (e) {
-      throw ApiException('Error getBookmarks: $e');
+      debugPrint('❌ Unexpected error: $e');
+
+      throw ApiException('Error fetching bookmarks: $e');
     }
   }
-
   // @override
   // Future<ServiceModel> getServices() async {
   //   final client = Dio();
@@ -255,39 +269,50 @@ class DashboardRepositoryImplementation implements DashboardRepository {
   }
 
   @override
-  Future<void> updateBookmark({
-    required int userId,
-    required int serviceId,
-  }) async {
-    final client = Dio();
-    // 🔧 endpoint path
+  Future<void> updateBookmark({required int serviceId}) async {
+    final client = await KAppX.network.secureClient();
+
+    final userInfo = KAppX.globalProvider.read(userInfoProvider);
+    final String userId = userInfo?.data?.id ?? '0';
+    final String url = ApiEndPoint.updateBookmark;
+
     final payload = {"user_id": userId, "service_id": serviceId};
-    final url = 'https://caa.altomouhit.com/v1/user-service/service/bookmark';
 
     try {
-      final response = await client.post(
-        url,
-        data: payload,
-        options: Options(
-          headers: {'Content-Type': 'application/json', 'jwt': token},
-        ),
-      );
+      if (client != null) {
+        final response = await client.post(url, data: payload);
 
-      if (response.statusCode == 200 || response.statusMessage == 'success') {
-        final data = response.data;
-        print("✅ Bookmark updated successfully");
-        print(data);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          debugPrint('✅ Bookmark updated successfully');
+
+          debugPrint(response.data.toString());
+
+          // ShowFlutterToast().showFlutterToastSuccess(
+          //   response.data['message'] ??
+          //       'Bookmark updated successfully',
+          // );
+        } else {
+          debugPrint('⚠️ Failed to update bookmark: ${response.statusCode}');
+
+          throw ApiException(
+            response.data?['message'] ?? 'Something went wrong',
+          );
+        }
       } else {
-        throw Exception("Failed with status: ${response.statusCode}");
+        debugPrint('❌ Client is null — cannot update bookmark');
+
+        throw ApiException('Client is null');
       }
     } on DioException catch (e) {
-      // Dio gives rich error information
-      if (e.response != null) {
-        print("❌ Dio Error: ${e.response?.data}");
-      } else {
-        print("❌ Dio Network Error: ${e.message}");
-      }
-      rethrow; // propagate for handling upstream
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+
+      final message = e.response?.data['message'] ?? e.message;
+
+      throw ApiException(message);
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+
+      throw ApiException('Error updating bookmark: $e');
     }
   }
 

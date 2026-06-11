@@ -1,4 +1,5 @@
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
@@ -126,6 +127,7 @@ class _DateFieldWidgetState extends ConsumerState<DateFieldWidget> {
         isRequired: widget.field.required,
         hintText: widget.field.placeholder,
         fieldHeadingText: widget.field.label,
+        fieldHeadingTextStyle: DynamicFieldLabelStyle.text,
         errorText: state.errors[widget.field.name],
         suffixIcon: const Icon(Icons.calendar_today),
 
@@ -142,7 +144,10 @@ class _DateFieldWidgetState extends ConsumerState<DateFieldWidget> {
                   );
 
                   if (year != null) {
-                    notifier.updateValue(widget.field.name, year.toString());
+                    final selectedYear = year.toString();
+
+                    notifier.updateValue(widget.field.name, selectedYear);
+                    widget.field.onChanged?.call(selectedYear, ref);
                   }
                 }
 
@@ -176,6 +181,7 @@ class _DateFieldWidgetState extends ConsumerState<DateFieldWidget> {
                         pickedDate.formattedDateAsYearMonthDate;
 
                     notifier.updateValue(widget.field.name, selectedDate);
+                    widget.field.onChanged?.call(selectedDate, ref);
                   }
                 }
               },

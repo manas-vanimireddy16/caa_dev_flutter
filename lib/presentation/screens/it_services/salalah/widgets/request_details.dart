@@ -58,7 +58,7 @@ class _SalalahRequestDetailsTabScreenState
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));
 
-          if (state.requestDetails == null || state.isLoading) {
+          if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -164,15 +164,32 @@ class _SalalahRequestDetailsTabScreenState
                       );
                     },
                   ),
-                ] else if (selectedTab == 2)
+                ] else if (selectedTab == 2) ...[
+                  EmployeeInformationCard(
+                    l10n: l10n,
+                    requestId: requestId?.toString(),
+                    status: request?.status,
+                    assignedTo: controller.buildAssignedToLabel(approvals),
+                    user: createdByUser,
+                    labelBuilder: l10n.requestDetailsLabel,
+                  ),
                   CommonAttachmentsTabContent(
                     attachments: attachments,
                     l10n: l10n,
-                  )
-                else if (selectedTab == 3)
+                  ),
+                ] else if (selectedTab == 3) ...[
+                  EmployeeInformationCard(
+                    l10n: l10n,
+                    requestId: requestId?.toString(),
+                    status: request?.status,
+                    assignedTo: controller.buildAssignedToLabel(approvals),
+                    user: createdByUser,
+                    labelBuilder: l10n.requestDetailsLabel,
+                  ),
                   ITServicesRequestWorkflowTimeline(
                     details: state.requestDetails,
                   ),
+                ],
               ],
             ),
           );

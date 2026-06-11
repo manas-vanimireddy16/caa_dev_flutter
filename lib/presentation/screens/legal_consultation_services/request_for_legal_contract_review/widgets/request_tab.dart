@@ -3,11 +3,13 @@ part of '../view.dart';
 class RequestTabs extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onTabChanged;
+  final int actionItemCount;
 
   const RequestTabs({
     super.key,
     required this.selectedIndex,
     required this.onTabChanged,
+    required this.actionItemCount,
   });
 
   @override

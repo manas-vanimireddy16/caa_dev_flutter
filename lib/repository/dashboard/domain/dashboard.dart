@@ -18,6 +18,6 @@ abstract class DashboardRepository {
   Future<List<EmployeesResponse>> getUserById();
   Future<List<SectionResponse>> getSections();
   Future<List<AnnouncementModel>> getModels();
-  Future<void> updateBookmark({required int userId, required int serviceId});
+  Future<void> updateBookmark({required int serviceId});
   Future<List<ActionItemData>> getActionItems({required int userId});
 }

@@ -5,6 +5,7 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/hr_service/models/temporary_decision.dart';
 import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart'
@@ -19,29 +20,36 @@ abstract class SecondmentDecisionReposiroty {
   Future<List<Position>> getPositions();
   Future<List<Employee>> getUsers();
 
-  Future<void> sendAssignmentDecisionRequest(Map<String, dynamic> payload);
+  Future<void> createTemporaryDecisionRequest(Map<String, dynamic> payload);
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,
   );
   Future<RequestDetailData?> getRequestsById(int id);
-  Future<KPIResponse?> getKpiData(int service_id, int sub_service_id);
-
-  Future<List<AssignmentDecision>> getRequests({
-    required int offset,
-    required int limit,
-    // String sortBy = 'created_at',
-    // String sortOrder = 'DESC',
-    String status = '', // 👈 changed to List
-    String searchText = '',
+  Future<KPIResponse?> getKpiData({
+    required int serviceId,
+    required int subServiceId,
   });
 
-  Future<List<AssignmentDecision>> getActionItems({
+  Future<List<TemporaryDecision>> getRequests({
     required int offset,
     required int limit,
     // String sortBy = 'created_at',
     // String sortOrder = 'DESC',
     String status = '', // 👈 changed to List
     String searchText = '',
+    required int serviceId,
+    required int subServiceId,
+  });
+
+  Future<List<TemporaryDecision>> getActionItems({
+    required int offset,
+    required int limit,
+    // String sortBy = 'created_at',
+    // String sortOrder = 'DESC',
+    String status = '', // 👈 changed to List
+    String searchText = '',
+    required int serviceId,
+    required int subServiceId,
   });
   // Future<List<ThreatRequestDetail>> getCombinedActionItems({
   //   required int offset,
@@ -59,8 +67,7 @@ abstract class SecondmentDecisionReposiroty {
   // Future<KPIResponse?> getCombinedKpiData();
   // Future<KPIResponse?> getCombinedApprovalKpiData();
 
-  Future<void> onApprove(Map<String, dynamic> payload);
-  Future<void> onReject(Map<String, dynamic> payload);
+  Future<void> onAssignRejectClose(Map<String, dynamic> payload);
   Future<void> onEventChange(int requestId, Map<String, dynamic> payload);
 
   Future<String> sendChat(Map<String, dynamic> payload, int id);
@@ -76,9 +83,27 @@ abstract class SecondmentDecisionReposiroty {
   Future<void> onAssignEmployee(Map<String, dynamic> payload);
   Future<void> onReplaceEmployee(Map<String, dynamic> payload);
 
-  Future<StatusBreakdownModel?> getApprovalStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(String period);
+  Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<TrendBreakdownModel> getApprovalTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
 
-  Future<StatusBreakdownModel?> getStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period);
+  Future<StatusBreakdownModel?> getStatusBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<TrendBreakdownModel> getTrendBreakdownData({
+    required String period,
+    required int serviceId,
+    required int subServiceId,
+  });
+  Future<String> sendAttachment(Map<String, dynamic> payload, int id);
+  Future<List<AttachmentModel>> getAttachmentsById({required int id});
 }

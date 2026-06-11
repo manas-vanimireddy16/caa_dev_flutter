@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:code_setup/presentation/common_widgets/request_details/common_attachments.dart';
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/models/file_upload_model.dart';
 import 'package:code_setup/repository/authentication/domain.dart';
@@ -150,138 +151,60 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
         .read(KAppX.theme.current)
         .themeBox;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        /// TITLE
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: RichText(
-            text: TextSpan(
-              text: widget.title?.trim().isNotEmpty == true
-                  ? widget.title!.trim()
-                  : 'Attachments',
-              style: TextStyle(
-                fontWeight: currentTheme.fontWeights.wBold,
-                fontSize: currentTheme.fontSizes.s12,
-                color: Colors.black,
+    return CommonAttachmentsUploadArea(
+      title: widget.title?.trim().isNotEmpty == true
+          ? widget.title!.trim()
+          : 'Attachments (Optional)',
+      isRequired: widget.isRequired,
+      isUploading: _isUploading,
+      onUploadTap: _pickFile,
+      allowedExtensions: widget.allowedExtensions,
+      maxFileSizeInMB: widget.maxFileSizeInMB,
+      footer: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (files.isNotEmpty) ...[
+            Text(
+              '${files.length} / ${widget.maxFiles} files uploaded',
+              style: const TextStyle(
+                fontSize: 12,
+                color: filesTextColor,
+                fontWeight: FontWeight.w500,
               ),
-              children: [
-                if (widget.isRequired)
-                  const TextSpan(
-                    text: ' *',
-                    style: TextStyle(color: Colors.red),
-                  ),
-              ],
             ),
-          ),
-        ),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300, width: 2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            children: [
-              /// UPLOAD BUTTON
-              InkWell(
-                onTap: _isUploading ? null : _pickFile,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 20,
+            const SizedBox(height: 8),
+            ...List.generate(files.length, (index) {
+              final file = files[index];
+
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                title: Text(
+                  file.originalName ?? 'File ${index + 1}',
+                  style: TextStyle(fontSize: currentTheme.fontSizes.s13),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.red,
+                    size: 20,
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.purple.shade100.withOpacity(0.55),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: _isUploading
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                            SizedBox(width: 10),
-                            Text("Uploading..."),
-                          ],
-                        )
-                      : Text(
-                          "Upload File",
-                          style: TextStyle(
-                            fontWeight: currentTheme.fontWeights.wBold,
-                            fontSize: currentTheme.fontSizes.s14,
-                          ),
-                        ),
+                  onPressed: () => _deleteFile(index),
                 ),
+              );
+            }),
+          ],
+          if (_errorMessage != null)
+            Text(
+              _errorMessage!,
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
               ),
-
-              const SizedBox(height: 14),
-
-              /// FILE COUNT
-              Text(
-                "${files.length} / ${widget.maxFiles} files uploaded",
-                style: TextStyle(
-                  fontSize: currentTheme.fontSizes.s12,
-                  color: Colors.black54,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              Text(
-                "Allowed: ${widget.allowedExtensions.join(', ')}\n"
-                "Max size: ${widget.maxFileSizeInMB}MB per file",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: currentTheme.fontSizes.s12,
-                  color: Colors.black54,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              /// ✅ FILE LIST FROM STATE
-              if (files.isNotEmpty)
-                ...List.generate(files.length, (index) {
-                  final file = files[index];
-
-                  return ListTile(
-                    dense: true,
-                    title: Text(
-                      file.originalName ?? 'File ${index + 1}',
-                      style: TextStyle(fontSize: currentTheme.fontSizes.s13),
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(
-                        Icons.delete_outline,
-                        color: Colors.red,
-                        size: 20,
-                      ),
-                      onPressed: () => _deleteFile(index),
-                    ),
-                  );
-                }),
-
-              if (_errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    _errorMessage!,
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ],
+            ),
+        ],
+      ),
     );
   }
 }

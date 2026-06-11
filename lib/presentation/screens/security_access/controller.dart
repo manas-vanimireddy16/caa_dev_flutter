@@ -66,6 +66,8 @@ class _VSController extends StateNotifier<_ViewState> {
         return l10n.dashboard;
       case 1:
         return l10n.requestAccessCard;
+      case 2:
+        return 'Complaint / Lost Property Report';
 
       default:
         return l10n.home;

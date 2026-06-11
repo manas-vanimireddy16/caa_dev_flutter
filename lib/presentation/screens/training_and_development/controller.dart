@@ -72,6 +72,8 @@ class _VSController extends StateNotifier<_ViewState> {
         return 'Request Training';
       case 4:
         return 'Request for Study Leave';
+      case 6:
+        return 'Request to Book CAA Halls';
 
       default:
         return '  Home';
