@@ -1534,6 +1534,17 @@ class RequestModel {
   final String? ifStationSelected;
   final String? buildingSiteClassification;
 
+  // Maintenance of External Stations
+  final String? externalStationNameOrLocation;
+  final String? stationCategory;
+  final String? typeOfIssue;
+  final String? detailedDescription;
+  final String? urgencyLevel;
+  final String? dateOfIssueOccurred;
+  final String? contactPersonName;
+  final String? contactPersonNumber;
+  final String? contactPersonDesignation;
+
   // ─────────────────────────────
   // CONSTRUCTOR
   // ─────────────────────────────
@@ -1893,6 +1904,16 @@ class RequestModel {
     this.reasonForMaintenance,
     this.ifStationSelected,
     this.buildingSiteClassification,
+    // Maintenance of External Stations
+    this.externalStationNameOrLocation,
+    this.stationCategory,
+    this.typeOfIssue,
+    this.detailedDescription,
+    this.urgencyLevel,
+    this.dateOfIssueOccurred,
+    this.contactPersonName,
+    this.contactPersonNumber,
+    this.contactPersonDesignation,
   });
 
   static List<String> parseStringList(dynamic data) {
@@ -2360,6 +2381,16 @@ class RequestModel {
       reasonForMaintenance: json['reason_for_maintenance'],
       ifStationSelected: json['if_station_selected'],
       buildingSiteClassification: json['building_site_classification'],
+      // Maintenance of External Stations
+      externalStationNameOrLocation: json['external_station_name_or_location'],
+      stationCategory: json['station_category'],
+      typeOfIssue: json['type_of_issue'],
+      detailedDescription: json['detailed_description'],
+      urgencyLevel: json['urgency_level'],
+      dateOfIssueOccurred: json['date_of_issue_occurred'],
+      contactPersonName: json['contact_person_name'],
+      contactPersonNumber: json['contact_person_number']?.toString(),
+      contactPersonDesignation: json['contact_person_designation'],
     );
   }
 

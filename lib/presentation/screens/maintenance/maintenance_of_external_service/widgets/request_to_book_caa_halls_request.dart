@@ -57,7 +57,7 @@ class _MaintenanceExternalServiceNewRequestScreenState
         child: DynamicForm(
           title: formTitle,
           stepTitles: const [''],
-          steps: [controller.buildFollowUpReportFields(l10n)],
+          steps: [controller.buildExternalMaintenanceFields(l10n)],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {
