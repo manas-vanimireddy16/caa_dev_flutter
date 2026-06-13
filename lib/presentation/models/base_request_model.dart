@@ -86,7 +86,7 @@ class BaseRequestModel {
       id: json['id'],
       isDeleted: json['is_deleted'],
       userId: json['user_id'],
-      status: json['status'],
+      status: json['status'] ?? json['approval_status'],
 
       serviceId: json['service_id'],
       subServiceId: json['sub_service_id'],

@@ -293,8 +293,18 @@ class _VSController extends StateNotifier<_ViewState> {
     required String name,
     Service? service,
     SubService? subService,
+    List<SubService>? subServices,
   }) {
     switch (name.trim()) {
+      case 'CAAS016':
+        KAppX.router.push(
+          MaintenanceDashboardRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+            subServices: subServices ?? [],
+          ),
+        );
+        break;
       case 'CAA032':
         KAppX.router.push(
           LogisticsForeignersRequestPortalRoute(
@@ -541,7 +551,7 @@ class _VSController extends StateNotifier<_ViewState> {
         break;
 
       default:
-        debugPrint('No route found for $name');
+        debugPrint('No route found for-- $name');
     }
   }
 }

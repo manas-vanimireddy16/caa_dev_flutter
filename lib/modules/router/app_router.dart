@@ -135,7 +135,8 @@ class AppRouter extends RootStackRouter {
       page: MaintenanceHomeRoute.page,
       path: RouteNames.maintenanceHomeScreen,
       children: [
-        AutoRoute(page: RequestMaintenanceRoute.page, initial: true),
+        AutoRoute(page: MaintenanceDashboardRoute.page, initial: true),
+        AutoRoute(page: RequestMaintenanceRoute.page),
         AutoRoute(page: MaintenanceofExternalServiceRoute.page),
       ],
     ),

@@ -1446,9 +1446,9 @@ class RequestModel {
   final String? grievanceDetails;
   final String? individualsInvolved;
   final List<String>? times;
-  final String? dates;
-  final String? requests;
-  final String? events;
+  final List<String>? dates;
+  final List<String>? requests;
+  final List<String>? events;
   final String? grievantName;
   final String? grievantEmployeeNumber;
   final int? grievantDirectorateId;
@@ -2295,10 +2295,10 @@ class RequestModel {
       decisionSubject: json['decision_subject'],
       grievanceDetails: json['grievance_details'],
       individualsInvolved: json['individuals_involved'],
-      times: json['times'] != null ? List<String>.from(json['times']) : [],
-      dates: json['dates'],
-      requests: json['requests'],
-      events: json['events'],
+      times: parseStringList(json['times']),
+      dates: parseStringList(json['dates']),
+      requests: parseStringList(json['requests']),
+      events: parseStringList(json['events']),
       grievantName: json['grievant_name'],
       grievantEmployeeNumber: json['grievant_employee_number'],
       grievantDirectorateId: json['grievant_directorate_id'],

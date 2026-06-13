@@ -1,40 +1,22 @@
-import 'dart:convert';
-
 import 'dart:developer';
-
 import 'package:auto_route/auto_route.dart';
-
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-
 import 'package:code_setup/modules/domain/core/theme/theme.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
-
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/common_widgets/drawer_component.dart';
-
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/drawer/drawer.dart';
-
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/core_widgets/list_tile_divider.dart';
-
-import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/models/request_detail.dart'
     hide Service;
-
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/assets/icons.dart';
-
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:google_fonts/google_fonts.dart';
-
 part 'controller.dart';
-
 part 'widgets/drawer.dart';
 
 // part 'my_profile_page/widget/my_profile_widget.dart';
@@ -53,6 +35,11 @@ class MaintenanceHomeScreen extends ConsumerWidget {
 
     return AutoTabsRouter.builder(
       routes: [
+        MaintenanceDashboardRoute(
+          service: Service(),
+          subService: SubService(),
+          subServices: [],
+        ),
         RequestMaintenanceRoute(service: Service(), subService: SubService()),
         MaintenanceofExternalServiceRoute(
           service: Service(),

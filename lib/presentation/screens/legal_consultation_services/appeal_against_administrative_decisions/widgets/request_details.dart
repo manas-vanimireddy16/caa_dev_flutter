@@ -42,7 +42,11 @@ class _AppealAgainstAdministrativeDecisionsDetailsScreenState
     Future.microtask(() {
       ref
           .read(_vsProvider(_providerArgs).notifier)
-          .fetchRequestDetailsById(widget.id);
+          .fetchRequestDetailsById(
+            widget.id,
+            widget.serviceId,
+            widget.subServiceId,
+          );
     });
   }
 

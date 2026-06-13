@@ -145,6 +145,7 @@ class _DashboardRequestsCardState extends ConsumerState<DashboardRequestsCard> {
               error: error,
               onRetry: () => _search(_searchController.text),
               emptyLabel: l10n.noDataFound,
+              fromActionItems: _selectedTab == 1,
             ),
           ),
         ],
@@ -236,6 +237,7 @@ class _DashboardRequestList extends StatelessWidget {
   final String error;
   final String emptyLabel;
   final VoidCallback onRetry;
+  final bool fromActionItems;
 
   const _DashboardRequestList({
     required this.items,
@@ -243,6 +245,7 @@ class _DashboardRequestList extends StatelessWidget {
     required this.error,
     required this.emptyLabel,
     required this.onRetry,
+    required this.fromActionItems,
   });
 
   @override
@@ -270,6 +273,14 @@ class _DashboardRequestList extends StatelessWidget {
         final item = items[index];
         final base = item.base;
         return RequestCard(
+          onTap: () => navigateToDashboardRequestDetails(
+            subServiceCode: item.subServiceCode ?? item.subService?.code ?? '',
+            requestId:
+                int.tryParse(item.requestId ?? '') ?? base?.id ?? item.id ?? 0,
+            service: item.service,
+            subService: item.subService,
+            fromActionItems: fromActionItems,
+          ),
           data: {
             'request_id': item.requestId ?? base?.id ?? item.id ?? '-',
             'request_name':

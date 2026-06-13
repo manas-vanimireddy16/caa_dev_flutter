@@ -393,7 +393,11 @@ class _ServiceListCard extends ConsumerWidget {
       isBookmarked: isBookmarked,
       onBookmarkToggle: () => controller.toggleBookmark(serviceId),
       onCardTap: () {
-        controller.navigateToRoute(name: service.name ?? '', service: service);
+        controller.navigateToRoute(
+          name: service.code ?? '',
+          service: service,
+          subServices: service.subservices,
+        );
       },
       onSubServiceTap: (subName) {
         SubService? matched;

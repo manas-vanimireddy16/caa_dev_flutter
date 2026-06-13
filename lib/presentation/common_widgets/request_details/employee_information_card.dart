@@ -50,7 +50,7 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
 
     return Card(
       color: Colors.white,
-      margin: const EdgeInsets.all(8), //.fromLTRB(16, 16, 16, 8),
+      margin: const EdgeInsets.all(16), //.fromLTRB(16, 16, 16, 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(4),
         side: BorderSide(color: const Color(0xFFD8D8D8)),

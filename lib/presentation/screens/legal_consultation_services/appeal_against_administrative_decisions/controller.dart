@@ -411,11 +411,11 @@ class _VSController extends StateNotifier<_ViewState> {
       'Grievance Details': request?.grievanceDetails ?? '-',
       'Individuals Involved': request?.individualsInvolved ?? '-',
       // 'Times': request?.times ?? '-',
-      'Dates': request?.dates ?? '-',
+      'Dates': request?.dates?.join(', ') ?? '-',
       'Location': request?.location ?? '-',
 
-      'Requests': request?.requests ?? '-',
-      'Events': request?.events ?? '-',
+      'Requests': request?.requests?.join(', ') ?? '-',
+      'Events': request?.events?.join(', ') ?? '-',
       'Grievant Name': request?.grievantName ?? '-',
       'Grievant Employee Number': request?.grievantEmployeeNumber ?? '-',
     };
@@ -781,35 +781,42 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchActionItems(isRefresh: true, searchText: searchText, status: status);
   }
 
-  Future<void> fetchRequestDetailsById(int id) async {
+  Future<void> fetchRequestDetailsById(
+    int id, [
+    int serviceId = 0,
+    int subServiceId = 0,
+  ]) async {
     state = state.copyWith(isLoading: true);
+
     try {
       final requests = await appealAgainstAdministrativeDecisionsInstance
           .getRequestsById(
             id: id,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
+            serviceId: serviceId == 0 ? (service.id ?? 0) : serviceId,
+            subServiceId: subServiceId == 0
+                ? (subService.id ?? 0)
+                : subServiceId,
           );
 
       if (requests != null) {
         state = state.copyWith(requestDetails: requests, isLoading: false);
-        // fetchAssignEmployeesList();
 
         fetchChatById(id);
         fetchAttachmentsById(id);
+
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
 
-        /// ✅ CHECK ACTION TYPE HERE
         final actionType = getActionButtonsType(
           requests,
           requests.approvalDetails ?? [],
         );
+
         if (actionType == ActionButtonsType.assignReject) {
-          // fetchAssignEmployeesList();
           debugPrint('this user can only approve');
         }
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);

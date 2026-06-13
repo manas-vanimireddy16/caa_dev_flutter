@@ -8,7 +8,7 @@ import 'package:code_setup/presentation/screens/home_screen/dashboard/models/boo
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/dashboard_requests_approvals.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/servicesModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/userModel.dart';
-import 'package:code_setup/repository/dashboard/data/dashboardImplementation.dart';
+import 'package:code_setup/repository/dashboard/data/dashboard_implementation.dart';
 
 abstract class DashboardRepository {
   factory DashboardRepository() => DashboardRepositoryImplementation();
