@@ -39,21 +39,25 @@ class SalalahRequestModel {
   factory SalalahRequestModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) return const SalalahRequestModel();
 
+    final serviceTypeJson = json['service_type'];
+
     return SalalahRequestModel(
       base: BaseRequestModel.fromJson(json),
 
-      subServiceId: json['sub_service_id'],
-      problem: json['problem'],
-      requestFor: json['request_for'],
-      description: json['description'],
-      extnNum: json['extn_num'],
-      contactNum: json['contact_num'],
-      email: json['email'],
-      requestType: json['request_type'],
-      personName: json['person_name'],
-      personContactNumber: json['person_contact_number'],
-      requestDate: json['request_date'],
-      serviceType: ServiceTypeModel.fromJson(json['service_type']),
+      subServiceId: int.tryParse(json['sub_service_id']?.toString() ?? ''),
+      problem: json['problem']?.toString(),
+      requestFor: json['request_for']?.toString(),
+      description: json['description']?.toString(),
+      extnNum: json['extn_num']?.toString(),
+      contactNum: json['contact_num']?.toString(),
+      email: json['email']?.toString(),
+      requestType: json['request_type']?.toString(),
+      personName: json['person_name']?.toString(),
+      personContactNumber: json['person_contact_number']?.toString(),
+      requestDate: json['request_date']?.toString(),
+      serviceType: serviceTypeJson is Map<String, dynamic>
+          ? ServiceTypeModel.fromJson(serviceTypeJson)
+          : null,
     );
   }
 }

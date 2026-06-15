@@ -94,7 +94,7 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
             ),
           ),
           if (_expanded) ...[
-            Divider(height: 1, color: Colors.grey.shade300),
+            Divider(color: Colors.grey.shade300, thickness: 1),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: LayoutBuilder(

@@ -9,6 +9,7 @@ import 'package:code_setup/presentation/common_widgets/analytics/request_status_
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
+import 'package:code_setup/presentation/core/providers/service_tree_provider.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/models/activity_feed_model.dart';
@@ -22,12 +23,12 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/asset_affairs/models/unit_locations_model.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/dashboard_requests_approvals.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_list.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/grade_list_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/hr_task.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_list.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/grade_list_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/hr_task.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/maintenance/models/station_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
@@ -50,15 +51,15 @@ part 'widgets/ticket_requests_card.dart';
 
 @RoutePage()
 class MaintenanceDashboardScreen extends ConsumerStatefulWidget {
-  final Service service;
-  final SubService subService;
+  final Service? service;
+  final SubService? subService;
   final List<SubService> subServices;
 
   const MaintenanceDashboardScreen({
     super.key,
-    required this.service,
-    required this.subService,
-    required this.subServices,
+    this.service,
+    this.subService,
+    this.subServices = const [],
   });
 
   @override
@@ -78,18 +79,19 @@ class _MaintenanceDashboardScreenState
 
     final selected = ref.read(selectedServiceProvider);
 
-    final service = widget.service.id != null
-        ? widget.service
-        : selected.service;
+    final service =
+        widget.service ??
+        ref.read(serviceTreeProvider).serviceByCode('CAAS016') ??
+        selected.service;
 
-    final subService = widget.subService.id != null
-        ? widget.subService
-        : selected.subService;
+    final subService = widget.subService ?? selected.subService;
 
     _providerArgs = _VSControllerParams(
       service: service,
       subService: subService,
-      subServices: widget.subServices,
+      subServices: widget.subServices.isNotEmpty
+          ? widget.subServices
+          : service.subservices ?? [],
     );
 
     _focusNode = FocusNode();
@@ -126,7 +128,7 @@ class _MaintenanceDashboardScreenState
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
             title: l10n.requestsStatusBreakdown,
-            centerMetricLabel: l10n.totalTickets,
+            centerMetricLabel: _providerArgs.service.name ?? '',
             legendHeading: l10n.breakdown,
             statusLabelBuilder: l10n.statusLabel,
             onChanged: controller.onStatusFilterChanged,
@@ -140,7 +142,7 @@ class _MaintenanceDashboardScreenState
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
             title: l10n.requestTrendBreakdown,
-            metric: l10n.totalTickets,
+            metric: _providerArgs.service.name ?? '',
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
@@ -148,6 +150,14 @@ class _MaintenanceDashboardScreenState
           ),
 
           16.toVerticalSizedBox,
+
+          Text(
+            _providerArgs.service.name ?? '',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          12.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

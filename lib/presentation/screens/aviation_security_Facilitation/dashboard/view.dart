@@ -1,271 +1,174 @@
+import 'dart:async';
 import 'package:auto_route/auto_route.dart';
+import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+import 'package:code_setup/modules/domain/models/roles_model.dart';
+import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/presentation/common_widgets/request_card.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
+import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
+import 'package:code_setup/presentation/core/providers/service_tree_provider.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/models/activity_feed_model.dart';
+import 'package:code_setup/presentation/models/allowance_employee.dart';
+import 'package:code_setup/presentation/models/details_models.dart';
+import 'package:code_setup/presentation/models/file_upload_model.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
-import 'package:code_setup/presentation/models/request_detail.dart';
+import 'package:code_setup/presentation/models/master_roles.dart';
+import 'package:code_setup/presentation/models/selection_dialog_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/hotel_reservation/models/request_data.dart';
-import 'package:code_setup/repository/housing_accommodation_service/dashboard/domain/domain.dart';
-import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
+import 'package:code_setup/presentation/screens/asset_affairs/models/unit_locations_model.dart';
+import 'package:code_setup/presentation/screens/home_screen/dashboard/models/dashboard_requests_approvals.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_list.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/grade_list_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/hr_task.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
+import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
+import 'package:code_setup/presentation/screens/maintenance/models/station_model.dart';
+import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
+import 'package:code_setup/repository/common_dashboard_all_services/domain/domain.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/helper/dashboard_request_details_navigator.dart';
+import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 part 'controller.dart';
-// part 'widgets/remarksSend.dart';
-// part 'widgets/request_details.dart';
+part 'widgets/request_list.dart';
+part 'widgets/request_tab.dart';
+part 'widgets/ticket_requests_card.dart';
 
 @RoutePage()
-class AviationSecurityFacilitationDashboardScreen
-    extends ConsumerStatefulWidget {
-  const AviationSecurityFacilitationDashboardScreen({super.key});
+class AviationSecurityFaciliationScreen extends ConsumerStatefulWidget {
+  final Service? service;
+  final SubService? subService;
+  final List<SubService> subServices;
+
+  const AviationSecurityFaciliationScreen({
+    super.key,
+    this.service,
+    this.subService,
+    this.subServices = const [],
+  });
 
   @override
-  ConsumerState<AviationSecurityFacilitationDashboardScreen> createState() =>
-      _AviationSecurityFacilitationDashboardScreenState();
+  ConsumerState<AviationSecurityFaciliationScreen> createState() =>
+      _AviationSecurityFaciliationScreenState();
 }
 
-class _AviationSecurityFacilitationDashboardScreenState
-    extends ConsumerState<AviationSecurityFacilitationDashboardScreen>
-    with SingleTickerProviderStateMixin {
-  late TextEditingController searchController;
+class _AviationSecurityFaciliationScreenState
+    extends ConsumerState<AviationSecurityFaciliationScreen> {
   late FocusNode _focusNode;
-  late TabController _tabController;
+  late _VSControllerParams _providerArgs;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    searchController = TextEditingController(
-      text: ref.read(searchQueryProvider),
+
+    final selected = ref.read(selectedServiceProvider);
+
+    final service =
+        widget.service ??
+        ref
+            .read(serviceTreeProvider)
+            .serviceByCodeOrSubServiceCodes(
+              serviceCode: 'CAAS013',
+              subServiceCodes: const ['CAA010'],
+            ) ??
+        selected.service;
+
+    final subService = widget.subService ?? selected.subService;
+
+    _providerArgs = _VSControllerParams(
+      service: service,
+      subService: subService,
+      subServices: widget.subServices.isNotEmpty
+          ? widget.subServices
+          : service.subservices ?? [],
     );
+
     _focusNode = FocusNode();
-
-    searchController.addListener(() {
-      setState(() {}); // rebuild suffixIcon
-    });
-
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        ref.read(selectedrequesteventTabProvider.notifier).state =
-            _tabController.index;
-      }
-    });
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
-    searchController.dispose();
     _focusNode.dispose();
-    _tabController.dispose();
     super.dispose();
+    _pageController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final tickets = ref.watch(ticketProvider);
-    // final selectedTab = ref.watch(selectedrequesteventTabProvider);
-    // final data = ref.watch(filteredDataProvider);
-    // final selectedService = ref.watch(bottomNavIndexProvider);
-    final state = ref.watch(_vsProvider);
-    final controller = ref.read(_vsProvider.notifier);
+    final state = ref.watch(_vsProvider(_providerArgs));
+    final controller = ref.read(_vsProvider(_providerArgs).notifier);
     final l10n = DashboardL10n.of(context);
-    final statsList = StatSummaryHelper.buildStatList(
-      state.kpiData.data?.toJson(),
-      titleForKey: l10n.statTitle,
-    );
-    final statsApproverList = StatSummaryHelper.buildStatList(
-      state.approvalKpiData.data?.toJson(),
-      titleForKey: l10n.statTitle,
-    );
-
-    // // Keep TabController in sync with provider
-    // if (_tabController.index != selectedTab) {
-    //   _tabController.index = selectedTab;
-    // }
 
     return KScaffold(
       backgroundColor: Colors.white,
-      // appBar: AppBar(title: const Text('Hotel Accomidation')),
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
-          // KPI Cards
+          /// KPI
           StatSummaryRow(
-            stats: state.tabIndex == 0 ? statsList : statsApproverList,
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
+          ),
+          16.toVerticalSizedBox,
+
+          /// Status Breakdown
+          RequestStatusBreakdownCard(
+            data: state.tabIndex == 0
+                ? controller.statusBreakdownList
+                : controller.approvalStatusBreakdownList,
+            title: l10n.requestsStatusBreakdown,
+            centerMetricLabel: _providerArgs.service.name ?? '',
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
+            onChanged: controller.onStatusFilterChanged,
+            breakdown: state.statusBreakdown.data,
+          ),
+          16.toVerticalSizedBox,
+
+          RequestTrendBreakdownCard(
+            monthlyData: state.tabIndex == 0
+                ? controller.trendCounts
+                : controller.approvalTrendCounts,
+            monthLabels: state.months,
+            title: l10n.requestTrendBreakdown,
+            metric: _providerArgs.service.name ?? '',
+            selectedYear: controller.currentYear.toString(),
+            barColor: Colors.blue,
+            filterLabelList: controller.filterLabelList,
+            onChanged: controller.onTrendFilterChanged,
           ),
 
-          // Ticket Requests Section
-          Card(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.ticketRequests,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // KAppX.router.push(AccessCardDashboardRequestRoute());
-                        },
-                        child: Text(l10n.newRequest),
-                      ),
-                    ],
-                  ),
-                  12.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
-                  // Search box
-                  KTextField(
-                    focusNode: _focusNode,
-                    hintText: l10n.searchByIdOrName,
-                    controller: searchController,
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (value) {
-                      ref.read(searchQueryProvider.notifier).state = value;
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.search, color: Colors.black),
-                      suffixIcon: searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(
-                                Icons.clear,
-                                color: Colors.black,
-                              ),
-                              onPressed: () {
-                                searchController.clear();
-                                ref.read(searchQueryProvider.notifier).state =
-                                    "";
-                                Future.microtask(() {
-                                  if (!_focusNode.hasFocus) {
-                                    _focusNode.requestFocus();
-                                  }
-                                });
-                              },
-                            )
-                          : null,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  12.toHorizontalSizedBox,
+          Text(
+            _providerArgs.service.name ?? '',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          12.toVerticalSizedBox,
 
-                  // Tabs below the search bar
-                  TabBar(
-                    controller: _tabController,
-                    indicatorColor: Colors.blue,
-                    labelColor: Colors.blue,
-                    unselectedLabelColor: Colors.grey,
-                    tabs: [
-                      Tab(text: l10n.myRequests),
-                      Tab(text: l10n.actionItems),
-                    ],
-                  ),
-
-                  // Tab content
-                  SizedBox(
-                    height: 400, // adjust height as needed
-                    child: TabBarView(
-                      controller: _tabController,
-                      // physics:   const NeverScrollableScrollPhysics(), // ❌ disables swipe
-                      children: [
-                        // Tab 0
-                        Consumer(
-                          builder: (context, ref, _) {
-                            final data = state
-                                .hotelReservationRequestData; //state.dashboardMyRequests;
-                            return ListView.builder(
-                              itemCount: data.length,
-                              itemBuilder: (context, index) {
-                                final item = data[index];
-                                return RequestCard(
-                                  from: 'hotelreservation',
-                                  fieldLabelBuilder: l10n.fieldLabel,
-                                  requestIdLabelBuilder: l10n.requestIdLabel,
-
-                                  data: {
-                                    'id': item.id,
-                                    'status': item.status,
-                                    'User Name':
-                                        item.createdByUser?.employeeName ??
-                                        'NA',
-                                    'Date': item.dateOfRequest,
-                                    'Hotel Name': item.hotelName,
-                                    'Check-In Date': item.checkInDate,
-                                  },
-                                  onTap: () async {
-                                    // KAppX.router.push(
-                                    //   HotelReservationRequestDetailsTabRoute(
-                                    //     from: 'employee',
-                                    //     id: item.id ?? 0,
-                                    //   ),
-                                    // );
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        // Tab 1
-                        Consumer(
-                          builder: (context, ref, _) {
-                            final data = state.hotelReservationActionItemsData;
-                            return ListView.builder(
-                              itemCount: data.length,
-                              itemBuilder: (context, index) {
-                                final item = data[index];
-                                return RequestCard(
-                                  from: 'hotelreservation',
-                                  fieldLabelBuilder: l10n.fieldLabel,
-                                  requestIdLabelBuilder: l10n.requestIdLabel,
-
-                                  data: {
-                                    'id': item.id,
-                                    'status': item.status,
-                                    'User Name':
-                                        item.createdByUser?.employeeName ??
-                                        'NA',
-                                    'Date': item.dateOfRequest,
-                                    'Hotel Name': item.hotelName,
-                                    'Check-In Date': item.checkInDate,
-                                  },
-                                  onTap: () async {
-                                    // KAppX.router.push(
-                                    //   HotelReservationRequestDetailsTabRoute(
-                                    //     from: 'employee',
-                                    //     id: item.id ?? 0,
-                                    //   ),
-                                    // );
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          /// MAIN CARD
+          TicketRequestsCard(
+            providerArgs: _providerArgs,
+            focusNode: _focusNode,
+            pageController: _pageController,
           ),
         ],
       ),

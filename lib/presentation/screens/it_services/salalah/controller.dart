@@ -551,16 +551,19 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> refreshAfterReturn() async {
     await Future.wait([
       fetchRequests(),
+      fetchActionItems(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
       fetchApprovalKpi(),
+      fetchApprovalStatusBreakdown('weekly'),
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString()),
     ]);
   }
 
   Future<void> openNewRequestForm() async {
     await fetchitTechnician();
-    KAppX.router.push(
+    await KAppX.router.push(
       SalalahNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -568,6 +571,7 @@ class _VSController extends StateNotifier<_ViewState> {
         subService: subService,
       ),
     );
+    await refreshAfterReturn();
   }
 
   void updateTabIndex(int index) {

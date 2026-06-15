@@ -3,16 +3,16 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/master_roles.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/request_data_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/temporary_decision.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/temporary_decision.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart'
     hide ChatMessageModel;
 import 'package:code_setup/repository/hr_service/secondment_decision/data/data.dart';
 
-import '../../../../presentation/screens/hr_service/models/position_model.dart';
+import '../../../../presentation/screens/hc_service/models/position_model.dart';
 
 abstract class SecondmentDecisionReposiroty {
   factory SecondmentDecisionReposiroty() => SecondmentDecisionRepositoryImple();

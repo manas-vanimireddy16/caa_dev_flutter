@@ -2,6 +2,56 @@ import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/modules/router/route_names.dart';
 
+List<AutoRoute> get _dynamicSubServiceRoutes => [
+  AutoRoute(page: HotelReservationRoute.page),
+  AutoRoute(page: AirportEntryPermitRoute.page),
+  AutoRoute(page: AccessCardRequestRoute.page),
+  AutoRoute(page: ImportExportMaterialPermissionRoute.page),
+  AutoRoute(page: ComplaintLostPropertyReportRoute.page),
+  AutoRoute(page: SalalahDashboard.page),
+  AutoRoute(page: MuscatDashboard.page),
+  AutoRoute(page: VpnDashboard.page),
+  AutoRoute(page: RequestEventSupportRoute.page),
+  AutoRoute(page: RequestTrainingRoute.page),
+  AutoRoute(page: RequestForStudyLeaveRoute.page),
+  AutoRoute(page: AnnualTrainingPlanRoute.page),
+  AutoRoute(page: RequestForCancellationRoute.page),
+  AutoRoute(page: RequestforTrainingRoomBookingRoute.page),
+  AutoRoute(page: RequestToBookCAAHallsRoute.page),
+  AutoRoute(page: SecurityThreatRoute.page),
+  AutoRoute(
+    page: LegalConsultationandReviewofAdministrativeDecisionsRoute.page,
+  ),
+  AutoRoute(page: AppealAgainstAdministrativeDecisionsRoute.page),
+  AutoRoute(page: RequestForLegalContractReviewRoute.page),
+  AutoRoute(page: LogisticsRequestPortalRoute.page),
+  AutoRoute(page: LogisticsForeignersRequestPortalRoute.page),
+  AutoRoute(page: RequestForVehicleMaintenanceRoute.page),
+  AutoRoute(page: RequestMaintenanceRoute.page),
+  AutoRoute(page: MaintenanceofExternalServiceRoute.page),
+  AutoRoute(page: RequiredNewResourceRoute.page),
+  AutoRoute(page: PerformanceManagementRoute.page),
+  AutoRoute(page: SkillsEnhancementRoute.page),
+  AutoRoute(page: RequestForHumanResourceAnnualPlanningRoute.page),
+  AutoRoute(page: RequestforDutyMissionRoute.page),
+  AutoRoute(page: AssignmentDecisionRoute.page),
+  AutoRoute(page: SecondmentDecisionRoute.page),
+  AutoRoute(page: TemporaryAssignmentDecisionRoute.page),
+  AutoRoute(page: ServiceTransferRoute.page),
+  AutoRoute(page: TransferFromOneJobtoAnotherJobNatureRoute.page),
+  AutoRoute(page: PaymentofShiftAllowanceRoute.page),
+  AutoRoute(page: PaymentofCashAllowanceForLeaveRoute.page),
+  AutoRoute(page: PromotionsRoute.page),
+  AutoRoute(page: AnnualIncrementRoute.page),
+  AutoRoute(page: RequestforCoverageRoute.page),
+  AutoRoute(page: RequestTenderServiceRoute.page),
+  AutoRoute(page: RequestAServiceToRespondToEnquiriesRoute.page),
+  AutoRoute(page: RequestTenderAnalysisServiceRoute.page),
+  AutoRoute(page: ContractServiceRequestRoute.page),
+  AutoRoute(page: AssignaTasktoEmployeeRoute.page),
+  AutoRoute(page: FollowUpReportRoute.page),
+];
+
 @AutoRouterConfig(replaceInRouteName: 'Screen|Page,Route')
 class AppRouter extends RootStackRouter {
   static final AppRouter instance = AppRouter._internal();
@@ -38,7 +88,7 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.hotelReservationHomePage,
       children: [
         AutoRoute(page: HotelReservationDashboardRoute.page, initial: true),
-        AutoRoute(page: HotelReservationRoute.page),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 
@@ -57,13 +107,8 @@ class AppRouter extends RootStackRouter {
       page: SecuritySelfHomeRoute.page,
       path: RouteNames.securitySelfHomePage,
       children: [
-        AutoRoute(page: SecuritySelfDashboardRoute.page, initial: true),
-        AutoRoute(page: SecurityThreatRoute.page),
-        AutoRoute(page: OrganizeSecurityAwarenessRoute.page),
-        AutoRoute(page: RequestForProjectApprovalRoute.page),
-        AutoRoute(page: RequestForVAPTAndInfrastructureReviewRoute.page),
-        AutoRoute(page: RequestForInternalAuditRoute.page),
-        AutoRoute(page: CyberSecurityRiskManagementRoute.page),
+        AutoRoute(page: InformationSecurityDashboardRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 
@@ -136,8 +181,7 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.maintenanceHomeScreen,
       children: [
         AutoRoute(page: MaintenanceDashboardRoute.page, initial: true),
-        AutoRoute(page: RequestMaintenanceRoute.page),
-        AutoRoute(page: MaintenanceofExternalServiceRoute.page),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 
@@ -165,10 +209,8 @@ class AppRouter extends RootStackRouter {
       page: ITServicesHomeRoute.page,
       path: RouteNames.itService,
       children: [
-        AutoRoute(page: SalalahDashboard.page, initial: true),
-        AutoRoute(page: MuscatDashboard.page),
-        AutoRoute(page: VpnDashboard.page),
-        AutoRoute(page: RequestEventSupportRoute.page),
+        AutoRoute(page: ITServiceDashboardRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 
@@ -257,10 +299,8 @@ class AppRouter extends RootStackRouter {
       page: LogisticsHomeRoute.page,
       path: RouteNames.logistics,
       children: [
-        AutoRoute(page: LogisticsRequestPortalRoute.page),
-        AutoRoute(page: LogisticsDashboardRoute.page),
-        AutoRoute(page: LogisticsForeignersRequestPortalRoute.page),
-        AutoRoute(page: RequestForVehicleMaintenanceRoute.page),
+        AutoRoute(page: LogisticsServicesDashboardRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 
@@ -286,10 +326,8 @@ class AppRouter extends RootStackRouter {
       page: RequestForAccessHomeRoute.page,
       path: RouteNames.requestForAccessHome,
       children: [
-        AutoRoute(page: AccessCardDashboardRoute.page),
-        AutoRoute(page: AccessCardRequestRoute.page),
-        AutoRoute(page: ComplaintLostPropertyReportRoute.page),
-        AutoRoute(page: ImportExportMaterialPermissionRoute.page),
+        AutoRoute(page: SecurityAccessDashboardRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 
@@ -301,11 +339,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: AccessCardNewRequestRoute.page,
       path: RouteNames.accessCardNewRequest,
-    ),
-
-    AutoRoute(
-      page: ComplaintLostPropertyReportRoute.page,
-      path: RouteNames.accessCardDetailScreen,
     ),
 
     AutoRoute(
@@ -323,13 +356,31 @@ class AppRouter extends RootStackRouter {
       page: AviationSecurityFacilitationHomeRoute.page,
       path: RouteNames.homeRouteAirportPermit,
       children: [
-        AutoRoute(
-          page: AviationSecurityFacilitationDashboardRoute.page,
-          initial: true,
-        ),
-        AutoRoute(page: AirportEntryPermitRoute.page),
+        AutoRoute(page: AviationSecurityFaciliationRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
+
+    /// --- DYNAMIC SUB-SERVICES ---
+    AutoRoute(page: HotelReservationRoute.page),
+    AutoRoute(page: AirportEntryPermitRoute.page),
+    AutoRoute(page: AccessCardRequestRoute.page),
+    AutoRoute(page: ImportExportMaterialPermissionRoute.page),
+    AutoRoute(page: ComplaintLostPropertyReportRoute.page),
+    AutoRoute(page: SalalahDashboard.page),
+    AutoRoute(page: MuscatDashboard.page),
+    AutoRoute(page: VpnDashboard.page),
+    AutoRoute(page: RequestEventSupportRoute.page),
+    AutoRoute(
+      page: LegalConsultationandReviewofAdministrativeDecisionsRoute.page,
+    ),
+    AutoRoute(page: AppealAgainstAdministrativeDecisionsRoute.page),
+    AutoRoute(page: RequestForLegalContractReviewRoute.page),
+    AutoRoute(page: LogisticsRequestPortalRoute.page),
+    AutoRoute(page: LogisticsForeignersRequestPortalRoute.page),
+    AutoRoute(page: RequestForVehicleMaintenanceRoute.page),
+    AutoRoute(page: RequestMaintenanceRoute.page),
+    AutoRoute(page: MaintenanceofExternalServiceRoute.page),
 
     AutoRoute(
       page: AirportEntryPermitNewRequestRoute.page,
@@ -346,23 +397,8 @@ class AppRouter extends RootStackRouter {
       page: HRServiceHomeRoute.page,
       path: RouteNames.homeRouteHRService,
       children: [
-        AutoRoute(page: AssignmentDecisionDashboardRoute.page, initial: true),
-        AutoRoute(page: AssignmentDecisionRoute.page),
-        AutoRoute(page: SecondmentDecisionRoute.page),
-        AutoRoute(page: TemporaryAssignmentDecisionRoute.page),
-        AutoRoute(page: ServiceTransferRoute.page),
-        AutoRoute(page: RequestforDutyMissionRoute.page),
-        AutoRoute(page: RequestforDutyMissionPlannedRoute.page),
-        AutoRoute(page: RequestforDutyMissionUnplannedRoute.page),
-        AutoRoute(page: TransferFromOneJobtoAnotherJobNatureRoute.page),
-        AutoRoute(page: PaymentofShiftAllowanceRoute.page),
-        AutoRoute(page: PaymentofCashAllowanceForLeaveRoute.page),
-        AutoRoute(page: RequiredNewResourceRoute.page),
-        AutoRoute(page: PromotionsRoute.page),
-        AutoRoute(page: AnnualIncrementRoute.page),
-        AutoRoute(page: SkillsEnhancementRoute.page),
-        AutoRoute(page: PerformanceManagementRoute.page),
-        AutoRoute(page: RequestForHumanResourceAnnualPlanningRoute.page),
+        AutoRoute(page: HCServicesDashboardRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 
@@ -502,8 +538,8 @@ class AppRouter extends RootStackRouter {
       page: TrainingsandDevelopmentHomeRoute.page,
       path: RouteNames.trainingsanddevelopmentHomeScreen,
       children: [
-        AutoRoute(page: AssignaTasktoEmployeeRoute.page, initial: true),
-        AutoRoute(page: FollowUpReportRoute.page),
+        AutoRoute(page: TaskManagementDashboardRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 
@@ -576,8 +612,8 @@ class AppRouter extends RootStackRouter {
       page: MediaCoverageHomeRoute.page,
       path: RouteNames.mediaCoverageHomeScreen,
       children: [
-        AutoRoute(page: MediaServicesDashboardRoute.page, initial: true),
-        AutoRoute(page: RequestforCoverageRoute.page),
+        AutoRoute(page: MediaServiceDashboardRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 
@@ -596,15 +632,10 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.traininganddevelopmentHomeScreen,
       children: [
         AutoRoute(
-          page: TrainingandDevelopmentDashboardRoute.page,
+          page: TrainingAndDevelopmentDashboardRoute.page,
           initial: true,
         ),
-        AutoRoute(page: RequestforTrainingRoomBookingRoute.page),
-        AutoRoute(page: AnnualTrainingPlanRoute.page),
-        AutoRoute(page: RequestTrainingRoute.page),
-        AutoRoute(page: RequestForStudyLeaveRoute.page),
-        AutoRoute(page: RequestForCancellationRoute.page),
-        AutoRoute(page: RequestToBookCAAHallsRoute.page),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 
@@ -663,12 +694,9 @@ class AppRouter extends RootStackRouter {
       page: LegalConsultationServicesHomeRoute.page,
       path: RouteNames.homeRouteLegalConsultationServices,
       children: [
-        AutoRoute(page: RequestForLegalContractReviewRoute.page, initial: true),
-        AutoRoute(page: AppealAgainstAdministrativeDecisionsRoute.page),
+        AutoRoute(page: LegalServicesDashboardRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
         AutoRoute(page: RaiseLegalComplaintRoute.page),
-        AutoRoute(
-          page: LegalConsultationandReviewofAdministrativeDecisionsRoute.page,
-        ),
       ],
     ),
     AutoRoute(
@@ -711,10 +739,8 @@ class AppRouter extends RootStackRouter {
       page: TenderServiceHomeRoute.page,
       path: RouteNames.tenderServiceHomeScreen,
       children: [
-        AutoRoute(page: RequestTenderServiceRoute.page),
-        AutoRoute(page: RequestAServiceToRespondToEnquiriesRoute.page),
-        AutoRoute(page: RequestTenderAnalysisServiceRoute.page),
-        AutoRoute(page: ContractServiceRequestRoute.page),
+        AutoRoute(page: TenderServiceDashboardRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
       ],
     ),
 

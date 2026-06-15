@@ -2,7 +2,7 @@ import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/request_data_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/request_data_model.dart';
 import 'package:code_setup/repository/task_management/assign_a_task_to_employee/data/data.dart';

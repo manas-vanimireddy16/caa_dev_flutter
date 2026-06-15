@@ -5,12 +5,14 @@ import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/roles_repo.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
+import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/bookmarksModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/services/servicesCard.dart';
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/helper/sub_service_route_resolver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -199,6 +201,13 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
   @override
   void didChangeTabRoute(TabPageRoute previousRoute) {
     super.didChangeTabRoute(previousRoute);
+
+    _refreshServicesData();
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
 
     _refreshServicesData();
   }

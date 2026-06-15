@@ -17,6 +17,248 @@ Future<void> navigateToDashboardRequestDetails({
   final subServiceId = resolvedSubService.id ?? 0;
 
   switch (subServiceCode.trim()) {
+    /// IT Services
+    case 'CAA004':
+      await KAppX.router.push(
+        MuscatRequestDetailsTabRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA005':
+      await KAppX.router.push(
+        VPNRequestDetailsTabRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA003':
+      await KAppX.router.push(
+        SalalahRequestDetailsTabRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA059':
+      await KAppX.router.push(
+        RequestEventSupportDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+
+    /// Training Services
+    case 'CAA015':
+      await KAppX.router.push(
+        RequestTrainingDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA016':
+      await KAppX.router.push(
+        RequestForStudyLeaveDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA018':
+      await KAppX.router.push(
+        AnnualTrainingPlanDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA019':
+      await KAppX.router.push(
+        RequestForCancellationDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA049':
+      await KAppX.router.push(
+        RequestforTrainingRoomBookingDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA050':
+      await KAppX.router.push(
+        RequestToBookCAAHallsDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+
+    /// Logistics
+    case 'CAA031':
+      await KAppX.router.push(
+        LogisticsRequestDetailsTabRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA032':
+      await KAppX.router.push(
+        LogisticsForeignRequestDetailsTabRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA033':
+      await KAppX.router.push(
+        RequestForVehicleMaintenanceDetailsTabRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+
+    /// Legal Services
+
+    case 'CAA029':
+      await KAppX.router.push(
+        AppealAgainstAdministrativeDecisionsDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA027':
+      await KAppX.router.push(
+        LegalConsultationandReviewofAdministrativeDecisionsDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA028':
+      await KAppX.router.push(
+        RaiseLegalComplaintDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA030':
+      await KAppX.router.push(
+        RequestForLegalContractReviewDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+
+    /// Aviation Security
+    case 'CAA010':
+      await KAppX.router.push(
+        AirportEntryRequestDetailsTabRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+
+    /// Hotel Reservation
+    case 'CAA046':
+      await KAppX.router.push(
+        HotelReservationRequestDetailsTabRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+
+    /// Maintenance
     case 'CAA045':
       await KAppX.router.push(
         MaintenanceofExternalServiceDetailsRoute(
@@ -42,45 +284,33 @@ Future<void> navigateToDashboardRequestDetails({
       );
       break;
 
-    case 'CAA032':
-      await KAppX.router.push(
-        LogisticsForeignRequestDetailsTabRoute(
-          id: requestId,
-          from: from,
-          service: resolvedService,
-          subService: resolvedSubService,
-          serviceId: serviceId,
-          subServiceId: subServiceId,
-        ),
-      );
-      break;
-    case 'CAA031':
-      await KAppX.router.push(
-        LogisticsRequestDetailsTabRoute(
-          id: requestId,
-          from: from,
-          service: resolvedService,
-          subService: resolvedSubService,
-          serviceId: serviceId,
-          subServiceId: subServiceId,
-        ),
-      );
-      break;
-    case 'CAA033':
-      await KAppX.router.push(
-        RequestForVehicleMaintenanceDetailsTabRoute(
-          id: requestId,
-          from: from,
-          service: resolvedService,
-          subService: resolvedSubService,
-          serviceId: serviceId,
-          subServiceId: subServiceId,
-        ),
-      );
-      break;
     case 'CAA021':
       await KAppX.router.push(
         AccessCardRequestDetailsTabRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA023':
+      await KAppX.router.push(
+        ImportExportMaterialPermissionNewRequestDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA025':
+      await KAppX.router.push(
+        ComplaintLostPropertyReportDetailsRoute(
           id: requestId,
           from: from,
           service: resolvedService,
@@ -102,9 +332,141 @@ Future<void> navigateToDashboardRequestDetails({
         ),
       );
       break;
-    case 'CAA010':
+    case 'CAA020':
       await KAppX.router.push(
-        AirportEntryRequestDetailsTabRoute(
+        RequestforCoverageDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA011':
+      await KAppX.router.push(
+        RequestTenderServiceDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA012':
+      await KAppX.router.push(
+        RequestAServiceToRespondToEnquiriesDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA013':
+      await KAppX.router.push(
+        RequestTenderAnalysisServiceDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA014':
+      await KAppX.router.push(
+        ContractServiceRequestDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA034':
+      await KAppX.router.push(
+        AssignaTasktoEmployeeDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA065':
+      await KAppX.router.push(
+        FollowUpReportDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA036':
+      await KAppX.router.push(
+        RequiredNewResourceDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA037':
+      await KAppX.router.push(
+        PerformanceManagementDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA038':
+      await KAppX.router.push(
+        SkillsEnhancementDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA039':
+      await KAppX.router.push(
+        RequestForHumanResourceAnnualPlanningDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA040':
+      await KAppX.router.push(
+        RequestforDutyMissionDetailsRoute(
           id: requestId,
           from: from,
           service: resolvedService,
@@ -127,7 +489,6 @@ Future<void> navigateToDashboardRequestDetails({
       );
       break;
     case 'CAA061':
-    case 'CAA028':
       await KAppX.router.push(
         SecondmentDecisionDetailsRoute(
           id: requestId,
@@ -139,9 +500,81 @@ Future<void> navigateToDashboardRequestDetails({
         ),
       );
       break;
-    case 'CAA029':
+    case 'CAA062':
       await KAppX.router.push(
-        AppealAgainstAdministrativeDecisionsDetailsRoute(
+        TemporaryAssignmentDecisionDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA063':
+      await KAppX.router.push(
+        ServiceTransferDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA064':
+      await KAppX.router.push(
+        TransferFromOneJobtoAnotherJobNatureDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA066':
+      await KAppX.router.push(
+        PaymentofShiftAllowanceDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA067':
+      await KAppX.router.push(
+        PaymentofCashAllowanceForLeaveDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA068':
+      await KAppX.router.push(
+        PromotionsDetailsRoute(
+          id: requestId,
+          from: from,
+          service: resolvedService,
+          subService: resolvedSubService,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+        ),
+      );
+      break;
+    case 'CAA069':
+      await KAppX.router.push(
+        AnnualIncrementDetailsRoute(
           id: requestId,
           from: from,
           service: resolvedService,

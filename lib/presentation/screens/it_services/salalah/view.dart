@@ -30,17 +30,10 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/it_technician.dart';
-import 'package:code_setup/presentation/screens/it_services/salalah/models/requestData.dart'
-    hide Service;
-import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart'
-    hide Service, SubService;
 import 'package:code_setup/presentation/screens/it_services/salalah/models/salalah_action_items_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/salalah_data_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/service_dropdown_model.dart'
     hide Service, SubService;
-import 'package:code_setup/presentation/screens/it_services/salalah/models/status_break_down.dart'
-    hide ChartData;
-import 'package:code_setup/presentation/screens/it_services/salalah/widgets/request_details_tab.dart';
 import 'package:code_setup/presentation/screens/it_services/widgets/workflow.dart';
 import 'package:code_setup/repository/it_services/salalah/domain/dashboard.dart'
     show DashboardRepository;
@@ -81,7 +74,9 @@ class SalalahDashboard extends ConsumerStatefulWidget {
 }
 
 class _SalalahDashboardState extends ConsumerState<SalalahDashboard>
-    with SingleTickerProviderStateMixin {
+    with
+        SingleTickerProviderStateMixin,
+        AutoRouteAwareStateMixin<SalalahDashboard> {
   late TextEditingController searchController;
   late FocusNode _focusNode;
   late TabController _tabController;
@@ -121,6 +116,18 @@ class _SalalahDashboardState extends ConsumerState<SalalahDashboard>
     _tabController.dispose();
     _pageController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeTabRoute(TabPageRoute previousRoute) {
+    super.didChangeTabRoute(previousRoute);
+    ref.read(_vsProvider(_providerArgs).notifier).refreshAfterReturn();
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    ref.read(_vsProvider(_providerArgs).notifier).refreshAfterReturn();
   }
 
   @override

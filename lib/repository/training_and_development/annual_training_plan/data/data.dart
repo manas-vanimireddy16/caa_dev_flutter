@@ -7,7 +7,7 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/request_data_model.dart';
 import 'package:code_setup/presentation/screens/media_services/models/request_data_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/request_data_model.dart';

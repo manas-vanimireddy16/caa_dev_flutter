@@ -5,11 +5,20 @@ final selectedrequesteventTabProvider = StateProvider<int>((ref) => 0);
 // Stores search text
 final searchQueryProvider = StateProvider<String>((ref) => "");
 
+final requestDeatilsTabSelectedProvider = StateProvider.autoDispose<int>(
+  (ref) => 0,
+);
+
 class _VSControllerParams extends Equatable {
   final Service service;
   final SubService subService;
+  final List<SubService> subServices;
 
-  const _VSControllerParams({required this.service, required this.subService});
+  const _VSControllerParams({
+    required this.service,
+    required this.subService,
+    required this.subServices,
+  });
 
   @override
   List<Object?> get props => [service, subService];
@@ -20,6 +29,7 @@ final _vsProvider = StateNotifierProvider.autoDispose
       final controller = _VSController(
         service: params.service,
         subService: params.subService,
+        subServices: params.subServices,
       );
       controller.initState();
       return controller;
@@ -27,124 +37,282 @@ final _vsProvider = StateNotifierProvider.autoDispose
 
 class _ViewState {
   final bool isLoading;
+  final bool isRequestLoading;
+  final bool isActionItemLoading;
 
-  final List<HotelReservationRequestModel> requestData;
-  final List<HotelReservationRequestModel> actionItems;
-  final RequestDetailData requestDetails;
+  final List<FileUploadItem> selectedFileUrl;
+  final List<Map<String, dynamic>> attachments;
+
   final KPIResponse kpiData;
   final KPIResponse approvalKpiData;
-  final int tabIndex;
-  final TrendBreakdownModel trendData;
-  final TrendBreakdownModel approvalTrendData;
+
   final StatusBreakdownModel statusBreakdown;
+  final TrendBreakdownModel trendData;
+  final RequestDetailModel requestDataById;
+
+  final int tabIndex;
+  final int selectedTab;
+
   final StatusBreakdownModel approvalStatusBreakdown;
+  final TrendBreakdownModel approvalTrendData;
+  final List<DashboardRequestModel> requestData;
+  final List<DashboardRequestModel> actionItems;
+  final String myRequestsStatusFilter;
+  final String actionItemsStatusFilter;
+  final RequestDetailData requestDetails;
   final int requestDetailTab;
+  final int approvalId;
+
+  final bool isButtonDisabled;
+  final List<ChatMessageModel> chatById;
+  final List<AttachmentModel> attachmentsById;
+  final List<StationModel> stationsList;
+  final List<String> months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  /// FORM KEY
+  final formKey = GlobalKey<FormState>();
+
   _ViewState({
     required this.isLoading,
+    required this.isRequestLoading,
+    required this.selectedFileUrl,
+    required this.attachments,
+    required this.kpiData,
     required this.approvalKpiData,
-    required this.requestDetails,
+    required this.statusBreakdown,
+    required this.trendData,
+    required this.requestDataById,
+    required this.tabIndex,
+    required this.selectedTab,
+    required this.approvalStatusBreakdown,
+    required this.approvalTrendData,
     required this.requestData,
     required this.actionItems,
-    required this.kpiData,
-    required this.tabIndex,
-    required this.trendData,
-    required this.approvalTrendData,
-    required this.statusBreakdown,
-    required this.approvalStatusBreakdown,
+    required this.myRequestsStatusFilter,
+    required this.actionItemsStatusFilter,
+    required this.requestDetails,
     required this.requestDetailTab,
+    required this.approvalId,
+    required this.isButtonDisabled,
+    required this.chatById,
+    required this.attachmentsById,
+    required this.stationsList,
+    required this.isActionItemLoading,
   });
 
   _ViewState.init()
     : this(
         isLoading: false,
-        requestDetails: RequestDetailData(),
-        requestData: [],
-        actionItems: [],
+        isRequestLoading: false,
+        selectedFileUrl: [],
+        attachments: [],
         kpiData: KPIResponse(),
         approvalKpiData: KPIResponse(),
-        tabIndex: 0,
-        trendData: TrendBreakdownModel(),
-        approvalTrendData: TrendBreakdownModel(),
         statusBreakdown: StatusBreakdownModel(),
+        trendData: TrendBreakdownModel(),
+        requestDataById: RequestDetailModel(),
+        tabIndex: 0,
+        selectedTab: 0,
         approvalStatusBreakdown: StatusBreakdownModel(),
+        approvalTrendData: TrendBreakdownModel(),
+        requestData: [],
+        actionItems: [],
+        myRequestsStatusFilter: '',
+        actionItemsStatusFilter: '',
+        requestDetails: RequestDetailData(),
         requestDetailTab: 0,
+        approvalId: 0,
+        isButtonDisabled: false,
+        chatById: [],
+
+        attachmentsById: [],
+        stationsList: [],
+        isActionItemLoading: false,
       );
 
   _ViewState copyWith({
     bool? isLoading,
-    RequestDetailData? requestDetails,
-    List<HotelReservationRequestModel>? requestData,
-    List<HotelReservationRequestModel>? actionItems,
+    bool? isRequestLoading,
+    int? threatType,
+    String? selectedPriority,
+    String? visitorChecks,
+    List<String>? servicePreference,
+    List<FileUploadItem>? selectedFileUrl,
+    List<Map<String, dynamic>>? attachments,
     KPIResponse? kpiData,
     KPIResponse? approvalKpiData,
-    int? tabIndex,
-    TrendBreakdownModel? trendData,
-    TrendBreakdownModel? approvalTrendData,
+    List<ActivitiesFeedData>? activityFeed,
     StatusBreakdownModel? statusBreakdown,
-    int? requestDetailTab,
+    TrendBreakdownModel? trendData,
+    RequestDetailModel? requestDataById,
     StatusBreakdownModel? approvalStatusBreakdown,
+    TrendBreakdownModel? approvalTrendData,
+    int? tabIndex,
+    int? selectedTab,
+    List<DashboardRequestModel>? requestData,
+    List<DashboardRequestModel>? actionItems,
+    String? myRequestsStatusFilter,
+    String? actionItemsStatusFilter,
+    RequestDetailData? requestDetails,
+    int? requestDetailTab,
+    String? permitCategory,
+    String? departmentName,
+    List<PendingApprovalUser>? engineersList,
+    int? approvalId,
+    String? mediaCoverageRequired,
+    String? location,
+    String? permitType,
+    List<String>? selectedpermissionAreas,
+    List<String>? acknowledgement,
+    String? threatOption,
+    bool? isFormValid,
+    bool? isButtonDisabled,
+    List<ChatMessageModel>? chatById,
+    List<Position>? positionsList,
+    String? selectedPositionName,
+    int? selectedUserId,
+    List<EmployeeList>? usersList,
+    String? selectedUserName,
+    EmployeeList? selectedUser,
+    List<EmployeeSummary>? employeeList,
+    bool? isStartDateSelected,
+    String? selectedSalaryDetails,
+    String? selectedRequestType,
+    List<AllowanceEmployee>? allowanceEmployees,
+    List<DepartmentModel>? departments,
+    List<LocationModel>? locations,
+    List<AttachmentModel>? attachmentsById,
+    List<MasterRolesModel>? rolesList,
+    List<SelectionDialogItem>? selectionItems,
+    List<Grade>? gradeList,
+    List<GoalModel>? byCycleGoalsData,
+    List<GoalListModel>? goalWeightList,
+    List<HrTask>? hrTasks,
+    String? hrTaskInput,
+    String? hrResponsibilityInput,
+    String? hrFrequencyInput,
+    String? hrDurationInput,
+    ValueGetter<int?>? hrEditingIndex,
+    List<EmployeeList>? selectedUsersList,
+    List<ResidentalUnitRentalLocationModel>? unitLocations,
+    List<SectionModel>? sections,
+    List<StationModel>? stationsList,
+    bool? isActionItemLoading,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
-      requestDetails: requestDetails ?? this.requestDetails,
-      requestData: requestData ?? this.requestData,
-      actionItems: actionItems ?? this.actionItems,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
+      selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
+      attachments: attachments ?? this.attachments,
       kpiData: kpiData ?? this.kpiData,
       approvalKpiData: approvalKpiData ?? this.approvalKpiData,
-      tabIndex: tabIndex ?? this.tabIndex,
-      trendData: trendData ?? this.trendData,
-      approvalTrendData: approvalTrendData ?? this.approvalTrendData,
       statusBreakdown: statusBreakdown ?? this.statusBreakdown,
+      trendData: trendData ?? this.trendData,
+      requestDataById: requestDataById ?? this.requestDataById,
+      tabIndex: tabIndex ?? this.tabIndex,
+      selectedTab: selectedTab ?? this.selectedTab,
       approvalStatusBreakdown:
           approvalStatusBreakdown ?? this.approvalStatusBreakdown,
+      approvalTrendData: approvalTrendData ?? this.approvalTrendData,
+      requestData: requestData ?? this.requestData,
+      actionItems: actionItems ?? this.actionItems,
+      myRequestsStatusFilter:
+          myRequestsStatusFilter ?? this.myRequestsStatusFilter,
+      actionItemsStatusFilter:
+          actionItemsStatusFilter ?? this.actionItemsStatusFilter,
+      requestDetails: requestDetails ?? this.requestDetails,
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
+      approvalId: approvalId ?? this.approvalId,
+      isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
+      chatById: chatById ?? this.chatById,
+      attachmentsById: attachmentsById ?? this.attachmentsById,
+      stationsList: stationsList ?? this.stationsList,
+      isActionItemLoading: isActionItemLoading ?? this.isActionItemLoading,
     );
   }
 }
 
 class _VSController extends StateNotifier<_ViewState> {
+  static const List<String> requestListStatusFilters = [
+    '',
+    'Approved',
+    'Pending',
+    'Rejected',
+  ];
+
   final Service service;
   final SubService subService;
+  final List<SubService> subServices;
   late final _VSControllerParams params;
-  _VSController({required this.service, required this.subService})
-    : super(_ViewState.init()) {
-    params = _VSControllerParams(service: service, subService: subService);
+  _VSController({
+    required this.service,
+    required this.subService,
+    required this.subServices,
+  }) : super(_ViewState.init()) {
+    params = _VSControllerParams(
+      service: service,
+      subService: subService,
+      subServices: subServices,
+    );
   }
-  late TextEditingController personNameController;
-  late TextEditingController contactNumberController;
-  late TextEditingController departmentController;
-  late TextEditingController emailController;
-  late TextEditingController employeeIdController;
-  late TextEditingController uniorOrgcontroller;
-  late TextEditingController reasonController;
-  late TextEditingController descriptionController;
-  late TextEditingController vehicleRequiredLocationController;
-  late TextEditingController contactNumberForeignController;
-  late TextEditingController chatController;
+
   Timer? _searchDebounce;
+
+  late TextEditingController chatController;
+  late TextEditingController titleController;
   late TextEditingController searchController;
 
   void initState() {
-    personNameController = TextEditingController();
-    departmentController = TextEditingController();
-    contactNumberController = TextEditingController();
-    emailController = TextEditingController();
-    reasonController = TextEditingController();
-    employeeIdController = TextEditingController();
-    uniorOrgcontroller = TextEditingController();
-    reasonController = TextEditingController();
-    vehicleRequiredLocationController = TextEditingController();
-    contactNumberForeignController = TextEditingController();
-    descriptionController = TextEditingController();
     chatController = TextEditingController();
+    titleController = TextEditingController();
     searchController = TextEditingController();
+    fetchUserRoles();
     fetchKpi();
-    fetchApprovalKpi();
     fetchRequests();
-    fetchActionItems();
+    fetchStatusBreakdown('weekly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalKpi();
+    // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
   int _searchVersion = 0;
+
+  String get currentStatusFilter => state.tabIndex == 0
+      ? state.myRequestsStatusFilter
+      : state.actionItemsStatusFilter;
+
+  String requestListStatusFilterLabel(String status, DashboardL10n l10n) {
+    if (status.isEmpty) {
+      return l10n.isArabic ? 'الكل' : 'All';
+    }
+    return l10n.statusLabel(status);
+  }
+
+  void onRequestStatusFilterChanged(String status) {
+    final searchText = searchController.text.trim();
+
+    if (state.tabIndex == 0) {
+      state = state.copyWith(myRequestsStatusFilter: status);
+      fetchRequests(isRefresh: true, searchText: searchText, status: status);
+      return;
+    }
+
+    state = state.copyWith(actionItemsStatusFilter: status);
+    fetchActionItems(isRefresh: true, searchText: searchText, status: status);
+  }
 
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
@@ -152,9 +320,17 @@ class _VSController extends StateNotifier<_ViewState> {
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
       if (state.tabIndex == 0) {
-        await fetchRequests(isRefresh: true, searchText: value);
+        await fetchRequests(
+          isRefresh: true,
+          searchText: value,
+          status: state.myRequestsStatusFilter,
+        );
       } else {
-        await fetchActionItems(isRefresh: true, searchText: value);
+        await fetchActionItems(
+          isRefresh: true,
+          searchText: value,
+          status: state.actionItemsStatusFilter,
+        );
       }
 
       if (currentVersion != _searchVersion) return; // ignore old response
@@ -165,19 +341,21 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
-
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
-
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? StatSummaryHelper.buildStatList(
+          state.kpiData.data?.toJson(),
+          titleForKey: titleForKey,
+        )
+      : StatSummaryHelper.buildStatList(
+          state.approvalKpiData.data?.toJson(),
+          titleForKey: titleForKey,
+        );
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
-      // fetchStatusBreakdown(value ?? '');
+      fetchStatusBreakdown(value ?? '');
     } else {
-      // fetchApprovalStatusBreakdown(value ?? '');
+      fetchApprovalStatusBreakdown(value ?? '');
     }
   }
 
@@ -185,9 +363,9 @@ class _VSController extends StateNotifier<_ViewState> {
     if (value == null) return;
 
     if (state.tabIndex == 0) {
-      // fetchTrendBreakDown(value);
+      fetchTrendBreakDown(value);
     } else {
-      // fetchApprovalTrendBreakDown(value);
+      fetchApprovalTrendBreakDown(value);
     }
   }
 
@@ -217,263 +395,301 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  bool _isPendingOrInProgress(String? status) {
-    final s = status?.toLowerCase();
-    return s == 'in progress';
-  }
-
-  bool _isCompleted(String? status) {
-    return status?.toLowerCase() == 'completed' ||
-        status?.toLowerCase() == 'approved';
-  }
-
-  DateTime _parseDate(String? value) {
-    try {
-      return DateTime.parse(value ?? '');
-    } catch (_) {
-      return DateTime.fromMillisecondsSinceEpoch(0);
-    }
-  }
-
-  Map<String, String> resolveApproverMap(List<ApprovalDetailModel>? approvals) {
-    if (approvals == null || approvals.isEmpty) {
-      return {};
-    }
-
-    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
-    final pendingList = approvals
-        .where((a) => _isPendingOrInProgress(a.approvalStatus))
-        .toList();
-
-    if (pendingList.isNotEmpty) {
-      pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
-      final next = pendingList.first;
-
-      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
-      if (next.approverRoleId != null) {
-        final name = next.approverUser?.employeeName;
-        final email = next.approverUser?.email;
-        final roleName = next.approverRole?.name;
-
-        if ((name ?? '').isNotEmpty) {
-          return {
-            'name': name!,
-            if ((email ?? '').isNotEmpty) 'email': email!,
-            if ((roleName ?? '').isNotEmpty) 'role': roleName!,
-          };
-        }
-      }
-
-      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
-      final department = next.department?.departmentName;
-      final section = next.section?.sectionName;
-
-      if ((department ?? '').isNotEmpty) {
-        return {
-          'department': department!,
-          if ((section ?? '').isNotEmpty) 'section': section!,
-        };
-      }
-
-      return {};
-    }
-
-    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
-    final completedList = approvals
-        .where((a) => _isCompleted(a.approvalStatus))
-        .toList();
-
-    if (completedList.isEmpty) {
-      return {};
-    }
-
-    completedList.sort((a, b) {
-      final levelCompare = (a.level ?? 0).compareTo(b.level ?? 0);
-      if (levelCompare != 0) return levelCompare;
-      return _parseDate(a.updatedAt).compareTo(_parseDate(b.updatedAt));
-    });
-
-    final last = completedList.last;
-
-    final name =
-        last.approvedByUser?.employeeName ?? last.approverUser?.employeeName;
-
-    final email = last.approverUser?.email;
-
-    if ((name ?? '').isNotEmpty) {
-      return {'name': name!, if ((email ?? '').isNotEmpty) 'email': email!};
-    }
-
-    return {};
-  }
-
-  Map<String, String> buildRequestCardData(HotelReservationRequestModel item) {
-    final approverMap = resolveApproverMap(item.approvalDetails ?? []);
+  Map<String, String> buildRequestCardData(DashboardRequestModel item) {
+    // final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
-      'Request Id': item.id?.toString() ?? '-',
-      'status': item.status ?? '-',
-      'Request By': item.createdByUser?.employeeName ?? '-',
-      // 'Cycle Period': item.cyclePeriod ?? '-',
-      'Request Submission Date': item.createdAt?.toString() ?? '-',
-      // 'Type of Request': item.typeOfRequest ?? '-',
-      // 'Request Classification': item.requestClassification ?? '-',
-      // 'Application Name': item.applicationName ?? '-',
-      // 'Date of Submission': item.submissionDate.toString() ?? '-',
+      'Request Id': item.requestId?.toString() ?? '-',
+      'status': item.base?.status ?? '-',
+      "Request For": item.base?.subService?.subServiceName ?? '',
+      'Request By': item.base?.createdByUser?.employeeName ?? '-',
+      'Request Submission Date': item.base?.createdAt.toString() ?? '-',
 
-      /// ================= EMPLOYEE INFO =================
+      // 'Type of Project': item.titleOfProject ?? 'NA',
 
       /// 👇 APPROVER (SINGLE LINE)
-      if (approverMap.containsKey('role')) ...{
-        'Approver': approverMap['role'] ?? '-',
-      } else if (approverMap.containsKey('department')) ...{
-        'Approver': _buildDepartmentSection(approverMap),
-      },
     };
   }
 
-  Map<String, String> buildRequestInformationData() {
-    final request = state.requestDetails.request;
-    return {
-      /// ───── RIGHT COLUMN ─────
-      "Service Type": request?.service?.name ?? 'N/A',
-
-      /// ───── LEFT COLUMN ─────
-      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      'Type of Request': request?.typeOfRequest ?? '-',
-      'Request Classification': request?.requestClassification ?? '-',
-      'Application Name': request?.applicationName ?? '-',
-      'Date of Submission': request?.submissionDate.toString() ?? '-',
-      'Application URL': request?.applicationUrl ?? '-',
-      'IP Address': request?.ipAddress ?? '-',
-      'Remarks': request?.remarks ?? '-',
-    };
-  }
-
-  Map<String, String> buildStatusInformation() {
-    final request = state.requestDetails.request;
-    final approvals = state.requestDetails.approvalDetails;
-    final nextApprover = resolveApproverMap(approvals);
-    return {
-      "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
-      // "Last Updated":
-      //     request?.updatedAt?.split('T').first ?? 'N/A',
-      if (nextApprover.containsKey('department'))
-        'Department': nextApprover['department']!,
-      if (nextApprover.containsKey('section'))
-        'Section': nextApprover['section']!,
-
-      if (nextApprover.containsKey('name'))
-        'Approver Name': nextApprover['name']!,
-      if (nextApprover.containsKey('email'))
-        'Approver Email': nextApprover['email']!,
-    };
-  }
-
-  Map<String, String> buildTechnicalInformation() {
-    final request = state.requestDetails.request;
-    return {
-      'Extension Number':
-          request?.createdByUser?.extensionNumber.toString() ?? '0',
-    };
-  }
-
-  String _buildDepartmentSection(Map<String, String> approverMap) {
-    final department = approverMap['department'];
-    final section = approverMap['section'];
-
-    if ((department ?? '').isNotEmpty && (section ?? '').isNotEmpty) {
-      return '$department - $section';
-    }
-
-    return department ?? '-';
-  }
-
-  void updateRequestTab(int index) {
-    state = state.copyWith(requestDetailTab: index);
-  }
-
-  Future<void> openRequestDetails(
-    int id, {
+  Future<void> navigateToRoute({
+    required String name,
+    required int requestId,
+    Service? service,
+    SubService? subService,
     bool fromActionItems = false,
-  }) async {
-    updateRequestTab(0);
-
-    await KAppX.router.push(
-      RequestForInternalAuditDetailsRoute(
-        id: id,
-        from: fromActionItems ? 'action items' : '',
-        service: service,
-        subService: subService,
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
-      ),
-    );
-
-    await refreshAfterReturn();
-  }
+  }) => navigateToDashboardRequestDetails(
+    subServiceCode: name,
+    requestId: requestId,
+    service: service,
+    subService: subService,
+    fromActionItems: fromActionItems,
+  );
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
       fetchRequests(),
       fetchKpi(),
-      // fetchStatusBreakdown('weekly'),
-      // fetchTrendBreakDown(DateTime.now().year.toString()),
+      fetchStatusBreakdown('weekly'),
+      fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
   }
 
-  void openNewRequestForm() {
-    // fetchbyCycleGoals(cycle: 'Jan-Jun');
-    // state = state.copyWith(selectedUsersList: []);
-    KAppX.router.push(
-      RequestForInternalAuditNewRequestRoute(
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
-        service: service,
-        subService: subService,
-      ),
+  final dashboardInstance = CommonDashboardRepository();
+
+  Future<void> selectOrStoreRole(UserRoleResponse userRoles) async {
+    final storage = KAuthCred();
+    final saved = await storage.getSelectedRole();
+
+    if (saved != null) {
+      print("🔵 Using saved role ${saved.roleName}");
+      return;
+    }
+
+    // First role from summary
+    final first = userRoles.data!.rolesSummary!.first;
+
+    // Match it inside role_details
+    final detail = userRoles.data!.roleDetails!.firstWhere(
+      (e) => e.role?.id == first.roleId,
+      orElse: () => userRoles.data!.roleDetails!.first,
     );
+
+    final selected = SelectedUserRole(
+      roleId: first.roleId!,
+      roleName: first.roleName!,
+      departmentId: detail.department?.id ?? 0,
+      sectionId: detail.section?.id ?? 0,
+      services: detail.services ?? [],
+    );
+
+    await storage.storeSelectedRole(selected);
+
+    print("🎯 Selected Role: ${selected.roleName}");
   }
 
-  void updateTabIndex(int index) {
-    state = state.copyWith(tabIndex: index);
-    if (index == 0) {
-      fetchRequests();
-      fetchKpi();
-      // fetchStatusBreakdown('weekly');
-      // fetchTrendBreakDown('2026');
-    } else {
-      // fetchactionItems();
-      fetchApprovalKpi();
-      // fetchApprovalStatusBreakdown('monthly');
-      // fetchApprovalTrendBreakDown('2026');
+  Future<void> fetchUserRoles() async {
+    if (!mounted) return;
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final userInfo = KAppX.globalProvider.read(userInfoProvider);
+      final id = int.tryParse((userInfo?.data?.id ?? 0).toString()) ?? 0;
+      final userRoles = await dashboardInstance.getUserRoles(id);
+      if (!mounted) return;
+
+      await selectOrStoreRole(userRoles);
+      await Future.wait([
+        fetchRequests(),
+        fetchActionItems(),
+        fetchApprovalKpi(),
+        fetchKpi(),
+        fetchStatusBreakdown('weekly'),
+        fetchTrendBreakDown(DateTime.now().year.toString()),
+      ]);
+
+      if (!mounted) return;
+
+      state = state.copyWith(isLoading: false);
+    } catch (e) {
+      debugPrint("fetchUserRoles error: $e");
+      if (mounted) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 
-  final hotelReservationinstance = HotelReservationDashboardRepoistory();
+  (List<int>, List<int>) getServiceAndSubServiceIds() {
+    final role = KAppX.globalProvider.read(rolesProvider);
+
+    final services = role?.services ?? [];
+
+    final currentService = services.firstWhere((e) => e.id == service.id);
+
+    final List<int> serviceIds = [
+      if (currentService.id != null) currentService.id ?? 0,
+    ];
+
+    final List<int> subServiceIds = (currentService.subservices ?? [])
+        .map((subService) => subService.id)
+        .whereType<int>()
+        .toSet()
+        .toList();
+
+    return (serviceIds, subServiceIds);
+  }
+
+  Future<void> fetchApprovalTrendBreakDown(String period) async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
+
+      final data = await dashboardInstance.getApprovalTrendBreakdownData(
+        period: period,
+        serviceIds: serviceIds,
+        subServiceIds: subServiceIds,
+      );
+
+      if (data != null) {
+        state = state.copyWith(approvalTrendData: data, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchApprovalStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
+
+      final statusBreakdown = await dashboardInstance
+          .getApprovalStatusBreakdownData(
+            period: period,
+            serviceIds: serviceIds,
+            subServiceIds: subServiceIds,
+          );
+
+      if (statusBreakdown != null) {
+        state = state.copyWith(
+          approvalStatusBreakdown: statusBreakdown,
+          isLoading: false,
+        );
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchStatusBreakdown(String period) async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
+
+      final statusBreakdown = await dashboardInstance.getStatusBreakdownData(
+        period: period,
+        serviceIds: serviceIds,
+        subServiceIds: subServiceIds,
+      );
+
+      if (statusBreakdown != null) {
+        state = state.copyWith(
+          statusBreakdown: statusBreakdown,
+          isLoading: false,
+        );
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> fetchTrendBreakDown(String period) async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
+
+      final data = await dashboardInstance.getTrendBreakdownData(
+        period: period,
+        serviceIds: serviceIds,
+        subServiceIds: subServiceIds,
+      );
+
+      if (data != null) {
+        state = state.copyWith(trendData: data, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchKpi() async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
+
+      final kpis = await dashboardInstance.getKpiData(
+        serviceIds: serviceIds,
+        subServiceIds: subServiceIds,
+      );
+
+      if (kpis != null) {
+        state = state.copyWith(kpiData: kpis, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> fetchApprovalKpi() async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
+
+      final kpis = await dashboardInstance.getApprovalKpiData(
+        serviceIds: serviceIds,
+        subServiceIds: subServiceIds,
+      );
+
+      if (kpis != null) {
+        state = state.copyWith(approvalKpiData: kpis, isLoading: false);
+      }
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+    }
+  }
 
   Future<void> fetchRequests({
     bool isRefresh = false,
     String searchText = '',
     String status = '',
   }) async {
-    try {
-      // Clear list only if explicitly refreshing or searching
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-        state = state.copyWith(requestData: []);
-      }
+    state = state.copyWith(isRequestLoading: true);
 
-      final requests = await hotelReservationinstance.getRequests(
-        offset: 0,
-        limit: 10,
+    try {
+      final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
+
+      final requests = await dashboardInstance.getRequests(
+        offset: 1,
+        limit: 8,
         searchText: searchText,
-        status: status,
+        // status: status,
+        serviceIds: serviceIds,
+        subServiceIds: subServiceIds,
       );
 
-      // No merging needed
-      state = state.copyWith(requestData: requests);
+      state = state.copyWith(
+        requestData: requests,
+        // serviceIds: serviceIds,
+        // subServiceIds: subServiceIds,
+        isRequestLoading: false,
+      );
     } catch (e) {
+      state = state.copyWith(isRequestLoading: false);
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -483,282 +699,70 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isActionItemLoading: true);
 
     try {
-      if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
+      if (isRefresh || status.isNotEmpty) {
         state = state.copyWith(actionItems: []);
       }
 
-      final items = await hotelReservationinstance.getActionItems(
+      final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
+
+      final items = await dashboardInstance.getActionItems(
         offset: 0,
-        limit: 10,
+        limit: 8,
         searchText: searchText,
-        status: status,
+        // status: status,
+        serviceIds: serviceIds,
+        subServiceIds: subServiceIds,
       );
 
-      // No merging needed
-      state = state.copyWith(actionItems: items, isLoading: false);
+      state = state.copyWith(
+        actionItems: items,
+        // serviceIds: serviceIds,
+        // subServiceIds: subServiceIds,
+        isActionItemLoading: false,
+      );
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isActionItemLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
-  Future<void> fetchApprovalKpi() async {
-    try {
-      final kpis = await hotelReservationinstance.getApprovalKpiData();
+  String formatTime(String? time) {
+    if (time == null || time.isEmpty) return '';
 
-      if (kpis != null) {
-        state = state.copyWith(approvalKpiData: kpis);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
+    final parts = time.split(':');
+
+    if (parts.length >= 2) {
+      return '${parts[0]}:${parts[1]}';
+    }
+
+    return time;
   }
 
-  Future<void> fetchKpi() async {
-    try {
-      final kpis = await hotelReservationinstance.getKpiData();
+  void updateTabIndex(int index) {
+    state = state.copyWith(
+      tabIndex: index,
+      myRequestsStatusFilter: index == 0 ? '' : state.myRequestsStatusFilter,
+      actionItemsStatusFilter: index == 1 ? '' : state.actionItemsStatusFilter,
+    );
 
-      if (kpis != null) {
-        state = state.copyWith(kpiData: kpis);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
+    if (index == 0) {
+      fetchRequests(status: '');
+      fetchKpi();
+      fetchStatusBreakdown('weekly');
+      fetchTrendBreakDown('2026');
+    } else {
+      fetchActionItems(status: '');
+      fetchApprovalKpi();
+      fetchApprovalStatusBreakdown('weekly');
+      fetchApprovalTrendBreakDown('2026');
+    }
   }
-
-  // void onSelectFromDate(String date) => state = state.copyWith(fromDate: date);
-  // void onSelectTravelTime(String time) =>
-  //     state = state.copyWith(travelTime: time);
-
-  // void onSelectedVehicleType(String value) =>
-  //     state = state.copyWith(vehicleType: value);
-
-  // void onSelectedTravelTime(String value) =>
-  //     state = state.copyWith(travelTime: value);
-
-  // void onSelectedVehicleRequiredFor(String value) =>
-  //     state = state.copyWith(vehicleRequiredfor: value);
-
-  // void onSelectedVehicleRequiredLocation(String value) =>
-  //     state = state.copyWith(vehicleRequiredLocation: value);
-
-  // void onSelectedPurposeOfTravel(String value) =>
-  //     state = state.copyWith(purposeofTravel: value);
-
-  // void onSelectedExpectedDaysInTravel(int value) =>
-  //     state = state.copyWith(expectedDaysinTravel: value);
-
-  // void onSelectedExpectedHoursInTravel(int value) =>
-  //     state = state.copyWith(expectedHoursinTravel: value);
-  // void onSelectTravelTimeUI(String time) =>
-  //     state = state.copyWith(travelTimeForUI: time);
-
-  // Future<String> sendChat(int id, String message, String type) async {
-  //   try {
-  //     state = state.copyWith(isLoading: true);
-
-  //     List<dynamic> uploadedFiles = [];
-
-  //     // 🧩 1️⃣ Upload only if not a text message
-  //     if (type != 'text') {
-  //       debugPrint('📎 Attachment Message: $message');
-  //       uploadedFiles = await logisticsDashboardinstance.uploadAttachments(
-  //         state.attachments,
-  //       );
-
-  //       // ✅ Safety check: ensure upload success
-  //       if (uploadedFiles.isEmpty || uploadedFiles[0]["file_url"] == null) {
-  //         throw Exception('File upload failed or returned empty response.');
-  //       }
-  //     }
-
-  //     // 🧩 2️⃣ Detect image types (png, jpg, jpeg, gif, etc.)
-
-  //     if (type != 'text') {
-  //       final uploadedFileType = (uploadedFiles.first["file_type"] ?? '')
-  //           .toLowerCase();
-  //       if (uploadedFileType.contains('png') ||
-  //           uploadedFileType.contains('jpg') ||
-  //           uploadedFileType.contains('jpeg') ||
-  //           uploadedFileType.contains('gif') ||
-  //           uploadedFileType.contains('bmp') ||
-  //           uploadedFileType.contains('webp') ||
-  //           uploadedFileType.contains('tiff')) {
-  //         type = 'image';
-  //       } else {
-  //         type = uploadedFileType;
-  //       }
-  //     }
-
-  //     // 🧩 3️⃣ Build payload safely
-  //     final payload = {
-  //       "request_id": id,
-  //       "service_id": 20,
-  //       "sub_service_id": 12,
-  //       "message": type == 'text'
-  //           ? message
-  //           : uploadedFiles.first["file_url"], // safe access
-  //       "messageType": type,
-  //       "file_name": type != 'text' ? uploadedFiles.first["file_name"] : null,
-  //       "file_type": type != 'text' ? type : null,
-  //       "file_size": type != 'text' ? uploadedFiles.first["file_size"] : null,
-  //     };
-
-  //     debugPrint("✅ Final Payload: $payload");
-
-  //     // 🧩 4️⃣ Send request
-  //     final resMessage = await logisticsDashboardinstance.sendChat(
-  //       payload,
-  //       id,
-  //       type,
-  //     );
-
-  //     // 🧩 5️⃣ Refresh UI state
-  //     await fetchRequestsById(id);
-
-  //     chatController.clear();
-
-  //     state = state.copyWith(attachments: []);
-  //     // 🧩 6️⃣ Close chat modal or pop page
-  //     // KAppX.router.pop();
-
-  //     return resMessage;
-  //   } catch (e, stack) {
-  //     debugPrint('❌ Error submitting chat: $e');
-  //     debugPrint('Stacktrace: $stack');
-  //     return 'Not sent';
-  //   } finally {
-  //     state = state.copyWith(isLoading: false);
-  //   }
-  // }
-
-  // Future<String> sendAttachment(int id, String message) async {
-  //   try {
-  //     state = state.copyWith(isLoading: true);
-
-  //     // 2️⃣ Build payload
-  //     final payload = {
-  //       "request_id": id,
-  //       "service_id": 20,
-  //       "sub_service_id": 12,
-  //       "message": message,
-  //       "messageType": "text",
-  //       "file_name": null,
-  //       "file_type": null,
-  //       "file_size": null,
-  //     };
-
-  //     debugPrint("✅ Final Payload: $payload");
-
-  //     // 3️⃣ Send request
-  //     final resMessage = await logisticsDashboardinstance.sendChat(payload, id);
-  //     return resMessage;
-  //   } catch (e) {
-  //     debugPrint('❌ Error submitting request: $e');
-  //     return 'Not sent';
-  //   } finally {
-  //     state = state.copyWith(isLoading: false);
-  //   }
-  // }
-
-  // Future<void> vehicleRequest() async {
-  //   try {
-  //     state = state.copyWith(isLoading: true);
-
-  //     // 1️⃣ Upload files
-  //     final uploadedFiles = await logisticsDashboardinstance.uploadAttachments(
-  //       state.attachments,
-  //     );
-
-  //     final userData = KAppX.globalProvider.read(userProvider);
-
-  //     // 2️⃣ Build payload
-  //     final payload = {
-  //       "req_user_department_id": userData?.department,
-  //       "req_user_section_id": userData?.section,
-  //       "service_id": 20,
-  //       "sub_service_id": 12,
-  //       "category": state.selectedRole,
-  //       "vehicle_required_for": state.vehicleRequiredfor,
-  //       "vehicle_required_location": state.vehicleRequiredLocation,
-  //       "title": eventTypeController.text,
-  //       "purpose_of_travel": state.purposeofTravel,
-  //       "type_of_vehicle_required": state.vehicleType,
-  //       "date_of_travel": state.fromDate,
-  //       "time_of_travel": state.travelTime,
-  //       "exp_duration_of_use_hrs": state.expectedHoursinTravel,
-  //       "exp_duration_of_use_days": state.expectedDaysinTravel,
-  //       "type_of_request": 'New Request',
-  //       "description": descriptionController.text,
-  //       "attachments": uploadedFiles,
-  //     };
-
-  //     debugPrint("✅ Final Payload: $payload");
-  //     print("✅ Final Payload=============: $payload");
-
-  //     // 3️⃣ Send request
-  //     await logisticsDashboardinstance.sendVehicleRequest(payload);
-  //     state = state.copyWith(attachments: []);
-  //   } catch (e) {
-  //     debugPrint('❌ Error submitting request: $e');
-  //   } finally {
-  //     state = state.copyWith(isLoading: false);
-  //   }
-  // }
-
-  // // --- Passenger Logic ---
-
-  // void addPassenger() {
-  //   final updatedList = [...state.passengers, PassengerUIModel()];
-  //   state = state.copyWith(passengers: updatedList);
-  // }
-
-  // void removePassenger(int index) {
-  //   if (state.passengers.length <= 1) return; // 👈 Prevent deleting last one
-
-  //   final updatedList = [...state.passengers];
-  //   updatedList[index].dispose();
-  //   updatedList.removeAt(index);
-  //   state = state.copyWith(passengers: updatedList);
-  // }
-
-  // // Validation check before submission
-  // bool validatePassenge0rs(BuildContext context) {
-  //   for (var i = 0; i < state.passengers.length; i++) {
-  //     if (state.passengers[i].nameController.text.trim().isEmpty) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Please enter name for Passenger ${i + 1}')),
-  //       );
-  //       return false;
-  //     }
-  //   }
-  //   return true;
-  // }
-
-  // List<PassengerModel> getPassengersAsModels() {
-  //   return state.passengers
-  //       .map((ui) => PassengerModel(name: ui.nameController.text))
-  //       .toList();
-  // }
-
-  // Future<void> employeeUpdatedFetch() async {
-  //   await Future.wait([
-  //     // fetchAllMyRequests(),
-  //     fetchDashboardMyRequests(),
-  //     fetchRequestsById(id)
-  //     // fetchKpiEmployee(),
-  //     // fetchStatusBreakDown('weekly'),
-  //     // fetchTrendBreakDown('2025'),
-  //   ]);
-  // }
 
   @override
   void dispose() {
-    // for (var p in state.passengers) {
-    //   p.dispose();
-    // }
     super.dispose();
   }
 }

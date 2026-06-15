@@ -137,6 +137,9 @@ class _VSController extends StateNotifier<_ViewState> {
       if (!mounted) return;
 
       final services = _filterServicesByRole(roles, effectiveRoleId);
+      await _storeSelectedRole(roles, effectiveRoleId);
+      if (!mounted) return;
+
       state = state.copyWith(services: services, isLoading: false);
     } catch (e) {
       debugPrint('fetchUserRoles error: $e');
@@ -155,6 +158,24 @@ class _VSController extends StateNotifier<_ViewState> {
     return matched?.services ?? [];
   }
 
+  Future<void> _storeSelectedRole(UserRoleResponse roles, int roleId) async {
+    final detail = roles.data?.roleDetails?.firstWhere(
+      (item) => item.role?.id == roleId,
+      orElse: () => RoleDetail(services: []),
+    );
+    if (detail == null) return;
+
+    await KAuthCred().storeSelectedRole(
+      SelectedUserRole(
+        roleId: roleId,
+        roleName: detail.role?.name ?? '',
+        departmentId: detail.department?.id ?? 0,
+        sectionId: detail.section?.id ?? 0,
+        services: detail.services ?? [],
+      ),
+    );
+  }
+
   /// Updates the services list for the active role. Applies cached role
   /// services immediately, then optionally refreshes from the API.
   Future<void> syncWithSelectedRole({
@@ -163,7 +184,6 @@ class _VSController extends StateNotifier<_ViewState> {
   }) async {
     if (!mounted) return;
 
-    final roleId = role.role?.id ?? 0;
     final roleName = role.role?.name ?? '';
     final immediateServices = role.services ?? [];
 
@@ -295,15 +315,126 @@ class _VSController extends StateNotifier<_ViewState> {
     SubService? subService,
     List<SubService>? subServices,
   }) {
-    switch (name.trim()) {
-      case 'CAAS016':
-        KAppX.router.push(
-          MaintenanceDashboardRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-            subServices: subServices ?? [],
-          ),
+    if (subService != null) {
+      final targetService = service ?? Service();
+      final shellRoute = SubServiceRouteResolver.serviceShellRouteFor(
+        targetService,
+      );
+      if (shellRoute != null) {
+        KAppX.globalProvider
+            .read(selectedServiceProvider.notifier)
+            .state = SelectedServiceState(
+          service: targetService,
+          subService: subService,
         );
+        KAppX.router.push(shellRoute);
+        return;
+      }
+
+      final destination = SubServiceRouteResolver.resolve(
+        service: targetService,
+        subService: subService,
+      );
+      if (destination.route != null) {
+        KAppX.router.push(destination.route!);
+        return;
+      }
+    }
+
+    if (subService == null && service != null) {
+      KAppX.globalProvider.read(selectedServiceProvider.notifier).state =
+          SelectedServiceState(service: service, subService: SubService());
+
+      switch ((service.code ?? name).trim()) {
+        case 'CAAS01':
+          KAppX.router.push(const ITServicesHomeRoute());
+          return;
+        case 'CAAS014':
+          KAppX.router.push(const HotelReservationHomeRoute());
+          return;
+        case 'CAAS013':
+          KAppX.router.push(const AviationSecurityFacilitationHomeRoute());
+          return;
+        case 'CAAS03':
+          KAppX.router.push(const RequestForAccessHomeRoute());
+          return;
+        case 'CAAS016':
+          KAppX.router.push(const MaintenanceHomeRoute());
+          return;
+        case 'CAAS02':
+          KAppX.router.push(const TrainingandDevelopmentHomeRoute());
+          return;
+        case 'CAAS08':
+          KAppX.router.push(const HRServiceHomeRoute());
+          return;
+        case 'CAAS09':
+          KAppX.router.push(const MediaCoverageHomeRoute());
+          return;
+        case 'CAAS011':
+          KAppX.router.push(const SecuritySelfHomeRoute());
+          return;
+        case 'CAAS012':
+          KAppX.router.push(const TenderServiceHomeRoute());
+          return;
+        case 'CAAS015':
+          KAppX.router.push(const TrainingsandDevelopmentHomeRoute());
+          return;
+      }
+
+      final serviceSubServices = subServices ?? service.subservices ?? [];
+      final codes = serviceSubServices
+          .map((item) => (item.code ?? '').trim())
+          .toSet();
+
+      if (codes.any({'CAA003', 'CAA004', 'CAA005', 'CAA059'}.contains)) {
+        KAppX.router.push(const ITServicesHomeRoute());
+        return;
+      }
+      if (codes.any({'CAA031', 'CAA032', 'CAA033'}.contains)) {
+        KAppX.router.push(const LogisticsHomeRoute());
+        return;
+      }
+      if (codes.any({'CAA027', 'CAA029', 'CAA030'}.contains)) {
+        KAppX.router.push(const LegalConsultationServicesHomeRoute());
+        return;
+      }
+      if (codes.contains('CAA010')) {
+        KAppX.router.push(const AviationSecurityFacilitationHomeRoute());
+        return;
+      }
+      if (codes.any({'CAA021', 'CAA023', 'CAA025'}.contains)) {
+        KAppX.router.push(const RequestForAccessHomeRoute());
+        return;
+      }
+
+      return;
+    }
+
+    switch (name.trim()) {
+      case 'CAAS014':
+        KAppX.router.push(const HotelReservationHomeRoute());
+        break;
+
+      case 'CAAS016':
+        KAppX.router.push(const MaintenanceHomeRoute());
+        break;
+      case 'CAAS02':
+        KAppX.router.push(const TrainingandDevelopmentHomeRoute());
+        break;
+      case 'CAAS08':
+        KAppX.router.push(const HRServiceHomeRoute());
+        break;
+      case 'CAAS09':
+        KAppX.router.push(const MediaCoverageHomeRoute());
+        break;
+      case 'CAAS011':
+        KAppX.router.push(const SecuritySelfHomeRoute());
+        break;
+      case 'CAAS012':
+        KAppX.router.push(const TenderServiceHomeRoute());
+        break;
+      case 'CAAS015':
+        KAppX.router.push(const TrainingsandDevelopmentHomeRoute());
         break;
       case 'CAA032':
         KAppX.router.push(
@@ -475,6 +606,14 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
+      case 'CAA030':
+        KAppX.router.push(
+          RequestForLegalContractReviewRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
 
       case 'CAA012':
         KAppX.router.push(
@@ -511,23 +650,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
         break;
       case 'CAA035':
-        KAppX.router.push(
-          RequestMaintenanceRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-
-        break;
-
       case 'CAA045':
-        KAppX.router.push(
-          MaintenanceofExternalServiceRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
+        SubServiceRouteResolver.navigateToSubService(
+          service: service ?? Service(),
+          subService: subService ?? SubService(code: name),
         );
-
         break;
 
       /// complaint a Lost Item

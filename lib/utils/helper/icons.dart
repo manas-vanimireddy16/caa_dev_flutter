@@ -7,4 +7,10 @@ class AppIcons {
   static const kpiApproved = 'assets/icons/approved_kpi.svg';
   static const kpiPending = 'assets/icons/pending_kpi.svg';
   static const kpiRejected = 'assets/icons/rejected_kpi.svg';
+
+  static const requestDetailsRequestDetails =
+      'assets/icons/total_requests_kpi.svg';
+  static const attachmentsRequestDetails = 'assets/icons/attach_file.svg';
+  static const routingHistoryRequestDetails = 'assets/icons/comment.svg';
+  static const workflowRequestDetails = 'assets/icons/workflow.svg';
 }

@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/airport_entry_request_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/goal_weight_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/human_resource_annual_plan.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/human_resource_annual_plan.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/cyber_security_risk_management_model.dart';
 import 'package:code_setup/utils/mappers/approval_detail_mapper.dart';
 

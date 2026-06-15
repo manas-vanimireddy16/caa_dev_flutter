@@ -339,8 +339,8 @@ class CardInfo extends StatelessWidget {
     return Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(4),
+        side: BorderSide(color: const Color(0xFFD8D8D8)),
       ),
       elevation: 0,
       margin: const EdgeInsets.all(16),

@@ -7,7 +7,7 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/request_for_internal_audit_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/request_for_project_approval.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/request_for_vapt_model.dart';

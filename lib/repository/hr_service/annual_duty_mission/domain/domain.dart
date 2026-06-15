@@ -1,5 +1,5 @@
-import 'package:code_setup/presentation/screens/hr_service/models/duty_mission_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/position_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/duty_mission_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/repository/hr_service/annual_duty_mission/data/data.dart';
 import 'package:code_setup/repository/hr_service/service_transfer/data/data.dart';
@@ -9,9 +9,9 @@ import 'package:code_setup/repository/hr_service/temporary_assignment_decision/d
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/master_roles.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/request_data_model.dart';
-import 'package:code_setup/presentation/screens/hr_service/models/user_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/request_data_model.dart';
+import 'package:code_setup/presentation/screens/hc_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart'
     hide ChatMessageModel;

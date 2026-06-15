@@ -23,7 +23,7 @@ class RequestDetailsTabs extends ConsumerWidget {
 
     final labels = [
       "Request Details",
-      "Request History",
+      "Routing History",
       "Attachments",
       "Work Flow",
     ];
