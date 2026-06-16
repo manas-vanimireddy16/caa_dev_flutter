@@ -104,18 +104,19 @@ class _RequestEventSupportDetailsScreenState
                     labelBuilder: l10n.requestDetailsLabel,
                   ),
                   CommonRequestDetails(
-                    statusInformationTitle:
-                        l10n.requestDetailsLabel('Status Information'),
-                    requestInformationTitle:
-                        l10n.requestDetailsLabel('Request Information'),
+                    statusInformationTitle: l10n.requestDetailsLabel(
+                      'Status Information',
+                    ),
+                    requestInformationTitle: l10n.requestDetailsLabel(
+                      'Request Information',
+                    ),
                     technicalInformationTitle: l10n.technicalDetailsSection,
                     requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: controller.buildStatusInformation(),
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
                   ),
-                ]
-                else if (selectedTab == 1)
+                ] else if (selectedTab == 1)
                   CommentsCard(
                     from: widget.from,
                     showButtons: actionType != ActionButtonsType.none,
@@ -157,6 +158,13 @@ class _RequestEventSupportDetailsScreenState
                   CommonAttachmentsTabContent(
                     attachments: attachments,
                     l10n: l10n,
+
+                    onDelete: (attachment) async {
+                      await controller.deleteAttachment(
+                        attachment.id ?? 0,
+                        requestId: attachment.requestId ?? requestId,
+                      );
+                    },
                   )
                 else if (selectedTab == 3)
                   RequestWorkflowTimeline(

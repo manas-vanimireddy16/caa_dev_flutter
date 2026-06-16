@@ -165,6 +165,13 @@ class _VPNRequestDetailsTabScreenState
                   CommonAttachmentsTabContent(
                     attachments: attachments,
                     l10n: l10n,
+
+                    onDelete: (attachment) async {
+                      await controller.deleteAttachment(
+                        attachment.id ?? 0,
+                        requestId: attachment.requestId ?? requestId,
+                      );
+                    },
                   )
                 else if (selectedTab == 3)
                   RequestWorkflowTimeline(

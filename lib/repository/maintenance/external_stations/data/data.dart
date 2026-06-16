@@ -665,7 +665,7 @@ class ExternalMaintenanceRepositoryImpl
   }
 
   @override
-  Future<void> deleteAttachment(int attachmentId) async {
+  Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
     final client = await KAppX.network.secureClient();
     if (client == null) {
       throw ApiException('Client is null');

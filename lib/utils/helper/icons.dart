@@ -1,4 +1,5 @@
 class AppIcons {
+  static const moreVert = 'assets/icons/more_vert.svg';
   static const deleteForver = 'assets/icons/delete_forever_red.svg';
   static const checkCircleGreen = 'assets/icons/check_circle_outline_green.svg';
   static const cancelGrey = 'assets/icons/cancel_24.svg';
@@ -31,4 +32,11 @@ class AppIcons {
   static const empIdEmployeeCard = 'assets/icons/employee_id.svg';
   static const jobTitleEmployeeCard = 'assets/icons/job_title.svg';
   static const requestIdEmployeeCard = 'assets/icons/request_id.svg';
+
+  // Navigation Bottom Drawer
+  static const homeBottomNavigator = 'assets/icons/home.svg';
+  static const servicesBottomNavigator = 'assets/icons/services.svg';
+  static const linksBottom = 'assets/icons/links.svg';
+  static const profileBottomNavigator = 'assets/icons/profile.svg';
+  static const settingsBottomNavigator = 'assets/icons/settings.svg';
 }

@@ -106,4 +106,5 @@ abstract class SecondmentDecisionReposiroty {
   });
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
   Future<List<AttachmentModel>> getAttachmentsById({required int id});
+  Future<void> deleteAttachment(int attachmentId, {int? requestId});
 }

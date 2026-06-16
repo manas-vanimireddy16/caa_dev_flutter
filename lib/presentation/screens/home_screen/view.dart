@@ -49,6 +49,8 @@ class HomePage extends ConsumerWidget {
           AnnouncementRoute(),
           // ApprovalsList(),
           ServicesRoute(),
+          LinksRoute(),
+          ProfileRoute(),
           SettingsRoute(),
         ],
 
@@ -91,20 +93,22 @@ class HomePage extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
 
               children: [
-                _buildNavItem(
-                  icon: Icons.home,
+                Expanded(
+                  child: _buildNavItem(
+                    icon: Icons.home,
 
-                  label: 'Home',
+                    label: 'Home',
 
-                  isActive: tabsRouter.activeIndex == 0,
+                    isActive: tabsRouter.activeIndex == 0,
 
-                  onTap: () {
-                    tabsRouter.setActiveIndex(0);
+                    onTap: () {
+                      tabsRouter.setActiveIndex(0);
 
-                    stateController.onTabChanged(0);
-                  },
+                      stateController.onTabChanged(0);
+                    },
 
-                  currentTheme: currentTheme,
+                    currentTheme: currentTheme,
+                  ),
                 ),
 
                 // _buildNavItem(
@@ -122,35 +126,73 @@ class HomePage extends ConsumerWidget {
 
                 //   currentTheme: currentTheme,
                 // ),
-                _buildNavItem(
-                  icon: Icons.work,
+                Expanded(
+                  child: _buildNavItem(
+                    icon: Icons.work,
 
-                  label: 'Services',
+                    label: 'Services',
 
-                  isActive: tabsRouter.activeIndex == 1,
+                    isActive: tabsRouter.activeIndex == 1,
 
-                  onTap: () {
-                    tabsRouter.setActiveIndex(1);
+                    onTap: () {
+                      tabsRouter.setActiveIndex(1);
 
-                    stateController.onTabChanged(1);
-                  },
+                      stateController.onTabChanged(1);
+                    },
 
-                  currentTheme: currentTheme,
+                    currentTheme: currentTheme,
+                  ),
                 ),
-                _buildNavItem(
-                  icon: Icons.settings,
+                Expanded(
+                  child: _buildNavItem(
+                    icon: Icons.link,
 
-                  label: 'Settings',
+                    label: 'Links',
 
-                  isActive: tabsRouter.activeIndex == 2,
+                    isActive: tabsRouter.activeIndex == 2,
 
-                  onTap: () {
-                    tabsRouter.setActiveIndex(2);
+                    onTap: () {
+                      tabsRouter.setActiveIndex(2);
 
-                    stateController.onTabChanged(2);
-                  },
+                      stateController.onTabChanged(2);
+                    },
 
-                  currentTheme: currentTheme,
+                    currentTheme: currentTheme,
+                  ),
+                ),
+                Expanded(
+                  child: _buildNavItem(
+                    icon: Icons.person_outline,
+
+                    label: 'Profile',
+
+                    isActive: tabsRouter.activeIndex == 3,
+
+                    onTap: () {
+                      tabsRouter.setActiveIndex(3);
+
+                      stateController.onTabChanged(3);
+                    },
+
+                    currentTheme: currentTheme,
+                  ),
+                ),
+                Expanded(
+                  child: _buildNavItem(
+                    icon: Icons.settings,
+
+                    label: 'Settings',
+
+                    isActive: tabsRouter.activeIndex == 4,
+
+                    onTap: () {
+                      tabsRouter.setActiveIndex(4);
+
+                      stateController.onTabChanged(4);
+                    },
+
+                    currentTheme: currentTheme,
+                  ),
                 ),
               ],
             ),
@@ -178,7 +220,8 @@ Widget _buildNavItem({
     child: Container(
       clipBehavior: Clip.antiAlias,
 
-      width: 76.toAutoScaledWidth,
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 2.toAutoScaledWidth),
 
       padding: EdgeInsets.symmetric(vertical: 4.toAutoScaledHeight),
 
@@ -211,6 +254,10 @@ Widget _buildNavItem({
 
           Text(
             label,
+
+            maxLines: 1,
+
+            overflow: TextOverflow.ellipsis,
 
             style: TextStyle(
               fontSize: currentTheme.fontSizes.s10,

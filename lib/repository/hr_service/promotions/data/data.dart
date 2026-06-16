@@ -635,6 +635,30 @@ class PromotionsRepositoryImple implements PromotionsRepository {
   }
 
   @override
+  Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw ApiException('Client is null');
+    }
+
+    final url = ApiEndPoint.promotionSendAttachmentById(attachmentId);
+
+    try {
+      final response = await client.delete(url);
+      if (response.statusCode != 200 &&
+          response.statusCode != 201 &&
+          response.statusCode != 204) {
+        throw ApiException(
+          response.data?['message'] ?? 'Failed to delete attachment',
+        );
+      }
+    } on DioException catch (error) {
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    }
+  }
+
+  @override
   Future<void> onApprove(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
     final String url = ApiEndPoint.promotionApprove;

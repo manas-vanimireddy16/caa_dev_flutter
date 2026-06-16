@@ -1968,6 +1968,38 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
+    if (attachmentId == 0) {
+      Fluttertoast.showToast(msg: 'Attachment ID missing');
+      return;
+    }
+
+    try {
+      state = state.copyWith(isLoading: true);
+      final effectiveRequestId = requestId ?? state.requestDetails.request?.id;
+      await dashboardinstance.deleteAttachment(
+        attachmentId,
+        requestId: effectiveRequestId,
+      );
+
+      final updatedAttachments = state.attachmentsById
+          .where((attachment) => attachment.id != attachmentId)
+          .toList();
+      state = state.copyWith(attachmentsById: updatedAttachments);
+
+      if (effectiveRequestId != null && effectiveRequestId != 0) {
+        await fetchAttachmentsById(effectiveRequestId);
+        await fetchRequestDetailsById(effectiveRequestId);
+      }
+    } catch (e, st) {
+      debugPrint('Failed to delete attachment: $e');
+      debugPrintStack(stackTrace: st);
+      Fluttertoast.showToast(msg: e.toString());
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
   List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {
     return (values['attachments'] as List<FileUploadItem>? ?? [])
         .map((file) => file.toJson())

@@ -4586,6 +4586,22 @@ class LegalServicesDashboardRouteArgs {
 }
 
 /// generated route for
+/// [_i3.LinksScreen]
+class LinksRoute extends _i95.PageRouteInfo<void> {
+  const LinksRoute({List<_i95.PageRouteInfo>? children})
+    : super(LinksRoute.name, initialChildren: children);
+
+  static const String name = 'LinksRoute';
+
+  static _i95.PageInfo page = _i95.PageInfo(
+    name,
+    builder: (data) {
+      return const _i3.LinksScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [_i32.LogisticsForeignRequestDetailsTabScreen]
 class LogisticsForeignRequestDetailsTabRoute
     extends _i95.PageRouteInfo<LogisticsForeignRequestDetailsTabRouteArgs> {
@@ -6773,6 +6789,22 @@ class PerformanceManagementRouteArgs {
 
   @override
   int get hashCode => key.hashCode ^ service.hashCode ^ subService.hashCode;
+}
+
+/// generated route for
+/// [_i3.ProfileScreen]
+class ProfileRoute extends _i95.PageRouteInfo<void> {
+  const ProfileRoute({List<_i95.PageRouteInfo>? children})
+    : super(ProfileRoute.name, initialChildren: children);
+
+  static const String name = 'ProfileRoute';
+
+  static _i95.PageInfo page = _i95.PageInfo(
+    name,
+    builder: (data) {
+      return const _i3.ProfileScreen();
+    },
+  );
 }
 
 /// generated route for

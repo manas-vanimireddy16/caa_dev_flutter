@@ -50,6 +50,7 @@ abstract class AssignaTasktoEmployeeDetailsRepository {
     required int serviceId,
     required int subServiceId,
   });
+  Future<void> deleteAttachment(int attachmentId, {int? requestId});
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
   Future<List<ChatMessageModel>> getchatById(int id);
   Future<StatusBreakdownModel?> getApprovalStatusBreakdownData(String period);

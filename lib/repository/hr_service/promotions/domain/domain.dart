@@ -60,6 +60,7 @@ abstract class PromotionsRepository {
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
   Future<List<ChatMessageModel>> getchatById(int id);
   Future<List<AttachmentModel>> getAttachmentsById(int id);
+  Future<void> deleteAttachment(int attachmentId, {int? requestId});
 
   Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
     required String period,

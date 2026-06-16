@@ -7,6 +7,7 @@ import 'package:code_setup/repository/common/domain/domain.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/utils/helper/icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
@@ -247,11 +248,15 @@ class _DashedBorderPainter extends CustomPainter {
 class CommonAttachmentsTabContent extends StatelessWidget {
   final List<AttachmentModel> attachments;
   final DashboardL10n? l10n;
+  final bool useActionsMenu;
+  final Future<void> Function(AttachmentModel attachment)? onDelete;
 
   const CommonAttachmentsTabContent({
     super.key,
     required this.attachments,
     this.l10n,
+    this.useActionsMenu = true,
+    this.onDelete,
   });
 
   @override
@@ -293,7 +298,12 @@ class CommonAttachmentsTabContent extends StatelessWidget {
             ...attachments.map(
               (file) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: _AttachmentFileCard(file: file, l10n: labels),
+                child: _AttachmentFileCard(
+                  file: file,
+                  l10n: labels,
+                  useActionsMenu: useActionsMenu,
+                  onDelete: onDelete,
+                ),
               ),
             ),
           ],
@@ -306,8 +316,15 @@ class CommonAttachmentsTabContent extends StatelessWidget {
 class _AttachmentFileCard extends StatefulWidget {
   final AttachmentModel file;
   final DashboardL10n l10n;
+  final bool useActionsMenu;
+  final Future<void> Function(AttachmentModel attachment)? onDelete;
 
-  const _AttachmentFileCard({required this.file, required this.l10n});
+  const _AttachmentFileCard({
+    required this.file,
+    required this.l10n,
+    required this.useActionsMenu,
+    required this.onDelete,
+  });
 
   @override
   State<_AttachmentFileCard> createState() => _AttachmentFileCardState();
@@ -446,6 +463,35 @@ class _AttachmentFileCardState extends State<_AttachmentFileCard> {
     ShowFlutterToast().showFlutterToastFailure(widget.l10n.previewNotAvailable);
   }
 
+  Future<void> _onDelete() async {
+    final onDelete = widget.onDelete;
+    final attachmentId = widget.file.id;
+
+    if (onDelete == null) return;
+    if (attachmentId == null || attachmentId == 0) {
+      ShowFlutterToast().showFlutterToastFailure('Attachment ID missing');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      await onDelete(widget.file);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _onMenuSelected(_AttachmentAction action) async {
+    switch (action) {
+      case _AttachmentAction.view:
+        await _onView();
+      case _AttachmentAction.download:
+        await _onDownload();
+      case _AttachmentAction.delete:
+        await _onDelete();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -458,57 +504,128 @@ class _AttachmentFileCardState extends State<_AttachmentFileCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _InfoRow(label: widget.l10n.documentNameLabel, value: _fileName),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _InfoRow(
+                  label: widget.l10n.documentNameLabel,
+                  value: _fileName,
+                ),
+              ),
+              if (widget.useActionsMenu)
+                PopupMenuButton<_AttachmentAction>(
+                  enabled: !_isLoading,
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: _onMenuSelected,
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: _AttachmentAction.view,
+                      enabled: _canDownload,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.remove_red_eye_outlined, size: 18),
+                          const SizedBox(width: 8),
+                          Text(widget.l10n.viewButtonLabel),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: _AttachmentAction.download,
+                      enabled: _canDownload,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.download_outlined, size: 18),
+                          const SizedBox(width: 8),
+                          Text(widget.l10n.downloadButtonLabel),
+                        ],
+                      ),
+                    ),
+                    if (widget.onDelete != null)
+                      const PopupMenuItem(
+                        value: _AttachmentAction.delete,
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_outline, size: 18),
+                            SizedBox(width: 8),
+                            Text('Delete'),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+            ],
+          ),
           10.toVerticalSizedBox,
           _InfoRow(label: widget.l10n.fileTypeLabel, value: _fileType),
           10.toVerticalSizedBox,
           _InfoRow(label: widget.l10n.uploadedDateLabel, value: _uploadedDate),
-          14.toVerticalSizedBox,
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _isLoading || !_canDownload ? null : _onView,
-                  icon: const Icon(Icons.remove_red_eye_outlined, size: 18),
-                  label: Text(widget.l10n.viewButtonLabel),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.black87,
-                    side: const BorderSide(color: Color(0xFF1A1A2E)),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+          if (!widget.useActionsMenu) ...[
+            14.toVerticalSizedBox,
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _isLoading || !_canDownload ? null : _onView,
+                    icon: const Icon(Icons.remove_red_eye_outlined, size: 18),
+                    label: Text(widget.l10n.viewButtonLabel),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.black87,
+                      side: const BorderSide(color: Color(0xFF1A1A2E)),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _isLoading || !_canDownload ? null : _onDownload,
-                  icon: _isLoading
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.download_outlined, size: 18),
-                  label: Text(widget.l10n.downloadButtonLabel),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _canDownload
-                        ? const Color(0xFF1A1A2E)
-                        : Colors.grey,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _isLoading || !_canDownload ? null : _onDownload,
+                    icon: _isLoading
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.download_outlined, size: 18),
+                    label: Text(widget.l10n.downloadButtonLabel),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _canDownload
+                          ? const Color(0xFF1A1A2E)
+                          : Colors.grey,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ] else if (_isLoading) ...[
+            14.toVerticalSizedBox,
+            const Row(
+              children: [
+                SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Color(0xFF1A1A2E),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Text('Loading...'),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
 }
+
+enum _AttachmentAction { view, download, delete }
 
 class _InfoRow extends StatelessWidget {
   final String label;

@@ -76,5 +76,6 @@ abstract class RequestMaintenanceRepository {
     required int serviceId,
     required int subServiceId,
   });
+  Future<void> deleteAttachment(int attachmentId, {int? requestId});
   Future<List<StationModel>> getStations();
 }

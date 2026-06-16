@@ -182,7 +182,15 @@ class _LegalConsultationandReviewofAdministrativeDecisionsDetailsScreenState
                     },
                   )
                 else if (selectedTab == 2)
-                  CommonAttachmentsTabContent(attachments: attachments)
+                  CommonAttachmentsTabContent(
+                    attachments: attachments,
+                    onDelete: (attachment) async {
+                      await controller.deleteAttachment(
+                        attachment.id ?? 0,
+                        requestId: attachment.requestId ?? requestId,
+                      );
+                    },
+                  )
                 else if (selectedTab == 3)
                   LegalServicesRequestWorkflowTimeline(
                     details: state.requestDetails,

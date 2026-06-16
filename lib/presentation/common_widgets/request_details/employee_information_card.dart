@@ -248,7 +248,7 @@ class _EmployeeFieldTile extends StatelessWidget {
           image: field.icon,
           width: 20,
           height: 20,
-          tintColor: Colors.indigo.shade900,
+          tintColor: Color(0xFF000000),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -287,7 +287,7 @@ class _StatusRow extends StatelessWidget {
           image: AppIcons.statusInfoRequestDetails,
           width: 20,
           height: 20,
-          tintColor: Colors.indigo.shade900,
+          tintColor: Color(0xFF000000),
         ),
         const SizedBox(width: 10),
         Expanded(

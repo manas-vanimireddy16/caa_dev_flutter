@@ -67,6 +67,7 @@ abstract class RequestAVehicleRepository {
     required int serviceId,
     required int subServiceId,
   });
+  Future<void> deleteAttachment(int attachmentId, {int? requestId});
 
   Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
     required String period,

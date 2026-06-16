@@ -82,4 +82,5 @@ abstract class RequestForStudyLeaveRepository {
     required int subServiceId,
   });
   Future<List<AttachmentModel>> getAttachmentsById(int id);
+  Future<void> deleteAttachment(int attachmentId, {int? requestId});
 }

@@ -28,33 +28,19 @@ class AnnouncementScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(_vsProvider);
-    final UserModel? user = state.user;
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(l10n.announcements),
+        title: const Text('Home'),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: ListView(
         padding: EdgeInsets.zero, // remove default padding
         children: [
-          ProfileCard(
-            title: l10n.myProfile,
-            subtitle: l10n.findTheProfileDetails,
-            name: user?.data?.employeeName ?? '',
-            avatarUrl:
-                "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
-            isOnline: true,
-            info: {
-              l10n.profileEmailLabel: user?.data?.email ?? '',
-              l10n.profilePhoneLabel: user?.data?.mobile ?? '',
-              l10n.profileLocationLabel: user?.data?.location ?? '',
-              l10n.profileRoleLabel: user?.data?.position?.name ?? '',
-            },
-          ),
+          const _HomeSectionTitle(title: 'Announcements'),
           Padding(
             padding: const EdgeInsets.all(11.0),
             child: AnnouncementWidget(
@@ -63,11 +49,142 @@ class AnnouncementScreen extends ConsumerWidget {
               subtitle: l10n.announcementsSubtext,
             ),
           ),
+          const _HomeSectionTitle(title: 'Dashboard'),
           const Padding(
             padding: EdgeInsets.fromLTRB(11, 0, 11, 16),
             child: DashboardRequestsCard(),
           ),
         ],
+      ),
+    );
+  }
+}
+
+@RoutePage()
+class LinksScreen extends StatelessWidget {
+  const LinksScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return KScaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Links'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: const Center(child: Text('Coming Soon')),
+    );
+  }
+}
+
+@RoutePage()
+class ProfileScreen extends ConsumerWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(_vsProvider);
+    final UserModel? user = state.user;
+    final storedUser = ref.watch(userProvider);
+    final userInfo = ref.watch(userInfoProvider);
+    final l10n = DashboardL10n.of(context);
+    final profile = user?.data;
+    final sessionProfile = userInfo?.data;
+    final avatarUrl =
+        _firstNonEmpty([profile?.avatar, sessionProfile?.avatar]) ??
+        'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png';
+
+    return KScaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Profile'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          ProfileCard(
+            title: l10n.myProfile,
+            subtitle: l10n.findTheProfileDetails,
+            name:
+                _firstNonEmpty([
+                  profile?.employeeName,
+                  sessionProfile?.employeeName,
+                  storedUser?.employeeName,
+                ]) ??
+                '',
+            avatarUrl: avatarUrl,
+            isOnline: true,
+            info: {
+              l10n.profileEmailLabel:
+                  _firstNonEmpty([
+                    profile?.email,
+                    sessionProfile?.email,
+                    storedUser?.email,
+                  ]) ??
+                  '',
+              l10n.profilePhoneLabel:
+                  _firstNonEmpty([profile?.mobile, sessionProfile?.mobile]) ??
+                  '',
+              l10n.profileLocationLabel:
+                  _firstNonEmpty([
+                    profile?.location,
+                    sessionProfile?.location,
+                  ]) ??
+                  '',
+              l10n.profileRoleLabel:
+                  _firstNonEmpty([
+                    profile?.position?.name,
+                    sessionProfile?.position?.name,
+                    storedUser?.positionName,
+                  ]) ??
+                  '',
+              'Employee ID':
+                  _firstNonEmpty([
+                    profile?.employeeId,
+                    sessionProfile?.employeeId,
+                    storedUser?.employeeId,
+                  ]) ??
+                  '',
+              'Department':
+                  _firstNonEmpty([
+                    profile?.department?.departmentName,
+                    sessionProfile?.department?.departmentName,
+                    storedUser?.departmentName,
+                  ]) ??
+                  '',
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String? _firstNonEmpty(List<String?> values) {
+  for (final value in values) {
+    final trimmed = value?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) {
+      return trimmed;
+    }
+  }
+  return null;
+}
+
+class _HomeSectionTitle extends StatelessWidget {
+  final String title;
+
+  const _HomeSectionTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
       ),
     );
   }

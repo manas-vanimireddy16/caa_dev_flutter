@@ -140,8 +140,7 @@ class _SecurityThreatRequestDetailsTabScreenState
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
                   ),
-                ]
-                else if (selectedTab == 1)
+                ] else if (selectedTab == 1)
                   CommentsCard(
                     from: widget.from,
                     showButtons: actionType != ActionButtonsType.none,
@@ -189,6 +188,13 @@ class _SecurityThreatRequestDetailsTabScreenState
                   CommonAttachmentsTabContent(
                     attachments: attachments,
                     l10n: l10n,
+
+                    onDelete: (attachment) async {
+                      await controller.deleteAttachment(
+                        attachment.id ?? 0,
+                        requestId: attachment.requestId ?? requestId,
+                      );
+                    },
                   )
                 else if (selectedTab == 3)
                   RequestWorkflowTimeline(

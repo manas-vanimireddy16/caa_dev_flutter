@@ -122,8 +122,14 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchUser() async {
     final userData = KAppX.globalProvider.read(userProvider);
+    final userInfo = KAppX.globalProvider.read(userInfoProvider);
+    final userId =
+        userData?.userId ?? int.tryParse(userInfo?.data?.id ?? '') ?? 0;
+
+    if (userId == 0) return;
+
     state = state.copyWith(isLoading: true);
-    final userModel = await dashboardInstance.getUser(userData?.userId ?? 0);
+    final userModel = await dashboardInstance.getUser(userId);
     final user = userModel;
     print(user.data?.employeeName);
     print(user.data?.department?.id);

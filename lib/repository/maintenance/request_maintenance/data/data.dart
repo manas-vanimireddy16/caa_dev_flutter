@@ -398,7 +398,7 @@ class RequestMaintenanceRepositoryImpl implements RequestMaintenanceRepository {
       if (client != null) {
         final Map<String, dynamic> queryParams = {
           'offset': offset,
-          'limit': limit,
+          'limit': 2,
           // 'service_id': serviceId,
           // 'sub_service_id': subServiceId,
         };
@@ -550,6 +550,41 @@ class RequestMaintenanceRepositoryImpl implements RequestMaintenanceRepository {
             response.data['message'] ?? 'Request sent successfully',
           );
           debugPrint('✅ Message sent successfully');
+
+          return response.data["message"] ?? "Success";
+        } else {
+          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          return response.data["message"] ?? "Something went wrong";
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot send request');
+        return "Something went wrong";
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      throw e;
+    }
+  }
+
+  @override
+  Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.requestMaintenanceDeleteAttachment(
+      attachmentId,
+    );
+
+    try {
+      if (client != null) {
+        final response = await client.delete(url, data: {});
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Deleted successfully',
+          );
+          debugPrint('✅ Deleted successfully');
 
           return response.data["message"] ?? "Success";
         } else {
