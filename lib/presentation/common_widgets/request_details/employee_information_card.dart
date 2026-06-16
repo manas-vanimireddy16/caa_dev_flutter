@@ -1,7 +1,9 @@
 import 'package:code_setup/presentation/common_widgets/status_widget.dart';
+import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 
 class EmployeeInformationCard extends StatefulWidget {
@@ -65,7 +67,12 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               child: Row(
                 children: [
-                  Icon(Icons.person_outline, color: Colors.indigo.shade900),
+                  KImageProvider(
+                    image: AppIcons.employeeInfoRequestDetails,
+                    width: 22,
+                    height: 22,
+                    tintColor: Color(0xFF000000),
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -97,93 +104,115 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
             Divider(color: Colors.grey.shade300, thickness: 1),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final useTwoColumns = constraints.maxWidth > 520;
+              child: Column(
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final useTwoColumns = constraints.maxWidth > 520;
 
-                  final fields = <_EmployeeField>[
-                    _EmployeeField(
-                      icon: Icons.badge_outlined,
-                      label: _label('Request Id'),
-                      value: _orNa(widget.requestId),
-                    ),
-
-                    _EmployeeField(
-                      icon: Icons.perm_identity_outlined,
-                      label: _label('Employee ID'),
-                      value: _orNa(user?.employeeId ?? user?.civilEmployeeId),
-                    ),
-
-                    /// NEW FIELD
-                    _EmployeeField(
-                      icon: Icons.person_outline,
-                      label: _label('Name'),
-                      value: _orNa(user?.employeeName),
-                    ),
-
-                    _EmployeeField(
-                      icon: Icons.work_outline,
-                      label: _label('Job Title / Designation'),
-                      value: jobTitle,
-                    ),
-
-                    _EmployeeField(
-                      icon: Icons.email_outlined,
-                      label: _label('Email Address'),
-                      value: _orNa(user?.email),
-                    ),
-
-                    _EmployeeField(
-                      icon: Icons.apartment_outlined,
-                      label: _label('Department'),
-                      value: department,
-                    ),
-
-                    _EmployeeField(
-                      icon: Icons.phone_outlined,
-                      label: _label('Contact Number'),
-                      value: _orNa(user?.mobile ?? user?.officeNumber),
-                    ),
-                  ];
-
-                  if (useTwoColumns) {
-                    return Column(
-                      children: [
-                        for (int i = 0; i < fields.length; i += 2) ...[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: _EmployeeFieldTile(field: fields[i]),
-                              ),
-
-                              const SizedBox(width: 16),
-
-                              Expanded(
-                                child: i + 1 < fields.length
-                                    ? _EmployeeFieldTile(field: fields[i + 1])
-                                    : const SizedBox.shrink(),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 14),
-                        ],
-                      ],
-                    );
-                  }
-
-                  return Column(
-                    children: [
-                      ...fields.map(
-                        (f) => Padding(
-                          padding: const EdgeInsets.only(bottom: 14),
-                          child: _EmployeeFieldTile(field: f),
+                      final fields = <_EmployeeField>[
+                        _EmployeeField(
+                          icon: AppIcons.requestIdEmployeeCard,
+                          label: _label('Request Id'),
+                          value: _orNa(widget.requestId),
                         ),
+
+                        _EmployeeField(
+                          icon: AppIcons.empIdEmployeeCard,
+                          label: _label('Employee ID'),
+                          value: _orNa(
+                            user?.employeeId ?? user?.civilEmployeeId,
+                          ),
+                        ),
+
+                        /// NEW FIELD
+                        _EmployeeField(
+                          icon: AppIcons.employeeInfoRequestDetails,
+                          label: _label('Name'),
+                          value: _orNa(user?.employeeName),
+                        ),
+
+                        _EmployeeField(
+                          icon: AppIcons.jobTitleEmployeeCard,
+                          label: _label('Job Title / Designation'),
+                          value: jobTitle,
+                        ),
+
+                        _EmployeeField(
+                          icon: AppIcons.mailEmployeeCard,
+                          label: _label('Email Address'),
+                          value: _orNa(user?.email),
+                        ),
+
+                        _EmployeeField(
+                          icon: AppIcons.departmentEmployeeCard,
+                          label: _label('Department'),
+                          value: department,
+                        ),
+
+                        _EmployeeField(
+                          icon: AppIcons.phoneEmployeeCard,
+                          label: _label('Contact Number'),
+                          value: _orNa(user?.mobile ?? user?.officeNumber),
+                        ),
+                      ];
+
+                      if (useTwoColumns) {
+                        return Column(
+                          children: [
+                            for (int i = 0; i < fields.length; i += 2) ...[
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: _EmployeeFieldTile(field: fields[i]),
+                                  ),
+
+                                  const SizedBox(width: 16),
+
+                                  Expanded(
+                                    child: i + 1 < fields.length
+                                        ? _EmployeeFieldTile(
+                                            field: fields[i + 1],
+                                          )
+                                        : const SizedBox.shrink(),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 14),
+                            ],
+                          ],
+                        );
+                      }
+
+                      return Column(
+                        children: [
+                          ...fields.map(
+                            (f) => Padding(
+                              padding: const EdgeInsets.only(bottom: 14),
+                              child: _EmployeeFieldTile(field: f),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  if (widget.status != null &&
+                      widget.status!.trim().isNotEmpty) ...[
+                    _StatusRow(label: _label('Status'), status: widget.status!),
+                    const SizedBox(height: 14),
+                  ],
+                  if (widget.assignedTo != null &&
+                      widget.assignedTo!.trim().isNotEmpty)
+                    _EmployeeFieldTile(
+                      field: _EmployeeField(
+                        icon: AppIcons.assignedToEmployeeCard,
+                        label: _label('Assigned To'),
+                        value: widget.assignedTo!,
                       ),
-                    ],
-                  );
-                },
+                    ),
+                ],
               ),
             ),
           ],
@@ -194,7 +223,7 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
 }
 
 class _EmployeeField {
-  final IconData icon;
+  final String icon;
   final String label;
   final String value;
 
@@ -215,7 +244,12 @@ class _EmployeeFieldTile extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(field.icon, size: 20, color: Colors.indigo.shade900),
+        KImageProvider(
+          image: field.icon,
+          width: 20,
+          height: 20,
+          tintColor: Colors.indigo.shade900,
+        ),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
@@ -249,7 +283,12 @@ class _StatusRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.info_outline, size: 20, color: Colors.indigo.shade900),
+        KImageProvider(
+          image: AppIcons.statusInfoRequestDetails,
+          width: 20,
+          height: 20,
+          tintColor: Colors.indigo.shade900,
+        ),
         const SizedBox(width: 10),
         Expanded(
           child: Column(

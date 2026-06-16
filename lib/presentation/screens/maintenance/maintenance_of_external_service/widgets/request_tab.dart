@@ -74,7 +74,7 @@ class RequestTabs extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(icon, size: 18, color: iconColor),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         Flexible(
                           child: Text(
                             title,
@@ -90,6 +90,7 @@ class RequestTabs extends StatelessWidget {
                       ],
                     ),
                   ),
+                  3.toHorizontalSizedBox,
                   if (showBadge) _countBadge(count),
                 ],
               ),
@@ -105,9 +106,15 @@ class RequestTabs extends StatelessWidget {
       height: 22,
       width: 22,
       alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        color: Colors.red,
+      decoration: BoxDecoration(
+        color: AppColors.errorRed,
         shape: BoxShape.circle,
+        border: Border.all(
+          color: selectedIndex == 0
+              ? AppColors.actionItemCountRequestBorderColor
+              : AppColors.actionItemActionBorderColor,
+          width: 2,
+        ),
       ),
       child: Text(
         count > 99 ? '99+' : count.toString(),

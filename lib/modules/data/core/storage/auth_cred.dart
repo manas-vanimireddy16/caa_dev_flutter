@@ -5,6 +5,7 @@ import 'package:code_setup/modules/domain/core/storage/persistent_storage/persis
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/models/user_model.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // --- USER MODEL ---
@@ -150,10 +151,11 @@ class KAuthCred {
   // 🔥 Store only SelectedUserRole
   Future<void> storeSelectedRole(SelectedUserRole role) async {
     try {
-      KAppX.globalProvider.read(rolesProvider.notifier).state = role;
+      final scopedRole = MobileServiceScope.filterSelectedRole(role);
+      KAppX.globalProvider.read(rolesProvider.notifier).state = scopedRole;
       await _persistentStorage.store(
         key: roleKey, // Use same key
-        data: role.toJson(),
+        data: scopedRole.toJson(),
         encoder: jsonEncode,
         overwrite: true,
       );
@@ -172,8 +174,8 @@ class KAuthCred {
       );
 
       if (jsonData != null) {
-        final role = SelectedUserRole.fromJson(
-          Map<String, dynamic>.from(jsonData),
+        final role = MobileServiceScope.filterSelectedRole(
+          SelectedUserRole.fromJson(Map<String, dynamic>.from(jsonData)),
         );
 
         KAppX.globalProvider.read(rolesProvider.notifier).state = role;

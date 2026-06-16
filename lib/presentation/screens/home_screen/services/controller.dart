@@ -155,7 +155,7 @@ class _VSController extends StateNotifier<_ViewState> {
       orElse: () => RoleDetail(services: []),
     );
 
-    return matched?.services ?? [];
+    return MobileServiceScope.filterServices(matched?.services ?? const []);
   }
 
   Future<void> _storeSelectedRole(UserRoleResponse roles, int roleId) async {
@@ -171,7 +171,9 @@ class _VSController extends StateNotifier<_ViewState> {
         roleName: detail.role?.name ?? '',
         departmentId: detail.department?.id ?? 0,
         sectionId: detail.section?.id ?? 0,
-        services: detail.services ?? [],
+        services: MobileServiceScope.filterServices(
+          detail.services ?? const [],
+        ),
       ),
     );
   }
@@ -185,7 +187,9 @@ class _VSController extends StateNotifier<_ViewState> {
     if (!mounted) return;
 
     final roleName = role.role?.name ?? '';
-    final immediateServices = role.services ?? [];
+    final immediateServices = MobileServiceScope.filterServices(
+      role.services ?? const [],
+    );
 
     state = state.copyWith(
       services: immediateServices,
@@ -240,7 +244,7 @@ class _VSController extends StateNotifier<_ViewState> {
       roleName: first.roleName!,
       departmentId: detail.department?.id ?? 0,
       sectionId: detail.section?.id ?? 0,
-      services: detail.services ?? [],
+      services: MobileServiceScope.filterServices(detail.services ?? const []),
     );
 
     await storage.storeSelectedRole(selected);
@@ -315,6 +319,14 @@ class _VSController extends StateNotifier<_ViewState> {
     SubService? subService,
     List<SubService>? subServices,
   }) {
+    if (service != null && !MobileServiceScope.isApprovedService(service)) {
+      return;
+    }
+    if (subService != null &&
+        !MobileServiceScope.isApprovedSubService(subService)) {
+      return;
+    }
+
     if (subService != null) {
       final targetService = service ?? Service();
       final shellRoute = SubServiceRouteResolver.serviceShellRouteFor(
@@ -394,7 +406,7 @@ class _VSController extends StateNotifier<_ViewState> {
         KAppX.router.push(const LogisticsHomeRoute());
         return;
       }
-      if (codes.any({'CAA027', 'CAA029', 'CAA030'}.contains)) {
+      if (codes.any({'CAA027', 'CAA028', 'CAA029'}.contains)) {
         KAppX.router.push(const LegalConsultationServicesHomeRoute());
         return;
       }

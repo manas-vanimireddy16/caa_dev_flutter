@@ -1,6 +1,7 @@
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/roles_repo.dart';
+import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final rolesControllerProvider =
@@ -40,12 +41,14 @@ class RolesController extends StateNotifier<SelectedUserRole?> {
       );
 
       /// ✅ CREATE SELECTED ROLE
-      final selected = SelectedUserRole(
-        roleId: detail.role?.id ?? 0,
-        roleName: detail.role?.name ?? '',
-        departmentId: detail.department?.id ?? 0,
-        sectionId: detail.section?.id ?? 0,
-        services: detail.services ?? [],
+      final selected = MobileServiceScope.filterSelectedRole(
+        SelectedUserRole(
+          roleId: detail.role?.id ?? 0,
+          roleName: detail.role?.name ?? '',
+          departmentId: detail.department?.id ?? 0,
+          sectionId: detail.section?.id ?? 0,
+          services: detail.services ?? [],
+        ),
       );
 
       /// ✅ UPDATE STATE
@@ -60,6 +63,8 @@ class RolesController extends StateNotifier<SelectedUserRole?> {
 
   Future<void> loadFromStorage() async {
     final stored = await KAuthCred().getSelectedRole();
-    state = stored;
+    state = stored == null
+        ? null
+        : MobileServiceScope.filterSelectedRole(stored);
   }
 }

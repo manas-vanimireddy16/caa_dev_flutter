@@ -13,4 +13,22 @@ class AppIcons {
   static const attachmentsRequestDetails = 'assets/icons/attach_file.svg';
   static const routingHistoryRequestDetails = 'assets/icons/comment.svg';
   static const workflowRequestDetails = 'assets/icons/workflow.svg';
+
+  static const employeeInfoRequestDetails =
+      'assets/icons/employee_information.svg';
+
+  static const statusInfoRequestDetails = 'assets/icons/status_information.svg';
+  static const requestInfoRequestDetails =
+      'assets/icons/request_information.svg';
+  static const technicalInfoRequestDetails =
+      'assets/icons/technical_information.svg';
+
+  static const assignedToEmployeeCard = 'assets/icons/assigned_to.svg';
+  static const phoneEmployeeCard = 'assets/icons/phone.svg';
+  static const mailEmployeeCard = 'assets/icons/mail.svg';
+
+  static const departmentEmployeeCard = 'assets/icons/department.svg';
+  static const empIdEmployeeCard = 'assets/icons/employee_id.svg';
+  static const jobTitleEmployeeCard = 'assets/icons/job_title.svg';
+  static const requestIdEmployeeCard = 'assets/icons/request_id.svg';
 }

@@ -258,7 +258,9 @@
 //   }
 // }
 import 'package:code_setup/presentation/common_widgets/status_widget.dart';
+import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 
 class CardInfo extends StatelessWidget {
@@ -266,6 +268,7 @@ class CardInfo extends StatelessWidget {
   final String? subtitle;
   final Map<String, String> info;
   final Widget? customContent;
+  final String? headerIcon;
 
   final String Function(String key)? requestDetailsBuilder;
   final String Function(String status)? statusLabelBuilder;
@@ -277,6 +280,7 @@ class CardInfo extends StatelessWidget {
     this.subtitle,
     required this.info,
     this.customContent,
+    this.headerIcon,
     this.requestDetailsBuilder,
     this.statusLabelBuilder,
     this.isShowClosed = false,
@@ -352,7 +356,12 @@ class CardInfo extends StatelessWidget {
             // Title Row
             Row(
               children: [
-                Icon(Icons.info_outline, color: Colors.indigo.shade900),
+                KImageProvider(
+                  image: headerIcon ?? _headerIcon(),
+                  width: 22,
+                  height: 22,
+                  tintColor: Color(0xFF000000),
+                ),
                 const SizedBox(width: 8),
                 Text(title, style: TextStyle(color: AppColors.mainTitleColor)),
               ],
@@ -380,7 +389,6 @@ class CardInfo extends StatelessWidget {
                           padding: const EdgeInsets.all(6),
                           child: InfoTile(
                             title: _label(gridEntries.elementAt(i).key),
-                            iconKey: gridEntries.elementAt(i).key,
                             text: gridEntries.elementAt(i).value,
                           ),
                         ),
@@ -393,7 +401,6 @@ class CardInfo extends StatelessWidget {
                             padding: const EdgeInsets.all(6),
                             child: InfoTile(
                               title: _label(gridEntries.elementAt(i + 1).key),
-                              iconKey: gridEntries.elementAt(i + 1).key,
                               text: gridEntries.elementAt(i + 1).value,
                             ),
                           ),
@@ -407,6 +414,11 @@ class CardInfo extends StatelessWidget {
 
             if (statusEntry != null) ...[
               const SizedBox(height: 8),
+              Text(
+                _label(statusEntry.key),
+                style: TextStyle(color: AppColors.headingColor),
+              ),
+              const SizedBox(height: 6),
               Align(
                 alignment: Alignment.centerLeft,
                 child: StatusChip(
@@ -471,67 +483,36 @@ class CardInfo extends StatelessWidget {
       ),
     );
   }
+
+  String _headerIcon() {
+    final normalized = title.toLowerCase();
+    if (normalized.contains('status')) {
+      return AppIcons.statusInfoRequestDetails;
+    }
+    if (normalized.contains('technical')) {
+      return AppIcons.technicalInfoRequestDetails;
+    }
+    return AppIcons.requestInfoRequestDetails;
+  }
 }
 
 class InfoTile extends StatelessWidget {
   final String title;
   final String? text;
   final Widget? textWidget;
-  final String? iconKey;
 
-  const InfoTile({
-    super.key,
-    required this.title,
-    this.text,
-    this.textWidget,
-    this.iconKey,
-  });
+  const InfoTile({super.key, required this.title, this.text, this.textWidget});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          _getIconForKey(iconKey ?? title),
-          color: Colors.indigo.shade900,
-          size: 20,
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: TextStyle(color: AppColors.headingColor)),
-              const SizedBox(height: 2),
-              textWidget ??
-                  Text(
-                    text ?? "",
-                    style: TextStyle(color: AppColors.contentColor),
-                  ),
-            ],
-          ),
-        ),
+        Text(title, style: TextStyle(color: AppColors.headingColor)),
+        const SizedBox(height: 2),
+        textWidget ??
+            Text(text ?? "", style: TextStyle(color: AppColors.contentColor)),
       ],
     );
-  }
-
-  IconData _getIconForKey(String key) {
-    switch (key.toLowerCase()) {
-      case "status":
-      case "approval status":
-        return Icons.verified;
-
-      case "requested date":
-        return Icons.calendar_today;
-
-      case "approver":
-        return Icons.person;
-
-      case "assigned to":
-        return Icons.work_outline;
-
-      default:
-        return Icons.info_outline;
-    }
   }
 }

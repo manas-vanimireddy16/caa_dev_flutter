@@ -14,8 +14,6 @@ List<AutoRoute> get _dynamicSubServiceRoutes => [
   AutoRoute(page: RequestEventSupportRoute.page),
   AutoRoute(page: RequestTrainingRoute.page),
   AutoRoute(page: RequestForStudyLeaveRoute.page),
-  AutoRoute(page: AnnualTrainingPlanRoute.page),
-  AutoRoute(page: RequestForCancellationRoute.page),
   AutoRoute(page: RequestforTrainingRoomBookingRoute.page),
   AutoRoute(page: RequestToBookCAAHallsRoute.page),
   AutoRoute(page: SecurityThreatRoute.page),
@@ -23,7 +21,6 @@ List<AutoRoute> get _dynamicSubServiceRoutes => [
     page: LegalConsultationandReviewofAdministrativeDecisionsRoute.page,
   ),
   AutoRoute(page: AppealAgainstAdministrativeDecisionsRoute.page),
-  AutoRoute(page: RequestForLegalContractReviewRoute.page),
   AutoRoute(page: LogisticsRequestPortalRoute.page),
   AutoRoute(page: LogisticsForeignersRequestPortalRoute.page),
   AutoRoute(page: RequestForVehicleMaintenanceRoute.page),
@@ -44,7 +41,6 @@ List<AutoRoute> get _dynamicSubServiceRoutes => [
   AutoRoute(page: PromotionsRoute.page),
   AutoRoute(page: AnnualIncrementRoute.page),
   AutoRoute(page: RequestforCoverageRoute.page),
-  AutoRoute(page: RequestTenderServiceRoute.page),
   AutoRoute(page: RequestAServiceToRespondToEnquiriesRoute.page),
   AutoRoute(page: RequestTenderAnalysisServiceRoute.page),
   AutoRoute(page: ContractServiceRequestRoute.page),
@@ -375,7 +371,6 @@ class AppRouter extends RootStackRouter {
       page: LegalConsultationandReviewofAdministrativeDecisionsRoute.page,
     ),
     AutoRoute(page: AppealAgainstAdministrativeDecisionsRoute.page),
-    AutoRoute(page: RequestForLegalContractReviewRoute.page),
     AutoRoute(page: LogisticsRequestPortalRoute.page),
     AutoRoute(page: LogisticsForeignersRequestPortalRoute.page),
     AutoRoute(page: RequestForVehicleMaintenanceRoute.page),
@@ -648,14 +643,6 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.traininganddevelopmentNewRequest,
     ),
     AutoRoute(
-      page: AnnualTrainingPlanDetailsRoute.page,
-      path: RouteNames.annualTrainingPlanDetails,
-    ),
-    AutoRoute(
-      page: AnnualTrainingPlanRequestRoute.page,
-      path: RouteNames.annualTrainingPlanNewRequest,
-    ),
-    AutoRoute(
       page: RequestTrainingDetailsRoute.page,
       path: RouteNames.requestTrainingDetails,
     ),
@@ -671,15 +658,6 @@ class AppRouter extends RootStackRouter {
       page: RequestForStudyLeaveDetailsRoute.page,
       path: RouteNames.requestForStudyLeaveDetails,
     ),
-    AutoRoute(
-      page: RequestForCancellationNewRequestRoute.page,
-      path: RouteNames.requestForCancellationNewRequest,
-    ),
-    AutoRoute(
-      page: RequestForCancellationDetailsRoute.page,
-      path: RouteNames.requestForCancellationDetails,
-    ),
-
     AutoRoute(
       page: RequestToBookCAAHallsDetailsRoute.page,
       path: RouteNames.requestToBookCAAHallsDetails,
@@ -698,14 +676,6 @@ class AppRouter extends RootStackRouter {
         ..._dynamicSubServiceRoutes,
         AutoRoute(page: RaiseLegalComplaintRoute.page),
       ],
-    ),
-    AutoRoute(
-      page: RequestForLegalContractReviewDetailsRoute.page,
-      path: RouteNames.legalConsultationServicesRequestDetails,
-    ),
-    AutoRoute(
-      page: RequestForLegalContractReviewNewRequestRoute.page,
-      path: RouteNames.legalConsultationServicesNewRequest,
     ),
     AutoRoute(
       page: AppealAgainstAdministrativeDecisionsDetailsRoute.page,
@@ -744,14 +714,6 @@ class AppRouter extends RootStackRouter {
       ],
     ),
 
-    AutoRoute(
-      page: RequestTenderServiceDetailsRoute.page,
-      path: RouteNames.requestTenderServiceDetails,
-    ),
-    AutoRoute(
-      page: RequestTenderServiceNewRequestRoute.page,
-      path: RouteNames.requestTenderServiceNewRequest,
-    ),
     AutoRoute(
       page: RequestAServiceToRespondToEnquiriesDetailsRoute.page,
       path: RouteNames.respondToEnquiryDetails,

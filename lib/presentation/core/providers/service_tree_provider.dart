@@ -1,10 +1,13 @@
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
+import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final serviceTreeProvider = Provider<ServiceTree>((ref) {
   final selectedRole = ref.watch(rolesProvider);
-  return ServiceTree(selectedRole?.services ?? []);
+  return ServiceTree(
+    MobileServiceScope.filterServices(selectedRole?.services ?? const []),
+  );
 });
 
 class ServiceTree {

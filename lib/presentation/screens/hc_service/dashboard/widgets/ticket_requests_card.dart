@@ -21,13 +21,12 @@ class TicketRequestsCard extends ConsumerWidget {
   });
 
   String _screenTitle(DashboardL10n l10n) {
-    final sub = providerArgs.subService;
     if (l10n.isArabic) {
-      return sub.arabicsubServiceName ??
-          sub.subServiceName ??
+      return providerArgs.service.arabicName ??
+          providerArgs.service.name ??
           l10n.ticketRequests;
     }
-    return sub.subServiceName ?? l10n.ticketRequests;
+    return providerArgs.service.name ?? l10n.ticketRequests;
   }
 
   @override

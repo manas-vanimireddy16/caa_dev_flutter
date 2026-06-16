@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 
 class SubServiceDestination {
   final Service service;
@@ -21,6 +22,8 @@ class SubServiceRouteResolver {
   const SubServiceRouteResolver._();
 
   static PageRouteInfo<dynamic>? serviceShellRouteFor(Service service) {
+    if (!MobileServiceScope.isApprovedService(service)) return null;
+
     final serviceCode = (service.code ?? '').trim();
     final subServiceCodes = (service.subservices ?? [])
         .map((subService) => (subService.code ?? '').trim())
@@ -77,7 +80,7 @@ class SubServiceRouteResolver {
     if (subServiceCodes.any({'CAA031', 'CAA032', 'CAA033'}.contains)) {
       return const LogisticsHomeRoute();
     }
-    if (subServiceCodes.any({'CAA027', 'CAA029', 'CAA030'}.contains)) {
+    if (subServiceCodes.any({'CAA027', 'CAA028', 'CAA029'}.contains)) {
       return const LegalConsultationServicesHomeRoute();
     }
     if (subServiceCodes.any(
@@ -128,6 +131,15 @@ class SubServiceRouteResolver {
     required SubService subService,
   }) {
     PageRouteInfo<dynamic>? route;
+
+    if (!MobileServiceScope.isApprovedService(service) ||
+        !MobileServiceScope.isApprovedSubService(subService)) {
+      return SubServiceDestination(
+        service: service,
+        subService: subService,
+        route: null,
+      );
+    }
 
     switch ((subService.code ?? '').trim()) {
       case 'CAA010':
@@ -219,6 +231,12 @@ class SubServiceRouteResolver {
         break;
       case 'CAA027':
         route = LegalConsultationandReviewofAdministrativeDecisionsRoute(
+          service: service,
+          subService: subService,
+        );
+        break;
+      case 'CAA028':
+        route = RaiseLegalComplaintRoute(
           service: service,
           subService: subService,
         );
@@ -380,7 +398,7 @@ class SubServiceRouteResolver {
   }
 
   static List<SubServiceDestination> destinationsFor(Service service) {
-    return (service.subservices ?? [])
+    return MobileServiceScope.filterSubServices(service.subservices ?? const [])
         .map((subService) => resolve(service: service, subService: subService))
         .toList(growable: false);
   }

@@ -4,6 +4,7 @@ import 'package:code_setup/presentation/models/request_detail_table.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/performance_management/widgets/goals_table.dart';
 import 'package:code_setup/presentation/screens/hc_service/request_for_duty_mission/widgets/allowance_table.dart';
+import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/card_info.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
@@ -52,6 +53,7 @@ class CommonRequestDetails extends StatelessWidget {
         if (coverageInfo != null) ...[
           CardInfo(
             title: coverageInformationTitle ?? "Coverage Information",
+            headerIcon: AppIcons.requestInfoRequestDetails,
             info: coverageInfo!,
             requestDetailsBuilder: requestDetailsLabelBuilder,
           ),
@@ -62,6 +64,7 @@ class CommonRequestDetails extends StatelessWidget {
         if (statusInfo != null) ...[
           CardInfo(
             title: statusInformationTitle ?? "Status Information",
+            headerIcon: AppIcons.statusInfoRequestDetails,
             info: statusInfo!,
             requestDetailsBuilder: requestDetailsLabelBuilder,
           ),
@@ -72,6 +75,7 @@ class CommonRequestDetails extends StatelessWidget {
         if (requestInfo != null) ...[
           CardInfo(
             title: requestInformationTitle ?? "Request Information",
+            headerIcon: AppIcons.requestInfoRequestDetails,
             info: requestInfo!,
             requestDetailsBuilder: requestDetailsLabelBuilder,
             customContent: table != null
@@ -95,6 +99,7 @@ class CommonRequestDetails extends StatelessWidget {
         if (technicalInfo != null) ...[
           CardInfo(
             title: technicalInformationTitle ?? "Technical Details",
+            headerIcon: AppIcons.technicalInfoRequestDetails,
             info: technicalInfo!,
             requestDetailsBuilder: requestDetailsLabelBuilder,
           ),

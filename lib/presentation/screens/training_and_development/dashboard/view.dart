@@ -129,9 +129,7 @@ class _TrainingAndDevelopmentDashboardScreenState
         padding: const EdgeInsets.all(16),
         children: [
           /// KPI
-          StatSummaryRow(
-            stats: controller.currentStats((key) => l10n.statTitle(key)),
-          ),
+          StatSummaryRow(stats: controller.currentStats(l10n.statTitle)),
           16.toVerticalSizedBox,
 
           /// Status Breakdown
@@ -140,7 +138,7 @@ class _TrainingAndDevelopmentDashboardScreenState
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
             title: l10n.requestsStatusBreakdown,
-            centerMetricLabel: _providerArgs.service.name ?? '',
+            centerMetricLabel: l10n.totalRequests,
             legendHeading: l10n.breakdown,
             statusLabelBuilder: l10n.statusLabel,
             onChanged: controller.onStatusFilterChanged,
@@ -154,7 +152,7 @@ class _TrainingAndDevelopmentDashboardScreenState
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
             title: l10n.requestTrendBreakdown,
-            metric: _providerArgs.service.name ?? '',
+            metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
@@ -162,14 +160,6 @@ class _TrainingAndDevelopmentDashboardScreenState
           ),
 
           16.toVerticalSizedBox,
-
-          Text(
-            _providerArgs.service.name ?? '',
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          12.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

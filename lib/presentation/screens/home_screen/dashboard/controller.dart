@@ -207,19 +207,9 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       final role = KAppX.globalProvider.read(rolesProvider);
 
-      final services = role?.services ?? [];
-      final List<int> serviceIds = services
-          .map((service) => service.id)
-          .whereType<int>()
-          .toSet()
-          .toList();
-
-      final List<int> subServiceIds = services
-          .expand((service) => service.subservices ?? [])
-          .map((subService) => subService.id)
-          .whereType<int>()
-          .toSet()
-          .toList();
+      final ids = MobileServiceScope.idsForServices(role?.services ?? const []);
+      final serviceIds = ids.serviceIds;
+      final subServiceIds = ids.subServiceIds;
 
       final requests = await dashboardInstance.getRequestsData(
         offset: 1,
@@ -258,19 +248,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
       final role = KAppX.globalProvider.read(rolesProvider);
 
-      final services = role?.services ?? [];
-      final List<int> serviceIds = services
-          .map((service) => service.id)
-          .whereType<int>()
-          .toSet()
-          .toList();
-
-      final List<int> subServiceIds = services
-          .expand((service) => service.subservices ?? [])
-          .map((subService) => subService.id)
-          .whereType<int>()
-          .toSet()
-          .toList();
+      final ids = MobileServiceScope.idsForServices(role?.services ?? const []);
+      final serviceIds = ids.serviceIds;
+      final subServiceIds = ids.subServiceIds;
 
       final items = await dashboardInstance.getActionItems(
         offset: 1,

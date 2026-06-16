@@ -2,6 +2,7 @@ import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/roles_repo.dart';
+import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 import 'package:flutter/foundation.dart';
 
 class RoleService {
@@ -29,7 +30,7 @@ class RoleService {
 
     if (saved != null) {
       print("🔵 Using saved role ${saved.roleName}");
-      return saved;
+      return MobileServiceScope.filterSelectedRole(saved);
     }
 
     final first = userRoles.data!.rolesSummary!.first;
@@ -39,12 +40,14 @@ class RoleService {
       orElse: () => userRoles.data!.roleDetails!.first,
     );
 
-    final selected = SelectedUserRole(
-      roleId: first.roleId!,
-      roleName: first.roleName!,
-      departmentId: detail.department?.id ?? 0,
-      sectionId: detail.section?.id ?? 0,
-      services: detail.services ?? [],
+    final selected = MobileServiceScope.filterSelectedRole(
+      SelectedUserRole(
+        roleId: first.roleId!,
+        roleName: first.roleName!,
+        departmentId: detail.department?.id ?? 0,
+        sectionId: detail.section?.id ?? 0,
+        services: detail.services ?? [],
+      ),
     );
 
     await _storage.storeSelectedRole(selected);

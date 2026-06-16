@@ -1,6 +1,8 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/common_widgets/status_widget.dart';
+import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 
 class CardInfo extends StatelessWidget {
@@ -52,7 +54,12 @@ class CardInfo extends StatelessWidget {
             // Title Row
             Row(
               children: [
-                Icon(Icons.info_outline, color: Colors.indigo.shade900),
+                KImageProvider(
+                  image: _headerIcon(),
+                  width: 22,
+                  height: 22,
+                  tintColor: Colors.indigo.shade900,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   title,
@@ -205,6 +212,17 @@ class CardInfo extends StatelessWidget {
       ),
     );
   }
+
+  String _headerIcon() {
+    final normalized = title.toLowerCase();
+    if (normalized.contains('status')) {
+      return AppIcons.statusInfoRequestDetails;
+    }
+    if (normalized.contains('technical')) {
+      return AppIcons.technicalInfoRequestDetails;
+    }
+    return AppIcons.requestInfoRequestDetails;
+  }
 }
 
 class InfoTile extends StatelessWidget {
@@ -219,33 +237,25 @@ class InfoTile extends StatelessWidget {
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)
         .themeBox;
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(_getIconForKey(title), color: Colors.indigo.shade900, size: 20),
-        8.toHorizontalSizedBox,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: currentTheme.fontSizes.s12,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-              2.toVerticalSizedBox,
-              textWidget ??
-                  Text(
-                    text ?? "",
-                    style: TextStyle(
-                      fontSize: currentTheme.fontSizes.s14,
-                      fontWeight: currentTheme.fontWeights.wBold,
-                    ),
-                  ),
-            ],
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: currentTheme.fontSizes.s12,
+            color: Colors.grey.shade600,
           ),
         ),
+        2.toVerticalSizedBox,
+        textWidget ??
+            Text(
+              text ?? "",
+              style: TextStyle(
+                fontSize: currentTheme.fontSizes.s14,
+                fontWeight: currentTheme.fontWeights.wBold,
+              ),
+            ),
       ],
     );
   }

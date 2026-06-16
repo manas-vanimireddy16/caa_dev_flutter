@@ -12,6 +12,7 @@ import 'package:code_setup/presentation/screens/home_screen/services/servicesCar
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 import 'package:code_setup/utils/helper/sub_service_route_resolver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
