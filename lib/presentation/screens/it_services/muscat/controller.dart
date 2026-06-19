@@ -284,6 +284,8 @@ class _VSController extends StateNotifier<_ViewState> {
   _VSController({required this.service, required this.subService})
     : super(_ViewState.init()) {
     params = _VSControllerParams(service: service, subService: subService);
+    searchController = TextEditingController();
+    chatController = TextEditingController();
   }
   Timer? _searchDebounce;
 
@@ -301,6 +303,25 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController chatController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
   Future<void> initState() async {
     personNameController = TextEditingController();
     contactNumberController = TextEditingController();
@@ -310,8 +331,6 @@ class _VSController extends StateNotifier<_ViewState> {
     descriptionController = TextEditingController();
     extensionNumberController = TextEditingController();
     emailController = TextEditingController();
-    searchController = TextEditingController();
-    chatController = TextEditingController();
     fetchServices();
     fetchApprovalKpi();
 
@@ -320,7 +339,6 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchDepartments();
     // fetchitTechnician();
-    fetchRequests();
   }
 
   int _searchVersion = 0;
@@ -339,38 +357,21 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void onRequestStatusFilterChanged(String status) {
-    final searchText = searchController.text.trim();
-
     if (state.tabIndex == 0) {
       state = state.copyWith(myRequestsStatusFilter: status);
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
-      return;
+      refreshMyRequestsList();
+    } else {
+      state = state.copyWith(actionItemsStatusFilter: status);
+      refreshActionItemsList();
     }
-
-    state = state.copyWith(actionItemsStatusFilter: status);
-    fetchActionItems(isRefresh: true, searchText: searchText, status: status);
   }
 
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(
-          isRefresh: true,
-          searchText: value,
-          status: state.myRequestsStatusFilter,
-        );
-      } else {
-        await fetchActionItems(
-          isRefresh: true,
-          searchText: value,
-          status: state.actionItemsStatusFilter,
-        );
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -578,12 +579,12 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
       fetchApprovalKpi(),
     ]);
+    refreshRequestLists();
   }
 
   Future<void> openNewRequestForm() async {
@@ -606,12 +607,12 @@ class _VSController extends StateNotifier<_ViewState> {
     );
 
     if (index == 0) {
-      fetchRequests(status: '');
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchActionItems(status: '');
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
@@ -1409,61 +1410,51 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchRequests({
-    bool isRefresh = false,
+  Future<List<SalalahRequestModel>> loadMyRequestsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isRequestLoading: true);
-    try {
-      // Clear list only if explicitly refreshing or searching
-      // if (isRefresh || status.isNotEmpty) {
-      //   state = state.copyWith(requestData: [], isLoading: false);
-      // }
+    if (!mounted) return [];
 
-      final requests = await dashboardinstance.getRequests(
-        offset: 1,
-        limit: 8,
+    try {
+      return await dashboardinstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
-
-      // No merging needed
-      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isRequestLoading: false);
-      Fluttertoast.showToast(msg: e.toString());
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
-  Future<void> fetchActionItems({
-    bool isRefresh = false,
+  Future<List<ApprovalData>> loadActionItemsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return [];
 
     try {
-      // if (isRefresh || status.isNotEmpty) {
-      //   state = state.copyWith(actionItems: [], isLoading: false);
-      // }
-
-      final items = await dashboardinstance.getActionItems(
-        offset: 0,
-        limit: 8,
+      return await dashboardinstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
-
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
-
-      // No merging needed
-      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
@@ -1734,7 +1725,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // 3️⃣ Send request
       await dashboardinstance.sendRequest(payload);
-      fetchRequests();
+      refreshRequestLists();
       KAppX.router.pop();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -1796,8 +1787,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await dashboardinstance.onClose(payload);
       KAppX.router.pop();
       KAppX.router.pop();
-      await fetchActionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1834,8 +1824,8 @@ class _VSController extends StateNotifier<_ViewState> {
       // 3️⃣ Send request
       await dashboardinstance.muscatAssign(payload);
       KAppX.router.pop();
-      // await fetchActionItems();
-      // await fetchRequests();
+      // refreshRequestLists();
+      // await refreshRequestLists();
       fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -2090,7 +2080,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests(isRefresh: true);
+    refreshRequestLists();
     // fetchactionItems();
   }
 
@@ -2126,7 +2116,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // 3️⃣ Send request
       await dashboardinstance.sendRequest(payload);
-      fetchRequests();
+      refreshRequestLists();
       KAppX.router.pop();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -2153,6 +2143,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
+    searchController.dispose();
+    chatController.dispose();
     personNameController.dispose();
     contactNumberController.dispose();
     departmentController.dispose();

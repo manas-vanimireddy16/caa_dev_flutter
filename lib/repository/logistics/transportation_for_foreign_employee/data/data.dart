@@ -403,10 +403,8 @@ class TransportationForForeignEmployeeRepositoryImpl
     try {
       if (client != null) {
         final Map<String, dynamic> queryParams = {
-          // 'offset': offset,
-          // 'limit': limit,
-          // 'service_id': serviceId,
-          // 'sub_service_id': subServiceId,
+          'offset': offset,
+          'limit': limit,
         };
 
         if (searchText.isNotEmpty) {
@@ -456,8 +454,8 @@ class TransportationForForeignEmployeeRepositoryImpl
       final client = await KAppX.network.secureClient();
       if (client != null) {
         final queryParams = {
-          // 'offset': offset.toString(),
-          // 'limit': limit.toString(),
+          'offset': offset.toString(),
+          'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
           'service_id': serviceId,
@@ -573,6 +571,32 @@ class TransportationForForeignEmployeeRepositoryImpl
     } catch (e) {
       debugPrint('❌ Unexpected error: $e');
       throw e;
+    }
+  }
+
+  @override
+  Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw ApiException('Client is null');
+    }
+
+    final url = ApiEndPoint.foreignEmployeeVehicleDeleteAttachment(
+      attachmentId,
+    );
+
+    try {
+      final response = await client.delete(url);
+      if (response.statusCode != 200 &&
+          response.statusCode != 201 &&
+          response.statusCode != 204) {
+        throw ApiException(
+          response.data?['message'] ?? 'Failed to delete attachment',
+        );
+      }
+    } on DioException catch (error) {
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
     }
   }
 
@@ -744,6 +768,41 @@ class TransportationForForeignEmployeeRepositoryImpl
     } catch (e) {
       debugPrint('❌ Unexpected error: $e');
       throw e;
+    }
+  }
+
+  @override
+  Future<void> updateActualReturn(
+    Map<String, dynamic> payload,
+    int requestId,
+  ) async {
+    final client = await KAppX.network.secureClient();
+    final String url =
+        ApiEndPoint.foreignEmployeeVehicleActualReturn(requestId);
+
+    try {
+      if (client == null) {
+        throw ApiException('Unable to connect. Please try again.');
+      }
+
+      final response = await client.put(url, data: payload);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ShowFlutterToast().showFlutterToastSuccess(
+          '${response.data['message'] ?? 'Actual return updated successfully'}',
+        );
+      } else {
+        ShowFlutterToast().showFlutterToastFailure(
+          '${response.statusMessage ?? 'Failed to update actual return'}',
+        );
+        throw ApiException(
+          response.data?['message'] ?? 'Failed to update actual return',
+        );
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data?['message'] ?? e.message;
+      ShowFlutterToast().showFlutterToastFailure('$message');
+      throw ApiException(message);
     }
   }
 }

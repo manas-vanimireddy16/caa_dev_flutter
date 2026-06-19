@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:code_setup/presentation/common_widgets/header.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/announcementsModels.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,7 +36,8 @@ class _AnnouncementWidgetState extends ConsumerState<AnnouncementWidget> {
   Widget build(BuildContext context) {
     return Card(
       color: Colors.white,
-      margin: const EdgeInsets.all(10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      // margin: const EdgeInsets.all(10),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -117,8 +119,7 @@ class _AnnouncementWidgetState extends ConsumerState<AnnouncementWidget> {
                                 ),
                                 child: Text(
                                   ann?.title ?? '',
-                                  style: const TextStyle(
-                                    fontFamily: 'Cairo',
+                                  style: AppTextStyles.cairo(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16,
                                     color: Color(0xFF1E1E1E),
@@ -134,8 +135,7 @@ class _AnnouncementWidgetState extends ConsumerState<AnnouncementWidget> {
                                 ),
                                 child: Text(
                                   ann.fieldAnnouncementCaaTitle ?? '',
-                                  style: const TextStyle(
-                                    fontFamily: 'Cairo',
+                                  style: AppTextStyles.cairo(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 12,
                                     color: Color(0xFF808080),
@@ -151,10 +151,9 @@ class _AnnouncementWidgetState extends ConsumerState<AnnouncementWidget> {
                                 ),
                                 child: Row(
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Announcement',
-                                      style: TextStyle(
-                                        fontFamily: 'Cairo',
+                                      style: AppTextStyles.cairo(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 14,
                                         color: Color(0xFF1E1E1E),
@@ -170,10 +169,9 @@ class _AnnouncementWidgetState extends ConsumerState<AnnouncementWidget> {
                                         color: const Color(0xFFFFEDE8),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: const Text(
+                                      child: Text(
                                         'New',
-                                        style: TextStyle(
-                                          fontFamily: 'Cairo',
+                                        style: AppTextStyles.cairo(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 10,
                                           color: Color(0xFF8D2814),
@@ -192,8 +190,7 @@ class _AnnouncementWidgetState extends ConsumerState<AnnouncementWidget> {
                                 ),
                                 child: Text(
                                   'posted on ${ann.fieldActiveAnnouncementFrom}',
-                                  style: const TextStyle(
-                                    fontFamily: 'Cairo',
+                                  style: AppTextStyles.cairo(
                                     fontWeight: FontWeight.w200,
                                     fontSize: 10,
                                     color: Color(0xFF808080),

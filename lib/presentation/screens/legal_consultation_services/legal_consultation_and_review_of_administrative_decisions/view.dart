@@ -52,10 +52,16 @@ import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
+import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
+import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
+import 'package:code_setup/utils/helper/list_pagination.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
 // import 'package:flutter/rendering.dart' hide Border;
 // import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -111,6 +117,11 @@ class _LegalConsultationandReviewofAdministrativeDecisionsScreenState
 
     _focusNode = FocusNode();
     _pageController = PageController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(_vsProvider(_providerArgs).notifier).initState();
+    });
   }
 
   @override

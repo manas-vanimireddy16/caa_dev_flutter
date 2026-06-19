@@ -4,10 +4,9 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/repository/common/domain/domain.dart';
-import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
-import 'package:code_setup/utils/helper/icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
@@ -62,11 +61,7 @@ class CommonAttachmentsUploadArea extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: AppColors.secondaryText,
-            ),
+            style: AppTextStyles.requestDetailsFieldHeading(),
             children: [
               if (isRequired)
                 const TextSpan(
@@ -150,21 +145,11 @@ class CommonAttachmentsUploadArea extends StatelessWidget {
                 const SizedBox(height: 14),
                 Text(
                   _allowedFilesText,
-                  style: const TextStyle(
-                    color: filesTextColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    height: 1.4,
-                  ),
+                  style: AppTextStyles.requestDetailsFieldHeading(),
                 ),
                 Text(
                   "File can't be larger than ${maxFileSizeInMB}MB",
-                  style: const TextStyle(
-                    color: filesTextColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    height: 1.4,
-                  ),
+                  style: AppTextStyles.requestDetailsFieldHeading(),
                 ),
                 if (footer != null) ...[const SizedBox(height: 12), footer!],
               ],
@@ -267,7 +252,7 @@ class CommonAttachmentsTabContent extends StatelessWidget {
       return Center(
         child: Text(
           labels.noAttachmentsAvailable,
-          style: TextStyle(color: AppColors.contentColor),
+          style: AppTextStyles.requestDetailsFieldContent(),
         ),
       );
     }
@@ -290,7 +275,7 @@ class CommonAttachmentsTabContent extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   labels.fileListTitle,
-                  style: TextStyle(color: AppColors.mainTitleColor),
+                  style: AppTextStyles.requestDetailsSectionHeading(),
                 ),
               ],
             ),
@@ -638,9 +623,9 @@ class _InfoRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: AppColors.headingColor)),
+        Text(label, style: AppTextStyles.requestDetailsFieldHeading()),
         const SizedBox(height: 2),
-        Text(value, style: TextStyle(color: AppColors.contentColor)),
+        Text(value, style: AppTextStyles.requestDetailsFieldContent()),
       ],
     );
   }

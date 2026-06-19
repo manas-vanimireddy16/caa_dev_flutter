@@ -409,8 +409,8 @@ class AssignaTasktoEmployeeDetailsRepositoryImple
     try {
       if (client != null) {
         final Map<String, dynamic> queryParams = {
-          // 'offset': offset,
-          // 'limit': limit,
+          'offset': offset,
+          'limit': limit,
         };
 
         if (searchText.isNotEmpty) {
@@ -454,8 +454,8 @@ class AssignaTasktoEmployeeDetailsRepositoryImple
       final client = await KAppX.network.secureClient();
       if (client != null) {
         final queryParams = {
-          // 'offset': offset.toString(),
-          // 'limit': limit.toString(),
+          'offset': offset.toString(),
+          'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
         };
@@ -564,6 +564,30 @@ class AssignaTasktoEmployeeDetailsRepositoryImple
     } catch (e) {
       debugPrint('❌ Unexpected error: $e');
       throw e;
+    }
+  }
+
+  @override
+  Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw ApiException('Client is null');
+    }
+
+    final url = ApiEndPoint.assignTaskAttachmentById(attachmentId);
+
+    try {
+      final response = await client.delete(url);
+      if (response.statusCode != 200 &&
+          response.statusCode != 201 &&
+          response.statusCode != 204) {
+        throw ApiException(
+          response.data?['message'] ?? 'Failed to delete attachment',
+        );
+      }
+    } on DioException catch (error) {
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
     }
   }
 

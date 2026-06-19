@@ -38,7 +38,6 @@ import 'package:code_setup/presentation/screens/task_management/models/employee_
 import 'package:code_setup/presentation/screens/training_and_development/models/request_data_model.dart';
 import 'package:code_setup/repository/security_access/domain/domain.dart';
 import 'package:code_setup/repository/training_and_development/annual_training_plan/domain/domain.dart';
-import 'package:code_setup/repository/training_and_development/request_for_training_room_booking/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;

@@ -1,3 +1,4 @@
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class TabItem extends StatelessWidget {
@@ -31,7 +32,7 @@ class TabItem extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: TextStyle(
+          style: AppTextStyles.cairo(
             color: isSelected ? Colors.white : Colors.black87,
             fontWeight: FontWeight.w500,
           ),

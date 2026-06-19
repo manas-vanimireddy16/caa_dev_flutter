@@ -1,4 +1,5 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +55,7 @@ class _ServicesSearchFieldState extends State<ServicesSearchField> {
       onChanged: widget.onChanged,
       decoration: InputDecoration(
         hintText: widget.hintText,
-        hintStyle: TextStyle(
+        hintStyle: AppTextStyles.cairo(
           fontSize: 14.toAutoScaledWidth,
           fontWeight: FontWeight.w400,
           color: _hintColor,
@@ -82,7 +83,10 @@ class _ServicesSearchFieldState extends State<ServicesSearchField> {
           ),
         ),
       ),
-      style: TextStyle(fontSize: 14.toAutoScaledWidth, color: Colors.black87),
+      style: AppTextStyles.cairo(
+        fontSize: 14.toAutoScaledWidth,
+        color: Colors.black87,
+      ),
     );
   }
 }
@@ -213,7 +217,7 @@ class _SegmentButton extends StatelessWidget {
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: AppTextStyles.cairo(
                       fontSize: 13.toAutoScaledWidth,
                       fontWeight: FontWeight.w600,
                       color: fg,
@@ -313,7 +317,7 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
                           widget.title,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: AppTextStyles.cairo(
                             fontSize: 16.toAutoScaledWidth,
                             fontWeight: FontWeight.w700,
                             color: Colors.black,
@@ -333,7 +337,7 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
                   widget.subtitle,
                   maxLines: _expanded ? null : 3,
                   overflow: _expanded ? null : TextOverflow.ellipsis,
-                  style: TextStyle(
+                  style: AppTextStyles.cairo(
                     fontSize: 13.toAutoScaledWidth,
                     fontWeight: FontWeight.w400,
                     color: _subtitleColor,
@@ -364,7 +368,7 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
                           ),
                           child: Text(
                             tag,
-                            style: TextStyle(
+                            style: AppTextStyles.cairo(
                               fontSize: 12.toAutoScaledWidth,
                               fontWeight: FontWeight.w500,
                               color: _chipTextColor,
@@ -381,7 +385,7 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
                   behavior: HitTestBehavior.opaque,
                   child: Text(
                     _expanded ? l10n.servicesLessInfo : l10n.servicesMoreInfo,
-                    style: TextStyle(
+                    style: AppTextStyles.cairo(
                       fontSize: 13.toAutoScaledWidth,
                       fontWeight: FontWeight.w700,
                       color: Colors.black,

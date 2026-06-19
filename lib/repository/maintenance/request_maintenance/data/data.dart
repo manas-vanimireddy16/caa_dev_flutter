@@ -398,7 +398,7 @@ class RequestMaintenanceRepositoryImpl implements RequestMaintenanceRepository {
       if (client != null) {
         final Map<String, dynamic> queryParams = {
           'offset': offset,
-          'limit': 2,
+          'limit': limit,
           // 'service_id': serviceId,
           // 'sub_service_id': subServiceId,
         };
@@ -450,7 +450,7 @@ class RequestMaintenanceRepositoryImpl implements RequestMaintenanceRepository {
       if (client != null) {
         final queryParams = {
           'offset': offset.toString(),
-          'limit': '2',
+          'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
           'service_id': serviceId,
@@ -521,11 +521,13 @@ class RequestMaintenanceRepositoryImpl implements RequestMaintenanceRepository {
           return response.data["message"] ?? "Success";
         } else {
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Something went wrong";
+          throw ApiException(
+            response.data["message"] ?? "Something went wrong",
+          );
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
-        return "Something went wrong";
+        throw ApiException("Something went wrong");
       }
     } on DioException catch (e) {
       debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
@@ -554,11 +556,13 @@ class RequestMaintenanceRepositoryImpl implements RequestMaintenanceRepository {
           return response.data["message"] ?? "Success";
         } else {
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Something went wrong";
+          throw ApiException(
+            response.data["message"] ?? "Something went wrong",
+          );
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
-        return "Something went wrong";
+        throw ApiException("Something went wrong");
       }
     } on DioException catch (e) {
       debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
@@ -585,15 +589,15 @@ class RequestMaintenanceRepositoryImpl implements RequestMaintenanceRepository {
             response.data['message'] ?? 'Deleted successfully',
           );
           debugPrint('✅ Deleted successfully');
-
-          return response.data["message"] ?? "Success";
         } else {
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Something went wrong";
+          throw ApiException(
+            response.data["message"] ?? "Something went wrong",
+          );
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
-        return "Something went wrong";
+        throw ApiException("Something went wrong");
       }
     } on DioException catch (e) {
       debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');

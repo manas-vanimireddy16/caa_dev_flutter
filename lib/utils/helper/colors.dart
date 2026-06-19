@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const primaryBlue = Color(0xFF26285F);
-  static const buttonGreen = const Color(0xFF0D652D);
-  static const buttonRed = const Color(0xFFC02211);
+  static const primaryBlue75 = Color(0xFF26285F);
+
+  static const buttonGreen = Color(0xFF0D652D);
+  static const buttonRed = Color(0xFFC02211);
+
+  static const Color homeSurfaceColor = Color(0xFFF6F6F9);
 
   /// Login Screen Colors
   static const Color loginText = Color(0xFFFFFFFF);
@@ -14,6 +17,7 @@ class AppColors {
   /// Text
   static const Color secondaryText = Color(0xFF434347);
   static const Color darkPrimaryTextColor = Color(0xFF04040A);
+  static const textHeading = Color(0xFF1E1E1E);
 
   /// Request Details
   // Main Title
@@ -69,4 +73,18 @@ class AppColors {
   static const Color alertAmber = Color(0xFFFFBF00);
   static const Color disabledGrey = Color(0xFFE6E6E6);
   static const Color grey50 = Color(0xFF676767);
+  static const Color breakdownTextColor = Color(0xFF021526);
+  static const Color black = Color(0xFF000000);
+
+  /// Trend Breakdown
+  static const Color trendLabelColor = Color(0xFF5A607F);
+  static const Color trendBarColor = Color(0xFF283593);
+
+  /// My Requests / Action Items tabs
+  static const Color selectedTabColor = Color(0xFF26285F);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color searchTextColor = Color(0xFF5C5E87);
+
+  /// KPI cards
+  static const Color kpiTextColor = Color(0xFF021526);
 }

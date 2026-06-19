@@ -56,6 +56,7 @@ abstract class DashboardRepository {
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
   Future<List<ChatMessageModel>> getchatById(int id);
   Future<List<AttachmentModel>> getAttachmentsById(int id);
+  Future<void> deleteAttachment(int attachmentId, {int? requestId});
 
   Future<KPIResponse?> getApprovalKpiData({
     required int serviceId,

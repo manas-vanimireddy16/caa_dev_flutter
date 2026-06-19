@@ -1,6 +1,7 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class StatSummaryData {
@@ -71,10 +72,6 @@ class StatSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentTheme = KAppX.globalProvider
-        .read(KAppX.theme.current)
-        .themeBox;
-
     final hasDescription = data.description.trim().isNotEmpty;
 
     return SizedBox(
@@ -82,7 +79,7 @@ class StatSummaryCard extends StatelessWidget {
       child: Card(
         margin: EdgeInsets.zero,
         elevation: 0,
-        color: currentTheme.colors.onPrimary,
+        color: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
           side: const BorderSide(color: Color(0xFFE5E7EB), width: 1),
@@ -96,27 +93,17 @@ class StatSummaryCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 8),
-
+                    const SizedBox(height: 8),
                     Text(
                       data.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: currentTheme.fontSizes.s14,
-                      ),
+                      style: AppTextStyles.kpiLabel(),
                     ),
-
                     const Spacer(),
-
                     Text(
                       data.count,
-                      style: Theme.of(context).textTheme.headlineLarge
-                          ?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            fontSize: currentTheme.fontSizes.s20,
-                          ),
+                      style: AppTextStyles.kpiCountValue(),
                     ),
                   ],
                 ),

@@ -34,12 +34,10 @@ class _VSControllerParams extends Equatable {
 
 final _vsProvider = StateNotifierProvider.autoDispose
     .family<_VSController, _ViewState, _VSControllerParams>((ref, params) {
-      final controller = _VSController(
+      return _VSController(
         service: params.service,
         subService: params.subService,
       );
-      controller.initState();
-      return controller;
     });
 
 class _ViewState {
@@ -295,7 +293,42 @@ class _VSController extends StateNotifier<_ViewState> {
   final SubService subService;
 
   _VSController({required this.service, required this.subService})
-    : super(_ViewState.init());
+    : super(_ViewState.init()) {
+    chatController = TextEditingController();
+    titleController = TextEditingController();
+    fromEntityController = TextEditingController();
+    toEntityController = TextEditingController();
+    startDateController = TextEditingController();
+    empIdController = TextEditingController();
+    eventTimeController = TextEditingController();
+    occupationController = TextEditingController();
+    detailsController = TextEditingController();
+    assignmentAllowanceController = TextEditingController();
+    completionController = TextEditingController();
+    endTimeController = TextEditingController();
+    phoneController = TextEditingController();
+    dateSubmitController = TextEditingController();
+    civilIdCardNumberController = TextEditingController();
+    currentJobPositionController = TextEditingController();
+    taskDescriptionController = TextEditingController();
+    taskTitleController = TextEditingController();
+    allowancePercentageController = TextEditingController();
+    socialServiceFundContribution = TextEditingController();
+    searchController = TextEditingController();
+    phoneController.addListener(_validateForm);
+    completionController.addListener(_validateForm);
+    fromEntityController.addListener(_validateForm);
+    currentJobPositionController.addListener(_validateForm);
+    civilIdCardNumberController.addListener(_validateForm);
+    taskDescriptionController.addListener(_validateForm);
+    empIdController.addListener(_validateForm);
+    endTimeController.addListener(_validateForm);
+    taskTitleController.addListener(_validateForm);
+    toEntityController.addListener(_validateForm);
+    allowancePercentageController.addListener(_validateForm);
+    socialServiceFundContribution.addListener(_validateForm);
+  }
+
   Timer? _searchDebounce;
 
   late TextEditingController chatController;
@@ -320,51 +353,30 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController socialServiceFundContribution;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
   void initState() {
-    chatController = TextEditingController();
-    titleController = TextEditingController();
-    fromEntityController = TextEditingController();
-    toEntityController = TextEditingController();
-    startDateController = TextEditingController();
-    empIdController = TextEditingController();
-    eventTimeController = TextEditingController();
-    occupationController = TextEditingController();
-    detailsController = TextEditingController();
-    assignmentAllowanceController = TextEditingController();
-    completionController = TextEditingController();
-    phoneController = TextEditingController();
-    dateSubmitController = TextEditingController();
-    civilIdCardNumberController = TextEditingController();
-    currentJobPositionController = TextEditingController();
-    taskDescriptionController = TextEditingController();
-    endTimeController = TextEditingController();
-    taskTitleController = TextEditingController();
-    allowancePercentageController = TextEditingController();
-    socialServiceFundContribution = TextEditingController();
-    searchController = TextEditingController();
-    phoneController.addListener(_validateForm);
-    completionController.addListener(_validateForm);
-    phoneController.addListener(_validateForm);
-    fromEntityController.addListener(_validateForm);
-    currentJobPositionController.addListener(_validateForm);
-    civilIdCardNumberController.addListener(_validateForm);
-    taskDescriptionController.addListener(_validateForm);
-    empIdController.addListener(_validateForm);
-    endTimeController.addListener(_validateForm);
-    taskTitleController.addListener(_validateForm);
-    toEntityController.addListener(_validateForm);
-    allowancePercentageController.addListener(_validateForm);
-    socialServiceFundContribution.addListener(_validateForm);
-    // fetchDepartmentName();
     fetchKpi();
     fetchApprovalKpi();
-    // fetchUsers();
-    fetchRequests();
-    // fetchActionItems();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    // fetchApprovalStatusBreakdown('weekly');
-    // fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchDepartments();
   }
 
@@ -380,16 +392,13 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void onRequestStatusFilterChanged(String status) {
-    final searchText = searchController.text.trim();
-
     if (state.tabIndex == 0) {
       state = state.copyWith(myRequestsStatusFilter: status);
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
-      return;
+      refreshMyRequestsList();
+    } else {
+      state = state.copyWith(actionItemsStatusFilter: status);
+      refreshActionItemsList();
     }
-
-    state = state.copyWith(actionItemsStatusFilter: status);
-    fetchActionItems(isRefresh: true, searchText: searchText, status: status);
   }
 
   void _validateForm() {
@@ -402,16 +411,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(isRefresh: true, searchText: value);
-      } else {
-        await fetchActionItems(isRefresh: true, searchText: value);
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -849,11 +852,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshRequestLists();
   }
 
   void openNewRequestForm() {
@@ -901,8 +904,6 @@ class _VSController extends StateNotifier<_ViewState> {
         fromEntityController.text.isNotEmpty &&
         state.selectedRequestType.isNotEmpty;
   }
-
-  int _searchVersion = 0;
 
   void updateFormValidity() {
     final formState = state.formKey.currentState;
@@ -1148,6 +1149,32 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
+    if (attachmentId == 0) {
+      Fluttertoast.showToast(msg: 'Attachment ID missing');
+      return;
+    }
+
+    try {
+      state = state.copyWith(isLoading: true);
+      final effectiveRequestId = requestId ?? state.requestDetails.request?.id;
+      await requestForCoverageInstance.deleteAttachment(
+        attachmentId,
+        requestId: effectiveRequestId,
+      );
+
+      if (effectiveRequestId != null && effectiveRequestId != 0) {
+        await fetchRequestDetailsById(effectiveRequestId);
+      }
+    } catch (e, st) {
+      debugPrint('Failed to delete attachment: $e');
+      debugPrintStack(stackTrace: st);
+      Fluttertoast.showToast(msg: e.toString());
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
   // Future<void> getRoleDetails() async {
   //   final storage = KAuthCred();
   //   final saved = await storage.getSelectedRole();
@@ -1274,55 +1301,47 @@ class _VSController extends StateNotifier<_ViewState> {
   //   }
   // }
 
-  Future<void> fetchRequests({
-    bool isRefresh = false,
+  Future<List<MediaRequestModel>> loadMyRequestsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
+    if (!mounted) return [];
+
     try {
-      // Clear list only if explicitly refreshing or searching
-      // if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-      //   state = state.copyWith(requestData: []);
-      // }
-      state = state.copyWith(isRequestLoading: true);
-      final requests = await requestForCoverageInstance.getRequests(
-        offset: 0,
-        limit: 8,
+      return await requestForCoverageInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
       );
-
-      // No merging needed
-      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
-      state = state.copyWith(isRequestLoading: false);
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
-  Future<void> fetchActionItems({
-    bool isRefresh = false,
+  Future<List<MediaRequestModel>> loadActionItemsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isActionItemsLoading: true);
+    if (!mounted) return [];
 
     try {
-      // if (isRefresh || searchText.isNotEmpty || status.isNotEmpty) {
-      //   state = state.copyWith(actionItems: []);
-      // }
-
-      final items = await requestForCoverageInstance.getActionItems(
-        offset: 0,
-        limit: 8,
+      return await requestForCoverageInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
       );
-
-      // No merging needed
-      state = state.copyWith(actionItems: items, isActionItemsLoading: false);
     } catch (e) {
-      state = state.copyWith(isActionItemsLoading: false);
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
@@ -1492,8 +1511,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await requestForCoverageInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchActionItems();
-      fetchRequests();
+      refreshRequestLists();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
@@ -1534,8 +1552,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       KAppX.router.pop();
-      await fetchActionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1558,8 +1575,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await requestForCoverageInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchActionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1625,14 +1641,18 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateTabIndex(int index) {
-    state = state.copyWith(tabIndex: index);
+    state = state.copyWith(
+      tabIndex: index,
+      myRequestsStatusFilter: index == 0 ? '' : state.myRequestsStatusFilter,
+      actionItemsStatusFilter: index == 1 ? '' : state.actionItemsStatusFilter,
+    );
     if (index == 0) {
-      fetchRequests();
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchActionItems();
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
@@ -1921,7 +1941,7 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchTrendBreakDown(DateTime.now().year.toString());
 
       fetchApprovalKpi();
-      fetchRequests();
+      refreshRequestLists();
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
     } finally {
@@ -1931,14 +1951,28 @@ class _VSController extends StateNotifier<_ViewState> {
 
   @override
   void dispose() {
-    // // 🔥 Dispose ALL controllers
-    // titleController.dispose();
-    // startDateController.dispose();
-    // eventTimeController.dispose();
-
-    // Optional
-    // eventDateController.dispose();
-
+    _searchDebounce?.cancel();
+    chatController.dispose();
+    titleController.dispose();
+    fromEntityController.dispose();
+    toEntityController.dispose();
+    startDateController.dispose();
+    empIdController.dispose();
+    eventTimeController.dispose();
+    occupationController.dispose();
+    detailsController.dispose();
+    assignmentAllowanceController.dispose();
+    completionController.dispose();
+    endTimeController.dispose();
+    phoneController.dispose();
+    dateSubmitController.dispose();
+    civilIdCardNumberController.dispose();
+    currentJobPositionController.dispose();
+    taskDescriptionController.dispose();
+    taskTitleController.dispose();
+    allowancePercentageController.dispose();
+    socialServiceFundContribution.dispose();
+    searchController.dispose();
     super.dispose();
   }
 }

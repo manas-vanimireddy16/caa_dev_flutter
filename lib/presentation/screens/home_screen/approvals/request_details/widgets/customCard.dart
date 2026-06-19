@@ -1,5 +1,6 @@
 import 'package:code_setup/presentation/screens/home_screen/approvals/model/attachmentsModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/approvals/request_details/widgets/IconAction.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
@@ -28,7 +29,7 @@ class CustomCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     data.documentName,
-                    style: const TextStyle(
+                    style: AppTextStyles.cairo(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -43,8 +44,14 @@ class CustomCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text("File Type: ${data.fileType}"),
-            Text("Uploaded Date: ${data.uploadedDate}"),
+            Text(
+              "File Type: ${data.fileType}",
+              style: AppTextStyles.cairo(),
+            ),
+            Text(
+              "Uploaded Date: ${data.uploadedDate}",
+              style: AppTextStyles.cairo(),
+            ),
           ],
         ),
       ),

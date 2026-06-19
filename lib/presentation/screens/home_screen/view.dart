@@ -13,12 +13,14 @@ import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/icons.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:google_fonts/google_fonts.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:msal_auth/msal_auth.dart';
 
 part 'controller.dart';
@@ -72,12 +74,11 @@ class HomePage extends ConsumerWidget {
             decoration: BoxDecoration(
               color: currentTheme.colors.onPrimary,
 
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16.toAutoScaledWidth),
+              // borderRadius: BorderRadius.only(
+              //   topLeft: Radius.circular(16.toAutoScaledWidth),
 
-                topRight: Radius.circular(16.toAutoScaledWidth),
-              ),
-
+              //   topRight: Radius.circular(16.toAutoScaledWidth),
+              // ),
               boxShadow: [
                 BoxShadow(
                   blurRadius: 4,
@@ -95,7 +96,7 @@ class HomePage extends ConsumerWidget {
               children: [
                 Expanded(
                   child: _buildNavItem(
-                    icon: Icons.home,
+                    icon: AppIcons.homeBottomNavigator,
 
                     label: 'Home',
 
@@ -128,7 +129,7 @@ class HomePage extends ConsumerWidget {
                 // ),
                 Expanded(
                   child: _buildNavItem(
-                    icon: Icons.work,
+                    icon: AppIcons.servicesBottomNavigator,
 
                     label: 'Services',
 
@@ -145,7 +146,7 @@ class HomePage extends ConsumerWidget {
                 ),
                 Expanded(
                   child: _buildNavItem(
-                    icon: Icons.link,
+                    icon: AppIcons.linksBottomNavigator,
 
                     label: 'Links',
 
@@ -162,7 +163,7 @@ class HomePage extends ConsumerWidget {
                 ),
                 Expanded(
                   child: _buildNavItem(
-                    icon: Icons.person_outline,
+                    icon: AppIcons.profileBottomNavigator,
 
                     label: 'Profile',
 
@@ -179,7 +180,7 @@ class HomePage extends ConsumerWidget {
                 ),
                 Expanded(
                   child: _buildNavItem(
-                    icon: Icons.settings,
+                    icon: AppIcons.settingsBottomNavigator,
 
                     label: 'Settings',
 
@@ -204,7 +205,7 @@ class HomePage extends ConsumerWidget {
 }
 
 Widget _buildNavItem({
-  required IconData icon,
+  required String icon,
 
   required String label,
 
@@ -237,19 +238,14 @@ Widget _buildNavItem({
         mainAxisAlignment: MainAxisAlignment.center,
 
         children: [
-          // KImageProvider(
+          KImageProvider(
+            image: icon,
+            width: 22,
+            height: 22,
+            tintColor: isActive ? AppColors.primaryBlue75 : AppColors.grey50,
+          ),
 
-          //   icon: icon,
-
-          //   tintColor: currentTheme.colors.primary,
-
-          //   width: 24.toAutoScaledWidth,
-
-          //   height: 24.toAutoScaledHeight,
-
-          // ),
-          Icon(icon, color: currentTheme.colors.secondary, size: 24),
-
+          // Icon(icon, color: currentTheme.colors.secondary, size: 24),
           const SizedBox(height: 4),
 
           Text(
@@ -259,18 +255,10 @@ Widget _buildNavItem({
 
             overflow: TextOverflow.ellipsis,
 
-            style: TextStyle(
-              fontSize: currentTheme.fontSizes.s10,
+            textAlign: TextAlign.center,
 
-              fontWeight: currentTheme.fontWeights.wRegular,
-
-              height: 15.7.toAutoScaledFont / currentTheme.fontSizes.s10,
-
-              letterSpacing: 0.5,
-
-              color: currentTheme.colors.secondary,
-
-              fontFamily: GoogleFonts.mitr().fontFamily,
+            style: _homeNavLabelStyle(
+              color: isActive ? AppColors.primaryBlue75 : AppColors.grey50,
             ),
           ),
         ],
@@ -323,17 +311,9 @@ Widget _buildNavigatorIcon(
           Text(
             iconName,
 
-            style: TextStyle(
-              fontSize: currentTheme.fontSizes.s10,
+            textAlign: TextAlign.center,
 
-              fontWeight: currentTheme.fontWeights.wRegular,
-
-              height: 15.7.toAutoScaledFont / currentTheme.fontSizes.s10,
-
-              letterSpacing: 0.5,
-
-              fontFamily: GoogleFonts.mitr().fontFamily,
-            ),
+            style: _homeNavLabelStyle(),
           ),
         ],
       ),
@@ -341,18 +321,16 @@ Widget _buildNavigatorIcon(
   );
 }
 
-TextStyle _buildLabelTextStyle() {
-  final currentTheme = KAppX.globalProvider.read(KAppX.theme.current);
-
-  return TextStyle(
-    fontSize: currentTheme.themeBox.fontSizes.s10,
-
-    fontWeight: currentTheme.themeBox.fontWeights.wRegular,
-
-    height: 15.7.toAutoScaledFont / currentTheme.themeBox.fontSizes.s10,
-
-    letterSpacing: 0.5,
-
-    fontFamily: GoogleFonts.mitr().fontFamily,
+TextStyle _homeNavLabelStyle({Color? color}) {
+  return AppTextStyles.cairo(
+    fontSize: 12.toAutoScaledFont,
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.normal,
+    height: 1.5,
+    color: color,
   );
+}
+
+TextStyle _buildLabelTextStyle() {
+  return _homeNavLabelStyle();
 }

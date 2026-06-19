@@ -1,35 +1,85 @@
 part of '../view.dart';
 
-class RequestsPage extends ConsumerWidget {
+class RequestsPage extends ConsumerStatefulWidget {
   final _VSControllerParams providerArgs;
   final DashboardL10n l10n;
+
+  /// When true, this page only loads and paginates Action Items.
+  /// When false, only My Requests.
+  final bool isActionItemsTab;
 
   const RequestsPage({
     super.key,
     required this.providerArgs,
     required this.l10n,
+    required this.isActionItemsTab,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(_vsProvider(providerArgs));
-    final controller = ref.read(_vsProvider(providerArgs).notifier);
-    final isActionItem = state.tabIndex == 1;
+  ConsumerState<RequestsPage> createState() => _RequestsPageState();
+}
 
-    final items = isActionItem ? state.actionItems : state.requestData;
+class _RequestsPageState extends ConsumerState<RequestsPage> {
+  PagingController<int, DashboardRequestModel>? _pagingController;
+  bool _controllerInitialized = false;
 
-    if (state.isLoading || state.isRequestLoading) {
-      return const Center(child: CircularProgressIndicator());
+  @override
+  void dispose() {
+    _pagingController?.dispose();
+    super.dispose();
+  }
+
+  void _ensureController(_VSController controller) {
+    if (_controllerInitialized) return;
+    _controllerInitialized = true;
+
+    if (widget.isActionItemsTab) {
+      _pagingController = PagingController<int, DashboardRequestModel>(
+        getNextPageKey: (state) =>
+            ListPagination.nextPageKey(state),
+        fetchPage: (pageKey) => controller.loadActionItemsPage(
+          pageKey,
+          searchText: controller.searchController.text.trim(),
+          status: ref
+              .read(_vsProvider(widget.providerArgs))
+              .actionItemsStatusFilter,
+        ),
+      );
+      controller.onActionItemsListRefresh = () => _pagingController?.refresh();
+    } else {
+      _pagingController = PagingController<int, DashboardRequestModel>(
+        getNextPageKey: (state) =>
+            ListPagination.nextPageKey(state),
+        fetchPage: (pageKey) => controller.loadMyRequestsPage(
+          pageKey,
+          searchText: controller.searchController.text.trim(),
+          status: ref
+              .read(_vsProvider(widget.providerArgs))
+              .myRequestsStatusFilter,
+        ),
+      );
+      controller.onMyRequestsListRefresh = () => _pagingController?.refresh();
     }
+  }
 
-    if (items.isEmpty) {
-      return Center(child: Text(l10n.noDataFound));
-    }
+  @override
+  Widget build(BuildContext context) {
+    final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
+    _ensureController(controller);
 
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
+    ref.listen(
+      _vsProvider(widget.providerArgs).select(
+        (s) => widget.isActionItemsTab
+            ? s.actionItemsStatusFilter
+            : s.myRequestsStatusFilter,
+      ),
+      (_, __) => _pagingController?.refresh(),
+    );
+
+    return PaginatedListSection<DashboardRequestModel>(
+      pagingController: _pagingController!,
+      emptyMessage: widget.l10n.noDataFound,
+      itemBuilder: (context, item, index) {
         final base = item.base;
         final service =
             item.service ??
@@ -48,8 +98,8 @@ class RequestsPage extends ConsumerWidget {
 
         return RequestCard(
           data: controller.buildRequestCardData(item),
-          fieldLabelBuilder: l10n.fieldLabel,
-          requestIdLabelBuilder: l10n.requestIdLabel,
+          fieldLabelBuilder: widget.l10n.fieldLabel,
+          requestIdLabelBuilder: widget.l10n.requestIdLabel,
           onTap: () {
             controller.navigateToRoute(
               name: item.subServiceCode ?? subService.code ?? '',
@@ -60,7 +110,7 @@ class RequestsPage extends ConsumerWidget {
                   0,
               service: service,
               subService: subService,
-              fromActionItems: isActionItem,
+              fromActionItems: widget.isActionItemsTab,
             );
           },
         );

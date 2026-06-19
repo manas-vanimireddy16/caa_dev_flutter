@@ -6,6 +6,7 @@ import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/models/buttons_enum.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/helper.dart';
@@ -145,13 +146,13 @@ class CommentEntry extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: AppColors.headingColor)),
+        Text(label, style: AppTextStyles.requestDetailsFieldHeading()),
         SizedBox(height: 4.toAutoScaledHeight),
         Text(
           value,
           maxLines: maxLines,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: AppColors.contentColor),
+          style: AppTextStyles.requestDetailsFieldContent(),
         ),
       ],
     );
@@ -179,11 +180,13 @@ class AddCommentBox extends StatefulWidget {
   final Future<void> Function()? onClose;
   final Future<void> Function()? onReject;
   final Future<void> Function()? onApprove;
+  final Future<void> Function()? onUpdate;
   final Future<void> Function()? onReplace;
   final Future<void> Function()? onInProgress;
   final Future<void> Function()? onComplete;
 
   final bool buttonsDisabled;
+  final bool updateButtonDisabled;
 
   final String? commentHint;
   final String? needMoreInfoLabel;
@@ -204,10 +207,12 @@ class AddCommentBox extends StatefulWidget {
     this.onClose,
     this.onReject,
     this.onApprove,
+    this.onUpdate,
     this.onReplace,
     this.onInProgress,
     this.onComplete,
     this.buttonsDisabled = false,
+    this.updateButtonDisabled = false,
     this.commentHint,
     this.needMoreInfoLabel,
   });
@@ -223,11 +228,12 @@ class _AddCommentBoxState extends State<AddCommentBox> {
     Color color,
     VoidCallback? onTap, {
     Widget? icon,
+    bool disabled = false,
   }) {
-    final disabled = widget.buttonsDisabled;
+    final isDisabled = widget.buttonsDisabled || disabled;
 
     return ElevatedButton(
-      onPressed: disabled ? null : onTap,
+      onPressed: isDisabled ? null : onTap,
       style: ButtonStyle(
         minimumSize: WidgetStateProperty.all(Size(0, 36.toAutoScaledHeight)),
         padding: WidgetStateProperty.all(
@@ -256,7 +262,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           Text(
             text,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: disabled ? 0.7 : 1),
+              color: Colors.white.withValues(alpha: isDisabled ? 0.7 : 1),
               fontSize: 13.toAutoScaledWidth,
               fontWeight: FontWeight.w600,
             ),
@@ -436,12 +442,12 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               children: [
                 Text(
                   widget.needMoreInfoLabel ?? l10n.needMoreInfo,
-                  style: TextStyle(color: AppColors.mainTitleColor),
+                  style: AppTextStyles.requestDetailsSectionHeading(),
                 ),
                 SizedBox(height: 12.toAutoScaledHeight),
                 Text(
                   l10n.transportCommentsOptional,
-                  style: TextStyle(color: AppColors.headingColor),
+                  style: AppTextStyles.requestDetailsFieldHeading(),
                 ),
                 SizedBox(height: 8.toAutoScaledHeight),
                 Row(
@@ -472,11 +478,11 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                             hintText:
                                 widget.commentHint ??
                                 l10n.routingAddCommentHint,
-                            hintStyle: TextStyle(color: AppColors.headingColor),
+                            hintStyle: AppTextStyles.requestDetailsFieldHeading(),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
                           ),
-                          style: TextStyle(color: AppColors.contentColor),
+                          style: AppTextStyles.requestDetailsFieldContent(),
                         ),
                       ),
                     ),
@@ -542,9 +548,9 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                     hintText: widget.commentHint ?? l10n.routingAddCommentHint,
                     border: InputBorder.none,
                     isDense: true,
-                    hintStyle: TextStyle(color: AppColors.headingColor),
+                    hintStyle: AppTextStyles.requestDetailsFieldHeading(),
                   ),
-                  style: TextStyle(color: AppColors.contentColor),
+                  style: AppTextStyles.requestDetailsFieldContent(),
                 ),
               ),
               IconButton(
@@ -832,6 +838,54 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           ],
         );
 
+      case ActionButtonsType.update:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            _actionButton(
+              l10n.commentButtonUpdate,
+              AppColors.primaryBlue75,
+              () async {
+                await widget.onUpdate?.call();
+              },
+              icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+              disabled: widget.updateButtonDisabled,
+            ),
+          ],
+        );
+
+      case ActionButtonsType.approveRejectUpdate:
+        return Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.end,
+          children: [
+            _actionButton(
+              l10n.commentButtonApprove,
+              const Color(0xFF0D652D),
+              () async {
+                await widget.onApprove?.call();
+              },
+            ),
+            _actionButton(
+              l10n.commentButtonReject,
+              const Color(0xFFC02211),
+              () async {
+                await widget.onReject?.call();
+              },
+            ),
+            _actionButton(
+              l10n.commentButtonUpdate,
+              AppColors.primaryBlue75,
+              () async {
+                await widget.onUpdate?.call();
+              },
+              icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+              disabled: widget.updateButtonDisabled,
+            ),
+          ],
+        );
+
       default:
         return const SizedBox.shrink();
     }
@@ -860,7 +914,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: AppColors.contentColor),
+              style: AppTextStyles.requestDetailsFieldContent(),
             ),
           ),
           const SizedBox(width: 8),
@@ -981,7 +1035,7 @@ class CommentsRoutingOverview extends StatelessWidget {
               Expanded(
                 child: Text(
                   l10n.commentsRoutingOverviewTitle,
-                  style: TextStyle(color: AppColors.mainTitleColor),
+                  style: AppTextStyles.requestDetailsSectionHeading(),
                 ),
               ),
             ],
@@ -994,7 +1048,7 @@ class CommentsRoutingOverview extends StatelessWidget {
                 ? Center(
                     child: Text(
                       l10n.noCommentsYet,
-                      style: TextStyle(color: AppColors.contentColor),
+                      style: AppTextStyles.requestDetailsFieldContent(),
                     ),
                   )
                 : ListView.separated(

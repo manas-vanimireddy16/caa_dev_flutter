@@ -92,4 +92,5 @@ abstract class TransportationForForeignEmployeeRepository {
     required int subServiceId,
   });
   Future<void> onAllocateVehicle(Map<String, dynamic> payload, int requestId);
+  Future<void> updateActualReturn(Map<String, dynamic> payload, int requestId);
 }

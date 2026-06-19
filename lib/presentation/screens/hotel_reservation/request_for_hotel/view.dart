@@ -14,7 +14,10 @@ import 'package:code_setup/presentation/common_widgets/request_card.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
+import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
+import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
@@ -39,6 +42,9 @@ import 'package:code_setup/repository/housing_accommodation_service/hotel_reserv
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
+import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
+import 'package:code_setup/utils/helper/list_pagination.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
@@ -47,6 +53,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 part 'widgets/new_request_hotel_reservation.dart';
 part 'controller.dart';
@@ -71,46 +78,42 @@ class HotelReservationScreen extends ConsumerStatefulWidget {
       _HotelReservationScreenState();
 }
 
-class _HotelReservationScreenState extends ConsumerState<HotelReservationScreen>
-    with SingleTickerProviderStateMixin {
-  late TextEditingController searchController;
+class _HotelReservationScreenState extends ConsumerState<HotelReservationScreen> {
   late FocusNode _focusNode;
-  late TabController _tabController;
   late _VSControllerParams _providerArgs;
   late PageController _pageController;
 
   @override
-  @override
   void initState() {
     super.initState();
+
+    final selected = ref.read(selectedServiceProvider);
+
+    final service = widget.service.id != null
+        ? widget.service
+        : selected.service;
+
+    final subService = widget.subService.id != null
+        ? widget.subService
+        : selected.subService;
+
     _providerArgs = _VSControllerParams(
-      service: widget.service,
-      subService: widget.subService,
+      service: service,
+      subService: subService,
     );
-    searchController = TextEditingController(
-      text: ref.read(searchQueryProvider),
-    );
-    _pageController = PageController();
+
     _focusNode = FocusNode();
+    _pageController = PageController();
 
-    searchController.addListener(() {
-      setState(() {}); // rebuild suffixIcon
-    });
-
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        ref.read(selectedrequesteventTabProvider.notifier).state =
-            _tabController.index;
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(_vsProvider(_providerArgs).notifier).initState();
     });
   }
 
   @override
   void dispose() {
-    searchController.dispose();
     _focusNode.dispose();
-    _tabController.dispose();
     _pageController.dispose();
     super.dispose();
   }

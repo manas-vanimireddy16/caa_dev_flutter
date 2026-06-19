@@ -75,12 +75,7 @@ class TicketRequestsCard extends ConsumerWidget {
                     _screenTitle(l10n),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                      color: _titleColor,
-                      height: 1.25,
-                    ),
+                    style: AppTextStyles.serviceScreenTitle(),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -189,27 +184,9 @@ class TicketRequestsCard extends ConsumerWidget {
               hintText: l10n.searchByIdOrName,
               controller: controller.searchController,
               onChanged: controller.onSearchChanged,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search, color: _searchHintColor),
-                filled: true,
-                fillColor: _searchBgColor,
-                hintStyle: const TextStyle(color: _searchHintColor),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: _borderColor),
-                ),
+              style: RequestListSearchStyles.textStyle(),
+              decoration: RequestListSearchStyles.decoration(
+                hintText: l10n.searchByIdOrName,
               ),
             ),
           ),
@@ -268,8 +245,16 @@ class TicketRequestsCard extends ConsumerWidget {
                   controller.updateTabIndex(index);
                 },
                 children: [
-                  RequestsPage(providerArgs: providerArgs, l10n: l10n),
-                  RequestsPage(providerArgs: providerArgs, l10n: l10n),
+                  RequestsPage(
+                    providerArgs: providerArgs,
+                    l10n: l10n,
+                    isActionItemsTab: false,
+                  ),
+                  RequestsPage(
+                    providerArgs: providerArgs,
+                    l10n: l10n,
+                    isActionItemsTab: true,
+                  ),
                 ],
               ),
             ),

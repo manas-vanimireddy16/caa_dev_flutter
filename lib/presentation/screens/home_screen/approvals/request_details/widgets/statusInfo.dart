@@ -1,4 +1,5 @@
 import 'package:code_setup/presentation/screens/home_screen/approvals/widgets/statusWidget.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -30,7 +31,7 @@ class StatusInfo extends StatelessWidget {
             backgroundColor: Colors.indigo,
             child: Text(
               initials,
-              style: const TextStyle(
+              style: AppTextStyles.cairo(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -46,7 +47,7 @@ class StatusInfo extends StatelessWidget {
                 // Username
                 Text(
                   userName,
-                  style: const TextStyle(
+                  style: AppTextStyles.cairo(
                     fontWeight: FontWeight.w600,
                     color: Colors.indigo,
                   ),
@@ -61,7 +62,10 @@ class StatusInfo extends StatelessWidget {
                     color: Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Text(message, style: const TextStyle(fontSize: 14)),
+                  child: Text(
+                    message,
+                    style: AppTextStyles.cairo(fontSize: 14),
+                  ),
                 ),
                 const SizedBox(height: 6),
 
@@ -72,7 +76,7 @@ class StatusInfo extends StatelessWidget {
                     const Spacer(),
                     Text(
                       formatDateTime(dateTime),
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style: AppTextStyles.cairo(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),

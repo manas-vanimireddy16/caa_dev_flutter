@@ -1,5 +1,6 @@
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/screens/home_screen/approvals/request_details/controller.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,7 +27,7 @@ class RemarksSend extends ConsumerWidget {
             if (title != null)
               Text(
                 title!,
-                style: const TextStyle(
+                style: AppTextStyles.cairo(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
@@ -36,7 +37,10 @@ class RemarksSend extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 4.0, bottom: 12.0),
                 child: Text(
                   subtitle!,
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                  style: AppTextStyles.cairo(
+                    fontSize: 13,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
               ),
 
@@ -71,9 +75,9 @@ class RemarksSend extends ConsumerWidget {
                   ),
                   onPressed: () {},
                   icon: const Icon(Icons.send, size: 18, color: Colors.white),
-                  label: const Text(
+                  label: Text(
                     "Send",
-                    style: TextStyle(color: Colors.white),
+                    style: AppTextStyles.cairo(color: Colors.white),
                   ),
                 ),
               ],

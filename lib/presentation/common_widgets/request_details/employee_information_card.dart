@@ -1,7 +1,7 @@
 import 'package:code_setup/presentation/common_widgets/status_widget.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
-import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +77,7 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
                   Expanded(
                     child: Text(
                       widget.l10n.employeeInformationTitle,
-                      style: TextStyle(color: AppColors.mainTitleColor),
+                      style: AppTextStyles.requestDetailsSectionHeading(),
                     ),
                   ),
                   Container(
@@ -257,12 +257,12 @@ class _EmployeeFieldTile extends StatelessWidget {
             children: [
               Text(
                 field.label,
-                style: TextStyle(color: AppColors.headingColor),
+                style: AppTextStyles.requestDetailsFieldHeading(),
               ),
               const SizedBox(height: 2),
               Text(
                 field.value,
-                style: TextStyle(color: AppColors.contentColor),
+                style: AppTextStyles.requestDetailsFieldContent(),
               ),
             ],
           ),
@@ -294,7 +294,7 @@ class _StatusRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(color: AppColors.headingColor)),
+              Text(label, style: AppTextStyles.requestDetailsFieldHeading()),
               const SizedBox(height: 6),
               StatusChip(status: status),
             ],

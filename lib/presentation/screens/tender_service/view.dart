@@ -23,6 +23,7 @@ class TenderServiceHomeScreen extends ConsumerWidget {
         Service(code: serviceCode, name: 'Tender Services');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: TenderServiceDashboardRoute(
         service: service,

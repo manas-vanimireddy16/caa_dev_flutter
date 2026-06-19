@@ -23,6 +23,7 @@ class SecuritySelfHomePage extends ConsumerWidget {
         Service(code: serviceCode, name: 'Information Security Services');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: InformationSecurityDashboardRoute(
         service: service,

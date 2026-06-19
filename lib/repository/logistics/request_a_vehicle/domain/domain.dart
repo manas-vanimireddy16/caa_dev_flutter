@@ -93,4 +93,8 @@ abstract class RequestAVehicleRepository {
   // Future<List<DepartmentModel>> getDepartments();
   // Future<List<SectionModel>> getSections({required String? userDepartmentId});
   Future<void> onAllocateVehicle(Map<String, dynamic> payload, int requestId);
+  Future<String> updateActualReturn(
+    Map<String, dynamic> payload,
+    int requestId,
+  );
 }

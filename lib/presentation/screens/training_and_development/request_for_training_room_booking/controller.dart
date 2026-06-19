@@ -523,6 +523,32 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
+    if (attachmentId == 0) {
+      Fluttertoast.showToast(msg: 'Attachment ID missing');
+      return;
+    }
+
+    try {
+      state = state.copyWith(isLoading: true);
+      final effectiveRequestId = requestId ?? state.requestDetails.request?.id;
+      await requestForTrainingRoomBookingInstance.deleteAttachment(
+        attachmentId,
+        requestId: effectiveRequestId,
+      );
+
+      if (effectiveRequestId != null && effectiveRequestId != 0) {
+        await fetchRequestDetailsById(effectiveRequestId);
+      }
+    } catch (e, st) {
+      debugPrint('Failed to delete attachment: $e');
+      debugPrintStack(stackTrace: st);
+      Fluttertoast.showToast(msg: e.toString());
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
   Future<void> fetchKpi() async {
     try {
       final kpis = await requestForTrainingRoomBookingInstance.getKpiData(

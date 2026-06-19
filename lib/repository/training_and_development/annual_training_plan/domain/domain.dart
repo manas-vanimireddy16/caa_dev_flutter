@@ -58,6 +58,7 @@ abstract class AnnualTrainingPlanRepository {
 
   Future<String> sendChat(Map<String, dynamic> payload, int id);
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
+  Future<void> deleteAttachment(int attachmentId, {int? requestId});
   Future<List<ChatMessageModel>> getchatById(int id);
   Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
     required String period,

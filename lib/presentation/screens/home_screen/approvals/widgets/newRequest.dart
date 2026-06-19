@@ -2,6 +2,7 @@ import 'package:code_setup/presentation/core_widgets/bottom_sheet_drager.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -41,11 +42,18 @@ class _NewRequestFormState extends ConsumerState<NewRequestForm> {
           children: [
             //  const KBottomSheetDrager(),
             const SizedBox(height: 16),
-            Text("New Request", style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              "New Request",
+              style: AppTextStyles.from(
+                Theme.of(context).textTheme.titleMedium!,
+              ),
+            ),
             const SizedBox(height: 8),
             Text(
               "Provide details about your New Request",
-              style: Theme.of(context).textTheme.bodySmall,
+              style: AppTextStyles.from(
+                Theme.of(context).textTheme.bodySmall!,
+              ),
             ),
             const SizedBox(height: 16),
 

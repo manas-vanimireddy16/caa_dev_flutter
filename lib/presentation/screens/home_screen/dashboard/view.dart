@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
+import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/roles_repo.dart';
@@ -12,12 +13,16 @@ import 'package:code_setup/presentation/screens/home_screen/dashboard/models/use
 import 'package:code_setup/presentation/screens/home_screen/dashboard/widgets/announcement/announcement.dart';
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/dashboard_request_details_navigator.dart';
 import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
+
 part 'controller.dart';
 part 'widgets/dashboard_requests_card.dart';
 
@@ -29,29 +34,48 @@ class AnnouncementScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(_vsProvider);
     final l10n = DashboardL10n.of(context);
+    final storedUser = ref.watch(userProvider);
+    final userInfo = ref.watch(userInfoProvider);
+    final profile = state.user?.data;
+    final sessionProfile = userInfo?.data;
+    final userName =
+        _firstNonEmpty([
+          profile?.employeeName,
+          sessionProfile?.employeeName,
+          storedUser?.employeeName,
+        ]) ??
+        '';
+    final avatarUrl = _firstNonEmpty([profile?.avatar, sessionProfile?.avatar]);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       appBar: AppBar(
-        title: const Text('Home'),
-        backgroundColor: Colors.transparent,
+        toolbarHeight: 64,
+        titleSpacing: 16,
+        title: _HomeGreetingHeader(userName: userName, avatarUrl: avatarUrl),
+        actions: const [_NotificationBellButton()],
+        foregroundColor: AppColors.textHeading,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         elevation: 0,
+        shape: const Border(
+          bottom: BorderSide(color: Color(0xFFE6E6EA), width: 1),
+        ),
       ),
       body: ListView(
         padding: EdgeInsets.zero, // remove default padding
         children: [
-          const _HomeSectionTitle(title: 'Announcements'),
           Padding(
-            padding: const EdgeInsets.all(11.0),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: AnnouncementWidget(
               announcements: state.announcements, // ✅ pass the whole list
-              title: l10n.announcements,
+              title: 'Latest Announcements',
               subtitle: l10n.announcementsSubtext,
             ),
           ),
           const _HomeSectionTitle(title: 'Dashboard'),
           const Padding(
-            padding: EdgeInsets.fromLTRB(11, 0, 11, 16),
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: DashboardRequestsCard(),
           ),
         ],
@@ -67,10 +91,19 @@ class LinksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       appBar: AppBar(
-        title: const Text('Links'),
-        backgroundColor: Colors.transparent,
+        title: Text(
+          'Links',
+          style: AppTextStyles.cairo(
+            fontSize: 20.toAutoScaledFont,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        toolbarHeight: 64,
+        foregroundColor: AppColors.textHeading,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         elevation: 0,
       ),
       body: const Center(child: Text('Coming Soon')),
@@ -96,10 +129,21 @@ class ProfileScreen extends ConsumerWidget {
         'https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png';
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.transparent,
+        title: Text(
+          'Profile',
+          style: AppTextStyles.cairo(
+            fontSize: 20.toAutoScaledFont,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        toolbarHeight: 64,
+        foregroundColor: AppColors.textHeading,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+
+        shape: Border(bottom: BorderSide(color: Color(0xFFE6E6EA), width: 1)),
         elevation: 0,
       ),
       body: ListView(
@@ -163,6 +207,90 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
+class _HomeGreetingHeader extends StatelessWidget {
+  final String userName;
+  final String? avatarUrl;
+
+  const _HomeGreetingHeader({required this.userName, this.avatarUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: const Color(0xFFE8DDF4),
+              backgroundImage: avatarUrl == null
+                  ? null
+                  : NetworkImage(avatarUrl!),
+              child: avatarUrl == null
+                  ? const Icon(Icons.person, color: Color(0xFF6C4FA3))
+                  : null,
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00C853),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1.5),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(width: 12),
+        Flexible(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Good Morning',
+                style: AppTextStyles.cairo(
+                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                userName.isEmpty ? '-' : userName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.cairo(
+                  color: Colors.black,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NotificationBellButton extends StatelessWidget {
+  const _NotificationBellButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: 'Notifications',
+      icon: const Icon(Icons.notifications_none, color: Colors.black, size: 26),
+      onPressed: () {},
+    );
+  }
+}
+
 String? _firstNonEmpty(List<String?> values) {
   for (final value in values) {
     final trimmed = value?.trim();
@@ -184,7 +312,7 @@ class _HomeSectionTitle extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Text(
         title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        style: AppTextStyles.cairo(fontSize: 18, fontWeight: FontWeight.w700),
       ),
     );
   }

@@ -23,6 +23,7 @@ class MediaCoverageHomeScreen extends ConsumerWidget {
         Service(code: serviceCode, name: 'Media Services');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: MediaServiceDashboardRoute(
         service: service,

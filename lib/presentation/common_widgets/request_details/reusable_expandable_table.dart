@@ -1,4 +1,5 @@
 import 'package:code_setup/presentation/common_widgets/request_details/reusable_table_row_model.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class ReusableExpandableTable extends StatefulWidget {
@@ -45,7 +46,9 @@ class _ReusableExpandableTableState extends State<ReusableExpandableTable> {
                   Expanded(
                     child: Text(
                       heading,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: AppTextStyles.requestDetailsFieldHeading(
+                        fontSize: 12,
+                      ).copyWith(fontWeight: FontWeight.w700),
                     ),
                   ),
                 if (widget.isExpandable) const SizedBox(width: 24),
@@ -85,6 +88,7 @@ class _ReusableExpandableTableState extends State<ReusableExpandableTable> {
                                 cell,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
+                                style: AppTextStyles.requestDetailsFieldContent(),
                               ),
                             ),
                           if (widget.isExpandable)
@@ -112,9 +116,15 @@ class _ReusableExpandableTableState extends State<ReusableExpandableTable> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(row.expandedTitle ?? ""),
+                              Text(
+                                row.expandedTitle ?? "",
+                                style: AppTextStyles.requestDetailsFieldHeading(),
+                              ),
                               const SizedBox(height: 6),
-                              Text(row.expandedDescription ?? ""),
+                              Text(
+                                row.expandedDescription ?? "",
+                                style: AppTextStyles.requestDetailsFieldContent(),
+                              ),
                             ],
                           ),
                         ),
@@ -137,12 +147,16 @@ class _ReusableExpandableTableState extends State<ReusableExpandableTable> {
                   Expanded(
                     child: Text(
                       widget.totalText!,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: AppTextStyles.requestDetailsFieldHeading(
+                        fontSize: 12,
+                      ).copyWith(fontWeight: FontWeight.w700),
                     ),
                   ),
                   Text(
                     widget.totalValue ?? "",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: AppTextStyles.requestDetailsFieldContent().copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),

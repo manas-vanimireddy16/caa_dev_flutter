@@ -21,12 +21,10 @@ class _VSControllerParams extends Equatable {
 
 final _vsProvider = StateNotifierProvider.autoDispose
     .family<_VSController, _ViewState, _VSControllerParams>((ref, params) {
-      final controller = _VSController(
+      return _VSController(
         service: params.service,
         subService: params.subService,
       );
-      controller.initState();
-      return controller;
     });
 
 class _ViewState {
@@ -247,6 +245,9 @@ class _VSController extends StateNotifier<_ViewState> {
   _VSController({required this.service, required this.subService})
     : super(_ViewState.init()) {
     params = _VSControllerParams(service: service, subService: subService);
+    chatController = TextEditingController();
+    titleController = TextEditingController();
+    searchController = TextEditingController();
   }
 
   Timer? _searchDebounce;
@@ -255,32 +256,38 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
-  void initState() {
-    chatController = TextEditingController();
-    titleController = TextEditingController();
-    searchController = TextEditingController();
-    fetchKpi();
-    fetchRequests();
-    fetchStatusBreakdown('weekly');
-    fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalKpi();
-    // fetchbyCycleGoals(cycle: 'Jan-Jun');
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
   }
 
-  int _searchVersion = 0;
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
+  void initState() {
+    fetchKpi();
+    fetchApprovalKpi();
+    fetchStatusBreakdown('weekly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+  }
 
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(isRefresh: true, searchText: value);
-      } else {
-        await fetchactionItems(isRefresh: true, searchText: value);
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -443,11 +450,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshRequestLists();
   }
 
   void openNewRequestForm() {
@@ -475,16 +482,13 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void onRequestStatusFilterChanged(String status) {
-    final searchText = searchController.text.trim();
-
     if (state.tabIndex == 0) {
       state = state.copyWith(myRequestsStatusFilter: status);
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
-      return;
+      refreshMyRequestsList();
+    } else {
+      state = state.copyWith(actionItemsStatusFilter: status);
+      refreshActionItemsList();
     }
-
-    state = state.copyWith(actionItemsStatusFilter: status);
-    fetchactionItems(isRefresh: true, searchText: searchText, status: status);
   }
 
   final legalContractReviewInstance = LegalContractReviewRepository();
@@ -785,61 +789,56 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchRequests({
-    bool isRefresh = false,
+
+
+
+  Future<List<LegalRequestModel>> loadMyRequestsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isRequestLoading: true);
-    try {
-      // Clear list only if explicitly refreshing or searching
+    if (!mounted) return [];
 
-      final requests = await legalContractReviewInstance.getRequests(
-        offset: 1,
-        limit: 8,
+    try {
+      return await legalContractReviewInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
-
-      // No merging needed
-      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isRequestLoading: false);
-      Fluttertoast.showToast(msg: e.toString());
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
-  Future<void> fetchactionItems({
-    bool isRefresh = false,
+  Future<List<LegalRequestModel>> loadActionItemsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isActionItemLoading: true);
+    if (!mounted) return [];
 
     try {
-      // if (isRefresh || status.isNotEmpty) {
-      //   state = state.copyWith(actionItems: [], isLoading: false);
-      // }
-
-      final items = await legalContractReviewInstance.getActionItems(
-        offset: 1,
-        limit: 8,
+      return await legalContractReviewInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
-
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
-
-      // No merging needed
-      state = state.copyWith(actionItems: items, isActionItemLoading: false);
     } catch (e) {
-      state = state.copyWith(isActionItemLoading: false);
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
-
   bool lastApprover(List<ApprovalDetailModel> approvals) {
     if (approvals.isEmpty) return false;
 
@@ -1006,8 +1005,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await legalContractReviewInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchactionItems();
-      fetchRequests();
+      refreshRequestLists();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
@@ -1054,8 +1052,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1078,8 +1075,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await legalContractReviewInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1358,14 +1354,19 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateTabIndex(int index) {
-    state = state.copyWith(tabIndex: index);
+    state = state.copyWith(
+      tabIndex: index,
+      myRequestsStatusFilter: index == 0 ? '' : state.myRequestsStatusFilter,
+      actionItemsStatusFilter: index == 1 ? '' : state.actionItemsStatusFilter,
+    );
+
     if (index == 0) {
-      fetchRequests();
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchactionItems();
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
@@ -1510,12 +1511,16 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchApprovalStatusBreakdown('weekly');
     // fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests();
-    // fetchactionItems();
+    refreshRequestLists();
+    // refreshRequestLists();
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
+    chatController.dispose();
+    titleController.dispose();
+    searchController.dispose();
     super.dispose();
   }
 }

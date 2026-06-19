@@ -1,4 +1,8 @@
+import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 
 class ProfileCard extends StatelessWidget {
@@ -30,7 +34,7 @@ class ProfileCard extends StatelessWidget {
     return Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         side: BorderSide(color: Colors.grey.shade300),
       ),
       elevation: 0,
@@ -45,13 +49,16 @@ class ProfileCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: const Color(0xFFF6F6F9), // Background color
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(Icons.event_note, color: accentColor, size: 22),
+                  child: const Icon(
+                    Icons.event_note,
+                    color: Color(0xFF094368), // Icon color
+                    size: 22,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -59,7 +66,7 @@ class ProfileCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: AppTextStyles.cairo(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -67,7 +74,7 @@ class ProfileCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: TextStyle(
+                      style: AppTextStyles.cairo(
                         fontSize: 13,
                         color: Colors.grey.shade600,
                       ),
@@ -110,7 +117,7 @@ class ProfileCard extends StatelessWidget {
             Center(
               child: Text(
                 name,
-                style: const TextStyle(
+                style: AppTextStyles.cairo(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -120,16 +127,26 @@ class ProfileCard extends StatelessWidget {
             const SizedBox(height: 20),
 
             // Build Info from map
-            ...info.entries.map((entry) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: InfoRow(
-                  icon: _getIconForKey(entry.key),
-                  label: entry.key,
-                  value: entry.value,
-                ),
-              );
-            }).toList(),
+            ...info.entries
+                .where(
+                  (entry) => [
+                    'email',
+                    'phone',
+                    'location',
+                    'role',
+                  ].contains(entry.key.toLowerCase()),
+                )
+                .map((entry) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: InfoRow(
+                      icon: _getIconForKey(entry.key),
+                      label: entry.key,
+                      value: entry.value,
+                    ),
+                  );
+                })
+                .toList(),
           ],
         ),
       ),
@@ -137,24 +154,24 @@ class ProfileCard extends StatelessWidget {
   }
 
   /// Helper function: Map key → Icon
-  IconData _getIconForKey(String key) {
-    switch (key) {
+  String _getIconForKey(String key) {
+    switch (key.toLowerCase()) {
       case "email":
-        return Icons.email;
+        return AppIcons.mailEmployeeCard;
       case "phone":
-        return Icons.phone;
+        return AppIcons.phoneEmployeeCard;
       case "location":
-        return Icons.location_on;
+        return AppIcons.locationOn;
       case "role":
-        return Icons.apartment;
+        return AppIcons.departmentEmployeeCard;
       default:
-        return Icons.info;
+        return AppIcons.defaultIcon;
     }
   }
 }
 
 class InfoRow extends StatelessWidget {
-  final IconData icon;
+  final String icon;
   final String label;
   final String value;
 
@@ -170,7 +187,13 @@ class InfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: Colors.indigo.shade900, size: 20),
+        KImageProvider(
+          image: icon,
+          tintColor: AppColors.primaryBlue75,
+          width: 24.toAutoScaledWidth,
+          height: 24.toAutoScaledHeight,
+        ),
+        // Icon(icon, color: Colors.indigo.shade900, size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Text.rich(
@@ -178,16 +201,16 @@ class InfoRow extends StatelessWidget {
               children: [
                 TextSpan(
                   text: "$label: ",
-                  style: const TextStyle(
+                  style: AppTextStyles.cairo(
                     fontSize: 14,
-                    fontWeight: FontWeight.bold, // ✅ Bold Key
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 TextSpan(
                   text: value,
-                  style: const TextStyle(
+                  style: AppTextStyles.cairo(
                     fontSize: 14,
-                    fontWeight: FontWeight.normal, // ✅ Normal Value
+                    fontWeight: FontWeight.normal,
                   ),
                 ),
               ],

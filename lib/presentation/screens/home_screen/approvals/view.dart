@@ -9,6 +9,7 @@ import 'package:code_setup/presentation/screens/home_screen/approvals/widgets/ne
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'widgets/statusWidget.dart';
@@ -83,10 +84,13 @@ class _ApprovalsListState extends ConsumerState<ApprovalsList> {
                   );
                 },
                 child: Row(
-                  children: const [
-                    Icon(Icons.add, color: Colors.white),
-                    SizedBox(width: 4),
-                    Text("New Request", style: TextStyle(color: Colors.white)),
+                  children: [
+                    const Icon(Icons.add, color: Colors.white),
+                    const SizedBox(width: 4),
+                    Text(
+                      "New Request",
+                      style: AppTextStyles.cairo(color: Colors.white),
+                    ),
                   ],
                 ),
               ),
@@ -183,7 +187,7 @@ class _ApprovalsListState extends ConsumerState<ApprovalsList> {
                               children: [
                                 Text(
                                   "Request ID: ${item.id}",
-                                  style: const TextStyle(
+                                  style: AppTextStyles.cairo(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                     color: Colors.black87,
@@ -197,7 +201,7 @@ class _ApprovalsListState extends ConsumerState<ApprovalsList> {
                             // Request Name
                             Text(
                               "Request Name: ${item.problem}",
-                              style: const TextStyle(
+                              style: AppTextStyles.cairo(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 14,
                                 color: Colors.black87,
@@ -208,7 +212,7 @@ class _ApprovalsListState extends ConsumerState<ApprovalsList> {
                             // Date
                             Text(
                               "Date: ${item.requestDate ?? "-"}",
-                              style: const TextStyle(
+                              style: AppTextStyles.cairo(
                                 fontSize: 14,
                                 color: Colors.black87,
                               ),
@@ -218,7 +222,7 @@ class _ApprovalsListState extends ConsumerState<ApprovalsList> {
                             // Approver
                             Text(
                               "Approver: ${item.reportingManager?.employeeName ?? "-"}",
-                              style: const TextStyle(
+                              style: AppTextStyles.cairo(
                                 fontSize: 14,
                                 color: Colors.black87,
                               ),
@@ -229,7 +233,7 @@ class _ApprovalsListState extends ConsumerState<ApprovalsList> {
                             if (item.serviceType != null) ...[
                               Text(
                                 "Service Type: ${item.serviceType}",
-                                style: const TextStyle(
+                                style: AppTextStyles.cairo(
                                   fontSize: 14,
                                   color: Colors.black87,
                                 ),
@@ -241,7 +245,7 @@ class _ApprovalsListState extends ConsumerState<ApprovalsList> {
                             if (item.assignedTo != null) ...[
                               Text(
                                 "Assigned To: ${item.assignedTo}",
-                                style: const TextStyle(
+                                style: AppTextStyles.cairo(
                                   fontSize: 14,
                                   color: Colors.black87,
                                 ),
@@ -257,7 +261,7 @@ class _ApprovalsListState extends ConsumerState<ApprovalsList> {
                                   Expanded(
                                     child: Text(
                                       "Start Date: ${item.createdBy ?? "-"}",
-                                      style: const TextStyle(
+                                      style: AppTextStyles.cairo(
                                         fontSize: 14,
                                         color: Colors.black87,
                                       ),
@@ -266,7 +270,7 @@ class _ApprovalsListState extends ConsumerState<ApprovalsList> {
                                   Expanded(
                                     child: Text(
                                       "End Date: ${item.updatedBy ?? "-"}",
-                                      style: const TextStyle(
+                                      style: AppTextStyles.cairo(
                                         fontSize: 14,
                                         color: Colors.black87,
                                       ),

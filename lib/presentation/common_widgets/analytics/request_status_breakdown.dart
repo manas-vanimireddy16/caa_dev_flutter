@@ -2,6 +2,7 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -83,10 +84,7 @@ class RequestStatusBreakdownCard extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.darkPrimaryTextColor,
-            ),
+            style: AppTextStyles.requestStatusBreakdownTitle(),
           ),
         ),
         // _FilterDropdown(label: filterLabel, onTap: onFilterTap),
@@ -278,12 +276,7 @@ class RequestStatusBreakdownCard extends StatelessWidget {
                     Text(
                       centerMetricLabel,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFFDADADA),
-                        fontSize: currentTheme.fontSizes.s10,
-                        fontWeight: FontWeight.w500,
-                        height: 1,
-                      ),
+                      style: AppTextStyles.requestStatusBreakdownDescriptionLabel(),
                     ),
                   ],
                 ),
@@ -325,10 +318,7 @@ class _BreakdownLegend extends StatelessWidget {
       children: [
         Text(
           legendHeading,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF111827),
-          ),
+          style: AppTextStyles.requestStatusBreakdownStatusLabel(),
         ),
         16.toVerticalSizedBox,
         // Total Tickets Row
@@ -371,9 +361,6 @@ class _LegendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentTheme = KAppX.globalProvider
-        .read(KAppX.theme.current)
-        .themeBox;
     return Row(
       children: [
         Container(
@@ -385,19 +372,12 @@ class _LegendItem extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: TextStyle(
-              color: AppColors.grey50,
-              fontSize: currentTheme.fontSizes.s14,
-            ),
+            style: AppTextStyles.requestStatusBreakdownDescriptionLabel(),
           ),
         ),
         Text(
           '$value',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: AppColors.darkPrimaryTextColor,
-            fontSize: currentTheme.fontSizes.s14,
-          ),
+          style: AppTextStyles.requestStatusBreakdownCountValue(),
         ),
       ],
     );

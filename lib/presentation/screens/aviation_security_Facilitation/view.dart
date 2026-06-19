@@ -22,6 +22,7 @@ class AviationSecurityFacilitationHomeScreen extends ConsumerWidget {
         Service(code: 'CAAS013', name: 'Aviation Security Facilitation');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: AviationSecurityFaciliationRoute(
         service: service,

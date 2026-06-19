@@ -294,7 +294,7 @@
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/assets/icons.dart';
-import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -503,7 +503,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
           children: [
             Text(
               l10n?.requestWorkflowSectionTitle ?? 'Request Workflow',
-              style: TextStyle(color: AppColors.mainTitleColor),
+              style: AppTextStyles.requestDetailsSectionHeading(),
             ),
             const Divider(height: 24),
             ListView.builder(
@@ -572,7 +572,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(color: AppColors.headingColor)),
+                  Text(title, style: AppTextStyles.requestDetailsFieldHeading()),
                   if (showDetails) ...[
                     if (department.isNotEmpty)
                       Padding(
@@ -580,7 +580,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
                         child: Chip(
                           label: Text(
                             department,
-                            style: TextStyle(color: AppColors.contentColor),
+                            style: AppTextStyles.requestDetailsFieldContent(),
                           ),
                         ),
                       ),
@@ -588,20 +588,20 @@ class RequestWorkflowTimeline extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         '$actionLabel:',
-                        style: TextStyle(color: AppColors.headingColor),
+                        style: AppTextStyles.requestDetailsFieldHeading(),
                       ),
                       Text(
                         actor,
-                        style: TextStyle(color: AppColors.contentColor),
+                        style: AppTextStyles.requestDetailsFieldContent(),
                       ),
                     ],
                     if (empId.isNotEmpty && empId != "-")
                       Text(
                         employeeLineFor(empId),
-                        style: TextStyle(color: AppColors.contentColor),
+                        style: AppTextStyles.requestDetailsFieldContent(),
                       ),
                     const SizedBox(height: 4),
-                    Text(date, style: TextStyle(color: AppColors.contentColor)),
+                    Text(date, style: AppTextStyles.requestDetailsFieldContent()),
                   ],
                 ],
               ),

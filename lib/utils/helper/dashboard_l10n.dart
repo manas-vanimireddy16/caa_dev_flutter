@@ -345,6 +345,17 @@ class DashboardL10n {
   String get transportVehicleReturnTime =>
       _t('Vehicle Return Time', 'وقت إرجاع المركبة المتوقع');
 
+  String get transportActualReturnDate =>
+      _t('Vehicle Return Date', 'تاريخ إرجاع المركبة');
+
+  String get transportActualVehicleReturnTime =>
+      _t('Vehicle Return Time', 'وقت إرجاع المركبة');
+
+  String get transportUpdateActualReturnTitle =>
+      _t('Update Actual Return', 'تحديث الإرجاع الفعلي');
+
+  String get commentButtonUpdate => _t('Update', 'تحديث');
+
   String get transportSelectReturnDate =>
       _t('Please select return date', 'يرجى اختيار تاريخ الإرجاع');
 
@@ -400,6 +411,29 @@ class DashboardL10n {
         return en;
     }
   }
+
+  // Permission
+  String get typeOfRequest => _t('Type of Request', 'نوع الطلب');
+
+  String get isTheMaterialHazardousOrSensitive =>
+      _t('Is the material hazardous or sensitive?', 'هل المادة خطرة أو حساسة؟');
+
+  String get purposeOfImportExport =>
+      _t('Purpose of Import/Export', 'الغرض من الاستيراد/التصدير');
+
+  String get requestedDateOfMaterialMovement =>
+      _t('Requested Date of Material Movement', 'التاريخ المطلوب لنقل المواد');
+
+  String get export => _t('Export', 'تصدير');
+
+  String get import => _t('Import', 'استيراد');
+
+  String get vehicleNumber => _t('Vehicle Number', 'رقم المركبة');
+
+  String get modeOfTransport => _t('Mode of Transport', 'وسيلة النقل');
+
+  String get materialNameDescription =>
+      _t('Material Name/Description', 'اسم المادة / الوصف');
 
   // Airport Entry Permit
   String get airportEntryPermit =>
@@ -657,8 +691,6 @@ class DashboardL10n {
     'إعادة طرح مناقصة (إعادة تقديم طلب مناقصة سابق)',
   );
 
-  String get typeOfRequest => _t('Type of Request', 'نوع الطلب');
-
   String get titleOfEnquire => _t('Title of Enquire', 'عنوان الاستفسار');
 
   String get titleOfProject => _t('Title of project', 'عنوان المشروع');
@@ -774,8 +806,6 @@ class DashboardL10n {
       _t('Request Submission Date', 'تاريخ تقديم الطلب');
 
   String get maintenanceType => _t('Maintenance Type', 'نوع الصيانة');
-
-  String get vehicleNumber => _t('Vehicle Number', 'رقم المركبة');
 
   /// Book CAA Halls
   ///
@@ -957,6 +987,106 @@ class DashboardL10n {
 
   String get selectAssignedTo => _t('Select Assigned To', 'اختيار المخصص');
 
+  /// Request Maintenance for External
+  String get contactPersonName => _t('Contact Person Name', 'اسم شخص التواصل');
+
+  String get enterContactPersonName =>
+      _t('Enter contact person name', 'أدخل اسم شخص التواصل');
+
+  String get contactPersonNumber =>
+      _t('Contact Person Number', 'رقم شخص التواصل');
+
+  String get enterContactPersonNumber =>
+      _t('Enter contact person number', 'أدخل رقم شخص التواصل');
+
+  String get contactPersonDesignation =>
+      _t('Contact Person Designation', 'المسمى الوظيفي لشخص التواصل');
+
+  String get enterContactPersonDesignation => _t(
+    'Enter contact person designation',
+    'أدخل المسمى الوظيفي لشخص التواصل',
+  );
+
+  String get requestForMaintenanceOfExternalStations => _t(
+    'Request for Maintenance of External Stations',
+    'طلب صيانة المحطات الخارجية',
+  );
+
+  String get externalStationNameOrLocation =>
+      _t('External Station Name or Location', 'اسم المحطة الخارجية أو الموقع');
+
+  String get enterExternalStationNameOrLocation => _t(
+    'Enter external station name or location',
+    'أدخل اسم المحطة الخارجية أو الموقع',
+  );
+
+  String get pleaseEnterExternalStationNameOrLocation => _t(
+    'Please enter external station name or location',
+    'يرجى إدخال اسم المحطة الخارجية أو الموقع',
+  );
+
+  String get stationCategory => _t('Station Category', 'فئة المحطة');
+
+  String get selectStationCategory =>
+      _t('Select station category', 'اختر فئة المحطة');
+
+  String get pleaseSelectStationCategory =>
+      _t('Please select station category', 'يرجى اختيار فئة المحطة');
+
+  String get enterStationCategory =>
+      _t('Enter station category', 'أدخل فئة المحطة');
+
+  String get stationCategoryOther =>
+      _t('Station Category (Other)', 'فئة المحطة (أخرى)');
+
+  String get externalStationCategoryWorkshop => _t('Workshop', 'ورشة عمل');
+
+  String get externalStationCategoryTraining => _t('Training', 'تدريب');
+
+  String get externalStationCategoryAssignment => _t('Assignment', 'مهمة');
+
+  String get typeOfIssue => _t('Type of Issue', 'نوع المشكلة');
+
+  String get selectTypeOfIssue =>
+      _t('Select type of issue', 'اختر نوع المشكلة');
+
+  String get pleaseSelectTypeOfIssue =>
+      _t('Please select type of issue', 'يرجى اختيار نوع المشكلة');
+
+  String get enterTypeOfIssue => _t('Enter type of issue', 'أدخل نوع المشكلة');
+
+  String get typeOfIssueOther =>
+      _t('Type of Issue (Other)', 'نوع المشكلة (أخرى)');
+
+  String get externalStationIssueEquipment => _t('Equipment', 'المعدات');
+
+  String get externalStationIssueFacility => _t('Facility', 'المرافق');
+
+  String get externalStationIssueInfrastructure =>
+      _t('Infrastructure', 'البنية الأساسية');
+
+  String get detailedDescription =>
+      _t('Detailed Description', 'الوصف التفصيلي');
+
+  String get enterDetailedDescription =>
+      _t('Enter detailed description', 'أدخل الوصف التفصيلي');
+
+  String get urgencyLevel => _t('Urgency Level', 'مستوى الأولوية');
+
+  String get selectUrgencyLevel =>
+      _t('Select urgency level', 'اختر مستوى الأولوية');
+
+  String get pleaseSelectUrgencyLevel =>
+      _t('Please select urgency level', 'يرجى اختيار مستوى الأولوية');
+
+  String get externalStationUrgencyCritical => _t('Critical', 'حرج');
+
+  String get dateOfIssueOccurred =>
+      _t('Date of Issue Occurred', 'تاريخ حدوث المشكلة');
+
+  String get selectDateOfIssueOccurred =>
+      _t('Select date of issue occurred', 'اختر تاريخ حدوث المشكلة');
+
   // Request for support event
   String get eventTitle =>
       _t('Event Title', 'التدريب على الأمن السيبراني إجباري');
@@ -978,6 +1108,44 @@ class DashboardL10n {
     'In case of urgent requirements, contact the IT Help Desk directly for consideration.',
     '',
   );
+
+  /// Request Maintenance
+  String get pleaseSelectACategory =>
+      _t('Please select a category', 'يرجى اختيار فئة');
+
+  String get pleaseSelectASubCategory =>
+      _t('Please select a sub-category', 'يرجى اختيار الفئة الفرعية');
+
+  String get subCategory => _t('Sub Category', 'الفئة الفرعية');
+
+  String get reasonForMaintenance =>
+      _t('Reason for Maintenance', 'سبب طلب الصيانة');
+
+  String get maintenanceCategoryStation => _t('Station', 'محطة');
+
+  String get maintenanceCategoryResidential => _t('Residential', 'سكن');
+
+  String get maintenanceSubCategoryElectrical =>
+      _t('Electrical', 'الأعمال الكهربائية');
+
+  String get maintenanceSubCategoryPlumbing => _t('Plumbing', 'أعمال السباكة');
+
+  String get maintenanceSubCategoryHvac =>
+      _t('HVAC', 'التكييف والتهوية والتبريد');
+
+  String get maintenanceSubCategoryCivil => _t('Civil', 'الأعمال المدنية');
+
+  String get maintenanceSubCategoryCleaning => _t('Cleaning', 'أعمال النظافة');
+
+  String get buildingSiteClassification =>
+      _t('Building Site Classification', 'تصنيف موقع المبنى');
+
+  String get caaMuscatOutsideStation =>
+      _t('CAA Muscat/outside station', 'مقر الهيئة بمسقط / المحطات الخارجية');
+
+  String get housing => _t('Housing', 'وحدة سكنية');
+
+  String get selectStation => _t('Select Station', '');
 
   /// VPN
   String get country => _t('Country', 'الدولة');

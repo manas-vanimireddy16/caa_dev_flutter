@@ -22,6 +22,7 @@ class RequestForAccessHomePage extends ConsumerWidget {
         Service(code: 'CAAS03', name: 'Security and Access');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: SecurityAccessDashboardRoute(
         service: service,

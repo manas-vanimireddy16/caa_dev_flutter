@@ -22,6 +22,7 @@ class LogisticsHomePage extends ConsumerWidget {
         Service(code: 'CAAS010', name: 'Logistics');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: LogisticsServicesDashboardRoute(
         service: service,

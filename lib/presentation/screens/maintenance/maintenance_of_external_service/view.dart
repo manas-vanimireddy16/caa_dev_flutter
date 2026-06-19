@@ -14,6 +14,8 @@ import 'package:code_setup/presentation/common_widgets/request_card.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
+import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
 import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
@@ -51,6 +53,9 @@ import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
+import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
+import 'package:code_setup/utils/helper/list_pagination.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
@@ -58,6 +63,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 part 'widgets/request_to_book_caa_halls_request.dart';
 part 'controller.dart';
@@ -110,6 +116,11 @@ class _MaintenanceofExternalServiceScreenState
 
     _focusNode = FocusNode();
     _pageController = PageController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(_vsProvider(_providerArgs).notifier).initState();
+    });
   }
 
   @override

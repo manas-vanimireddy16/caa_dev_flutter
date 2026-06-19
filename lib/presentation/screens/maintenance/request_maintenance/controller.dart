@@ -21,12 +21,10 @@ class _VSControllerParams extends Equatable {
 
 final _vsProvider = StateNotifierProvider.autoDispose
     .family<_VSController, _ViewState, _VSControllerParams>((ref, params) {
-      final controller = _VSController(
+      return _VSController(
         service: params.service,
         subService: params.subService,
       );
-      controller.initState();
-      return controller;
     });
 
 class _ViewState {
@@ -248,6 +246,9 @@ class _VSController extends StateNotifier<_ViewState> {
   _VSController({required this.service, required this.subService})
     : super(_ViewState.init()) {
     params = _VSControllerParams(service: service, subService: subService);
+    chatController = TextEditingController();
+    titleController = TextEditingController();
+    searchController = TextEditingController();
   }
 
   Timer? _searchDebounce;
@@ -256,19 +257,31 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
-  void initState() {
-    chatController = TextEditingController();
-    titleController = TextEditingController();
-    searchController = TextEditingController();
-    fetchKpi();
-    fetchRequests();
-    fetchStatusBreakdown('weekly');
-    fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalKpi();
-    // fetchbyCycleGoals(cycle: 'Jan-Jun');
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
   }
 
-  int _searchVersion = 0;
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
+  void initState() {
+    fetchKpi();
+    fetchApprovalKpi();
+    fetchStatusBreakdown('weekly');
+    fetchTrendBreakDown(DateTime.now().year.toString());
+  }
 
   String get currentStatusFilter => state.tabIndex == 0
       ? state.myRequestsStatusFilter
@@ -282,38 +295,21 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void onRequestStatusFilterChanged(String status) {
-    final searchText = searchController.text.trim();
-
     if (state.tabIndex == 0) {
       state = state.copyWith(myRequestsStatusFilter: status);
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
-      return;
+      refreshMyRequestsList();
+    } else {
+      state = state.copyWith(actionItemsStatusFilter: status);
+      refreshActionItemsList();
     }
-
-    state = state.copyWith(actionItemsStatusFilter: status);
-    fetchactionItems(isRefresh: true, searchText: searchText, status: status);
   }
 
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(
-          isRefresh: true,
-          searchText: value,
-          status: state.myRequestsStatusFilter,
-        );
-      } else {
-        await fetchactionItems(
-          isRefresh: true,
-          searchText: value,
-          status: state.actionItemsStatusFilter,
-        );
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -477,11 +473,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshRequestLists();
   }
 
   Future<void> openNewRequestForm() async {
@@ -795,6 +791,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> fetchKpi() async {
+    if (!mounted) return;
     state = state.copyWith(isLoading: true);
     try {
       final kpis = await requestMaintenanceInstance.getKpiData(
@@ -802,12 +799,19 @@ class _VSController extends StateNotifier<_ViewState> {
         subService.id ?? 0,
       );
 
+      if (!mounted) return;
+
       if (kpis != null) {
         state = state.copyWith(kpiData: kpis, isLoading: false);
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(isLoading: false);
     }
   }
@@ -816,19 +820,18 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       final stations = await requestMaintenanceInstance.getStations();
 
-      // print('Available halls response: $halls');
+      if (!mounted) return;
 
       if (stations != null) {
-        // Process halls data as needed
-        // For example, you might want to update the state with available halls
         state = state.copyWith(stationsList: stations);
       }
     } catch (e) {
-      // state = state.copyWith(isLoading: false);
+      // ignore
     }
   }
 
   Future<void> fetchApprovalTrendBreakDown(String period) async {
+    if (!mounted) return;
     state = state.copyWith(isLoading: true);
     try {
       final data = await requestMaintenanceInstance
@@ -838,17 +841,25 @@ class _VSController extends StateNotifier<_ViewState> {
             subServiceId: subService.id ?? 0,
           );
 
+      if (!mounted) return;
+
       if (data != null) {
         state = state.copyWith(approvalTrendData: data, isLoading: false);
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(isLoading: false);
     }
   }
 
   Future<void> fetchApprovalStatusBreakdown(String period) async {
+    if (!mounted) return;
     state = state.copyWith(isLoading: true);
     try {
       final statusBreakdown = await requestMaintenanceInstance
@@ -857,22 +868,30 @@ class _VSController extends StateNotifier<_ViewState> {
             serviceId: service.id ?? 0,
             subServiceId: subService.id ?? 0,
           );
+
+      if (!mounted) return;
+
       if (statusBreakdown != null) {
         state = state.copyWith(
           approvalStatusBreakdown: statusBreakdown,
           isLoading: false,
         );
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
     } catch (e) {
-      // optionally handle other errors
+      if (!mounted) return;
       state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
   }
 
   Future<void> fetchStatusBreakdown(String period) async {
+    if (!mounted) return;
     state = state.copyWith(isLoading: true);
     try {
       final statusBreakdown = await requestMaintenanceInstance
@@ -881,22 +900,30 @@ class _VSController extends StateNotifier<_ViewState> {
             serviceId: service.id ?? 0,
             subServiceId: subService.id ?? 0,
           );
+
+      if (!mounted) return;
+
       if (statusBreakdown != null) {
         state = state.copyWith(
           statusBreakdown: statusBreakdown,
           isLoading: false,
         );
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
     } catch (e) {
-      // optionally handle other errors
+      if (!mounted) return;
       state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
   }
 
   Future<void> fetchTrendBreakDown(String period) async {
+    if (!mounted) return;
     state = state.copyWith(isLoading: true);
     try {
       final data = await requestMaintenanceInstance.getTrendBreakdownData(
@@ -905,17 +932,25 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceId: subService.id ?? 0,
       );
 
+      if (!mounted) return;
+
       if (data != null) {
         state = state.copyWith(trendData: data, isLoading: false);
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(isLoading: false);
     }
   }
 
   Future<void> fetchApprovalKpi() async {
+    if (!mounted) return;
     state = state.copyWith(isLoading: true);
     try {
       final kpis = await requestMaintenanceInstance.getApprovalKpiData(
@@ -923,71 +958,68 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceId: subService.id ?? 0,
       );
 
+      if (!mounted) return;
+
       if (kpis != null) {
         state = state.copyWith(approvalKpiData: kpis, isLoading: false);
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
+      state = state.copyWith(isLoading: false);
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(isLoading: false);
     }
   }
 
-  Future<void> fetchRequests({
-    bool isRefresh = false,
+  Future<List<MaintenanceRequestModel>> loadMyRequestsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isRequestLoading: true);
-    try {
-      // Clear list only if explicitly refreshing or searching
-      // if (isRefresh || status.isNotEmpty) {
-      //   state = state.copyWith(requestData: [], isLoading: false);
-      // }
+    if (!mounted) return [];
 
-      final requests = await requestMaintenanceInstance.getRequests(
-        offset: 1,
-        limit: 8,
+    try {
+      return await requestMaintenanceInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
-
-      // No merging needed
-      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isRequestLoading: false);
-      Fluttertoast.showToast(msg: e.toString());
-    }
-  }
-
-  Future<void> fetchactionItems({
-    bool isRefresh = false,
-    String searchText = '',
-    String status = '',
-  }) async {
-    state = state.copyWith(isLoading: true);
-
-    try {
-      if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(actionItems: [], isLoading: false);
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
       }
+      rethrow;
+    }
+  }
 
-      final items = await requestMaintenanceInstance.getActionItems(
-        offset: 0,
-        limit: 8,
+  Future<List<MaintenanceRequestModel>> loadActionItemsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+
+    try {
+      return await requestMaintenanceInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
-
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
-
-      // No merging needed
-      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
@@ -1260,7 +1292,7 @@ class _VSController extends StateNotifier<_ViewState> {
       KAppX.router.pop();
       // }
       // await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
       await fetchApprovalKpi();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -1284,8 +1316,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await requestMaintenanceInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1585,12 +1616,12 @@ class _VSController extends StateNotifier<_ViewState> {
     );
 
     if (index == 0) {
-      fetchRequests(status: '');
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchactionItems(status: '');
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
@@ -1734,12 +1765,15 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests();
-    fetchactionItems();
+    refreshRequestLists();
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
+    chatController.dispose();
+    titleController.dispose();
+    searchController.dispose();
     super.dispose();
   }
 }

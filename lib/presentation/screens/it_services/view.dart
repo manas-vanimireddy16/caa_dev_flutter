@@ -22,6 +22,7 @@ class ITServicesHomeScreen extends ConsumerWidget {
         Service(code: 'CAAS01', name: 'IT Services');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: ITServiceDashboardRoute(
         service: service,

@@ -3,7 +3,7 @@ import 'package:code_setup/presentation/models/buttons_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
-import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 
 class CommentsCard extends StatelessWidget {
@@ -22,12 +22,14 @@ class CommentsCard extends StatelessWidget {
   final Future<void> Function()? onAssign;
   final Future<void> Function()? onReassign;
   final Future<void> Function()? onApprove;
+  final Future<void> Function()? onUpdate;
   final Future<void> Function()? onReplace;
   final Future<void> Function()? onInProgress;
   final Future<void> Function()? onComplete;
 
   final ActionButtonsType actionType;
   final bool buttonsDisabled;
+  final bool updateButtonDisabled;
 
   final DashboardL10n? l10n;
 
@@ -47,8 +49,10 @@ class CommentsCard extends StatelessWidget {
     this.onAssign,
     this.onReassign,
     this.onApprove,
+    this.onUpdate,
     this.onReplace,
     this.buttonsDisabled = false,
+    this.updateButtonDisabled = false,
     required this.attachments,
     this.onInProgress,
     this.onComplete,
@@ -86,7 +90,7 @@ class CommentsCard extends StatelessWidget {
                 child: Text(
                   l10n?.commentsRoutingOverviewTitle ??
                       'Comments / Routing Overview',
-                  style: TextStyle(color: AppColors.mainTitleColor),
+                  style: AppTextStyles.requestDetailsSectionHeading(),
                 ),
               ),
             ],
@@ -99,7 +103,7 @@ class CommentsCard extends StatelessWidget {
                 ? Center(
                     child: Text(
                       l10n?.noCommentsYet ?? 'No comments yet',
-                      style: TextStyle(color: AppColors.contentColor),
+                      style: AppTextStyles.requestDetailsFieldContent(),
                     ),
                   )
                 : ListView.separated(
@@ -130,8 +134,10 @@ class CommentsCard extends StatelessWidget {
             onReassign: onReassign,
             actionType: actionType,
             onApprove: onApprove,
+            onUpdate: onUpdate,
             onReplace: onReplace,
             buttonsDisabled: buttonsDisabled,
+            updateButtonDisabled: updateButtonDisabled,
             onInProgress: onInProgress,
             onComplete: onComplete,
             commentHint: l10n?.routingAddCommentHint,

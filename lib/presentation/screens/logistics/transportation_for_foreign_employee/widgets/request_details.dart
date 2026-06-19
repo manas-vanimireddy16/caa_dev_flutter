@@ -75,13 +75,24 @@ class _LogisticsForeignRequestDetailsTabScreenState
           final List<ApprovalDetailModel> approvals =
               state.requestDetails.approvalDetails ?? [];
           final selectedTab = state.requestDetailTab;
+          final fromActionItems = widget.from.toLowerCase() == 'action items';
           final active = controller.getActiveApprovalLevel(
             state.requestDetails.approvalDetails ?? [],
           );
           final actionType = controller.getActionButtonsType(
             state.requestDetails,
             approvals,
+            fromActionItems: fromActionItems,
           );
+          final updateButtonDisabled =
+              (actionType == ActionButtonsType.update &&
+                  controller.isRequesterActualReturnUpdated(
+                    state.requestDetails,
+                  )) ||
+              (actionType == ActionButtonsType.approveRejectUpdate &&
+                  controller.isApproverActualReturnUpdated(
+                    state.requestDetails,
+                  ));
 
           final approverId = active?.id;
 
@@ -131,7 +142,10 @@ class _LogisticsForeignRequestDetailsTabScreenState
                     actionType: actionType, // ✅ FIX HERE
                     entries: chats,
                     controller: controller.chatController,
-                    buttonsDisabled: state.isButtonDisabled,
+                    buttonsDisabled: actionType == ActionButtonsType.update
+                        ? false
+                        : state.isButtonDisabled,
+                    updateButtonDisabled: updateButtonDisabled,
                     attachments: state.attachments,
                     l10n: l10n,
                     onAttach: () async {
@@ -167,11 +181,9 @@ class _LogisticsForeignRequestDetailsTabScreenState
                         approverId: approverId ?? 0,
                         requestId: requestId ?? 0,
                       );
-                      // controller.onReject(
-                      //   approverId ?? 0,
-                      //   requestId ?? 0,
-                      //   'Rejected',
-                      // );
+                    },
+                    onUpdate: () async {
+                      controller.showUpdateActualReturnForm(context);
                     },
                   )
                 else if (selectedTab == 2)

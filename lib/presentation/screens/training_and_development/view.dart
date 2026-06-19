@@ -30,6 +30,7 @@ class TrainingandDevelopmentHomeScreen extends ConsumerWidget {
         Service(code: serviceCode, name: 'Training Services');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: TrainingAndDevelopmentDashboardRoute(
         service: service,

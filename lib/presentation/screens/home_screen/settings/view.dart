@@ -11,6 +11,7 @@ import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/localization_provider/localization_provider.dart';
@@ -36,14 +37,21 @@ class SettingsScreen extends ConsumerWidget {
         .themeBox;
 
     return KScaffold(
-      appBar: KAppBar(
+      backgroundColor: AppColors.homeSurfaceColor,
+      appBar: AppBar(
         title: Text(
           l10n.settings,
-          style: TextStyle(
-            fontWeight: currentTheme.fontWeights.wBold,
-            fontSize: currentTheme.fontSizes.s18,
+          style: AppTextStyles.cairo(
+            fontSize: 20.toAutoScaledFont,
+            fontWeight: FontWeight.w700,
           ),
         ),
+        toolbarHeight: 64,
+        foregroundColor: AppColors.textHeading,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        shape: Border(bottom: BorderSide(color: Color(0xFFE6E6EA), width: 1)),
+        elevation: 0,
       ),
       body: SafeArea(
         child: ColoredBox(
@@ -62,7 +70,7 @@ class SettingsScreen extends ConsumerWidget {
                     backgroundColor: Colors.white,
                     borderColor: const Color(0xFFD0D5DD),
                     borderRadius: BorderRadius.circular(8),
-                    style: const TextStyle(
+                    style: AppTextStyles.cairo(
                       color: AppColors.dropdownText,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -74,7 +82,7 @@ class SettingsScreen extends ConsumerWidget {
                             value: lang,
                             child: Text(
                               lang.name,
-                              style: const TextStyle(
+                              style: AppTextStyles.cairo(
                                 color: AppColors.dropdownText,
                               ),
                             ),
@@ -101,7 +109,7 @@ class SettingsScreen extends ConsumerWidget {
                     backgroundColor: Colors.white,
                     borderColor: const Color(0xFFD0D5DD),
                     borderRadius: BorderRadius.circular(8),
-                    style: const TextStyle(
+                    style: AppTextStyles.cairo(
                       color: AppColors.dropdownText,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -113,7 +121,7 @@ class SettingsScreen extends ConsumerWidget {
                             value: role,
                             child: Text(
                               role.role?.name ?? '',
-                              style: const TextStyle(
+                              style: AppTextStyles.cairo(
                                 color: AppColors.dropdownText,
                               ),
                             ),
@@ -143,9 +151,7 @@ class SettingsScreen extends ConsumerWidget {
                   label: state.isLoggingOut
                       ? 'Logging out...'
                       : 'Logout with JWT',
-                  onPressed: state.isLoggingOut
-                      ? null
-                      : controller.logoutJwt,
+                  onPressed: state.isLoggingOut ? null : controller.logoutJwt,
                 ),
               ],
             ),
@@ -186,7 +192,7 @@ class _SettingsSectionCard extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 title,
-                style: const TextStyle(
+                style: AppTextStyles.cairo(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: AppColors.dropdownHeadingText,
@@ -215,9 +221,11 @@ class _SettingsActionButton extends StatelessWidget {
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primaryBlue,
+          backgroundColor: AppColors.primaryBlue75,
           foregroundColor: AppColors.loginText,
-          disabledBackgroundColor: AppColors.primaryBlue.withValues(alpha: 0.6),
+          disabledBackgroundColor: AppColors.primaryBlue75.withValues(
+            alpha: 0.6,
+          ),
           disabledForegroundColor: AppColors.loginText,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           shape: RoundedRectangleBorder(
@@ -229,7 +237,7 @@ class _SettingsActionButton extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: AppTextStyles.cairo(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),

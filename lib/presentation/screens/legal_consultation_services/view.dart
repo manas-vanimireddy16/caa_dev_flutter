@@ -22,6 +22,7 @@ class LegalConsultationServicesHomeScreen extends ConsumerWidget {
         Service(name: 'Legal Services');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: LegalServicesDashboardRoute(
         service: service,

@@ -756,6 +756,7 @@ import 'package:code_setup/modules/domain/models/user_model.dart'
     hide UserData, Department, Section;
 import 'package:code_setup/modules/domain/roles_repo.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
+import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/repository/authentication/domain.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
@@ -802,146 +803,124 @@ class _MicrosoftLoginPageState extends ConsumerState<MicrosoftLoginPage> {
     final l10n = DashboardL10n.of(context);
     final locale = ref.watch(localeProvider);
     final languageLabel = l10n.loginLanguageDisplayName(locale.languageCode);
-    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final mediaQuery = MediaQuery.of(context);
+    final bottomInset = mediaQuery.padding.bottom;
+    final viewInsets = mediaQuery.viewInsets.bottom;
+    final horizontalPadding = 24.toAutoScaledWidth;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
-
-      body: Column(
-        children: [
-          /// TOP IMAGE SECTION
-          Expanded(
-            flex: 7,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                /// BACKGROUND IMAGE
-                Image.asset('assets/images/login-bg.png', fit: BoxFit.cover),
-
-                /// DARK OVERLAY
-                Container(color: const Color.fromRGBO(16, 20, 45, 0.45)),
-
-                /// BLUR
-                ClipRect(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 0.8, sigmaY: 0.8),
-                    child: const SizedBox.expand(),
+      body: SafeArea(
+        top: false,
+        bottom: false,
+        child: Column(
+          children: [
+            Expanded(
+              flex: 7,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset('assets/images/login-bg.png', fit: BoxFit.cover),
+                  Container(color: const Color.fromRGBO(16, 20, 45, 0.45)),
+                  ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 0.8, sigmaY: 0.8),
+                      child: const SizedBox.expand(),
+                    ),
                   ),
-                ),
-
-                /// CONTENT
-                SafeArea(
-                  child: Column(
-                    children: [
-                      /// HEADER
-                      _LoginHeader(
-                        languageLabel: languageLabel,
-                        arabicSubtitle: l10n.loginAuthoritySubtitle,
-
-                        onLanguageSelected: (code) async {
-                          await Hive.box('language').put('lang', code);
-
-                          ref.read(localeProvider.notifier).state = Locale(
-                            code,
-                          );
-                        },
-                      ),
-
-                      const Spacer(),
-
-                      /// FEATURES
-                      _LoginFeaturesColumn(
-                        items: [
-                          _LoginFeatureData(
-                            icon: Icons.verified_user_outlined,
-                            title: l10n.loginSafetyExcellenceTitle,
-                            subtitle: l10n.loginSafetyExcellenceSubtitle,
+                  SafeArea(
+                    bottom: false,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _LoginHeader(
+                            languageLabel: languageLabel,
+                            arabicSubtitle: l10n.loginAuthoritySubtitle,
+                            onLanguageSelected: (code) async {
+                              await Hive.box('language').put('lang', code);
+                              ref.read(localeProvider.notifier).state =
+                                  Locale(code);
+                            },
                           ),
-
-                          _LoginFeatureData(
-                            icon: Icons.public_outlined,
-                            title: l10n.loginGlobalNetworkTitle,
-                            subtitle: l10n.loginGlobalNetworkSubtitle,
+                          24.toVerticalSizedBox,
+                          _LoginFeaturesColumn(
+                            items: [
+                              _LoginFeatureData(
+                                icon: Icons.verified_user_outlined,
+                                title: l10n.loginSafetyExcellenceTitle,
+                                subtitle: l10n.loginSafetyExcellenceSubtitle,
+                              ),
+                              _LoginFeatureData(
+                                icon: Icons.public_outlined,
+                                title: l10n.loginGlobalNetworkTitle,
+                                subtitle: l10n.loginGlobalNetworkSubtitle,
+                              ),
+                              _LoginFeatureData(
+                                icon: Icons.flight_outlined,
+                                title: l10n.loginInnovationHubTitle,
+                                subtitle: l10n.loginInnovationHubSubtitle,
+                              ),
+                            ],
                           ),
-
-                          _LoginFeatureData(
-                            icon: Icons.flight_outlined,
-                            title: l10n.loginInnovationHubTitle,
-                            subtitle: l10n.loginInnovationHubSubtitle,
+                          20.toVerticalSizedBox,
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: horizontalPadding,
+                            ),
+                            child: const Divider(
+                              thickness: 0.5,
+                              color: Color(0x40FEF5DB),
+                            ),
                           ),
+                          20.toVerticalSizedBox,
+                          _LoginStatsRow(l10n: l10n),
+                          24.toVerticalSizedBox,
                         ],
                       ),
-
-                      const SizedBox(height: 20),
-
-                      /// DIVIDER
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Color(0x40FEF5DB),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      /// STATS
-                      _LoginStatsRow(l10n: l10n),
-
-                      const SizedBox(height: 24),
-                    ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(28.toAutoScaledHeight),
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          /// WHITE SECTION
-          Expanded(
-            flex: 3,
-            child: Container(
-              width: double.infinity,
-
-              decoration: const BoxDecoration(
-                color: Colors.white,
-
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-              ),
-
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-
-                  /// FLOATING CARD EFFECT
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    0,
+                    horizontalPadding,
+                    bottomInset + (viewInsets > 0 ? 8.toAutoScaledHeight : 16.toAutoScaledHeight),
+                  ),
                   child: Transform.translate(
-                    offset: const Offset(0, -55),
-
+                    offset: Offset(0, -55.toAutoScaledHeight),
                     child: _LoginBottomCard(
                       l10n: l10n,
                       isLoading: state.isLoading,
                       showJwtSection: _showJwtSection,
                       jwtController: _jwtController,
-
                       onMicrosoftSignIn: controller.signIn,
-
                       onToggleJwt: () {
                         setState(() {
                           _showJwtSection = !_showJwtSection;
                         });
                       },
-
                       onJwtLogin: () async {
                         final token = _jwtController.text.trim();
-
                         if (token.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(l10n.loginJwtRequired)),
                           );
-
                           return;
                         }
-
                         await controller.loginWithJwt(token);
                       },
                     ),
@@ -949,8 +928,8 @@ class _MicrosoftLoginPageState extends ConsumerState<MicrosoftLoginPage> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -982,7 +961,12 @@ class _LoginHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+      padding: EdgeInsets.fromLTRB(
+        18.toAutoScaledWidth,
+        20.toAutoScaledHeight,
+        18.toAutoScaledWidth,
+        0,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -990,31 +974,31 @@ class _LoginHeader extends StatelessWidget {
             colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
             child: Image.asset(
               'assets/images/caa_logo.png',
-              height: 34,
+              height: 34.toAutoScaledHeight,
               fit: BoxFit.contain,
             ),
           ),
-          const SizedBox(width: 8),
+          8.toHorizontalSizedBox,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'CIVIL AVIATION AUTHORITY',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 10.5,
+                    fontSize: 10.5.toAutoScaledFont,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.3,
                     height: 1.2,
                   ),
                 ),
-                const SizedBox(height: 2),
+                2.toVerticalSizedBox,
                 Text(
                   arabicSubtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 9,
+                    fontSize: 9.toAutoScaledFont,
                     fontWeight: FontWeight.w400,
                     height: 1.2,
                   ),
@@ -1024,10 +1008,10 @@ class _LoginHeader extends StatelessWidget {
             ),
           ),
           PopupMenuButton<String>(
-            offset: const Offset(0, 45),
+            offset: Offset(0, 45.toAutoScaledHeight),
             elevation: 6,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.toAutoScaledWidth),
             ),
             onSelected: onLanguageSelected,
             itemBuilder: (context) => [
@@ -1035,57 +1019,56 @@ class _LoginHeader extends StatelessWidget {
               const PopupMenuItem(value: 'ar', child: Text('العربية')),
             ],
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+              padding: EdgeInsets.symmetric(
+                horizontal: 6.toAutoScaledWidth,
+                vertical: 6.toAutoScaledHeight,
+              ),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(6.toAutoScaledWidth),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  /// Globe Icon Box
                   Container(
-                    width: 32,
-                    height: 32,
+                    width: 32.toAutoScaledWidth,
+                    height: 32.toAutoScaledHeight,
                     decoration: BoxDecoration(
                       color: const Color(0xFFF2F2F2),
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.language,
-                      size: 18,
+                      size: 18.toAutoScaledWidth,
                       color: Colors.black,
                     ),
                   ),
-
-                  const SizedBox(width: 6),
-
-                  /// Blue Language Button
+                  6.toHorizontalSizedBox,
                   Container(
-                    height: 32,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    height: 32.toAutoScaledHeight,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.toAutoScaledWidth,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2B2C73),
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           languageLabel,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
-                            fontSize: 13,
+                            fontSize: 13.toAutoScaledFont,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-
-                        const SizedBox(width: 6),
-
-                        const Icon(
+                        6.toHorizontalSizedBox,
+                        Icon(
                           Icons.keyboard_arrow_down,
                           color: Colors.white,
-                          size: 18,
+                          size: 18.toAutoScaledWidth,
                         ),
                       ],
                     ),
@@ -1111,7 +1094,7 @@ class _LoginFeaturesColumn extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         for (int i = 0; i < items.length; i++) ...[
-          if (i > 0) const SizedBox(height: 24),
+          if (i > 0) 24.toVerticalSizedBox,
           _LoginFeatureItem(data: items[i]),
         ],
       ],
@@ -1126,42 +1109,47 @@ class _LoginFeatureItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconBoxSize = 38.toAutoScaledWidth;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 38,
-          height: 38,
+          width: iconBoxSize,
+          height: iconBoxSize,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.7),
               width: 1,
             ),
             color: Colors.white.withValues(alpha: 0.06),
           ),
-          child: Icon(data.icon, color: Colors.white, size: 17),
+          child: Icon(
+            data.icon,
+            color: Colors.white,
+            size: 17.toAutoScaledWidth,
+          ),
         ),
-        const SizedBox(height: 10),
+        10.toVerticalSizedBox,
         Text(
           data.title,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
-            fontSize: 15,
+            fontSize: 15.toAutoScaledFont,
             fontWeight: FontWeight.w600,
             height: 1.2,
           ),
         ),
-        const SizedBox(height: 4),
+        4.toVerticalSizedBox,
         ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 280),
+          constraints: BoxConstraints(maxWidth: 280.toAutoScaledWidth),
           child: Text(
             data.subtitle,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white.withValues(alpha: _featureSubtitleOpacity),
-              fontSize: 11,
+              fontSize: 11.toAutoScaledFont,
               fontWeight: FontWeight.w400,
               height: 1.35,
             ),
@@ -1182,10 +1170,16 @@ class _LoginStatsRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _LoginStatColumn(line1: l10n.loginIcaoBold, line2: l10n.loginCompliant),
-        _LoginStatDivider(),
-        _LoginStatColumn(line1: l10n.loginIsoBold, line2: l10n.loginCertified),
-        _LoginStatDivider(),
+        _LoginStatColumn(
+          line1: l10n.loginIcaoBold,
+          line2: l10n.loginCompliant,
+        ),
+        const _LoginStatDivider(),
+        _LoginStatColumn(
+          line1: l10n.loginIsoBold,
+          line2: l10n.loginCertified,
+        ),
+        const _LoginStatDivider(),
         _LoginStatColumn(
           line1: l10n.loginSupportBold,
           line2: l10n.loginSupportLabel,
@@ -1204,27 +1198,27 @@ class _LoginStatColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      padding: EdgeInsets.symmetric(horizontal: 14.toAutoScaledWidth),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             line1,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 20,
+              fontSize: 20.toAutoScaledFont,
               fontWeight: FontWeight.w700,
               height: 1.0,
             ),
           ),
-          const SizedBox(height: 2),
+          2.toVerticalSizedBox,
           Text(
             line2,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white.withValues(alpha: _statLabelOpacity),
-              fontSize: 11,
+              fontSize: 11.toAutoScaledFont,
               fontWeight: FontWeight.w400,
               height: 1.0,
             ),
@@ -1236,11 +1230,13 @@ class _LoginStatColumn extends StatelessWidget {
 }
 
 class _LoginStatDivider extends StatelessWidget {
+  const _LoginStatDivider();
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 1,
-      height: 32,
+      height: 32.toAutoScaledHeight,
       color: Colors.white.withValues(alpha: 0.35),
     );
   }
@@ -1267,20 +1263,30 @@ class _LoginBottomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final minCardWidth = 280.toAutoScaledWidth;
+    final maxCardWidth = 420.toAutoScaledWidth;
+    final cardWidth = (MediaQuery.sizeOf(context).width - 48.toAutoScaledWidth)
+        .clamp(minCardWidth, maxCardWidth);
     return Container(
+      width: cardWidth,
       decoration: BoxDecoration(
         color: _cardBackground,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14.toAutoScaledWidth),
         border: Border.all(color: Colors.black.withValues(alpha: 0.04)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 18,
-            offset: const Offset(0, 4),
+            blurRadius: 18.toAutoScaledWidth,
+            offset: Offset(0, 4.toAutoScaledHeight),
           ),
         ],
       ),
-      padding: const EdgeInsets.fromLTRB(18, 24, 18, 26),
+      padding: EdgeInsets.fromLTRB(
+        18.toAutoScaledWidth,
+        24.toAutoScaledHeight,
+        18.toAutoScaledWidth,
+        26.toAutoScaledHeight,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -1289,89 +1295,80 @@ class _LoginBottomCard extends StatelessWidget {
             children: [
               Image.asset(
                 'assets/images/50years_image.png',
-                height: 52,
+                height: 52.toAutoScaledHeight,
                 fit: BoxFit.contain,
               ),
-              const SizedBox(width: 18),
+              18.toHorizontalSizedBox,
               Image.asset(
                 'assets/images/caa_logo.png',
-                height: 52,
+                height: 52.toAutoScaledHeight,
                 fit: BoxFit.contain,
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          14.toVerticalSizedBox,
           if (isLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 12.toAutoScaledHeight),
               child: SizedBox(
-                width: 28,
-                height: 28,
+                width: 28.toAutoScaledWidth,
+                height: 28.toAutoScaledHeight,
                 child: CircularProgressIndicator(
                   color: _buttonNavy,
-                  strokeWidth: 2.5,
+                  strokeWidth: 2.5.toAutoScaledWidth,
                 ),
               ),
             )
           else ...[
-            /// HIDE MICROSOFT BUTTON WHEN JWT OPEN
             if (!showJwtSection) ...[
               Center(
                 child: Material(
                   color: _buttonNavy,
                   elevation: 0,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
                   child: InkWell(
                     onTap: onMicrosoftSignIn,
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
                     child: Ink(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-
+                        borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.25),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            blurRadius: 8.toAutoScaledWidth,
+                            offset: Offset(0, 2.toAutoScaledHeight),
                           ),
                         ],
                       ),
-
                       child: Container(
-                        width: 230,
-                        height: 40,
-
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-
+                        width: 230.toAutoScaledWidth,
+                        constraints: BoxConstraints(maxWidth: cardWidth),
+                        height: 40.toAutoScaledHeight,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 14.toAutoScaledWidth,
+                        ),
                         alignment: Alignment.center,
-
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.lock_outline,
                               color: Colors.white,
-                              size: 14,
+                              size: 14.toAutoScaledWidth,
                             ),
-
                             Flexible(
                               child: Text(
                                 l10n.loginContinueWithMicrosoft,
-
                                 textAlign: TextAlign.center,
-
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 13,
+                                  fontSize: 13.toAutoScaledFont,
                                   fontWeight: FontWeight.w500,
                                 ),
-
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-
-                            const _MicrosoftLogo(size: 14),
+                            _MicrosoftLogo(size: 14.toAutoScaledWidth),
                           ],
                         ),
                       ),
@@ -1379,16 +1376,12 @@ class _LoginBottomCard extends StatelessWidget {
                   ),
                 ),
               ),
-
-              const SizedBox(height: 12),
+              12.toVerticalSizedBox,
             ],
-
-            /// JWT TOGGLE BUTTON
-            // const SizedBox(height: 12),
             TextButton(
               onPressed: onToggleJwt,
               style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 4),
+                padding: EdgeInsets.symmetric(vertical: 4.toAutoScaledHeight),
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
@@ -1397,90 +1390,73 @@ class _LoginBottomCard extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.grey.shade600,
                   fontWeight: FontWeight.w500,
-                  fontSize: 12,
+                  fontSize: 12.toAutoScaledFont,
                 ),
               ),
             ),
             if (showJwtSection) ...[
-              const SizedBox(height: 7),
+              7.toVerticalSizedBox,
               TextField(
                 controller: jwtController,
-
                 readOnly: true,
                 showCursor: false,
-
                 onTap: () async {
                   final data = await Clipboard.getData(Clipboard.kTextPlain);
-
                   if (data?.text != null) {
                     jwtController.text = data!.text!;
                   }
                 },
-
-                style: const TextStyle(fontSize: 12),
-
+                style: TextStyle(fontSize: 12.toAutoScaledFont),
                 decoration: InputDecoration(
                   hintText: 'Tap to paste JWT token',
-
                   hintStyle: TextStyle(
-                    fontSize: 11,
+                    fontSize: 11.toAutoScaledFont,
                     color: Colors.grey.shade500,
                   ),
-
                   prefixIcon: const Icon(Icons.paste),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.close),
-
                     onPressed: () {
                       jwtController.clear();
                     },
                   ),
-
                   filled: true,
                   fillColor: Colors.white,
-
-                  contentPadding: const EdgeInsets.all(12),
-
+                  contentPadding: EdgeInsets.all(12.toAutoScaledWidth),
                   isDense: true,
-
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-
+                    borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
                     borderSide: BorderSide(color: Colors.grey.shade300),
                   ),
-
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-
+                    borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
                     borderSide: BorderSide(color: Colors.grey.shade300),
                   ),
-
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-
-                    borderSide: const BorderSide(
+                    borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
+                    borderSide: BorderSide(
                       color: _buttonNavy,
-                      width: 1.2,
+                      width: 1.2.toAutoScaledWidth,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 2),
+              2.toVerticalSizedBox,
               SizedBox(
-                height: 32,
+                height: 32.toAutoScaledHeight,
                 child: TextButton(
                   onPressed: onJwtLogin,
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.grey.shade800,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
                     ),
                   ),
                   child: Text(
                     l10n.loginWithJwt,
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: TextStyle(
+                      fontSize: 12.toAutoScaledFont,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

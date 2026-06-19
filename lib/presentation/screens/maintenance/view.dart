@@ -18,6 +18,7 @@ class MaintenanceHomeScreen extends ConsumerWidget {
         Service(code: maintenanceServiceCode, name: 'Maintenance');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: MaintenanceDashboardRoute(
         service: service,

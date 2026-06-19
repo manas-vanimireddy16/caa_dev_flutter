@@ -4,23 +4,27 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 import 'package:code_setup/presentation/common_widgets/drawer_component.dart';
 import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
+import 'package:code_setup/presentation/core_widgets/buttons/back_button.dart';
 import 'package:code_setup/presentation/core_widgets/drawer/drawer.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/core_widgets/list_tile_divider.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/assets/icons.dart';
 import 'package:code_setup/utils/helper/sub_service_route_resolver.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DynamicServiceShell extends ConsumerStatefulWidget {
   final Service service;
   final PageRouteInfo<dynamic>? dashboardRoute;
+  final bool lazyLoadDashboard;
 
   const DynamicServiceShell({
     super.key,
     required this.service,
     this.dashboardRoute,
+    this.lazyLoadDashboard = false,
   });
 
   @override
@@ -30,6 +34,24 @@ class DynamicServiceShell extends ConsumerStatefulWidget {
 
 class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
   bool _hasAppliedInitialSelection = false;
+
+  void _dismissKeyboard(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    FocusScope.of(context).unfocus();
+  }
+
+  void _closeDrawer(BuildContext context) {
+    _dismissKeyboard(context);
+    Navigator.of(context).pop();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    });
+  }
+
+  void _openDrawer(BuildContext context) {
+    _dismissKeyboard(context);
+    Scaffold.of(context).openDrawer();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +84,8 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
 
           if (selectedIndex >= 0) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) tabsRouter.setActiveIndex(selectedIndex + 1);
+              if (!mounted) return;
+              tabsRouter.setActiveIndex(selectedIndex + 1);
             });
           }
         }
@@ -76,26 +99,50 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
 
         return Scaffold(
           backgroundColor: theme.colors.background,
+          onDrawerChanged: (isOpened) {
+            if (!isOpened) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              });
+            }
+          },
           appBar: KAppBar(
             leading: Builder(
               builder: (drawerContext) => IconButton(
                 icon: const Icon(Icons.menu),
-                onPressed: () => Scaffold.of(drawerContext).openDrawer(),
+                onPressed: () => _openDrawer(drawerContext),
               ),
             ),
             title: Text(
               activeTitle,
-              style: TextStyle(
-                fontSize: theme.fontSizes.s16,
-                fontWeight: theme.fontWeights.wBold,
-              ),
+              style: AppTextStyles.serviceScreenTitle(),
             ),
+            actions: [
+              KBackButton(
+                onPressed: () => tabsContext.router.maybePop(),
+              ),
+            ],
           ),
           drawer: KDrawer(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                60.toVerticalSizedBox,
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 8.toAutoScaledWidth,
+                    right: 4.toAutoScaledWidth,
+                    top: 12.toAutoScaledHeight,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.close),
+                      tooltip: 'Close',
+                      onPressed: () => _closeDrawer(tabsContext),
+                    ),
+                  ),
+                ),
+                20.toVerticalSizedBox,
                 const KDrawerHeader(),
                 20.toVerticalSizedBox,
                 KDivider(color: Colors.grey, padding: EdgeInsets.zero),
@@ -114,11 +161,7 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
                       Expanded(
                         child: Text(
                           widget.service.name ?? '',
-                          style: TextStyle(
-                            fontSize: theme.fontSizes.s16,
-                            fontWeight: theme.fontWeights.wBolder,
-                            color: theme.colors.onBackground,
-                          ),
+                          style: AppTextStyles.serviceScreenTitle(),
                         ),
                       ),
                     ],
@@ -142,7 +185,7 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
                           currentTheme: theme,
                           onTap: () {
                             tabsRouter.setActiveIndex(0);
-                            Navigator.of(context).pop();
+                            _closeDrawer(context);
                           },
                         );
                       }
@@ -169,7 +212,7 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
                             subService: destination.subService,
                           );
                           tabsRouter.setActiveIndex(index);
-                          Navigator.of(context).pop();
+                          _closeDrawer(context);
                         },
                       );
                     },

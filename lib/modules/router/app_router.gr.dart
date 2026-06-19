@@ -69,7 +69,7 @@ import 'package:code_setup/presentation/screens/home_screen/approvals/request_de
     as _i52;
 import 'package:code_setup/presentation/screens/home_screen/approvals/view.dart'
     as _i7;
-import 'package:code_setup/presentation/screens/home_screen/dashboard/dashboard.dart'
+import 'package:code_setup/presentation/screens/home_screen/dashboard/view.dart'
     as _i3;
 import 'package:code_setup/presentation/screens/home_screen/services/view.dart'
     as _i83;

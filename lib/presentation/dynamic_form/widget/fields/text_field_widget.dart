@@ -245,7 +245,8 @@ class _TextFieldWidgetState extends ConsumerState<TextFieldWidget> {
         enabled: !isDisabled, // 🔥 UPDATED
         hintText: widget.field.placeholder,
         fieldHeadingText: widget.field.label,
-        fieldHeadingTextStyle: DynamicFieldLabelStyle.text,
+        fieldHeadingTextStyle: DynamicFieldLabelStyle.label,
+        style: DynamicFieldLabelStyle.content,
         errorText: state.errors[widget.field.name],
         isRequired: isRequired,
         onChanged: isDisabled

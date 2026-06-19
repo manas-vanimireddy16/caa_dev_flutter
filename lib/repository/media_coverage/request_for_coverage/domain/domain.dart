@@ -52,6 +52,7 @@ abstract class RequestForCoverageRepository {
   Future<String> sendChat(Map<String, dynamic> payload, int id);
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
   Future<List<ChatMessageModel>> getchatById(int id);
+  Future<void> deleteAttachment(int attachmentId, {int? requestId});
   Future<StatusBreakdownModel?> getApprovalStatusBreakdownData(String period);
   Future<TrendBreakdownModel> getApprovalTrendBreakdownData(String period);
 

@@ -22,6 +22,7 @@ class HotelReservationHomeScreen extends ConsumerWidget {
         Service(code: 'CAAS014', name: 'Housing & Accommodation Service');
 
     return DynamicServiceShell(
+      lazyLoadDashboard: true,
       service: service,
       dashboardRoute: HotelReservationDashboardRoute(
         service: service,

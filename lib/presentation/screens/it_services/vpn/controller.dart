@@ -244,6 +244,9 @@ class _VSController extends StateNotifier<_ViewState> {
   _VSController({required this.service, required this.subService})
     : super(_ViewState.init()) {
     params = _VSControllerParams(service: service, subService: subService);
+    chatController = TextEditingController();
+    titleController = TextEditingController();
+    searchController = TextEditingController();
   }
 
   Timer? _searchDebounce;
@@ -252,13 +255,28 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshActionItemsList();
+    } else {
+      refreshMyRequestsList();
+    }
+  }
+
   void initState() {
-    chatController = TextEditingController();
-    titleController = TextEditingController();
-    searchController = TextEditingController();
     fetchApprovalKpi();
     fetchKpi();
-    fetchRequests();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
@@ -278,38 +296,21 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void onRequestStatusFilterChanged(String status) {
-    final searchText = searchController.text.trim();
-
     if (state.tabIndex == 0) {
       state = state.copyWith(actionItemsStatusFilter: status);
-      fetchactionItems(isRefresh: true, searchText: searchText, status: status);
-      return;
+      refreshActionItemsList();
+    } else {
+      state = state.copyWith(myRequestsStatusFilter: status);
+      refreshMyRequestsList();
     }
-
-    state = state.copyWith(myRequestsStatusFilter: status);
-    fetchRequests(isRefresh: true, searchText: searchText, status: status);
   }
 
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 1) {
-        await fetchRequests(
-          isRefresh: true,
-          searchText: value,
-          status: state.myRequestsStatusFilter,
-        );
-      } else {
-        await fetchactionItems(
-          isRefresh: true,
-          searchText: value,
-          status: state.actionItemsStatusFilter,
-        );
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -504,11 +505,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshRequestLists();
   }
 
   Future<void> openNewRequestForm() async {
@@ -956,13 +957,7 @@ Violation of this policy may result in:
         requestId: effectiveRequestId,
       );
 
-      final updatedAttachments = state.attachmentsById
-          .where((attachment) => attachment.id != attachmentId)
-          .toList();
-      state = state.copyWith(attachmentsById: updatedAttachments);
-
       if (effectiveRequestId != null && effectiveRequestId != 0) {
-        await fetchAttachmentsById(effectiveRequestId);
         await fetchRequestDetailsById(effectiveRequestId);
       }
     } catch (e, st) {
@@ -1121,56 +1116,51 @@ Violation of this policy may result in:
     }
   }
 
-  Future<void> fetchRequests({
-    bool isRefresh = false,
+  Future<List<AccessRequestModel>> loadMyRequestsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    /// ✅ SHOW LOADER + CLEAR OLD LIST
-    state = state.copyWith(isLoading: true, requestData: []);
+    if (!mounted) return [];
 
     try {
-      final requests = await vpnInstance.getRequests(
-        offset: 1,
-        limit: 8,
+      return await vpnInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
-
-      /// ✅ UPDATE NEW DATA
-      state = state.copyWith(requestData: requests, isLoading: false);
     } catch (e) {
-      /// ✅ STOP LOADER ON ERROR
-      state = state.copyWith(isLoading: false);
-
-      Fluttertoast.showToast(msg: e.toString());
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
-  Future<void> fetchactionItems({
-    bool isRefresh = false,
+  Future<List<AccessRequestModel>> loadActionItemsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return [];
 
     try {
-      final items = await vpnInstance.getActionItems(
-        offset: 1,
-        limit: 8,
+      return await vpnInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
-
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
-
-      // No merging needed
-      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
@@ -1572,8 +1562,8 @@ Violation of this policy may result in:
       await vpnInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchactionItems();
-      fetchRequests();
+      refreshRequestLists();
+      refreshRequestLists();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
@@ -1620,8 +1610,7 @@ Violation of this policy may result in:
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1655,8 +1644,7 @@ Violation of this policy may result in:
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1683,8 +1671,7 @@ Violation of this policy may result in:
       KAppX.router.pop();
       // if (decisionNo != null) {
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1707,8 +1694,7 @@ Violation of this policy may result in:
       // await vpnInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1994,12 +1980,12 @@ Violation of this policy may result in:
     );
 
     if (index == 1) {
-      fetchRequests(status: '');
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchactionItems(status: '');
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
@@ -2173,12 +2159,16 @@ Violation of this policy may result in:
     fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests(isRefresh: true);
-    fetchactionItems();
+    refreshRequestLists();
+    refreshRequestLists();
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
+    chatController.dispose();
+    titleController.dispose();
+    searchController.dispose();
     super.dispose();
   }
 }

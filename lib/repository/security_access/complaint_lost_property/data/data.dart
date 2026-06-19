@@ -453,7 +453,7 @@ class ComplaintLostPropertyImpl implements ComplaintLostPropertyRepository {
       if (client != null) {
         final queryParams = {
           'offset': offset.toString(),
-          'limit': '2',
+          'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
           'service_id': serviceId,

@@ -259,7 +259,7 @@
 // }
 import 'package:code_setup/presentation/common_widgets/status_widget.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
-import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 
@@ -363,7 +363,7 @@ class CardInfo extends StatelessWidget {
                   tintColor: Color(0xFF000000),
                 ),
                 const SizedBox(width: 8),
-                Text(title, style: TextStyle(color: AppColors.mainTitleColor)),
+                Text(title, style: AppTextStyles.requestDetailsSectionHeading()),
               ],
             ),
 
@@ -373,7 +373,7 @@ class CardInfo extends StatelessWidget {
 
             // Optional subtitle
             if (subtitle != null) ...[
-              Text(subtitle!, style: TextStyle(color: AppColors.contentColor)),
+              Text(subtitle!, style: AppTextStyles.requestDetailsFieldContent()),
               const SizedBox(height: 16),
             ],
 
@@ -416,7 +416,7 @@ class CardInfo extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 _label(statusEntry.key),
-                style: TextStyle(color: AppColors.headingColor),
+                style: AppTextStyles.requestDetailsFieldHeading(),
               ),
               const SizedBox(height: 6),
               Align(
@@ -434,7 +434,7 @@ class CardInfo extends StatelessWidget {
             if (problemStatement.key.isNotEmpty) ...[
               Text(
                 _label(problemStatement.key),
-                style: TextStyle(color: AppColors.headingColor),
+                style: AppTextStyles.requestDetailsFieldHeading(),
               ),
               const SizedBox(height: 6),
               Container(
@@ -446,7 +446,7 @@ class CardInfo extends StatelessWidget {
                 ),
                 child: Text(
                   problemStatement.value,
-                  style: TextStyle(color: AppColors.contentColor),
+                  style: AppTextStyles.requestDetailsFieldContent(),
                 ),
               ),
               const SizedBox(height: 16),
@@ -462,7 +462,7 @@ class CardInfo extends StatelessWidget {
             if (description.key.isNotEmpty) ...[
               Text(
                 _label(description.key),
-                style: TextStyle(color: AppColors.headingColor),
+                style: AppTextStyles.requestDetailsFieldHeading(),
               ),
               const SizedBox(height: 6),
               Container(
@@ -474,7 +474,7 @@ class CardInfo extends StatelessWidget {
                 ),
                 child: Text(
                   description.value,
-                  style: TextStyle(color: AppColors.contentColor),
+                  style: AppTextStyles.requestDetailsFieldContent(),
                 ),
               ),
             ],
@@ -508,10 +508,13 @@ class InfoTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: TextStyle(color: AppColors.headingColor)),
+        Text(title, style: AppTextStyles.requestDetailsFieldHeading()),
         const SizedBox(height: 2),
         textWidget ??
-            Text(text ?? "", style: TextStyle(color: AppColors.contentColor)),
+            Text(
+              text ?? "",
+              style: AppTextStyles.requestDetailsFieldContent(),
+            ),
       ],
     );
   }

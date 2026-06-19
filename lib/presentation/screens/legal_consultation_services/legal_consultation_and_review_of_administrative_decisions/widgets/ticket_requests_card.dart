@@ -3,8 +3,6 @@ part of '../view.dart';
 class TicketRequestsCard extends ConsumerWidget {
   static const _borderColor = Color(0xFFD8D8D8);
   static const _titleColor = Color(0xFF1A1A1A);
-  static const _searchBgColor = Color(0xFFF5F5F5);
-  static const _searchHintColor = Color(0xFF676767);
   static const _listIconBg = Color(0xFFEDE7F6);
   static const _listIconColor = Color(0xFF1E3A5F);
   static const _addButtonColor = Color(0xFF3B873E);
@@ -75,12 +73,7 @@ class TicketRequestsCard extends ConsumerWidget {
                     _screenTitle(l10n),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                      color: _titleColor,
-                      height: 1.25,
-                    ),
+                    style: AppTextStyles.serviceScreenTitle(),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -168,7 +161,7 @@ class TicketRequestsCard extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 16),
             child: RequestTabs(
               selectedIndex: state.tabIndex,
-              actionItemCount: state.approvalKpiData?.data?.pending ?? 0,
+              actionItemCount: state.approvalKpiData.data?.pending ?? 0,
               onTabChanged: (index) {
                 focusNode.unfocus();
                 controller.searchController.clear();
@@ -189,27 +182,9 @@ class TicketRequestsCard extends ConsumerWidget {
               hintText: l10n.searchByIdOrName,
               controller: controller.searchController,
               onChanged: controller.onSearchChanged,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search, color: _searchHintColor),
-                filled: true,
-                fillColor: _searchBgColor,
-                hintStyle: const TextStyle(color: _searchHintColor),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: _borderColor),
-                ),
+              style: RequestListSearchStyles.textStyle(),
+              decoration: RequestListSearchStyles.decoration(
+                hintText: l10n.searchByIdOrName,
               ),
             ),
           ),
@@ -268,8 +243,16 @@ class TicketRequestsCard extends ConsumerWidget {
                   controller.updateTabIndex(index);
                 },
                 children: [
-                  RequestsPage(providerArgs: providerArgs, l10n: l10n),
-                  RequestsPage(providerArgs: providerArgs, l10n: l10n),
+                  RequestsPage(
+                    providerArgs: providerArgs,
+                    l10n: l10n,
+                    isActionItemsTab: false,
+                  ),
+                  RequestsPage(
+                    providerArgs: providerArgs,
+                    l10n: l10n,
+                    isActionItemsTab: true,
+                  ),
                 ],
               ),
             ),

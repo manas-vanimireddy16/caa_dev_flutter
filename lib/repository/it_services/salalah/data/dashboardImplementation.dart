@@ -353,13 +353,21 @@ class DashboardRepositoryImpl implements DashboardRepository {
     try {
       if (client != null) {
         final queryParams = {
-          'offset': "0",
-          // 'limit': limit.toString(),
+          'offset': offset.toString(),
+          'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
           'service_id': serviceId.toString(),
           'sub_service_id': subServiceId.toString(),
         };
+
+        if (searchText.isNotEmpty) {
+          queryParams['search_text'] = searchText;
+        }
+
+        if (status.isNotEmpty) {
+          queryParams['status'] = status;
+        }
         final url = ApiEndPoint.salalahRequests;
         final response = await client.get(url, queryParameters: queryParams);
 
@@ -396,7 +404,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
       final client = await KAppX.network.secureClient();
       if (client != null) {
         final queryParams = {
-          'offset': "0",
+          'offset': offset.toString(),
           'limit': limit.toString(),
           'order_by': 'created_at',
           'sort_order': 'DESC',
@@ -732,6 +740,30 @@ class DashboardRepositoryImpl implements DashboardRepository {
     } catch (e) {
       debugPrint('Unexpected error: $e');
       throw e;
+    }
+  }
+
+  @override
+  Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw ApiException('Client is null');
+    }
+
+    final url = ApiEndPoint.salalahGetAttachments(attachmentId);
+
+    try {
+      final response = await client.delete(url);
+      if (response.statusCode != 200 &&
+          response.statusCode != 201 &&
+          response.statusCode != 204) {
+        throw ApiException(
+          response.data?['message'] ?? 'Failed to delete attachment',
+        );
+      }
+    } on DioException catch (error) {
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
     }
   }
 

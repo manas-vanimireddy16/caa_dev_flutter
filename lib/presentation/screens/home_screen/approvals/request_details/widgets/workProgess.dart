@@ -1,5 +1,6 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/screens/home_screen/approvals/model/requestProgressModel.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class TimelineItem extends StatelessWidget {
@@ -56,7 +57,7 @@ class TimelineItem extends StatelessWidget {
             children: [
               Text(
                 task.taskName,
-                style: const TextStyle(
+                style: AppTextStyles.cairo(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -64,10 +65,13 @@ class TimelineItem extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 "Approved by: ${task.approvedBy}",
-                style: const TextStyle(color: Colors.black54),
+                style: AppTextStyles.cairo(color: Colors.black54),
               ),
               if (task.date != null)
-                Text(task.date!, style: const TextStyle(color: Colors.black45)),
+                Text(
+                  task.date!,
+                  style: AppTextStyles.cairo(color: Colors.black45),
+                ),
               const SizedBox(height: 12),
             ],
           ),

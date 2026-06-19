@@ -331,6 +331,7 @@ import 'dart:math';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/chart_utils.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -353,7 +354,7 @@ class RequestTrendBreakdownCard extends StatelessWidget {
     required this.monthLabels,
     this.metric = 'Total Tickets',
     this.selectedYear = "2025",
-    this.barColor = const Color(0xFF283593),
+    this.barColor = AppColors.trendBarColor,
     this.onYearTap,
     required this.onChanged,
     required this.filterLabelList,
@@ -364,7 +365,6 @@ class RequestTrendBreakdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)
         .themeBox;
@@ -399,11 +399,7 @@ class RequestTrendBreakdownCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    style: TextStyle(
-                      color: AppColors.darkPrimaryTextColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: currentTheme.fontSizes.s16,
-                    ),
+                    style: AppTextStyles.requestTrendBreakdownTitle(),
                   ),
                 ),
                 // _YearDropdown(label: selectedYear.toString(), onTap: onYearTap),
@@ -443,16 +439,13 @@ class RequestTrendBreakdownCard extends StatelessWidget {
                   height: 18,
                   margin: const EdgeInsetsDirectional.only(end: 8),
                   decoration: BoxDecoration(
-                    color: barColor,
+                    color: AppColors.trendBarColor,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
                 Text(
                   metric,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: currentTheme.colors.secondary,
-                    fontWeight: currentTheme.fontWeights.wRegular,
-                  ),
+                  style: AppTextStyles.requestTrendBreakdownMetricLabel(),
                 ),
               ],
             ),
@@ -462,7 +455,6 @@ class RequestTrendBreakdownCard extends StatelessWidget {
               aspectRatio: 1.8,
               child: _RequestTrendBarChart(
                 data: monthlyData,
-                barColor: barColor,
                 labels: monthLabels,
               ),
             ),
@@ -476,12 +468,10 @@ class RequestTrendBreakdownCard extends StatelessWidget {
 // Bar Chart Implementation with interactive tooltip (hover/tap)
 class _RequestTrendBarChart extends StatefulWidget {
   final List<int> data;
-  final Color barColor;
   final List<String> labels;
 
   const _RequestTrendBarChart({
     required this.data,
-    required this.barColor,
     required this.labels,
   });
 
@@ -509,6 +499,7 @@ class _RequestTrendBarChartState extends State<_RequestTrendBarChart> {
 
     final interval = ChartUtils.calculateInterval(rawMax);
     final maxY = ChartUtils.calculateNiceMaxY(rawMax);
+    final axisLabelStyle = AppTextStyles.requestTrendBreakdownAxisLabel();
     return BarChart(
       BarChartData(
         minY: 0,
@@ -520,7 +511,7 @@ class _RequestTrendBarChartState extends State<_RequestTrendBarChart> {
             barRods: [
               BarChartRodData(
                 toY: widget.data.isNotEmpty ? widget.data[i].toDouble() : 0.0,
-                color: widget.barColor,
+                color: AppColors.trendBarColor,
                 width: 20.toAutoScaledWidth,
                 borderRadius: BorderRadius.circular(0),
                 borderSide: BorderSide.none,
@@ -544,10 +535,8 @@ class _RequestTrendBarChartState extends State<_RequestTrendBarChart> {
                   meta: meta,
                   child: Text(
                     value.toInt().toString(),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 10,
-                      color: const Color(0xFF9CA3AF),
-                    ),
+                    textAlign: TextAlign.center,
+                    style: axisLabelStyle,
                   ),
                 );
               },
@@ -576,10 +565,8 @@ class _RequestTrendBarChartState extends State<_RequestTrendBarChart> {
                   meta: meta,
                   child: Text(
                     shortMonth,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 10, // ⭐ keep small
-                      color: const Color(0xFF9CA3AF),
-                    ),
+                    textAlign: TextAlign.center,
+                    style: axisLabelStyle,
                   ),
                 );
               },

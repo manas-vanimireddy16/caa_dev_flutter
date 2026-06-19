@@ -1,4 +1,4 @@
-part of '../dashboard.dart';
+part of '../view.dart';
 
 class DashboardRequestsCard extends ConsumerStatefulWidget {
   const DashboardRequestsCard({super.key});
@@ -9,7 +9,7 @@ class DashboardRequestsCard extends ConsumerStatefulWidget {
 }
 
 class _DashboardRequestsCardState extends ConsumerState<DashboardRequestsCard> {
-  static const _primary = Color(0xFF252568);
+  static const _primary = Color(0xFF26285F);
   static const _border = Color(0xFFD8D8D8);
   static const _muted = Color(0xFF676767);
   static const _iconBackground = Color(0xFFF3EFFF);
@@ -50,6 +50,7 @@ class _DashboardRequestsCardState extends ConsumerState<DashboardRequestsCard> {
         : state.actionItemError;
 
     return Container(
+      // margin: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -76,10 +77,13 @@ class _DashboardRequestsCardState extends ConsumerState<DashboardRequestsCard> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Approvals',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    style: AppTextStyles.cairo(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 // IconButton(
@@ -125,7 +129,7 @@ class _DashboardRequestsCardState extends ConsumerState<DashboardRequestsCard> {
               },
               decoration: InputDecoration(
                 hintText: l10n.searchByIdOrName,
-                hintStyle: const TextStyle(color: _muted, fontSize: 13),
+                hintStyle: AppTextStyles.cairo(color: _muted, fontSize: 13),
                 prefixIcon: const Icon(Icons.search, color: _muted),
                 filled: true,
                 fillColor: const Color(0xFFF5F5F5),
@@ -197,7 +201,7 @@ class _DashboardRequestTab extends StatelessWidget {
                 child: Text(
                   label,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
+                  style: AppTextStyles.cairo(
                     color: selected
                         ? Colors.white
                         : _DashboardRequestsCardState._muted,
@@ -219,7 +223,7 @@ class _DashboardRequestTab extends StatelessWidget {
                   ),
                   child: Text(
                     count.toString(),
-                    style: const TextStyle(color: Colors.white, fontSize: 10),
+                    style: AppTextStyles.cairo(color: Colors.white, fontSize: 10),
                   ),
                 ),
               ],

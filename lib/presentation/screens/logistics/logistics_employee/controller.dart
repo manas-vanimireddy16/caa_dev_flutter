@@ -21,12 +21,10 @@ class _VSControllerParams extends Equatable {
 
 final _vsProvider = StateNotifierProvider.autoDispose
     .family<_VSController, _ViewState, _VSControllerParams>((ref, params) {
-      final controller = _VSController(
+      return _VSController(
         service: params.service,
         subService: params.subService,
       );
-      controller.initState();
-      return controller;
     });
 
 class _ViewState {
@@ -619,6 +617,9 @@ class _VSController extends StateNotifier<_ViewState> {
   _VSController({required this.service, required this.subService})
     : super(_ViewState.init()) {
     params = _VSControllerParams(service: service, subService: subService);
+    chatController = TextEditingController();
+    titleController = TextEditingController();
+    searchController = TextEditingController();
   }
 
   Timer? _searchDebounce;
@@ -627,16 +628,30 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
   void initState() {
-    chatController = TextEditingController();
-    titleController = TextEditingController();
-    searchController = TextEditingController();
     fetchApprovalKpi();
     fetchKpi();
-    fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
   int _searchVersion = 0;
@@ -653,38 +668,21 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void onRequestStatusFilterChanged(String status) {
-    final searchText = searchController.text.trim();
-
     if (state.tabIndex == 0) {
       state = state.copyWith(myRequestsStatusFilter: status);
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
-      return;
+      refreshMyRequestsList();
+    } else {
+      state = state.copyWith(actionItemsStatusFilter: status);
+      refreshActionItemsList();
     }
-
-    state = state.copyWith(actionItemsStatusFilter: status);
-    fetchactionItems(isRefresh: true, searchText: searchText, status: status);
   }
 
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(
-          isRefresh: true,
-          searchText: value,
-          status: state.myRequestsStatusFilter,
-        );
-      } else {
-        await fetchactionItems(
-          isRefresh: true,
-          searchText: value,
-          status: state.actionItemsStatusFilter,
-        );
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -865,11 +863,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshRequestLists();
   }
 
   void openNewRequestForm() {
@@ -884,6 +882,28 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   final logisticsRequestVehicleInstanceInstance = RequestAVehicleRepository();
+
+  bool isRequesterActualReturnUpdated([RequestDetailData? details]) {
+    final request = (details ?? state.requestDetails).request;
+    return request?.isRequesterUpdated == true;
+  }
+
+  bool isApproverActualReturnUpdated([RequestDetailData? details]) {
+    final request = (details ?? state.requestDetails).request;
+    return request?.isApproverUpdated == true;
+  }
+
+  bool isRequestCreator(RequestDetailData details) {
+    final user = KAppX.globalProvider.read(userInfoProvider);
+    final userId = int.tryParse(user?.data?.id ?? '') ?? 0;
+    final createdBy =
+        details.request?.createdBy ??
+        details.request?.createdByUser?.id ??
+        details.createdByUser?.id;
+    if (createdBy == null) return false;
+    return createdBy == userId;
+  }
+
   // final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
   List<DynamicField> buildLogisticsVehicleRequestFields(DashboardL10n l10n) => [
     DynamicField(
@@ -1146,6 +1166,38 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
+    if (attachmentId == 0) {
+      Fluttertoast.showToast(msg: 'Attachment ID missing');
+      return;
+    }
+
+    try {
+      state = state.copyWith(isLoading: true);
+      final effectiveRequestId = requestId ?? state.requestDetails.request?.id;
+      await logisticsRequestVehicleInstanceInstance.deleteAttachment(
+        attachmentId,
+        requestId: effectiveRequestId,
+      );
+
+      final updatedAttachments = state.attachmentsById
+          .where((attachment) => attachment.id != attachmentId)
+          .toList();
+      state = state.copyWith(attachmentsById: updatedAttachments);
+
+      if (effectiveRequestId != null && effectiveRequestId != 0) {
+        await fetchAttachmentsById(effectiveRequestId);
+        await fetchRequestDetailsById(effectiveRequestId);
+      }
+    } catch (e, st) {
+      debugPrint('Failed to delete attachment: $e');
+      debugPrintStack(stackTrace: st);
+      Fluttertoast.showToast(msg: e.toString());
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
@@ -1271,55 +1323,51 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchRequests({
-    bool isRefresh = false,
+  Future<List<LogisticsVehicleRequestModel>> loadMyRequestsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return [];
 
     try {
-      final requests = await logisticsRequestVehicleInstanceInstance
-          .getRequests(
-            offset: 1,
-            limit: 8,
-            searchText: searchText,
-            status: status,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
-
-      state = state.copyWith(requestData: requests, isLoading: false);
+      return await logisticsRequestVehicleInstanceInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
     } catch (e) {
-      state = state.copyWith(isLoading: false);
-
-      Fluttertoast.showToast(msg: e.toString());
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
-  Future<void> fetchactionItems({
-    bool isRefresh = false,
+  Future<List<LogisticsVehicleRequestModel>> loadActionItemsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return [];
 
     try {
-      final items = await logisticsRequestVehicleInstanceInstance
-          .getActionItems(
-            offset: 1,
-            limit: 8,
-            searchText: searchText,
-            status: status,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
-
-      state = state.copyWith(actionItems: items, isLoading: false);
+      return await logisticsRequestVehicleInstanceInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
     } catch (e) {
-      state = state.copyWith(isLoading: false);
-
-      Fluttertoast.showToast(msg: e.toString());
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
@@ -1475,42 +1523,6 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> onComplete(int approverId, int requestId) async {
-    try {
-      state = state.copyWith(isLoading: true);
-
-      // 1️⃣ Upload files
-
-      // 2️⃣ Build payload
-      final payload = {
-        "request_id": requestId,
-        "status": "Completed",
-        "comment": '',
-        "approval_id": approverId,
-      };
-
-      debugPrint("✅ Final Payload: $payload");
-
-      // 3️⃣ Send request
-      await logisticsRequestVehicleInstanceInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
-      KAppX.router.pop();
-      fetchactionItems();
-      fetchRequests();
-      fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('weekly');
-      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('weekly');
-      fetchTrendBreakDown(DateTime.now().year.toString());
-      fetchKpi();
-    } catch (e) {
-      debugPrint('❌ Error submitting request: $e');
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
-    return;
-  }
-
   Future<void> onApprove(Map<String, dynamic> payload) async {
     try {
       state = state.copyWith(isLoading: true);
@@ -1522,6 +1534,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await logisticsRequestVehicleInstanceInstance.onApprove(payload);
 
       /// CLOSE DIALOG ONLY ONCE
+      KAppX.router.pop();
 
       /// OPTIONAL REFRESH
       _refreshDashboard();
@@ -1567,8 +1580,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1601,6 +1613,86 @@ class _VSController extends StateNotifier<_ViewState> {
       // _refreshDashboard();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  void showUpdateActualReturnForm(BuildContext context) {
+    final request = state.requestDetails.request;
+
+    KAppX.extendedRouter.dialog.showKDialog(
+      barrierDismissible: false,
+      builder: (_) {
+        return Dialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
+          child: Container(
+            width: 650,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+              child: UpdateActualReturnDialog(
+                initialReturnDate: request?.actualReturnDate,
+                initialReturnTime: request?.actualVehicleReturnTime,
+                initialReason: request?.reason,
+                onSubmit:
+                    ({
+                      required String actualReturnDate,
+                      required String actualVehicleReturnTime,
+                      required String reason,
+                    }) async {
+                      await updateActualReturn(
+                        actualReturnDate: actualReturnDate,
+                        actualVehicleReturnTime: actualVehicleReturnTime,
+                        reason: reason,
+                      );
+                    },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> updateActualReturn({
+    required String actualReturnDate,
+    required String actualVehicleReturnTime,
+    required String reason,
+  }) async {
+    final requestId = state.requestDetails.request?.id;
+    if (requestId == null) return;
+
+    state = state.copyWith(isLoading: true);
+    try {
+      final payload = {
+        'actual_return_date': actualReturnDate,
+        'actual_vehicle_return_time': actualVehicleReturnTime,
+        'reason': reason,
+      };
+
+      final code = await logisticsRequestVehicleInstanceInstance
+          .updateActualReturn(payload, requestId);
+
+      await fetchRequestDetailsById(requestId);
+      _refreshDashboard();
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+      rethrow;
+    } catch (e) {
+      debugPrint('❌ Error updating actual return: $e');
+      rethrow;
     } finally {
       state = state.copyWith(isLoading: false);
     }
@@ -1780,8 +1872,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await logisticsRequestVehicleInstanceInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1893,44 +1984,41 @@ class _VSController extends StateNotifier<_ViewState> {
 
   ActionButtonsType getActionButtonsType(
     RequestDetailData? request,
-    List<ApprovalDetailModel> approvals,
-  ) {
+    List<ApprovalDetailModel> approvals, {
+    bool fromActionItems = false,
+  }) {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
-    final user = KAppX.globalProvider.read(userInfoProvider);
-    print(user?.data?.section?.id);
-
     if (selectedRole == null) return ActionButtonsType.none;
 
-    final int userId = int.parse(user?.data?.id ?? "0");
+    final details = request ?? state.requestDetails;
+    final status = (details?.request?.status ?? details?.status ?? '')
+        .toLowerCase()
+        .trim();
 
-    // Get active approval level
-    final level = getActiveApprovalLevel(approvals);
-
-    if (level == null) return ActionButtonsType.none;
-
-    // Check user permission
-    final canAct = canUserActOnLevel(approval: level);
-
-    if (!canAct) return ActionButtonsType.none;
-
-    if (!state.isButtonDisabled && !canUserActOnLevel(approval: level)) {
+    if (!fromActionItems && isRequestCreator(details)) {
+      if (_isCompleted(status)) {
+        return ActionButtonsType.update;
+      }
       return ActionButtonsType.none;
     }
 
-    final bool? isManager = level.isManager;
-    final bool? isPresident = level.isPresident;
-    final int approvalLevel = level.level ?? 0;
-    final bool ishasReplace = level.isReplace ?? false;
+    final level = getActiveApprovalLevel(approvals);
+    if (level == null) return ActionButtonsType.none;
 
-    if (isManager == true) {
-      debugPrint('this user can only approve');
-      return ActionButtonsType.assignReject;
-    } else if (level != null) {
-      debugPrint('this user can approve and reject');
-      return ActionButtonsType.approveRejectAllocateVehicle;
+    final canAct = canUserActOnLevel(approval: level);
+    if (!canAct) return ActionButtonsType.none;
+
+    if (_isCompleted(status) && isRequesterActualReturnUpdated(details)) {
+      return ActionButtonsType.approveRejectUpdate;
     }
 
-    return ActionButtonsType.none;
+    final bool? isManager = level.isManager;
+
+    if (isManager == true) {
+      return ActionButtonsType.assignReject;
+    }
+
+    return ActionButtonsType.approveRejectAllocateVehicle;
   }
 
   void updateButtonDisabledFromApprovals(List<ApprovalDetailModel> approvals) {
@@ -2067,14 +2155,14 @@ class _VSController extends StateNotifier<_ViewState> {
     );
 
     if (index == 0) {
-      fetchRequests(status: '');
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchactionItems(status: '');
+      refreshActionItemsList();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -2171,7 +2259,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
       "travel_date_to": values['travel_date_to'] ?? "",
 
-      "duration": values['duration'] ?? 0,
+      "duration":
+          int.tryParse(
+            values['duration']?.toString().split(' ').first ?? '0',
+          ) ??
+          0,
 
       "time_of_travel": values['travel_time'] ?? "",
 
@@ -2217,17 +2309,20 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void _refreshDashboard() {
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests(isRefresh: true);
-    fetchactionItems(isRefresh: true);
+    refreshRequestLists();
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
+    chatController.dispose();
+    titleController.dispose();
+    searchController.dispose();
     super.dispose();
   }
 }

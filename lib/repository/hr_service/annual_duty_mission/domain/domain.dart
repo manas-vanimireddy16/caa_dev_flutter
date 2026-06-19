@@ -88,6 +88,7 @@ abstract class AnnualDutyMissionRepoistry {
   Future<String> sendChat(Map<String, dynamic> payload, int requestId);
 
   Future<List<ChatMessageModel>> getchatById(int requestId);
+  Future<void> deleteAttachment(int attachmentId, {int? requestId});
 
   /// ===================== ASSIGN / REPLACE =====================
   Future<List<PendingApprovalUser>> getEngineersList(int requestId);

@@ -268,6 +268,7 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/models/buttons_enum.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -383,11 +384,11 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
                         ? "Close Request"
                         : "Approve Request",
 
-                    style: const TextStyle(
+                    style: AppTextStyles.cairo(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      height: 24 / 16, // line-height / font-size
-                      letterSpacing: 0,
+                      height: 24 / 16,
+                      color: AppColors.textHeading,
                     ),
                   ),
 
@@ -470,11 +471,11 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
 
                       textAlign: TextAlign.center,
 
-                      style: const TextStyle(
+                      style: AppTextStyles.cairo(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         height: 1.25,
-                        color: Color.fromRGBO(4, 4, 10, 1),
+                        color: AppColors.darkPrimaryTextColor,
                       ),
                     ),
 
@@ -488,11 +489,11 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
 
                       child: Text(
                         _isCommentRequired ? "Comments" : "Comments (Optional)",
-
-                        style: TextStyle(
+                        style: AppTextStyles.requestDetailsFieldHeading(
                           fontSize: 13,
+                        ).copyWith(
                           fontWeight: FontWeight.w500,
-                          color: _isCommentRequired ? Colors.red : null,
+                          color: _isCommentRequired ? AppColors.errorRed : null,
                         ),
                       ),
                     ),
@@ -506,14 +507,14 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
                       controller: _commentController,
                       minLines: 1,
                       maxLines: 3,
-
+                      style: AppTextStyles.requestDetailsFieldContent(
+                        fontSize: 14,
+                      ),
                       decoration: InputDecoration(
                         hintText: "Add your Comments",
 
-                        hintStyle: const TextStyle(
+                        hintStyle: AppTextStyles.requestDetailsFieldHeading(
                           fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF9CA3AF),
                         ),
 
                         filled: true,
@@ -572,13 +573,11 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
                     if (_isApprove && widget.showDecisionNumber) ...[
                       const SizedBox(height: 16),
 
-                      const Text(
+                      Text(
                         "Decision Number *",
-
-                        style: TextStyle(
+                        style: AppTextStyles.requestDetailsFieldHeading(
                           fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        ).copyWith(fontWeight: FontWeight.w500),
                       ),
 
                       8.toVerticalSizedBox,

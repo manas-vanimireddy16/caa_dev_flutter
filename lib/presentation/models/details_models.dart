@@ -1125,6 +1125,8 @@ class RequestModel {
   final String? expectedReturnDate;
   final String? actualVehicleReturnTime;
   final String? actualReturnDate;
+  final bool? isRequesterUpdated;
+  final bool? isApproverUpdated;
   final String? vehicleCondition;
   final String? reason;
   final String? driverName;
@@ -1596,6 +1598,8 @@ class RequestModel {
     this.expectedReturnDate,
     this.actualVehicleReturnTime,
     this.actualReturnDate,
+    this.isRequesterUpdated,
+    this.isApproverUpdated,
     this.vehicleCondition,
     this.driverName,
 
@@ -2193,6 +2197,8 @@ class RequestModel {
       expectedReturnDate: json['expected_return_date'],
       actualVehicleReturnTime: json['actual_vehicle_return_time'],
       actualReturnDate: json['actual_return_date'],
+      isRequesterUpdated: json['is_requester_updated'],
+      isApproverUpdated: json['is_approver_updated'],
       vehicleCondition: json['vehicle_condition'],
       driverName: json['driver_name'],
 

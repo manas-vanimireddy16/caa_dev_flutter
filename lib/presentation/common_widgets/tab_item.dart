@@ -1,4 +1,6 @@
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 
@@ -26,10 +28,12 @@ class TabItem extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         margin: EdgeInsets.only(left: index == 0 ? 16 : 0, right: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF26285F) : Colors.transparent,
+          color: isSelected ? AppColors.primaryBlue75 : Colors.transparent,
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
-            color: isSelected ? const Color(0xFF26285F) : Colors.grey.shade400,
+            color: isSelected
+                ? AppColors.primaryBlue75
+                : AppColors.actionItemCountRequestBorderColor,
             width: 1,
           ),
         ),
@@ -41,16 +45,15 @@ class TabItem extends StatelessWidget {
                 image: icon,
                 width: 18,
                 height: 18,
-                tintColor: isSelected ? Colors.white : Colors.black87,
+                tintColor: isSelected
+                    ? AppColors.loginText
+                    : AppColors.secondaryText,
               ),
               const SizedBox(width: 8),
             ],
             Text(
               text,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black87,
-                fontWeight: FontWeight.w500,
-              ),
+              style: AppTextStyles.requestTabLabel(isSelected: isSelected),
             ),
           ],
         ),

@@ -32,7 +32,6 @@ abstract final class MobileServiceScope {
     'CAA020',
     'CAA021',
     'CAA023',
-    'CAA024',
     'CAA025',
     'CAA027',
     'CAA028',

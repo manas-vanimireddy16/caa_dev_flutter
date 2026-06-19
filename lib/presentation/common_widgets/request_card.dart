@@ -1,11 +1,10 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/common_widgets/status_widget.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class RequestCard extends StatelessWidget {
-  static const _titleColor = Color(0xFF676767);
-  static const _dataColor = Color(0xFF434347);
   static const _backgroundColor = Color(0xFFFFFFFF);
   static const _borderColor = Color(0xFFD8D8D8);
   static const _cardRadius = 8.0;
@@ -113,11 +112,8 @@ class RequestCard extends StatelessWidget {
           _humanizeKey(key),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+          style: AppTextStyles.requestCardFieldHeading(
             fontSize: 12.toAutoScaledWidth,
-            fontWeight: FontWeight.w500,
-            color: _titleColor,
-            height: 1.3,
           ),
         ),
         SizedBox(height: 4.toAutoScaledHeight),
@@ -125,11 +121,8 @@ class RequestCard extends StatelessWidget {
           value,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+          style: AppTextStyles.requestCardFieldContent(
             fontSize: 14.toAutoScaledWidth,
-            fontWeight: FontWeight.w600,
-            color: _dataColor,
-            height: 1.35,
           ),
         ),
       ],
@@ -191,7 +184,6 @@ class RequestCard extends StatelessWidget {
           )
         else
           const SizedBox.shrink(),
-        // Icon(Icons.open_in_new, size: 20.toAutoScaledWidth, color: _dataColor),
       ],
     );
   }

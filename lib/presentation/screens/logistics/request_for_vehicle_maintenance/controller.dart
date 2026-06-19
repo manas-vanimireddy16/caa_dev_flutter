@@ -21,12 +21,10 @@ class _VSControllerParams extends Equatable {
 
 final _vsProvider = StateNotifierProvider.autoDispose
     .family<_VSController, _ViewState, _VSControllerParams>((ref, params) {
-      final controller = _VSController(
+      return _VSController(
         service: params.service,
         subService: params.subService,
       );
-      controller.initState();
-      return controller;
     });
 
 class _ViewState {
@@ -631,6 +629,9 @@ class _VSController extends StateNotifier<_ViewState> {
   _VSController({required this.service, required this.subService})
     : super(_ViewState.init()) {
     params = _VSControllerParams(service: service, subService: subService);
+    chatController = TextEditingController();
+    titleController = TextEditingController();
+    searchController = TextEditingController();
   }
 
   Timer? _searchDebounce;
@@ -639,16 +640,30 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
   void initState() {
-    chatController = TextEditingController();
-    titleController = TextEditingController();
-    searchController = TextEditingController();
-    fetchKpi();
     fetchApprovalKpi();
-    fetchRequests();
+    fetchKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
   int _searchVersion = 0;
@@ -665,38 +680,21 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void onRequestStatusFilterChanged(String status) {
-    final searchText = searchController.text.trim();
-
     if (state.tabIndex == 0) {
       state = state.copyWith(myRequestsStatusFilter: status);
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
-      return;
+      refreshMyRequestsList();
+    } else {
+      state = state.copyWith(actionItemsStatusFilter: status);
+      refreshActionItemsList();
     }
-
-    state = state.copyWith(actionItemsStatusFilter: status);
-    fetchactionItems(isRefresh: true, searchText: searchText, status: status);
   }
 
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(
-          isRefresh: true,
-          searchText: value,
-          status: state.myRequestsStatusFilter,
-        );
-      } else {
-        await fetchactionItems(
-          isRefresh: true,
-          searchText: value,
-          status: state.actionItemsStatusFilter,
-        );
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -890,11 +888,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshRequestLists();
   }
 
   void openNewRequestForm() {
@@ -1230,54 +1228,51 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchRequests({
-    bool isRefresh = false,
+  Future<List<VehicleMaintenanceRequestModel>> loadMyRequestsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isRequestLoading: true);
-    try {
-      // Clear list only if explicitly refreshing or searching
+    if (!mounted) return [];
 
-      final requests = await vehicleMaintenanceInstance.getRequests(
-        offset: 1,
-        limit: 8,
+    try {
+      return await vehicleMaintenanceInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
-
-      // No merging needed
-      state = state.copyWith(requestData: requests, isRequestLoading: false);
     } catch (e) {
-      state = state.copyWith(isRequestLoading: false);
-      Fluttertoast.showToast(msg: e.toString());
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
-  Future<void> fetchactionItems({
-    bool isRefresh = false,
+  Future<List<VehicleMaintenanceRequestModel>> loadActionItemsPage(
+    int pageKey, {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return [];
 
     try {
-      final items = await vehicleMaintenanceInstance.getActionItems(
-        offset: 1,
-        limit: 8,
+      return await vehicleMaintenanceInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
         searchText: searchText,
         status: status,
-
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
       );
-
-      // No merging needed
-      state = state.copyWith(actionItems: items, isLoading: false);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
     }
   }
 
@@ -1447,8 +1442,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await vehicleMaintenanceInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchactionItems();
-      fetchRequests();
+      refreshRequestLists();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
@@ -1495,8 +1489,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1523,8 +1516,7 @@ class _VSController extends StateNotifier<_ViewState> {
       KAppX.router.pop();
       // if (decisionNo != null) {
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1547,8 +1539,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await vehicleMaintenanceInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1834,12 +1825,12 @@ class _VSController extends StateNotifier<_ViewState> {
     );
 
     if (index == 0) {
-      fetchRequests(status: '');
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
-      fetchactionItems(isRefresh: true, status: '');
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
@@ -1960,7 +1951,6 @@ class _VSController extends StateNotifier<_ViewState> {
           .vehicleMaintenanceCreateRequest(payload);
 
       if (response['status'] == 'success') {
-        state = state.copyWith(isRequestLoading: true, requestData: []);
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1970,20 +1960,22 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> _refreshDashboard() async {
-    await Future.delayed(Duration(milliseconds: 2500));
+  void _refreshDashboard() {
     fetchKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests(isRefresh: true);
-    fetchactionItems();
+    refreshRequestLists();
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
+    chatController.dispose();
+    titleController.dispose();
+    searchController.dispose();
     super.dispose();
   }
 }

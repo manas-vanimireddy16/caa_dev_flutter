@@ -21,6 +21,8 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool automaticallyImplyLeading;
   final double titleSpacing;
   final double? appBarHeight;
+  final ShapeBorder? shape;
+
   KAppBar({
     Key? key,
     PreferredSizeWidget? bottom,
@@ -37,6 +39,7 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.automaticallyImplyLeading = true,
     this.titleSpacing = 0,
     this.appBarHeight,
+    this.shape,
   }) : super(key: key) {
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)
@@ -106,6 +109,7 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
             backgroundColor ?? currentTheme.themeBox.colors.background,
         elevation: elevation ?? 0,
         title: title,
+        shape: shape,
         centerTitle: centerTitle ?? false,
         actions: actions,
         foregroundColor: foregroundColor,

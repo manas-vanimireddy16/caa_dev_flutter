@@ -3800,6 +3800,9 @@ class ApiEndPoint {
   static String logisticsRequestVehicleUpdateRequest(int requestId) =>
       '/v1/it-service/logistics/vehicle-request/$requestId';
 
+  static String logisticsRequestVehicleActualReturn(int requestId) =>
+      '/v1/it-service/logistics/vehicle-request/$requestId/actual-return';
+
   /// ===================== APPROVE / REJECT =====================
 
   static const String logisticsRequestVehicleApprove =
@@ -4100,6 +4103,9 @@ class ApiEndPoint {
 
   static String foreignEmployeeVehicleUpdateRequest(int requestId) =>
       '/v1/it-service/logistics/foreign-vehicle-request/$requestId';
+
+  static String foreignEmployeeVehicleActualReturn(int requestId) =>
+      '/v1/it-service/logistics/foreign-vehicle-request/$requestId/actual-return';
 
   /// ===================== APPROVE / REJECT =====================
 

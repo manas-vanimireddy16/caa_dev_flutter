@@ -1,3 +1,4 @@
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class StatusChip extends StatelessWidget {
@@ -44,7 +45,7 @@ class StatusChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             status,
-            style: TextStyle(color: text, fontWeight: FontWeight.w500),
+            style: AppTextStyles.cairo(color: text, fontWeight: FontWeight.w500),
           ),
         ],
       ),
