@@ -84,19 +84,19 @@ class TicketRequestsCard extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Material(
-                  color: _addButtonColor,
-                  shape: const CircleBorder(),
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    onTap: controller.openNewRequestForm,
-                    child: const SizedBox(
-                      width: 36,
-                      height: 36,
-                      child: Icon(Icons.add, color: Colors.white, size: 22),
-                    ),
-                  ),
-                ),
+                // Material(
+                //   color: _addButtonColor,
+                //   shape: const CircleBorder(),
+                //   clipBehavior: Clip.antiAlias,
+                //   child: InkWell(
+                //     onTap: controller.openNewRequestForm,
+                //     child: const SizedBox(
+                //       width: 36,
+                //       height: 36,
+                //       child: Icon(Icons.add, color: Colors.white, size: 22),
+                //     ),
+                //   ),
+                // ),
                 PopupMenuButton<String>(
                   tooltip: l10n.isArabic ? 'تصفية' : 'Filter',
                   padding: EdgeInsets.zero,
@@ -163,7 +163,7 @@ class TicketRequestsCard extends ConsumerWidget {
               ],
             ),
           ),
-          const Divider(height: 1, thickness: 1, color: _borderColor),
+          const SectionContentDivider(),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 16),
             child: RequestTabs(
@@ -268,8 +268,16 @@ class TicketRequestsCard extends ConsumerWidget {
                   controller.updateTabIndex(index);
                 },
                 children: [
-                  RequestsPage(providerArgs: providerArgs, l10n: l10n),
-                  RequestsPage(providerArgs: providerArgs, l10n: l10n),
+                  RequestsPage(
+                    providerArgs: providerArgs,
+                    l10n: l10n,
+                    isActionItemsTab: false,
+                  ),
+                  RequestsPage(
+                    providerArgs: providerArgs,
+                    l10n: l10n,
+                    isActionItemsTab: true,
+                  ),
                 ],
               ),
             ),

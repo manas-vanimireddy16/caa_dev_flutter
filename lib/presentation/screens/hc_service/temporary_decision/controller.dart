@@ -251,13 +251,13 @@ class _VSController extends StateNotifier<_ViewState> {
     if (state.tabIndex == 0) {
       _myRequestsStatusFilter = status;
       state = state.copyWith();
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
+      refreshMyRequestsList();
       return;
     }
 
     _actionItemsStatusFilter = status;
     state = state.copyWith();
-    fetchactionItems(isRefresh: true, searchText: searchText, status: status);
+    refreshActionItemsList();
   }
 
   final Service service;
@@ -274,13 +274,26 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
   void initState() {
     chatController = TextEditingController();
     titleController = TextEditingController();
     searchController = TextEditingController();
     fetchKpi();
     fetchApprovalKpi();
-    fetchRequests();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
@@ -293,21 +306,8 @@ class _VSController extends StateNotifier<_ViewState> {
     final int currentVersion = ++_searchVersion;
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(
-          isRefresh: true,
-          searchText: value,
-          status: _myRequestsStatusFilter,
-        );
-      } else {
-        await fetchactionItems(
-          isRefresh: true,
-          searchText: value,
-          status: _actionItemsStatusFilter,
-        );
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+      if (currentVersion != _searchVersion) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -631,7 +631,6 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      await generateTemporaryAssignmentPdf();
       final kpis = await temporaryDecisionInstance.getKpiData(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
@@ -749,6 +748,48 @@ class _VSController extends StateNotifier<_ViewState> {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<List<TemporaryDecision>> loadMyRequestsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      return await temporaryDecisionInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<TemporaryDecision>> loadActionItemsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      return await temporaryDecisionInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
     }
   }
 
@@ -1697,12 +1738,12 @@ class _VSController extends StateNotifier<_ViewState> {
     _actionItemsStatusFilter = '';
     state = state.copyWith(tabIndex: index);
     if (index == 0) {
-      fetchRequests(status: '');
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
-      fetchactionItems(isRefresh: true, status: '');
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());

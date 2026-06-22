@@ -230,6 +230,7 @@ class _ServiceListCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final serviceId = service.id ?? 0;
+    final l10n = DashboardL10n.of(context);
     final isBookmarked = ref.watch(
       servicesProvider.select(
         (s) => s.bookmarkedServiceIds.contains(serviceId),
@@ -251,12 +252,10 @@ class _ServiceListCard extends ConsumerWidget {
 
     final subServiceLabels =
         service.subservices?.map((s) {
-          if (isArabic) {
-            return s.arabicsubServiceName?.trim().isNotEmpty == true
-                ? s.arabicsubServiceName!
-                : s.subServiceName ?? 'Unnamed';
-          }
-          return s.subServiceName ?? 'Unnamed';
+          return l10n.subServiceDisplayName(
+            englishName: s.subServiceName,
+            arabicName: s.arabicsubServiceName,
+          );
         }).toList() ??
         [];
 

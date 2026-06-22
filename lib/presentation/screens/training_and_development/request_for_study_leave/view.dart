@@ -40,7 +40,7 @@ import 'package:code_setup/presentation/screens/hc_service/models/grade_list_mod
 import 'package:code_setup/presentation/screens/hc_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
@@ -63,6 +63,7 @@ import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
 // import 'package:flutter/rendering.dart' hide Border;
@@ -70,6 +71,9 @@ import 'package:code_setup/presentation/common_widgets/my_requests_action_items_
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
+import 'package:code_setup/utils/helper/list_pagination.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 part 'widgets/request_for_study_leave_new_request.dart';
 part 'controller.dart';

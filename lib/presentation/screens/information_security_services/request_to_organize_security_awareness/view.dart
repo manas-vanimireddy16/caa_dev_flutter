@@ -30,7 +30,7 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/dashBoardRequest.dart'
     hide ChatMessage, Service;
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';

@@ -80,6 +80,16 @@ class _SecondmentDecisionDetailsScreenState
           );
 
           final approverId = active?.id;
+          final isFromActionItems = widget.from.toLowerCase() == 'action items';
+
+          Widget employeeSection() => EmployeeInformationCard(
+            l10n: l10n,
+            requestId: requestId?.toString(),
+            status: request?.status,
+            assignedTo: controller.buildAssignedToLabel(approvals),
+            user: createdByUser,
+            labelBuilder: l10n.requestDetailsLabel,
+          );
 
           return SingleChildScrollView(
             child: Column(
@@ -91,18 +101,10 @@ class _SecondmentDecisionDetailsScreenState
                   subService: widget.subService,
                 ),
                 5.toHorizontalSizedBox,
-                const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
                 if (selectedTab == 0) ...[
-                  EmployeeInformationCard(
-                    l10n: l10n,
-                    requestId: requestId?.toString(),
-                    status: request?.status,
-                    assignedTo: controller.buildAssignedToLabel(approvals),
-                    user: createdByUser,
-                    labelBuilder: l10n.requestDetailsLabel,
-                  ),
+                  employeeSection(),
                   CommonRequestDetails(
                     statusInformationTitle: l10n.requestDetailsLabel(
                       'Status Information',
@@ -116,10 +118,13 @@ class _SecondmentDecisionDetailsScreenState
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
                   ),
-                ] else if (selectedTab == 1)
+                ] else if (selectedTab == 1) ...[
+                  employeeSection(),
                   CommentsCard(
                     from: widget.from,
-                    showButtons: actionType != ActionButtonsType.none,
+                    showButtons:
+                        isFromActionItems &&
+                        actionType != ActionButtonsType.none,
                     actionType: actionType,
                     entries: chats,
                     controller: controller.chatController,
@@ -153,24 +158,27 @@ class _SecondmentDecisionDetailsScreenState
                         requestId: requestId ?? 0,
                       );
                     },
-                  )
-                else if (selectedTab == 2)
+                  ),
+                ] else if (selectedTab == 2) ...[
+                  employeeSection(),
                   CommonAttachmentsTabContent(
                     attachments: attachments,
                     l10n: l10n,
-
+                    useActionsMenu: true,
                     onDelete: (attachment) async {
                       await controller.deleteAttachment(
                         attachment.id ?? 0,
                         requestId: attachment.requestId ?? requestId,
                       );
                     },
-                  )
-                else if (selectedTab == 3)
+                  ),
+                ] else if (selectedTab == 3) ...[
+                  employeeSection(),
                   RequestWorkflowTimeline(
                     details: state.requestDetails,
                     l10n: l10n,
                   ),
+                ],
               ],
             ),
           );

@@ -93,7 +93,6 @@ class _RequestForHumanResourceAnnualPlanningDetailsScreenState
                   subService: widget.subService,
                 ),
                 5.toHorizontalSizedBox,
-                const Divider(thickness: 1),
                 if (selectedTab == 0) ...[
                   employeeSection(),
                   CommonRequestDetails(

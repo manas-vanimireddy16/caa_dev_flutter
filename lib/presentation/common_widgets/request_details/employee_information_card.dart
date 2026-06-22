@@ -1,4 +1,5 @@
 import 'package:code_setup/presentation/common_widgets/status_widget.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
@@ -101,7 +102,7 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
             ),
           ),
           if (_expanded) ...[
-            Divider(color: Colors.grey.shade300, thickness: 1),
+            const SectionContentDivider(horizontalPadding: 16),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Column(

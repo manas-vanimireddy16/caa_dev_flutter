@@ -14,12 +14,14 @@ import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/icons.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:code_setup/presentation/chatbot/widgets/chatbot_host.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:msal_auth/msal_auth.dart';
 
@@ -39,12 +41,16 @@ class HomePage extends ConsumerWidget {
 
     final stateController = ref.read(bottomNavigatorVsProvider.notifier);
 
+    final l10n = DashboardL10n.of(context);
+
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
     return SafeArea(
       top: false,
 
-      child: AutoTabsScaffold(
+      child: Stack(
+        children: [
+          AutoTabsScaffold(
         scaffoldKey: _scaffoldKey,
 
         routes: [
@@ -98,7 +104,7 @@ class HomePage extends ConsumerWidget {
                   child: _buildNavItem(
                     icon: AppIcons.homeBottomNavigator,
 
-                    label: 'Home',
+                    label: l10n.home,
 
                     isActive: tabsRouter.activeIndex == 0,
 
@@ -131,7 +137,7 @@ class HomePage extends ConsumerWidget {
                   child: _buildNavItem(
                     icon: AppIcons.servicesBottomNavigator,
 
-                    label: 'Services',
+                    label: l10n.services,
 
                     isActive: tabsRouter.activeIndex == 1,
 
@@ -148,7 +154,7 @@ class HomePage extends ConsumerWidget {
                   child: _buildNavItem(
                     icon: AppIcons.linksBottomNavigator,
 
-                    label: 'Links',
+                    label: l10n.links,
 
                     isActive: tabsRouter.activeIndex == 2,
 
@@ -165,7 +171,7 @@ class HomePage extends ConsumerWidget {
                   child: _buildNavItem(
                     icon: AppIcons.profileBottomNavigator,
 
-                    label: 'Profile',
+                    label: l10n.navProfile,
 
                     isActive: tabsRouter.activeIndex == 3,
 
@@ -182,7 +188,7 @@ class HomePage extends ConsumerWidget {
                   child: _buildNavItem(
                     icon: AppIcons.settingsBottomNavigator,
 
-                    label: 'Settings',
+                    label: l10n.settings,
 
                     isActive: tabsRouter.activeIndex == 4,
 
@@ -199,6 +205,9 @@ class HomePage extends ConsumerWidget {
             ),
           );
         },
+          ),
+          const ChatbotHost(),
+        ],
       ),
     );
   }

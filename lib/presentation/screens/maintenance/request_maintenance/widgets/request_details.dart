@@ -50,7 +50,7 @@ class _RequestMaintenanceDetailsScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       appBar: KAppBar(
         title: Text(
           l10n.requestDetailScreenTitle,
@@ -106,7 +106,6 @@ class _RequestMaintenanceDetailsScreenState
                   subService: widget.subService,
                 ),
                 5.toHorizontalSizedBox,
-                const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
                 if (selectedTab == 0) ...[

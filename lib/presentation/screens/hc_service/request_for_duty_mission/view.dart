@@ -44,7 +44,8 @@ import 'package:code_setup/presentation/screens/hc_service/models/request_data_m
 import 'package:code_setup/presentation/screens/hc_service/request_for_duty_mission_planned/view.dart';
 import 'package:code_setup/presentation/screens/hc_service/request_for_duty_mission_planned/widgets/allowance_card.dart';
 import 'package:code_setup/presentation/screens/hc_service/request_for_duty_mission_planned/widgets/travel_details_card.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_awareness_request_data.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';

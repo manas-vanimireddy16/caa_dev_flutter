@@ -1,20 +1,3 @@
-// import 'package:auto_route/auto_route.dart';
-// import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-// import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-// import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
-// import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-// import 'package:code_setup/presentation/screens/approvals/common_widgets.dart';
-// import 'package:code_setup/presentation/screens/logistics/models/logistics_detail_model.dart';
-// import 'package:code_setup/presentation/screens/logistics/view.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/attachments_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_details_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_history_tab.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/request_tabs.dart';
-// import 'package:code_setup/presentation/screens/logistics/widgets/workflow_tab.dart';
-// import 'package:code_setup/utils/app_extensions/app_extension.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 part of '../view.dart';
 
 @RoutePage()
@@ -48,14 +31,10 @@ class _RequestforTrainingRoomBookingDetailsScreenState
   @override
   void initState() {
     super.initState();
-
-    /// ✅ Create proper provider params object
     _providerArgs = _VSControllerParams(
       service: widget.service,
       subService: widget.subService,
     );
-
-    /// ✅ Fetch ONLY once (after init)
     Future.microtask(() {
       ref
           .read(_vsProvider(_providerArgs).notifier)
@@ -66,12 +45,11 @@ class _RequestforTrainingRoomBookingDetailsScreenState
   @override
   Widget build(BuildContext context) {
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: const Text('Request Detail')),
-
-      /// IMPORTANT — This fixes your issue.
+      appBar: KAppBar(title: Text(l10n.requestDetailScreenTitle)),
       body: Consumer(
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));
@@ -79,21 +57,14 @@ class _RequestforTrainingRoomBookingDetailsScreenState
           if (state.requestDetails == null || state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          final userInfo = KAppX.globalProvider.read(rolesProvider);
 
-          // final request = state.requestDetails.request == null
-          //     ? null
-          //     : state.requestDetails;
           final request = state.requestDetails.request;
-          final attachment = state.requestDetails.attachments;
+          final createdByUser =
+              request?.createdByUser ?? state.requestDetails.createdByUser;
           final requestId = request?.id;
-          final List<WorkflowDetailModel> workflows =
-              state.requestDetails.workflowDetails ?? [];
-          final List<AttachmentModel> attachments =
-              state.requestDetails.attachments ?? [];
+          final attachments = state.requestDetails.attachments ?? [];
           final chats = state.chatById;
-          final List<ApprovalDetailModel> approvals =
-              state.requestDetails.approvalDetails ?? [];
+          final approvals = state.requestDetails.approvalDetails ?? [];
           final selectedTab = state.requestDetailTab;
           final active = controller.getActiveApprovalLevel(
             state.requestDetails.approvalDetails ?? [],
@@ -103,35 +74,21 @@ class _RequestforTrainingRoomBookingDetailsScreenState
             approvals,
           );
           final nextApprover = controller.resolveApproverDisplayList(approvals);
-
           final approverId = active?.id;
-          final allowanceEmployees = state.allowanceEmployees;
+          final isFromActionItems = widget.from.toLowerCase() == 'action items';
 
-          // controller.onSelectedApprovalId(approverRoleId ?? 0);
-          // final canApprove = controller.shouldShowApprovalButtons(approvals);
+          Widget employeeSection() => EmployeeInformationCard(
+            l10n: l10n,
+            requestId: requestId?.toString(),
+            status: request?.status,
+            assignedTo: controller.buildAssignedToLabel(approvals),
+            user: createdByUser,
+            labelBuilder: l10n.requestDetailsLabel,
+          );
 
           return SingleChildScrollView(
             child: Column(
               children: [
-                /// ----------- Profile Section --------------
-                ProfileCard(
-                  title: "Profile",
-                  subtitle: "User Info",
-                  name: request?.createdByUser?.employeeName ?? '',
-                  avatarUrl: "https://i.pravatar.cc/150?img=3",
-                  isOnline: true,
-                  info: {
-                    "Request ID": (request?.id ?? 0).toString(),
-                    "Customer ID": (request?.userId ?? 0).toString(),
-                    "Job Title/Designation":
-                        request?.createdByUser?.directorate ?? 'N/A',
-                    "Department": request?.createdByUser?.category ?? 'N/A',
-                    "Email": request?.createdByUser?.email ?? 'N/A',
-                    "Phone": request?.createdByUser?.mobile ?? 'N/A',
-                    // "Request Type": request?.requestFor ?? 'N/A',
-                  },
-                ),
-
                 5.toHorizontalSizedBox,
                 RequestTabs(
                   selectedTab: selectedTab,
@@ -139,11 +96,17 @@ class _RequestforTrainingRoomBookingDetailsScreenState
                   subService: widget.subService,
                 ),
                 5.toHorizontalSizedBox,
-                const Divider(thickness: 1),
-
-                /// ------------ TABS -----------------
-                if (selectedTab == 0)
+                if (selectedTab == 0) ...[
+                  employeeSection(),
                   CommonRequestDetails(
+                    statusInformationTitle: l10n.requestDetailsLabel(
+                      'Status Information',
+                    ),
+                    requestInformationTitle: l10n.requestDetailsLabel(
+                      'Request Information',
+                    ),
+                    technicalInformationTitle: l10n.technicalDetailsSection,
+                    requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: {
                       "Approval Status": request?.status ?? 'N/A',
                       "Requested Date":
@@ -157,31 +120,21 @@ class _RequestforTrainingRoomBookingDetailsScreenState
                         'Approver': nextApprover[0],
                       },
                     },
-
                     requestInfo: {
-                      /// ───── LEFT COLUMN ─────
                       "Sub Service Type":
                           request?.subService?.subServiceName ?? 'N/A',
-
                       "Date of Event": request?.dateOfEvent ?? 'N/A',
-
                       "Select Classroom / Training Hall":
                           request?.roomType ?? 'N/A',
-
                       "Meals Required": request?.mealsRequired == true
                           ? "Yes"
                           : "No",
-
                       "Remarks": (request?.remarks?.isNotEmpty ?? false)
                           ? request!.remarks!
                           : "NA",
-
-                      /// ───── RIGHT COLUMN ─────
                       "Service Type": request?.service?.name ?? 'N/A',
-
                       "Purpose of Training":
                           request?.purposeOfTraining ?? 'N/A',
-
                       "Timing of Event":
                           (request?.startTime != null &&
                               request?.endTime != null)
@@ -193,24 +146,26 @@ class _RequestforTrainingRoomBookingDetailsScreenState
                           request?.createdByUser?.extensionNumber.toString() ??
                           '0',
                     },
-                  )
-                else if (selectedTab == 1)
+                  ),
+                ] else if (selectedTab == 1) ...[
+                  employeeSection(),
                   CommentsCard(
                     from: widget.from,
-                    showButtons: actionType != ActionButtonsType.none,
-                    actionType: actionType, // ✅ FIX HERE
+                    showButtons:
+                        isFromActionItems &&
+                        actionType != ActionButtonsType.none,
+                    actionType: actionType,
                     entries: chats,
                     controller: controller.chatController,
                     buttonsDisabled: state.isButtonDisabled,
                     attachments: state.attachments,
+                    l10n: l10n,
                     onAttach: () async {
                       await controller.pickFile();
                     },
-                    onRemove: () {
-                      controller.removeAttachment();
-                    },
+                    onRemove: controller.removeAttachment,
                     onSend: () async {
-                      controller.sendChatMessage(
+                      await controller.sendChatMessage(
                         serviceId: widget.serviceId,
                         subServiceId: widget.subServiceId,
                       );
@@ -221,11 +176,6 @@ class _RequestforTrainingRoomBookingDetailsScreenState
                         approverId: approverId ?? 0,
                         requestId: requestId ?? 0,
                       );
-                      // controller.onApprove(
-                      //   approverId ?? 0,
-                      //   requestId ?? 0,
-                      //   'Approved',
-                      // );
                     },
                     onReject: () async {
                       controller.showApprovalCommentDialog(
@@ -233,25 +183,28 @@ class _RequestforTrainingRoomBookingDetailsScreenState
                         approverId: approverId ?? 0,
                         requestId: requestId ?? 0,
                       );
-                      // controller.onReject(
-                      //   approverId ?? 0,
-                      //   requestId ?? 0,
-                      //   'Rejected',
-                      // );
                     },
-                  )
-                else if (selectedTab == 2)
+                  ),
+                ] else if (selectedTab == 2) ...[
+                  employeeSection(),
                   CommonAttachmentsTabContent(
                     attachments: attachments,
+                    l10n: l10n,
+                    useActionsMenu: true,
                     onDelete: (attachment) async {
                       await controller.deleteAttachment(
                         attachment.id ?? 0,
                         requestId: attachment.requestId ?? requestId,
                       );
                     },
-                  )
-                else if (selectedTab == 3)
-                  RequestWorkflowTimeline(details: state.requestDetails),
+                  ),
+                ] else if (selectedTab == 3) ...[
+                  employeeSection(),
+                  RequestWorkflowTimeline(
+                    details: state.requestDetails,
+                    l10n: l10n,
+                  ),
+                ],
               ],
             ),
           );

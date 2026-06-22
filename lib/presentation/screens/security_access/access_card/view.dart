@@ -41,7 +41,7 @@ import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_mo
 import 'package:code_setup/presentation/screens/hc_service/models/grade_list_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/security_access/models/request_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
@@ -67,6 +67,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
 part 'widgets/request_for_access_card.dart';
 part 'controller.dart';

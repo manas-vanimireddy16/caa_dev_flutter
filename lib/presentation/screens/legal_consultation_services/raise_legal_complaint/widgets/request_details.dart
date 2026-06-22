@@ -81,32 +81,25 @@ class _RaiseLegalComplaintDetailsScreenState
           final nextApprover = controller.resolveApproverMap(approvals);
 
           final approverId = active?.id;
+          final l10n = DashboardL10n.of(context);
+          final createdByUser =
+              request?.createdByUser ?? state.requestDetails.createdByUser;
+          final approverMap = nextApprover;
 
-          // controller.onSelectedApprovalId(approverRoleId ?? 0);
-          // final canApprove = controller.shouldShowApprovalButtons(approvals);
+          Widget employeeSection() => EmployeeInformationCard(
+            l10n: l10n,
+            requestId: requestId?.toString(),
+            status: request?.status,
+            assignedTo: approverMap['name'] ??
+                approverMap['role'] ??
+                approverMap['department'],
+            user: createdByUser,
+            labelBuilder: l10n.requestDetailsLabel,
+          );
 
           return SingleChildScrollView(
             child: Column(
               children: [
-                /// ----------- Profile Section --------------
-                ProfileCard(
-                  title: "Profile",
-                  subtitle: "User Info",
-                  name: request?.createdByUser?.employeeName ?? '',
-                  avatarUrl: "https://i.pravatar.cc/150?img=3",
-                  isOnline: true,
-                  info: {
-                    "Request ID": (request?.id ?? 0).toString(),
-                    "Customer ID": (request?.userId ?? 0).toString(),
-                    "Job Title/Designation":
-                        request?.createdByUser?.directorate ?? 'N/A',
-                    "Department": request?.createdByUser?.category ?? 'N/A',
-                    "Email": request?.createdByUser?.email ?? 'N/A',
-                    "Phone": request?.createdByUser?.mobile ?? 'N/A',
-                    // "Request Type": request?.requestFor ?? 'N/A',
-                  },
-                ),
-
                 5.toHorizontalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
@@ -114,18 +107,19 @@ class _RaiseLegalComplaintDetailsScreenState
                   subService: widget.subService,
                 ),
                 5.toHorizontalSizedBox,
-                const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
-                if (selectedTab == 0)
+                if (selectedTab == 0) ...[
+                  employeeSection(),
                   CommonRequestDetails(
                     statusInfo: controller.buildStatusInformation(),
 
                     requestInfo: controller.buildRequestInformationData(),
                     technicalInfo: controller.buildTechnicalInformation(),
                     // table: controller.mapAccommodationTableForDetails(),
-                  )
-                else if (selectedTab == 1)
+                  ),
+                ] else if (selectedTab == 1) ...[
+                  employeeSection(),
                   CommentsCard(
                     from: widget.from,
                     showButtons: actionType != ActionButtonsType.none,
@@ -171,8 +165,9 @@ class _RaiseLegalComplaintDetailsScreenState
                       //   'Rejected',
                       // );
                     },
-                  )
-                else if (selectedTab == 2)
+                  ),
+                ] else if (selectedTab == 2) ...[
+                  employeeSection(),
                   CommonAttachmentsTabContent(
                     attachments: attachments,
                     onDelete: (attachment) async {
@@ -181,9 +176,11 @@ class _RaiseLegalComplaintDetailsScreenState
                         requestId: attachment.requestId ?? requestId,
                       );
                     },
-                  )
-                else if (selectedTab == 3)
+                  ),
+                ] else if (selectedTab == 3) ...[
+                  employeeSection(),
                   RequestWorkflowTimeline(details: state.requestDetails),
+                ],
               ],
             ),
           );

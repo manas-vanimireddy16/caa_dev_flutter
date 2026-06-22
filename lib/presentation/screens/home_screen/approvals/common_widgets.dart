@@ -128,14 +128,7 @@ class ProfileCard extends StatelessWidget {
 
             // Build Info from map
             ...info.entries
-                .where(
-                  (entry) => [
-                    'email',
-                    'phone',
-                    'location',
-                    'role',
-                  ].contains(entry.key.toLowerCase()),
-                )
+                .where((entry) => entry.value.trim().isNotEmpty)
                 .map((entry) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
@@ -145,17 +138,37 @@ class ProfileCard extends StatelessWidget {
                       value: entry.value,
                     ),
                   );
-                })
-                .toList(),
+                }),
           ],
         ),
       ),
     );
   }
 
-  /// Helper function: Map key → Icon
   String _getIconForKey(String key) {
-    switch (key.toLowerCase()) {
+    final normalized = key.toLowerCase();
+    if (normalized.contains('mail') ||
+        normalized.contains('email') ||
+        normalized.contains('بريد')) {
+      return AppIcons.mailEmployeeCard;
+    }
+    if (normalized.contains('phone') ||
+        normalized.contains('هاتف') ||
+        normalized.contains('contact')) {
+      return AppIcons.phoneEmployeeCard;
+    }
+    if (normalized.contains('location') || normalized.contains('موقع')) {
+      return AppIcons.locationOn;
+    }
+    if (normalized.contains('role') ||
+        normalized.contains('دور') ||
+        normalized.contains('department') ||
+        normalized.contains('دائرة') ||
+        normalized.contains('employee id') ||
+        normalized.contains('موظف')) {
+      return AppIcons.departmentEmployeeCard;
+    }
+    switch (normalized) {
       case "email":
         return AppIcons.mailEmployeeCard;
       case "phone":

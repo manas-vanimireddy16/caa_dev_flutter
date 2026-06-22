@@ -90,24 +90,6 @@ class _SecurityThreatRequestDetailsTabScreenState
           return SingleChildScrollView(
             child: Column(
               children: [
-                /// ----------- Profile Section --------------
-                // ProfileCard(
-                //   title: "Profile",
-                //   subtitle: "User Info",
-                //   name: request?.createdByUser?.employeeName ?? '',
-                //   avatarUrl: "https://i.pravatar.cc/150?img=3",
-                //   isOnline: true,
-                //   info: {
-                //     "Request ID": (request?.id ?? 0).toString(),
-                //     "Customer ID": (request?.userId ?? 0).toString(),
-                //     "Job Title/Designation":
-                //         request?.createdByUser?.directorate ?? 'N/A',
-                //     "Department": request?.createdByUser?.category ?? 'N/A',
-                //     "Email": request?.createdByUser?.email ?? 'N/A',
-                //     "Phone": request?.createdByUser?.mobile ?? 'N/A',
-                //     // "Request Type": request?.requestFor ?? 'N/A',
-                //   },
-                // ),
                 5.toHorizontalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
@@ -115,7 +97,6 @@ class _SecurityThreatRequestDetailsTabScreenState
                   subService: widget.subService,
                 ),
                 5.toHorizontalSizedBox,
-                const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
                 if (selectedTab == 0) ...[

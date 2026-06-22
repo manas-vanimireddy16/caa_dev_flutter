@@ -42,7 +42,7 @@ import 'package:code_setup/presentation/screens/it_services/models/muscat_roles_
 import 'package:code_setup/presentation/screens/it_services/models/muscat_user_model.dart';
 import 'package:code_setup/presentation/screens/legal_consultation_services/models/legal_contract_review_model.dart';
 import 'package:code_setup/presentation/screens/legal_consultation_services/widgets/workflow_widget.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
@@ -67,6 +67,7 @@ import 'package:code_setup/presentation/common_widgets/my_requests_action_items_
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
 part 'widgets/request_for_legal_contract_review_new_request.dart';
 part 'controller.dart';

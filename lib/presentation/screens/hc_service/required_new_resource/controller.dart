@@ -308,6 +308,22 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
+  String get currentStatusFilter => '';
+
   void initState() {
     chatController = TextEditingController();
     titleController = TextEditingController();
@@ -316,8 +332,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalKpi();
     // fetchUsers();
     fetchLocations();
-    fetchRequests();
-    fetchActionItems();
+
     fetchStatusBreakdown('monthly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalStatusBreakdown('monthly');
@@ -333,13 +348,8 @@ class _VSController extends StateNotifier<_ViewState> {
     final int currentVersion = ++_searchVersion;
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(isRefresh: true, searchText: value);
-      } else {
-        await fetchActionItems(isRefresh: true, searchText: value);
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+      if (currentVersion != _searchVersion) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -379,6 +389,20 @@ class _VSController extends StateNotifier<_ViewState> {
     }
 
     return department ?? '-';
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
   }
 
   void openRequestDetails(int id, {bool fromActionItems = false}) {
@@ -803,6 +827,49 @@ class _VSController extends StateNotifier<_ViewState> {
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {}
+  }
+
+
+  Future<List<RequiredNewResourceRequestModel>> loadMyRequestsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      return await requiredNewResourceInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<RequiredNewResourceRequestModel>> loadActionItemsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      return await requiredNewResourceInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
+    }
   }
 
   Future<void> fetchRequests({
@@ -1471,6 +1538,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void updateTabIndex(int index) {
     state = state.copyWith(tabIndex: index);
+    if (index == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
   }
 
   void onRemoveFile(int index) {

@@ -238,7 +238,7 @@ class _VSController extends StateNotifier<_ViewState> {
     searchController = TextEditingController();
     fetchKpi();
     fetchRequests();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
@@ -1034,9 +1034,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchactionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1392,7 +1392,7 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       fetchactionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
     }
   }
@@ -1536,9 +1536,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void _refreshDashboard() {
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests();

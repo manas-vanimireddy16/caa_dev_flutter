@@ -257,18 +257,16 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void onRequestStatusFilterChanged(String status) {
-    final searchText = searchController.text.trim();
-
     if (state.tabIndex == 0) {
       _myRequestsStatusFilter = status;
       state = state.copyWith();
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
+      refreshMyRequestsList();
       return;
     }
 
     _actionItemsStatusFilter = status;
     state = state.copyWith();
-    fetchActionItems(isRefresh: true, searchText: searchText, status: status);
+    refreshActionItemsList();
   }
 
   final Service service;
@@ -285,12 +283,25 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
   void initState() {
     chatController = TextEditingController();
     titleController = TextEditingController();
     searchController = TextEditingController();
     fetchKpi();
-    fetchRequests();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
@@ -303,21 +314,8 @@ class _VSController extends StateNotifier<_ViewState> {
     final int currentVersion = ++_searchVersion;
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(
-          isRefresh: true,
-          searchText: value,
-          status: _myRequestsStatusFilter,
-        );
-      } else {
-        await fetchActionItems(
-          isRefresh: true,
-          searchText: value,
-          status: _actionItemsStatusFilter,
-        );
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+      if (currentVersion != _searchVersion) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -457,6 +455,20 @@ class _VSController extends StateNotifier<_ViewState> {
     }
 
     return department ?? '-';
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
   }
 
   Future<void> openRequestDetails(
@@ -937,6 +949,49 @@ class _VSController extends StateNotifier<_ViewState> {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+    }
+  }
+
+
+  Future<List<PaymentOfCashAllowanceForLeaveRequestModel>> loadMyRequestsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      return await paymentofCashAllowanceForLeaveInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<PaymentOfCashAllowanceForLeaveRequestModel>> loadActionItemsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      return await paymentofCashAllowanceForLeaveInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
     }
   }
 
@@ -1526,12 +1581,12 @@ class _VSController extends StateNotifier<_ViewState> {
     _actionItemsStatusFilter = '';
     state = state.copyWith(tabIndex: index);
     if (index == 0) {
-      fetchRequests(status: '');
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchActionItems(status: '');
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');
@@ -1668,7 +1723,6 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     fetchRequests();
-    fetchActionItems();
   }
 
   @override

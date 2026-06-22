@@ -10,6 +10,8 @@ import 'package:code_setup/presentation/common_widgets/request_details/common_at
 import 'package:code_setup/presentation/common_widgets/request_details/common_request_details.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/common_workflow.dart';
 import 'package:code_setup/presentation/common_widgets/request_card.dart';
+import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
+import 'package:code_setup/utils/helper/list_pagination.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
@@ -42,7 +44,7 @@ import 'package:code_setup/presentation/screens/hc_service/models/payment_of_cas
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/user_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
@@ -66,6 +68,8 @@ import 'package:code_setup/presentation/common_widgets/my_requests_action_items_
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
 // part 'widgets/cash_allowance_new_request.dart';
 part 'controller.dart';

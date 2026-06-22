@@ -251,13 +251,13 @@ class _VSController extends StateNotifier<_ViewState> {
     if (state.tabIndex == 0) {
       _myRequestsStatusFilter = status;
       state = state.copyWith();
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
+      refreshMyRequestsList();
       return;
     }
 
     _actionItemsStatusFilter = status;
     state = state.copyWith();
-    fetchactionItems(isRefresh: true, searchText: searchText, status: status);
+    refreshActionItemsList();
   }
 
   final Service service;
@@ -274,13 +274,26 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
   void initState() {
     chatController = TextEditingController();
     titleController = TextEditingController();
     searchController = TextEditingController();
     fetchKpi();
     fetchApprovalKpi();
-    fetchRequests();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
@@ -293,21 +306,8 @@ class _VSController extends StateNotifier<_ViewState> {
     final int currentVersion = ++_searchVersion;
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(
-          isRefresh: true,
-          searchText: value,
-          status: _myRequestsStatusFilter,
-        );
-      } else {
-        await fetchactionItems(
-          isRefresh: true,
-          searchText: value,
-          status: _actionItemsStatusFilter,
-        );
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+      if (currentVersion != _searchVersion) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -495,6 +495,7 @@ class _VSController extends StateNotifier<_ViewState> {
     bool fromActionItems = false,
   }) async {
     updateRequestTab(0);
+    generateSecondmentDecisionPdf();
 
     await KAppX.router.push(
       SecondmentDecisionDetailsRoute(
@@ -570,7 +571,7 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       final requests = await secondmentAssignmentInstance.getchatById(id);
       if (requests != null) {
-        final chats = requests.reversed.toList();
+        final chats = requests.toList();
         state = state.copyWith(chatById: chats);
       }
     } on ApiException catch (apiError) {
@@ -749,6 +750,48 @@ class _VSController extends StateNotifier<_ViewState> {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<List<TemporaryDecision>> loadMyRequestsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      return await secondmentAssignmentInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<TemporaryDecision>> loadActionItemsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      return await secondmentAssignmentInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
     }
   }
 
@@ -1013,17 +1056,77 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // 3️⃣ Send request
       await secondmentAssignmentInstance.onAssignRejectClose(payload);
-      // await Future.delayed(Duration(seconds: 3));
+      await fetchRequestDetailsById(requestId);
       KAppX.router.pop();
-      // if (decisionNo != null) {
       KAppX.router.pop();
-      // }
       await _refreshDashboard();
+      if (isRequestApproved()) {
+        await generateSecondmentDecisionPdf();
+      }
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  bool isRequestApproved() {
+    return state.requestDetails.status?.toLowerCase() == 'approved';
+  }
+
+  Future<void> generateSecondmentDecisionPdf() async {
+    final request = state.requestDetails;
+    final data = AdministrativeDecisionPdfService.dataFromRequestDetails(
+      type: AdministrativeDecisionDocumentType.secondment,
+      request: request,
+      issuedDate: _getLastApproverDate(),
+    );
+    await AdministrativeDecisionPdfService.savePdf(
+      data: data,
+      type: AdministrativeDecisionDocumentType.secondment,
+      requestId: request.id?.toString() ?? 'NA',
+    );
+  }
+
+  String _formatPdfDate(String? value) {
+    if (value == null || value.trim().isEmpty) return 'N/A';
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return value;
+    return DateFormat('dd/MM/yyyy').format(parsed);
+  }
+
+  String _getLastApproverDate() {
+    final approvals = state.requestDetails.approvalDetails ?? [];
+    if (approvals.isEmpty) {
+      return DateFormat('dd/MM/yyyy').format(DateTime.now());
+    }
+
+    final approvedApprovals =
+        approvals
+            .where(
+              (approval) =>
+                  approval.approvalStatus?.toLowerCase() == 'approved',
+            )
+            .toList()
+          ..sort((a, b) => (b.level ?? 0).compareTo(a.level ?? 0));
+
+    if (approvedApprovals.isNotEmpty) {
+      final latest = approvedApprovals.first;
+      return _formatPdfDate(latest.updatedAt ?? latest.createdAt);
+    }
+
+    final sortedByDate = List<ApprovalDetailModel>.from(approvals)
+      ..sort((a, b) {
+        final dateA = DateTime.tryParse(a.updatedAt ?? a.createdAt ?? '');
+        final dateB = DateTime.tryParse(b.updatedAt ?? b.createdAt ?? '');
+        return (dateB ?? DateTime.fromMillisecondsSinceEpoch(0)).compareTo(
+          dateA ?? DateTime.fromMillisecondsSinceEpoch(0),
+        );
+      });
+
+    return _formatPdfDate(
+      sortedByDate.first.updatedAt ?? sortedByDate.first.createdAt,
+    );
   }
 
   Future<void> onSendInProgress(int approverId, int requestId) async {
@@ -1325,12 +1428,12 @@ class _VSController extends StateNotifier<_ViewState> {
     _actionItemsStatusFilter = '';
     state = state.copyWith(tabIndex: index);
     if (index == 0) {
-      fetchRequests(status: '');
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
-      fetchactionItems(isRefresh: true, status: '');
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());

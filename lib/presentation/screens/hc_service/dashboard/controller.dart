@@ -275,13 +275,26 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
   void initState() {
     chatController = TextEditingController();
     titleController = TextEditingController();
     searchController = TextEditingController();
     fetchUserRoles();
     fetchKpi();
-    fetchRequests();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
@@ -306,12 +319,12 @@ class _VSController extends StateNotifier<_ViewState> {
 
     if (state.tabIndex == 0) {
       state = state.copyWith(myRequestsStatusFilter: status);
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
+      refreshMyRequestsList();
       return;
     }
 
     state = state.copyWith(actionItemsStatusFilter: status);
-    fetchActionItems(isRefresh: true, searchText: searchText, status: status);
+    refreshActionItemsList();
   }
 
   void onSearchChanged(String value) {
@@ -319,21 +332,8 @@ class _VSController extends StateNotifier<_ViewState> {
     final int currentVersion = ++_searchVersion;
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(
-          isRefresh: true,
-          searchText: value,
-          status: state.myRequestsStatusFilter,
-        );
-      } else {
-        await fetchActionItems(
-          isRefresh: true,
-          searchText: value,
-          status: state.actionItemsStatusFilter,
-        );
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+      if (currentVersion != _searchVersion) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -663,6 +663,49 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+
+  Future<List<DashboardRequestModel>> loadMyRequestsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
+      return await dashboardInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        serviceIds: serviceIds,
+        subServiceIds: subServiceIds,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<DashboardRequestModel>> loadActionItemsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
+      return await dashboardInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        serviceIds: serviceIds,
+        subServiceIds: subServiceIds,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
+    }
+  }
+
   Future<void> fetchRequests({
     bool isRefresh = false,
     String searchText = '',
@@ -749,12 +792,12 @@ class _VSController extends StateNotifier<_ViewState> {
     );
 
     if (index == 0) {
-      fetchRequests(status: '');
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown('2026');
     } else {
-      fetchActionItems(status: '');
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown('2026');

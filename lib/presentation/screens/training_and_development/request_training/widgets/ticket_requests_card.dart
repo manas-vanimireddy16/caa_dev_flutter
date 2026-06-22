@@ -16,6 +16,7 @@ class TicketRequestsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(_vsProvider(providerArgs));
     final controller = ref.read(_vsProvider(providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return Card(
       color: Colors.white,
@@ -82,8 +83,16 @@ class TicketRequestsCard extends ConsumerWidget {
                   controller.updateTabIndex(index);
                 },
                 children: [
-                  RequestsPage(providerArgs: providerArgs),
-                  RequestsPage(providerArgs: providerArgs),
+                  RequestsPage(
+                    providerArgs: providerArgs,
+                    l10n: l10n,
+                    isActionItemsTab: false,
+                  ),
+                  RequestsPage(
+                    providerArgs: providerArgs,
+                    l10n: l10n,
+                    isActionItemsTab: true,
+                  ),
                 ],
               ),
             ),

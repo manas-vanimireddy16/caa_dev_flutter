@@ -34,7 +34,7 @@ import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/area_permission.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/screens/media_services/models/request_data_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
@@ -55,6 +55,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
 part 'widgets/request_for_coverage_new_request.dart';
 part 'controller.dart';

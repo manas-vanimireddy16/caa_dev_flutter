@@ -254,18 +254,16 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void onRequestStatusFilterChanged(String status) {
-    final searchText = searchController.text.trim();
-
     if (state.tabIndex == 0) {
       _myRequestsStatusFilter = status;
       state = state.copyWith();
-      fetchRequests(isRefresh: true, searchText: searchText, status: status);
+      refreshMyRequestsList();
       return;
     }
 
     _actionItemsStatusFilter = status;
     state = state.copyWith();
-    fetchactionItems(isRefresh: true, searchText: searchText, status: status);
+    refreshActionItemsList();
   }
 
   final Service service;
@@ -282,13 +280,26 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
   void initState() {
     chatController = TextEditingController();
     titleController = TextEditingController();
     searchController = TextEditingController();
     fetchKpi();
     fetchApprovalKpi();
-    fetchRequests();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
 
@@ -302,21 +313,8 @@ class _VSController extends StateNotifier<_ViewState> {
     final int currentVersion = ++_searchVersion;
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(
-          isRefresh: true,
-          searchText: value,
-          status: _myRequestsStatusFilter,
-        );
-      } else {
-        await fetchactionItems(
-          isRefresh: true,
-          searchText: value,
-          status: _actionItemsStatusFilter,
-        );
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+      if (currentVersion != _searchVersion) return;
+      refreshActiveRequestList();
     });
   }
 
@@ -875,6 +873,48 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  Future<List<TemporaryDecision>> loadMyRequestsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      return await assignmentdecisionInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
+    }
+  }
+
+  Future<List<TemporaryDecision>> loadActionItemsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+    try {
+      return await assignmentdecisionInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) Fluttertoast.showToast(msg: e.toString());
+      rethrow;
+    }
+  }
+
   Future<void> fetchRequests({
     bool isRefresh = false,
     String searchText = '',
@@ -1161,387 +1201,17 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> generateTemporaryAssignmentPdf() async {
-    try {
-      final request = state.requestDetails;
-      final pdf = pw.Document();
-      final logos = await Future.wait([
-        _loadPdfImage('assets/images/pdfimage1.png'),
-        _loadPdfImage('assets/images/pdfimage.png'),
-        _loadPdfImage('assets/images/caa_logo.png'),
-      ]);
-
-      final decisionNumber = _safePdfValue(request.decisionNumber);
-      final employeeName = _safePdfValue(
-        request.assignedEmployeeName ?? request.employeeName,
-      );
-      final fromEntity = _safePdfValue(
-        request.fromEntity ?? request.currentEntity,
-      );
-      final toEntity = _safePdfValue(
-        request.toEntity ?? request.transferredToEntity,
-      );
-      final jobPosition = _safePdfValue(
-        request.assignedJobPosition ?? request.currentJobPosition,
-      );
-      final startDate = _formatPdfDate(request.startDate);
-      final endDate = _formatPdfDate(request.endDate);
-      final issuedDate = _getLastApproverDate();
-      final regularFont = await PdfGoogleFonts.notoNaskhArabicRegular();
-      final boldFont = await PdfGoogleFonts.notoNaskhArabicBold();
-      pdf.addPage(
-        pw.Page(
-          pageFormat: PdfPageFormat.a4,
-          margin: const pw.EdgeInsets.only(
-            top: 20,
-            left: 28,
-            right: 28,
-            bottom: 35,
-          ),
-          build: (context) {
-            final normalStyle = pw.TextStyle(
-              font: regularFont,
-              fontSize: 11,
-              height: 1.8,
-              color: PdfColors.black,
-            );
-
-            final boldStyle = pw.TextStyle(
-              font: boldFont,
-              fontSize: 12,
-              fontWeight: pw.FontWeight.bold,
-              color: PdfColors.black,
-            );
-
-            final titleStyle = pw.TextStyle(
-              font: boldFont,
-              fontSize: 18,
-              fontWeight: pw.FontWeight.bold,
-            );
-
-            final footerStyle = pw.TextStyle(
-              font: regularFont,
-              fontSize: 7,
-              color: PdfColors.grey700,
-            );
-
-            return pw.Directionality(
-              textDirection: pw.TextDirection.rtl,
-              child: pw.Container(
-                height: PdfPageFormat.a4.availableHeight,
-
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-                  children: [
-                    /// ================= HEADER =================
-                    pw.Container(
-                      padding: const pw.EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 10,
-                      ),
-
-                      decoration: const pw.BoxDecoration(
-                        border: pw.Border(
-                          bottom: pw.BorderSide(
-                            color: PdfColors.black,
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-
-                      child: pw.Directionality(
-                        textDirection: pw.TextDirection.ltr,
-
-                        child: pw.Row(
-                          crossAxisAlignment: pw.CrossAxisAlignment.center,
-
-                          children: [
-                            /// LEFT LOGO
-                            pw.Expanded(
-                              flex: 2,
-
-                              child: pw.Align(
-                                alignment: pw.Alignment.centerLeft,
-
-                                child: _logo(logos[0], width: 120, height: 70),
-                              ),
-                            ),
-
-                            /// RIGHT SIDE
-                            pw.Expanded(
-                              flex: 3,
-
-                              child: pw.Row(
-                                mainAxisAlignment: pw.MainAxisAlignment.end,
-
-                                crossAxisAlignment:
-                                    pw.CrossAxisAlignment.center,
-
-                                children: [
-                                  _logo(logos[1], width: 95, height: 65),
-
-                                  pw.SizedBox(width: 18),
-
-                                  /// VERTICAL DIVIDER
-                                  pw.Container(
-                                    width: 1,
-                                    height: 65,
-                                    color: PdfColors.grey300,
-                                  ),
-
-                                  pw.SizedBox(width: 18),
-
-                                  _logo(logos[2], width: 120, height: 75),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    pw.SizedBox(height: 20),
-
-                    /// ================= TITLE =================
-                    pw.Center(
-                      child: pw.Text('قرار إداري تكليف رقم', style: titleStyle),
-                    ),
-
-                    pw.SizedBox(height: 22),
-
-                    /// ================= PREAMBLE =================
-                    pw.Padding(
-                      padding: const pw.EdgeInsets.symmetric(horizontal: 18),
-
-                      child: pw.Text(
-                        'استنادا إلى قانون الخدمة المدنية الصادر بالمرسوم السلطاني رقم (٢٠٠٤ /١٢٠)، وإلى نظام هيئة الطيران المدني الصادر بالمرسوم السلطاني رقم (٢٠١٣/٤٣)، وإلى اللائحة التنفيذية لقانون الخدمة المدنية الصادرة بالقرار رقم (٢٠١٠/٩)، وبناء على ما تقتضيه مصلحة العمل',
-                        style: normalStyle,
-                        textAlign: pw.TextAlign.center,
-                      ),
-                    ),
-
-                    pw.SizedBox(height: 28),
-
-                    /// ================= DECISION =================
-                    pw.Center(
-                      child: pw.Text(
-                        'تقرر',
-                        style: pw.TextStyle(
-                          font: boldFont,
-                          fontSize: 16,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    pw.SizedBox(height: 38),
-
-                    /// ================= ARTICLE 1 =================
-                    _reactArticle(
-                      title: 'المادة الأولى:',
-                      body:
-                          'يُكلف الفاضل/$employeeName رقمه ($decisionNumber) الشاغل لوظيفة "$fromEntity" إضافة إلى عمله الأصلي القيام بأعمال "$jobPosition" خلال الفترة من $startDate إلى $endDate',
-                      titleStyle: boldStyle,
-                      bodyStyle: normalStyle,
-                    ),
-
-                    pw.SizedBox(height: 28),
-
-                    /// ================= ARTICLE 2 =================
-                    _reactArticle(
-                      title: 'المادة الثانية:',
-                      body:
-                          'يصرف للفاضل المكلف بدل تكليف بواقع 44.00% من الراتب الأساسي.',
-                      titleStyle: boldStyle,
-                      bodyStyle: normalStyle,
-                    ),
-
-                    pw.SizedBox(height: 28),
-
-                    /// ================= ARTICLE 3 =================
-                    _reactArticle(
-                      title: 'المادة الثالثة:',
-                      body:
-                          'يلغى كل ما يخالف هذا القرار ، وعلى جهات الاختصاص تنفيذه.',
-                      titleStyle: boldStyle,
-                      bodyStyle: normalStyle,
-                    ),
-
-                    /// IMPORTANT
-                    pw.Spacer(),
-
-                    /// ================= SIGNATURE =================
-                    pw.Align(
-                      alignment: pw.Alignment.centerRight,
-
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.end,
-
-                        children: [
-                          pw.Text('صدر في $issuedDate', style: normalStyle),
-
-                          pw.SizedBox(height: 14),
-
-                          pw.Text('الموافق: NA', style: normalStyle),
-
-                          pw.SizedBox(height: 26),
-
-                          pw.Text(
-                            'م. نايف بن علي بن حمد العبري',
-                            style: boldStyle,
-                          ),
-
-                          pw.SizedBox(height: 5),
-
-                          pw.Text(
-                            'رئيس هيئة الطيران المدني',
-                            style: normalStyle,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    pw.SizedBox(height: 34),
-
-                    /// ================= FOOTER =================
-                    pw.Container(
-                      padding: const pw.EdgeInsets.only(
-                        top: 10,
-                        left: 6,
-                        right: 6,
-                        bottom: 4,
-                      ),
-
-                      decoration: const pw.BoxDecoration(
-                        border: pw.Border(
-                          top: pw.BorderSide(
-                            color: PdfColors.grey300,
-                            width: 1,
-                          ),
-                        ),
-                      ),
-
-                      child: pw.Column(
-                        children: [
-                          /// FOOTER TOP
-                          pw.Directionality(
-                            textDirection: pw.TextDirection.ltr,
-
-                            child: pw.Row(
-                              mainAxisAlignment:
-                                  pw.MainAxisAlignment.spaceBetween,
-
-                              children: [
-                                pw.Text(
-                                  'P.C.: 111, Muscat - Sultanate of Oman',
-                                  style: footerStyle,
-                                ),
-
-                                pw.Text(
-                                  'صندوق البريد: ١١١، الرمز البريدي: ١١١ مسقط - سلطنة عمان',
-                                  style: footerStyle,
-                                  textDirection: pw.TextDirection.rtl,
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          pw.SizedBox(height: 6),
-
-                          /// FOOTER BOTTOM
-                          pw.Align(
-                            alignment: pw.Alignment.centerLeft,
-
-                            child: pw.Text(
-                              '+968 24354436 / +968 24354437 / +968 24354433 / +968 24354435 - Fax: +968 23368684 - www.caa.gov.om',
-                              style: footerStyle,
-                              textDirection: pw.TextDirection.ltr,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      );
-      final pdfBytes = await pdf.save();
-      final requestId = request.id?.toString() ?? 'NA';
-      final fileDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-      final fileName =
-          'Temporary_Assignment_Decision_${requestId}_$fileDate.pdf';
-
-      await FilePicker.platform.saveFile(fileName: fileName, bytes: pdfBytes);
-      Fluttertoast.showToast(msg: 'PDF downloaded successfully');
-    } catch (e, st) {
-      debugPrint('Failed to generate temporary assignment PDF: $e');
-      debugPrintStack(stackTrace: st);
-      Fluttertoast.showToast(msg: 'Error generating PDF. Please try again.');
-    }
-  }
-
-  Future<pw.MemoryImage> _loadPdfImage(String assetPath) async {
-    final bytes = await rootBundle.load(assetPath);
-    return pw.MemoryImage(bytes.buffer.asUint8List());
-  }
-
-  pw.Widget _reactArticle({
-    required String title,
-    required String body,
-    required pw.TextStyle titleStyle,
-    required pw.TextStyle bodyStyle,
-  }) {
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.end,
-      children: [
-        pw.Text(title, style: titleStyle, textAlign: pw.TextAlign.right),
-
-        pw.SizedBox(height: 10),
-
-        pw.Padding(
-          padding: const pw.EdgeInsets.only(left: 10),
-
-          child: pw.Text(body, style: bodyStyle, textAlign: pw.TextAlign.right),
-        ),
-      ],
+    final request = state.requestDetails;
+    final data = AdministrativeDecisionPdfService.dataFromRequestDetails(
+      type: AdministrativeDecisionDocumentType.assignment,
+      request: request,
+      issuedDate: _getLastApproverDate(),
     );
-  }
-
-  pw.Widget _logo(
-    pw.MemoryImage image, {
-    required double width,
-    required double height,
-  }) {
-    return pw.Container(
-      width: width,
-      height: height,
-      alignment: pw.Alignment.center,
-      child: pw.Image(image, fit: pw.BoxFit.contain),
+    await AdministrativeDecisionPdfService.savePdf(
+      data: data,
+      type: AdministrativeDecisionDocumentType.assignment,
+      requestId: request.id?.toString() ?? 'NA',
     );
-  }
-
-  pw.Widget _article({
-    required String title,
-    required String body,
-    required pw.TextStyle textStyle,
-    required pw.TextStyle boldStyle,
-  }) {
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.end,
-      children: [
-        pw.Text(title, style: boldStyle),
-        pw.SizedBox(height: 8),
-        pw.Text(body, style: textStyle, textAlign: pw.TextAlign.right),
-      ],
-    );
-  }
-
-  String _safePdfValue(Object? value) {
-    if (value == null) return 'N/A';
-    final text = value.toString().trim();
-    return text.isEmpty ? 'N/A' : text;
   }
 
   String _formatPdfDate(String? value) {
@@ -1885,12 +1555,12 @@ class _VSController extends StateNotifier<_ViewState> {
     _actionItemsStatusFilter = '';
     state = state.copyWith(tabIndex: index);
     if (index == 0) {
-      fetchRequests(status: '');
+      refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
-      fetchactionItems(isRefresh: true, status: '');
+      refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());

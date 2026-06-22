@@ -163,7 +163,7 @@ class TicketRequestsCard extends ConsumerWidget {
               ],
             ),
           ),
-          const Divider(height: 1, thickness: 1, color: _borderColor),
+          const SectionContentDivider(),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 16),
             child: RequestTabs(
@@ -268,8 +268,16 @@ class TicketRequestsCard extends ConsumerWidget {
                   controller.updateTabIndex(index);
                 },
                 children: [
-                  RequestsPage(providerArgs: providerArgs, l10n: l10n),
-                  RequestsPage(providerArgs: providerArgs, l10n: l10n),
+                  RequestsPage(
+                    providerArgs: providerArgs,
+                    l10n: l10n,
+                    isActionItemsTab: false,
+                  ),
+                  RequestsPage(
+                    providerArgs: providerArgs,
+                    l10n: l10n,
+                    isActionItemsTab: true,
+                  ),
                 ],
               ),
             ),

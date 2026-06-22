@@ -1354,6 +1354,38 @@ class _VSController extends StateNotifier<_ViewState> {
     return true;
   }
 
+  String _buildDepartmentSection(Map<String, String> approverMap) {
+    final department = approverMap['department'];
+    final section = approverMap['section'];
+
+    if ((department ?? '').isNotEmpty && (section ?? '').isNotEmpty) {
+      return '$department - $section';
+    }
+
+    return department ?? '-';
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final next = getNextApprovalDetails(approvals ?? []);
+    if (next == null) return 'N/A';
+
+    final name = next.approverUser?.employeeName;
+    if ((name ?? '').isNotEmpty) return name!;
+
+    final role = next.approverRole?.name;
+    if ((role ?? '').isNotEmpty) return role!;
+
+    final department = next.department?.departmentName;
+    final section = next.section?.sectionName;
+    if ((department ?? '').isNotEmpty) {
+      return _buildDepartmentSection({
+        'department': department!,
+        if ((section ?? '').isNotEmpty) 'section': section!,
+      });
+    }
+    return 'N/A';
+  }
+
   ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
     // 1️⃣ Prefer IN PROGRESS approval
     for (final a in list) {

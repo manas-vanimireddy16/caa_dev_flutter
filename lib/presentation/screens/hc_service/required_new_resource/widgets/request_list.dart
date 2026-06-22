@@ -1,40 +1,73 @@
 part of '../view.dart';
 
-class RequestsPage extends ConsumerWidget {
+class RequestsPage extends ConsumerStatefulWidget {
   final _VSControllerParams providerArgs;
+  final bool isActionItemsTab;
 
-  const RequestsPage({super.key, required this.providerArgs});
+  const RequestsPage({
+    super.key,
+    required this.providerArgs,
+    required this.isActionItemsTab,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(_vsProvider(providerArgs));
-    final controller = ref.read(_vsProvider(providerArgs).notifier);
+  ConsumerState<RequestsPage> createState() => _RequestsPageState();
+}
 
-    final isActionTab = state.tabIndex == 1;
+class _RequestsPageState extends ConsumerState<RequestsPage> {
+  PagingController<int, RequiredNewResourceRequestModel>? _pagingController;
+  bool _controllerInitialized = false;
 
-    final items = isActionTab
-        ? state.requiredNewResourceActionItems
-        : state.requiredNewResourceRequestData;
+  @override
+  void dispose() {
+    _pagingController?.dispose();
+    super.dispose();
+  }
 
-    if (state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+  void _ensureController(_VSController controller) {
+    if (_controllerInitialized) return;
+    _controllerInitialized = true;
+
+    if (widget.isActionItemsTab) {
+      _pagingController =
+          PagingController<int, RequiredNewResourceRequestModel>(
+        getNextPageKey: ListPagination.nextPageKey,
+        fetchPage: (pageKey) => controller.loadActionItemsPage(
+          pageKey,
+          searchText: controller.searchController.text.trim(),
+          status: '',
+        ),
+      );
+      controller.onActionItemsListRefresh = () => _pagingController?.refresh();
+    } else {
+      _pagingController =
+          PagingController<int, RequiredNewResourceRequestModel>(
+        getNextPageKey: ListPagination.nextPageKey,
+        fetchPage: (pageKey) => controller.loadMyRequestsPage(
+          pageKey,
+          searchText: controller.searchController.text.trim(),
+          status: '',
+        ),
+      );
+      controller.onMyRequestsListRefresh = () => _pagingController?.refresh();
     }
+  }
 
-    if (items.isEmpty) {
-      return const Center(child: Text("No Data Found"));
-    }
+  @override
+  Widget build(BuildContext context) {
+    final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
+    _ensureController(controller);
 
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
-
+    return PaginatedListSection<RequiredNewResourceRequestModel>(
+      pagingController: _pagingController!,
+      emptyMessage: 'No Data Found',
+      itemBuilder: (context, item, index) {
         return RequestCard(
           data: controller.buildRequestCardData(item),
-          onTap: () async {
+          onTap: () {
             controller.openRequestDetails(
               item.base.id ?? 0,
-              fromActionItems: isActionTab,
+              fromActionItems: widget.isActionItemsTab,
             );
             controller.updateTabIndex(0);
           },

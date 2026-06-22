@@ -13,6 +13,8 @@ import 'package:code_setup/presentation/common_widgets/request_details/common_re
 import 'package:code_setup/presentation/common_widgets/request_details/common_workflow.dart';
 import 'package:code_setup/presentation/common_widgets/dialog_config.dart';
 import 'package:code_setup/presentation/common_widgets/request_card.dart';
+import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
+import 'package:code_setup/utils/helper/list_pagination.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
@@ -40,7 +42,7 @@ import 'package:code_setup/presentation/screens/hc_service/models/payment_of_shi
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/required_new_resource_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/user_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
@@ -62,6 +64,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 part 'widgets/payment_of_shift_allowance_new_request.dart';
 part 'controller.dart';
@@ -232,7 +235,10 @@ class _RequiredNewResourceScreenState
                   /// Single Reusable Page
                   SizedBox(
                     height: 400,
-                    child: RequestsPage(providerArgs: _providerArgs),
+                    child: RequestsPage(
+                      providerArgs: _providerArgs,
+                      isActionItemsTab: state.tabIndex == 1,
+                    ),
                   ),
                 ],
               ),

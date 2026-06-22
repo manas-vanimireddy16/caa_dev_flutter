@@ -5,6 +5,7 @@ import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/roles_repo.dart';
 import 'package:code_setup/presentation/common_widgets/request_card.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/screens/home_screen/approvals/common_widgets.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/announcementsModels.dart';
@@ -21,7 +22,6 @@ import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:code_setup/utils/helper/app_text_styles.dart';
 
 part 'controller.dart';
 part 'widgets/dashboard_requests_card.dart';
@@ -38,13 +38,12 @@ class AnnouncementScreen extends ConsumerWidget {
     final userInfo = ref.watch(userInfoProvider);
     final profile = state.user?.data;
     final sessionProfile = userInfo?.data;
-    final userName =
-        _firstNonEmpty([
-          profile?.employeeName,
-          sessionProfile?.employeeName,
-          storedUser?.employeeName,
-        ]) ??
-        '';
+    final userName = _displayEmployeeName(
+      l10n: l10n,
+      profile: profile,
+      sessionProfile: sessionProfile,
+      storedUser: storedUser,
+    );
     final avatarUrl = _firstNonEmpty([profile?.avatar, sessionProfile?.avatar]);
 
     return KScaffold(
@@ -52,7 +51,11 @@ class AnnouncementScreen extends ConsumerWidget {
       appBar: AppBar(
         toolbarHeight: 64,
         titleSpacing: 16,
-        title: _HomeGreetingHeader(userName: userName, avatarUrl: avatarUrl),
+        title: _HomeGreetingHeader(
+          userName: userName,
+          avatarUrl: avatarUrl,
+          greeting: l10n.goodMorning,
+        ),
         actions: const [_NotificationBellButton()],
         foregroundColor: AppColors.textHeading,
         backgroundColor: Colors.white,
@@ -69,11 +72,11 @@ class AnnouncementScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: AnnouncementWidget(
               announcements: state.announcements, // ✅ pass the whole list
-              title: 'Latest Announcements',
+              title: l10n.latestAnnouncements,
               subtitle: l10n.announcementsSubtext,
             ),
           ),
-          const _HomeSectionTitle(title: 'Dashboard'),
+          _HomeSectionTitle(title: l10n.dashboard),
           const Padding(
             padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: DashboardRequestsCard(),
@@ -90,11 +93,12 @@ class LinksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = DashboardL10n.of(context);
     return KScaffold(
       backgroundColor: AppColors.homeSurfaceColor,
       appBar: AppBar(
         title: Text(
-          'Links',
+          l10n.links,
           style: AppTextStyles.cairo(
             fontSize: 20.toAutoScaledFont,
             fontWeight: FontWeight.w700,
@@ -132,7 +136,7 @@ class ProfileScreen extends ConsumerWidget {
       backgroundColor: AppColors.homeSurfaceColor,
       appBar: AppBar(
         title: Text(
-          'Profile',
+          l10n.myProfile,
           style: AppTextStyles.cairo(
             fontSize: 20.toAutoScaledFont,
             fontWeight: FontWeight.w700,
@@ -152,13 +156,12 @@ class ProfileScreen extends ConsumerWidget {
           ProfileCard(
             title: l10n.myProfile,
             subtitle: l10n.findTheProfileDetails,
-            name:
-                _firstNonEmpty([
-                  profile?.employeeName,
-                  sessionProfile?.employeeName,
-                  storedUser?.employeeName,
-                ]) ??
-                '',
+            name: _displayEmployeeName(
+              l10n: l10n,
+              profile: profile,
+              sessionProfile: sessionProfile,
+              storedUser: storedUser,
+            ),
             avatarUrl: avatarUrl,
             isOnline: true,
             info: {
@@ -185,14 +188,14 @@ class ProfileScreen extends ConsumerWidget {
                     storedUser?.positionName,
                   ]) ??
                   '',
-              'Employee ID':
+              l10n.employeeId:
                   _firstNonEmpty([
                     profile?.employeeId,
                     sessionProfile?.employeeId,
                     storedUser?.employeeId,
                   ]) ??
                   '',
-              'Department':
+              l10n.department:
                   _firstNonEmpty([
                     profile?.department?.departmentName,
                     sessionProfile?.department?.departmentName,
@@ -210,8 +213,13 @@ class ProfileScreen extends ConsumerWidget {
 class _HomeGreetingHeader extends StatelessWidget {
   final String userName;
   final String? avatarUrl;
+  final String greeting;
 
-  const _HomeGreetingHeader({required this.userName, this.avatarUrl});
+  const _HomeGreetingHeader({
+    required this.userName,
+    this.avatarUrl,
+    required this.greeting,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -253,7 +261,7 @@ class _HomeGreetingHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Good Morning',
+                greeting,
                 style: AppTextStyles.cairo(
                   color: Colors.black,
                   fontSize: 14,
@@ -299,6 +307,32 @@ String? _firstNonEmpty(List<String?> values) {
     }
   }
   return null;
+}
+
+String _displayEmployeeName({
+  required DashboardL10n l10n,
+  required dynamic profile,
+  required dynamic sessionProfile,
+  required dynamic storedUser,
+}) {
+  if (l10n.isArabic) {
+    return _firstNonEmpty([
+          profile?.employeeArabicName,
+          sessionProfile?.employeeArabicName,
+          storedUser?.employeeArabicName,
+          profile?.employeeName,
+          sessionProfile?.employeeName,
+          storedUser?.employeeName,
+        ]) ??
+        '';
+  }
+
+  return _firstNonEmpty([
+        profile?.employeeName,
+        sessionProfile?.employeeName,
+        storedUser?.employeeName,
+      ]) ??
+      '';
 }
 
 class _HomeSectionTitle extends StatelessWidget {

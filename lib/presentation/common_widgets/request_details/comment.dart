@@ -261,9 +261,9 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           if (icon != null) ...[icon, SizedBox(width: 6.toAutoScaledWidth)],
           Text(
             text,
-            style: TextStyle(
+            style: AppTextStyles.cairo(
               color: Colors.white.withValues(alpha: isDisabled ? 0.7 : 1),
-              fontSize: 13.toAutoScaledWidth,
+              fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -289,9 +289,9 @@ class _AddCommentBoxState extends State<AddCommentBox> {
             children: [
               Text(
                 widget.needMoreInfoLabel ?? l10n.needMoreInfo,
-                style: TextStyle(
+                style: AppTextStyles.cairo(
                   color: Colors.white,
-                  fontSize: 13.toAutoScaledWidth,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -361,8 +361,8 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           SizedBox(width: 6.toAutoScaledWidth),
           Text(
             l10n.transportFormCancel,
-            style: TextStyle(
-              fontSize: 13.toAutoScaledWidth,
+            style: AppTextStyles.cairo(
+              fontSize: 13,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -402,9 +402,10 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           SizedBox(width: 6.toAutoScaledWidth),
           Text(
             'Send',
-            style: TextStyle(
-              fontSize: 13.toAutoScaledWidth,
+            style: AppTextStyles.cairo(
+              fontSize: 13,
               fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
           ),
         ],

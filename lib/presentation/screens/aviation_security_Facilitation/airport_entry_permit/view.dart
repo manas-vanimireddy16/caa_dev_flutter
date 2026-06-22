@@ -81,6 +81,7 @@ import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
 part 'widgets/request_airport_entry_permit.dart';
 part 'controller.dart';

@@ -716,6 +716,221 @@ class DashboardL10n {
   String get enterProjectCodeBudgetCode =>
       _t('Enter Project Code/Budget Code', 'أدخل رمز المشروع / رمز الميزانية');
   // Logistics Daily/Emergency
+
+  /// HOME SCREEN
+  String get inputSearchPlaceholder =>
+      _t('Search by Service Name', 'البحث باسم الخدمة');
+
+  String get importantLinks => _t('Important Links', 'الروابط المهمة');
+
+  String get quickLink => _t('Quick Links', 'الروابط السريعة');
+
+  String get myServices => _t('My Services', 'خدماتي');
+
+  String get allServices => _t('All Services', 'جميع الخدمات');
+
+  String get status => _t('Status', 'الحالة');
+
+  String get requestId => _t('Request ID', 'رقم الطلب');
+
+  String get requestName => _t('Request Name', 'اسم الطلب');
+
+  String get myTickets => _t('My Requests', 'التذاكر الخاصة بي');
+
+  String get searchByName => _t('Search by Request Id', 'البحث برقم الطلب');
+
+  String get approvals => _t('Approvals', 'الموافقات');
+
+  String get links => _t('Links', 'الروابط');
+
+  String get navProfile => _t('Profile', 'الملف الشخصي');
+
+  String get goodMorning => _t('Good Morning', 'صباح الخير');
+
+  String get latestAnnouncements =>
+      _t('Latest Announcements', 'آخر الإعلانات');
+
+  String get requestMaintenanceSubService =>
+      _t('Request Maintenance', 'طلب صيانة');
+
+  String get maintenanceOfExternalServiceSubService => _t(
+    'Maintenance of External Service',
+    'صيانة المحطات الخارجية',
+  );
+
+  String get importExportMaterialPermissionSubService => _t(
+    'Import/Export Material Permission',
+    'تصريح استيراد / تصدير المواد',
+  );
+
+  String get requestForStudyLeaveSubService =>
+      _t('Request for Study Leave', 'طلب إجازة دراسية');
+
+  /// Resolves sub-service title for list/dashboard headers (EN or AR).
+  String subServiceDisplayName({
+    String? englishName,
+    String? arabicName,
+  }) {
+    final en = englishName?.trim() ?? '';
+    if (!isArabic) {
+      return en.isNotEmpty ? en : ticketRequests;
+    }
+
+    final ar = arabicName?.trim() ?? '';
+    if (ar.isNotEmpty) return ar;
+
+    final localized = _localizedSubServiceName(en);
+    if (localized != null && localized.isNotEmpty) return localized;
+
+    return en.isNotEmpty ? en : ticketRequests;
+  }
+
+  String? _localizedSubServiceName(String englishName) {
+    if (!isArabic || englishName.trim().isEmpty) return null;
+
+    final key = englishName.trim().toLowerCase();
+
+    if (key == 'request maintenance') {
+      return requestMaintenanceSubService;
+    }
+    if (key == 'maintenance of external service' ||
+        key == 'request for maintenance of external stations') {
+      return maintenanceOfExternalServiceSubService;
+    }
+    if (key == 'import/export material permission' ||
+        key == 'import export material permission' ||
+        key == 'permission' ||
+        key.contains('import') && key.contains('export') && key.contains('permission')) {
+      return importExportMaterialPermissionSubService;
+    }
+    if (key == 'complaint/lost property report' ||
+        key == 'complaint or lost property report' ||
+        key == 'complaint or lost property' ||
+        (key.contains('complaint') && key.contains('lost'))) {
+      return complaintLostPropertyReport;
+    }
+    if (key == 'request for study leave' || key == 'study leave') {
+      return requestForStudyLeaveSubService;
+    }
+
+    return null;
+  }
+
+  String get stayInformedWithLatestUpdates =>
+      _t('Stay informed with latest updates', 'ابقَ على اطلاع بآخر التحديثات');
+
+  String get eventsAnnouncementsTitle => _t('Announcements', 'الإعلانات');
+
+  String get myProfileDetails => _t('My Profile', 'صفحة ملفي الشخصي');
+
+  String get myProfileSubtext =>
+      _t('Find the Profile Details', 'البحث عن تفاصيل الملف الشخصي');
+  String get pleaseEnterHazardousOrSensitiveMaterial => _t(
+    'Please Enter if the material is hazardous or sensitive',
+    'يرجى إدخال ما إذا كانت المادة خطرة أو حساسة',
+  );
+
+  String get enterPurposeOfImportExport => _t(
+    'Enter the purpose of import/ export',
+    'أدخل الغرض من الإدخال / الإخراج',
+  );
+
+  String get pleaseEnterPurposeOfImportExport => _t(
+    'Please Enter the purpose of import/ export',
+    'يرجى إدخال الغرض من الإدخال / الإخراج',
+  );
+
+  String get enterDescriptionOfMaterial =>
+      _t('Enter the description of material', 'أدخل وصف المادة');
+
+  String get pleaseEnterDescriptionOfMaterial =>
+      _t('Please Enter the description of material', 'يرجى إدخال وصف المادة');
+
+  String get enterModeOfTransport =>
+      _t('Enter the mode of transport', 'أدخل وسيلة النقل');
+
+  String get pleaseEnterModeOfTransport =>
+      _t('Please Enter the mode of transport', 'يرجى إدخال وسيلة النقل');
+
+  String get enterVehicleNumber =>
+      _t('Enter the vehicle number', 'أدخل رقم المركبة');
+
+  String get pleaseEnterVehicleNumber =>
+      _t('Please Enter the vehicle number', 'يرجى إدخال رقم المركبة');
+
+  String get selectTypeOfRequest =>
+      _t('Select Type of Request', 'اختر نوع الطلب');
+
+  String get pleaseSelectTypeOfRequest =>
+      _t('Please Select the Type of Request', 'يرجى اختيار نوع الطلب');
+
+  String get selectMaterialMovementDate =>
+      _t('Select Material Movement Date', 'اختر تاريخ حركة المواد');
+
+  String get pleaseSelectMaterialMovementDate => _t(
+    'Please Select the Material Movement Date',
+    'يرجى اختيار تاريخ حركة المواد',
+  );
+
+  String get enterHazardousOrSensitiveMaterial => _t(
+    'Enter if the material is hazardous or sensitive',
+    'أدخل ما إذا كانت المادة خطرة أو حساسة',
+  );
+
+  String get dateOfRequest => _t('Date of Request', 'تاريخ الطلب');
+
+  String get enterLocationWhereItemWasLost =>
+      _t('Enter Location Where Item Was Lost', 'أدخل موقع فقدان المفقودات');
+
+  String get pleaseEnterLocationWhereItemWasLost => _t(
+    'Please Enter the Location Where Item Was Lost',
+    'يرجى إدخال موقع فقدان المفقودات',
+  );
+
+  String get enterItemDescription =>
+      _t('Enter Item Description', 'أدخل وصف المفقودات');
+
+  String get pleaseEnterItemDescription =>
+      _t('Please Enter the Item Description', 'يرجى إدخال وصف المفقودات');
+
+  String get complaintLostPropertyReport =>
+      _t('Complaint/Lost Property Report', 'بلاغ شكوى / مفقودات');
+
+  String get dateTimeOfLoss => _t('Date & time of loss', 'تاريخ ووقت الفقدان');
+
+  String get locationWhereItemWasLost =>
+      _t('Location where item was lost', 'موقع فقدان المفقودات');
+
+  String get scholarship => _t('Scholarship', 'المنحة الدراسية');
+
+  String get instituteName => _t('Institute name', 'اسم المعهد / المؤسسة');
+
+  String get enterInstituteName =>
+      _t('Enter Institute Name', 'أدخل اسم المعهد / المؤسسة');
+
+  String get qualificationRequired =>
+      _t('Qualification Required', 'المؤهل المطلوب');
+
+  String get studyLeaveAttachmentDescription => _t(
+    'University Approval (Acceptance Letter)',
+    'University Approval (Acceptance Letter)',
+  );
+
+  String get haveYouEverReceivedAuthority => _t(
+    'Have you ever received a study leave from the Authority?',
+    'هل سبق لك الحصول على إجازة دراسية من السلطة المختصة؟',
+  );
+
+  String get alreadySubmittedInMinistryOfEducationSystem => _t(
+    'Has this application already been submitted in the Ministry of Education system?',
+    'هل تم إرسال هذا الطلب مسبقا في نظام التعليم الموجود في وزارة التعليم؟',
+  );
+
+  String get durationOfCourseStartDate =>
+      _t('Duration of Scholarship Start Date', 'تاريخ بدء المنحة الدراسية');
+
+  String get durationOfCourseEndDate =>
+      _t('Duration of Scholarship End Date', 'تاريخ انتهاء المنحة الدراسية');
   String get vehicleRequiredFor =>
       _t('Vehicle Required For', 'المركبة المطلوبة لـ');
 
@@ -762,8 +977,6 @@ class DashboardL10n {
   String get servicesLabel => _t('Services', 'الخدمات');
 
   String get declaration => _t('Declaration', 'إقرار');
-
-  String get requestName => _t('Request Name', 'اسم الطلب');
 
   String get meal => _t('Meal', 'الوجبات');
 

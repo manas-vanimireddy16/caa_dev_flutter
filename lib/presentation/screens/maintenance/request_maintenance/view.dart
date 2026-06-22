@@ -16,6 +16,7 @@ import 'package:code_setup/presentation/common_widgets/analytics/request_trend_b
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
 import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
 import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
@@ -137,7 +138,7 @@ class _RequestMaintenanceScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

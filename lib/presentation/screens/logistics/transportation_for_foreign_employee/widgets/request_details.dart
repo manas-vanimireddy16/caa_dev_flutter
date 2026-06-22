@@ -110,7 +110,6 @@ class _LogisticsForeignRequestDetailsTabScreenState
                   subService: widget.subService,
                 ),
                 5.toHorizontalSizedBox,
-                const Divider(thickness: 1),
 
                 /// ------------ TABS -----------------
                 if (selectedTab == 0) ...[

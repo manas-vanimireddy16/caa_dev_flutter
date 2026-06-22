@@ -201,6 +201,9 @@ class ApiEndPoint {
   static String userRoles(int id) => '/v1/user-service/user/$id/roles-services';
   static String userInfo(int id) => '/v1/user-service/user/$id';
 
+  /// chatbot
+  static const String chatbotAsk = '/v1/chatbot-service/ask';
+
   /// ===================== VPN APIs =====================
 
   /// Send Request (Create Request)

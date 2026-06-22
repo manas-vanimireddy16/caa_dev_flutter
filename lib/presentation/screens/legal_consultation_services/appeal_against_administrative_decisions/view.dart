@@ -71,6 +71,7 @@ import 'package:code_setup/presentation/common_widgets/my_requests_action_items_
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
 part 'widgets/request_for_legal_contract_review_new_request.dart';
 part 'controller.dart';

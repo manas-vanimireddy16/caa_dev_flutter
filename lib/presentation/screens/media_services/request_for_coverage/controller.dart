@@ -830,6 +830,20 @@ class _VSController extends StateNotifier<_ViewState> {
     return department ?? '-';
   }
 
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    if (approverMap.containsKey('department')) {
+      return _buildDepartmentSection(approverMap);
+    }
+    return 'N/A';
+  }
+
   Future<void> openRequestDetails(
     int id, {
     bool fromActionItems = false,

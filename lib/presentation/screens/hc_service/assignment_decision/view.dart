@@ -44,7 +44,6 @@ import 'package:code_setup/presentation/screens/hc_service/models/temporary_deci
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/vehicle_maintenance_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
@@ -60,6 +59,10 @@ import 'package:code_setup/repository/tender_services/request_a_service_to_respo
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
+import 'package:code_setup/presentation/common_widgets/administrative_decision/administrative_decision_data.dart';
+import 'package:code_setup/presentation/common_widgets/administrative_decision/administrative_decision_pdf_service.dart';
+import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
+import 'package:code_setup/utils/helper/list_pagination.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
@@ -73,10 +76,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
 // part 'widgets/request_vehicle_new_request.dart';
 part 'controller.dart';

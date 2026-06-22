@@ -5,6 +5,11 @@ import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 
 class TabItem extends StatelessWidget {
+  static const _tabBorderColor = Color(0xFFBFBFBF);
+  static const _tabWidth = 140.0;
+  static const _tabHeight = 38.0;
+  static const _tabGap = 8.0;
+
   final String text;
   final int index;
   final int selectedIndex;
@@ -25,35 +30,42 @@ class TabItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
-        margin: EdgeInsets.only(left: index == 0 ? 16 : 0, right: 8),
+        width: _tabWidth,
+        height: _tabHeight,
+        padding: const EdgeInsets.fromLTRB(10, 4, 10, 4),
+        margin: EdgeInsetsDirectional.only(
+          start: index == 0 ? 16 : 0,
+          end: _tabGap,
+        ),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryBlue75 : Colors.transparent,
+          color: isSelected ? AppColors.primaryBlue75 : Colors.white,
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
-            color: isSelected
-                ? AppColors.primaryBlue75
-                : AppColors.actionItemCountRequestBorderColor,
+            color: isSelected ? AppColors.primaryBlue75 : _tabBorderColor,
             width: 1,
           ),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
               KImageProvider(
                 image: icon,
-                width: 18,
-                height: 18,
+                width: 16,
+                height: 16,
                 tintColor: isSelected
                     ? AppColors.loginText
                     : AppColors.secondaryText,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: _tabGap),
             ],
-            Text(
-              text,
-              style: AppTextStyles.requestTabLabel(isSelected: isSelected),
+            Flexible(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.requestTabLabel(isSelected: isSelected),
+              ),
             ),
           ],
         ),

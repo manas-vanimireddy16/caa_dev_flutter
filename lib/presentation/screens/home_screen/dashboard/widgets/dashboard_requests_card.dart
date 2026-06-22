@@ -79,7 +79,7 @@ class _DashboardRequestsCardState extends ConsumerState<DashboardRequestsCard> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Approvals',
+                    l10n.approvals,
                     style: AppTextStyles.cairo(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -94,7 +94,7 @@ class _DashboardRequestsCardState extends ConsumerState<DashboardRequestsCard> {
               ],
             ),
           ),
-          const Divider(height: 1, color: _border, indent: 15, endIndent: 13),
+          const SectionContentDivider(),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
             child: Row(
