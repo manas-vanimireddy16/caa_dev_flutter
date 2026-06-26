@@ -53,10 +53,11 @@ class _AppealAgainstAdministrativeDecisionsDetailsScreenState
   @override
   Widget build(BuildContext context) {
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: const Text('Request Detail')),
+      appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(

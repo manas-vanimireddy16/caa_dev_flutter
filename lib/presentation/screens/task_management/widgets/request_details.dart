@@ -46,7 +46,7 @@
 
 //     return KScaffold(
 //       backgroundColor: Colors.white,
-//       appBar: KAppBar(title: const Text('Request Detail')),
+//       appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
 
 //       body: SingleChildScrollView(
 //         child: Column(

@@ -54,7 +54,7 @@ class _ImportExportMaterialPermissionNewRequestDetailsScreenState
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: Text(l10n.requestDetailScreenTitle)),
+      appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(

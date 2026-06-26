@@ -42,6 +42,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   late SingleAccountPca msal;
   String accessToken = '';
+  bool _isSigningIn = false;
 
   void initState() {
     initializeMsal();
@@ -73,6 +74,11 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> signIn() async {
+    if (_isSigningIn) return;
+
+    _isSigningIn = true;
+    state = state.copyWith(isLoading: true);
+
     try {
       debugPrint('🔄 Attempting to acquire token...');
       AuthenticationResult result = await msal.acquireToken(
@@ -84,10 +90,11 @@ class _VSController extends StateNotifier<_ViewState> {
       );
       accessToken = result.accessToken;
 
-      // Fetch your app auth token using SSO access token
       await onGettingSSOAccessTokenFetchAuthToken(accessToken);
     } catch (e) {
       debugPrint('❌ ERROR DURING LOGIN: $e');
+      _isSigningIn = false;
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -130,18 +137,31 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> onGettingSSOAccessTokenFetchAuthToken(String accessToken) async {
-    final authRepo = AuthRepository();
+    try {
+      final authRepo = AuthRepository();
 
-    final response = await authRepo.getAuthTokenWithSSOAccessToken(accessToken);
+      final response = await authRepo.getAuthTokenWithSSOAccessToken(
+        accessToken,
+      );
 
-    if (response != null && response.isNotEmpty) {
-      final authToken = response['token'];
-      decodeJwtPayloadSafe(authToken);
+      if (response != null && response.isNotEmpty) {
+        final authToken = response['token'];
+        await decodeJwtPayloadSafe(authToken);
+      } else {
+        _isSigningIn = false;
+        state = state.copyWith(isLoading: false);
+      }
+    } catch (e) {
+      debugPrint('❌ Auth token fetch error: $e');
+      _isSigningIn = false;
+      state = state.copyWith(isLoading: false);
     }
   }
 
   Future<void> fetchUserRoles(int id) async {
-    state = state.copyWith(isLoading: true);
+    if (!_isSigningIn) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final repo = RolesRepo();
       final userRoles = await repo.getUserRoles(id);
@@ -149,10 +169,17 @@ class _VSController extends StateNotifier<_ViewState> {
       // Now select role
       await selectOrStoreRole(userRoles);
 
-      state = state.copyWith(isLoading: false);
+      if (!_isSigningIn) {
+        state = state.copyWith(isLoading: false);
+      }
     } catch (e) {
       debugPrint("fetchUserRoles error: $e");
-      state = state.copyWith(isLoading: false);
+      if (!_isSigningIn) {
+        state = state.copyWith(isLoading: false);
+      } else {
+        _isSigningIn = false;
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 
@@ -194,20 +221,30 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> fetchUserInfo(int id) async {
-    state = state.copyWith(isLoading: true);
+    if (!_isSigningIn) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final rolesRepo = RolesRepo();
       final userInfo = await rolesRepo.getUserInfo(id);
       print(userInfo);
       print(userInfo?.data?.section?.id);
-      state = state.copyWith(userInfo: userInfo, isLoading: false);
+      state = state.copyWith(userInfo: userInfo);
+      if (!_isSigningIn) {
+        state = state.copyWith(isLoading: false);
+      }
     } catch (e) {
       debugPrint('Error fetching user roles: $e');
-      state = state.copyWith(isLoading: false);
+      if (!_isSigningIn) {
+        state = state.copyWith(isLoading: false);
+      } else {
+        _isSigningIn = false;
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 
-  void decodeJwtPayloadSafe(String token) async {
+  Future<void> decodeJwtPayloadSafe(String token) async {
     // token =
     //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwMTMsImlzX2FkbWluIjpmYWxzZSwiZW1wbG95ZWVfaWQiOiIxMjgwNSIsImVtcGxveWVlX25hbWUiOiJTYW1iYSBSYWp1IiwiZW1wbG95ZWVfYXJhYmljX25hbWUiOiLYrdmF2YrYryDYqNmGINmF2K3ZhdivINio2YYg2KPYrdmF2K8g2KfZhNi52KfZhdix2YoiLCJwZXJzb25fdHlwZSI6IkNBQSIsInNlY3Rpb24iOjEwMSwic2VjdGlvbl9uYW1lIjoiVGVjaG5pY2FsIFN1cHBvcnQgU2VjdGlvbiIsInBvc2l0aW9uIjo3OCwicG9zaXRpb25fbmFtZSI6IkhlYWQgb2YgTmV0d29ya3MgU2VjdGlvbiIsImRlcGFydG1lbnQiOjUwLCJkZXBhcnRtZW50X25hbWUiOiJJbmZvcm1hdGlvbiBUZWNobm9sb2d5IERlcGFydG1lbnQiLCJlbWFpbCI6InNhbWJhQGFtbmV0ZGlnaXRhbC5jb20iLCJpYXQiOjE3NjM5ODU5NTQsImV4cCI6MTc2NzU4NTk1NH0.NpDfj2gLljd4FKFN2F3Ojk4XJ2UX4d2dbumrj0JDHxU';
     final kAuthCred = KAuthCred();
@@ -251,21 +288,28 @@ class _VSController extends StateNotifier<_ViewState> {
       userSession();
     } on FormatException catch (e) {
       log('FormatException while decoding JWT: $e');
+      _isSigningIn = false;
+      state = state.copyWith(isLoading: false);
     } catch (e) {
       log('Unexpected error decoding JWT: $e');
+      _isSigningIn = false;
+      state = state.copyWith(isLoading: false);
     }
   }
 
   Future<void> loginWithJwt(String token) async {
+    if (_isSigningIn) return;
+
+    _isSigningIn = true;
     state = state.copyWith(isLoading: true);
 
     try {
-      decodeJwtPayloadSafe(token);
+      await decodeJwtPayloadSafe(token);
     } catch (e) {
       debugPrint("JWT Login Error: $e");
+      _isSigningIn = false;
+      state = state.copyWith(isLoading: false);
     }
-
-    state = state.copyWith(isLoading: false);
   }
 
   Future<void> logoutJwt() async {

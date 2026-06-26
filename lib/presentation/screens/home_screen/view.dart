@@ -21,7 +21,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:code_setup/presentation/chatbot/widgets/chatbot_host.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:msal_auth/msal_auth.dart';
 
@@ -48,9 +47,7 @@ class HomePage extends ConsumerWidget {
     return SafeArea(
       top: false,
 
-      child: Stack(
-        children: [
-          AutoTabsScaffold(
+      child: AutoTabsScaffold(
         scaffoldKey: _scaffoldKey,
 
         routes: [
@@ -205,9 +202,6 @@ class HomePage extends ConsumerWidget {
             ),
           );
         },
-          ),
-          const ChatbotHost(),
-        ],
       ),
     );
   }

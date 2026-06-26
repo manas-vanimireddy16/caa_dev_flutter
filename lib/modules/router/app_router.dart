@@ -80,6 +80,11 @@ class AppRouter extends RootStackRouter {
       ],
     ),
 
+    AutoRoute(
+      page: ChatbotRoute.page,
+      path: RouteNames.chatbot,
+    ),
+
     /// --- HOTEL RESERVATION ---
     AutoRoute(
       page: HotelReservationHomeRoute.page,

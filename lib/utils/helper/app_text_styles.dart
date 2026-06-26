@@ -222,6 +222,16 @@ abstract final class AppTextStyles {
     );
   }
 
+  /// Request details screen app bar title.
+  static TextStyle requestDetailScreenTitle({double? fontSize}) {
+    return cairo(
+      fontSize: fontSize ?? 22,
+      fontWeight: FontWeight.w500,
+      color: AppColors.textHeading,
+      height: 1,
+    );
+  }
+
   /// Service shell app bar title and request list card header.
   static TextStyle serviceScreenTitle({double? fontSize}) {
     return cairo(

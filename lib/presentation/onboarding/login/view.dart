@@ -808,7 +808,9 @@ class _MicrosoftLoginPageState extends ConsumerState<MicrosoftLoginPage> {
     final viewInsets = mediaQuery.viewInsets.bottom;
     final horizontalPadding = 24.toAutoScaledWidth;
 
-    return Scaffold(
+    return Stack(
+      children: [
+        Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -931,6 +933,24 @@ class _MicrosoftLoginPageState extends ConsumerState<MicrosoftLoginPage> {
           ],
         ),
       ),
+        ),
+        if (state.isLoading)
+          Positioned.fill(
+            child: ColoredBox(
+              color: Colors.black.withValues(alpha: 0.35),
+              child: Center(
+                child: SizedBox(
+                  width: 40.toAutoScaledWidth,
+                  height: 40.toAutoScaledHeight,
+                  child: const CircularProgressIndicator(
+                    color: _buttonNavy,
+                    strokeWidth: 3,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

@@ -70,16 +70,6 @@ class _VSController extends StateNotifier<_ViewState> {
         return 'Request to Renewal of Housing Contract';
       case 3:
         return 'Cancel Housing Contract';
-      // case 1:
-      //   return 'Assignment Decision';
-      // case 2:
-      //   return 'Secondment Decision';
-      // case 3:
-      //   return 'Temporary Assignment Decision';
-      // case 4:
-      //   return 'Service Transfer';
-      // case 5:
-      //   return 'Duty Mission';
 
       default:
         return '  Home';

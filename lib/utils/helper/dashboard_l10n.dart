@@ -743,6 +743,8 @@ class DashboardL10n {
 
   String get links => _t('Links', 'الروابط');
 
+  String get postedOn => _t('Posted On', 'نُشر في');
+
   String get navProfile => _t('Profile', 'الملف الشخصي');
 
   String get goodMorning => _t('Good Morning', 'صباح الخير');

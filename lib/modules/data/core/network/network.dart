@@ -46,27 +46,40 @@ class KNetworkingBoxImpl
     bool loggingEnabled = true,
   }) async {
     DioNetworkingClient? client;
-    dynamic user = await KAuthCred().getProfileData();
 
-    dynamic role = await KAuthCred().getSelectedRole();
-    dynamic userInfo = await KAuthCred().getUserInfoData();
+    final user = await KAuthCred().getProfileData();
+    final role = await KAuthCred().getSelectedRole();
+    final userInfo = await KAuthCred().getUserInfoData();
 
-    String authCred = '';
-    // authCred =
-    //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE2MiwiaXNfYWRtaW4iOmZhbHNlLCJlbXBsb3llZV9pZCI6IjEyNzU3IiwiZW1wbG95ZWVfbmFtZSI6Ik1yLiBIdXNzYWluIFNhbGltIEFobWVkIEFsIEhhZGRhZCIsImVtcGxveWVlX2FyYWJpY19uYW1lIjoi2K3Ys9mK2YYg2KjZhiDYs9in2YTZhSDYqNmGINij2K3ZhdivINin2YTYrdiv2KfYryIsInBlcnNvbl90eXBlIjoiQ0FBIiwic2VjdGlvbiI6MzMyLCJzZWN0aW9uX25hbWUiOiJMZWdhbCBTdHVkaWVzIFNlY3Rpb24iLCJwb3NpdGlvbiI6MjUsInBvc2l0aW9uX25hbWUiOiJBZXJvZHJvbWUgU2VjdXJpdHkgT2ZmaWNlciIsImRlcGFydG1lbnQiOjIxMCwiZGVwYXJ0bWVudF9uYW1lIjoiTGVnYWwgRGVwYXJ0bWVudCAiLCJlbWFpbCI6Imh1c3NhaW4uaGFkZGFkQGNhYS5nb3Yub20iLCJpYXQiOjE3NzU3MjA1NzAsImV4cCI6MTc3OTMyMDU3MH0.648BsDlPklgPZhFd-6-C2Rs5ndxI0J0M8k2Rp_6yQjM';
-    if (user != null) {
-      authCred = user.accessToken ?? '';
-    }
+    final authToken = user?.accessToken ?? '';
+    final userId =
+        user?.userId?.toString() ?? userInfo?.data?.id?.toString() ?? '';
+    final roleName = role?.roleName ?? '';
 
-    if (authCred.isNotEmpty) {
-      client = await _networkingBoxService.client(
-        options: options,
-        accessToken: authCred,
-        loggingEnabled: loggingEnabled,
-      );
-    } else {
+    if (authToken.isEmpty) {
       log('[secureClient] Client could not be created');
+      return null;
     }
+
+    final cookieParts = <String>[
+      if (userId.isNotEmpty) 'userId=$userId',
+      'authToken=$authToken',
+      if (roleName.isNotEmpty) 'roleName=${Uri.encodeComponent(roleName)}',
+    ];
+
+    final mergedHeaders = <String, String>{
+      ...?options?.headers,
+      'Cookie': cookieParts.join('; '),
+    };
+
+    client = await _networkingBoxService.client(
+      options: DioNetworkingOptions(
+        baseUrl: options?.baseUrl,
+        headers: mergedHeaders,
+      ),
+      accessToken: authToken,
+      loggingEnabled: loggingEnabled,
+    );
 
     return client;
   }

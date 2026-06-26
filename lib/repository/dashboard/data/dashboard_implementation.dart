@@ -1,15 +1,13 @@
 import 'dart:developer';
-
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-import 'package:code_setup/modules/domain/core/network/network.dart';
 import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/models.dart';
 import 'package:code_setup/presentation/models/sections.dart';
 import 'package:code_setup/presentation/models/userIdModel.dart';
-import 'package:code_setup/presentation/screens/home_screen/approvals/model/actionItems.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/announcementsModels.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/bookmarksModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/dashboard_requests_approvals.dart';
+import 'package:code_setup/presentation/screens/home_screen/dashboard/models/important_links_model.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/userModel.dart';
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
 import 'package:code_setup/utils/api_end_point.dart';
@@ -17,7 +15,6 @@ import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 class DashboardRepositoryImplementation implements DashboardRepository {
   @override
@@ -97,8 +94,8 @@ class DashboardRepositoryImplementation implements DashboardRepository {
     final client = Dio();
 
     try {
-      final url =
-          'https://caa.altomouhit.com/v1/user-service/department/users/count';
+      final url = ApiEndPoint.getSections;
+      //      'https://caa.altomouhit.com/v1/user-service/department/users/count';
       final response = await client.get(url);
 
       if (response.statusCode == 200) {
@@ -126,7 +123,8 @@ class DashboardRepositoryImplementation implements DashboardRepository {
     final client = Dio();
 
     try {
-      final url = 'https://caa.altomouhit.com/v1/user-service/departments';
+      final url = ApiEndPoint.getDepartments;
+      //'https://caa.altomouhit.com/v1/user-service/departments';
       final response = await client.get(url);
 
       if (response.statusCode == 200) {
@@ -196,8 +194,8 @@ class DashboardRepositoryImplementation implements DashboardRepository {
     final client = Dio();
 
     try {
-      final url =
-          'https://caa.altomouhit.com/v1/user-service/department/users/count';
+      final url = ApiEndPoint.getSections;
+      //  'https://caa.altomouhit.com/v1/user-service/department/users/count';
       final response = await client.get(url);
 
       if (response.statusCode == 200) {
@@ -223,8 +221,8 @@ class DashboardRepositoryImplementation implements DashboardRepository {
     final client = Dio();
 
     try {
-      final url =
-          'https://caa.altomouhit.com/v1/user-service/department/users/count';
+      final url = ApiEndPoint.getSections;
+      // 'https://caa.altomouhit.com/v1/user-service/department/users/count';
       final response = await client.get(url);
 
       if (response.statusCode == 200) {
@@ -424,6 +422,44 @@ class DashboardRepositoryImplementation implements DashboardRepository {
       throw ApiException(message);
     } catch (e) {
       throw ApiException('${e.toString()} Accommodation Muscat request');
+    }
+  }
+
+  @override
+  Future<ImportantLinksResponse> getImportantLinks({
+    String searchText = '',
+    int offset = 1,
+    int limit = 10,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client == null) {
+        return const ImportantLinksResponse(data: [], totalCount: 0);
+      }
+
+      final response = await client.get(
+        ApiEndPoint.importantLinks,
+        queryParameters: {
+          'search_text': searchText,
+          'offset': offset.toString(),
+          'limit': limit.toString(),
+        },
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        final data = Map<String, dynamic>.from(response.data);
+        return ImportantLinksResponse.fromJson(data);
+      }
+
+      throw ApiException(
+        response.data?['message'] ?? 'Failed to fetch important links',
+      );
+    } on DioException catch (error) {
+      final message = error.response?.data?['message'] ?? error.message;
+      throw ApiException(message ?? 'Failed to fetch important links');
+    } catch (e) {
+      throw ApiException('Error fetching important links: $e');
     }
   }
 

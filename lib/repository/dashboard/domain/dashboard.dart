@@ -6,6 +6,7 @@ import 'package:code_setup/presentation/screens/home_screen/approvals/model/acti
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/announcementsModels.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/bookmarksModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/dashboard_requests_approvals.dart';
+import 'package:code_setup/presentation/screens/home_screen/dashboard/models/important_links_model.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/servicesModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/userModel.dart';
 import 'package:code_setup/repository/dashboard/data/dashboard_implementation.dart';
@@ -38,5 +39,10 @@ abstract class DashboardRepository {
   Future<KPIResponse?> getApprovalKpiData({
     required List<int> serviceIds,
     required List<int> subServiceIds,
+  });
+  Future<ImportantLinksResponse> getImportantLinks({
+    String searchText = '',
+    int offset = 1,
+    int limit = 10,
   });
 }

@@ -47,7 +47,7 @@ class _RequestTrainingDetailsScreenState
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: Text(l10n.requestDetailScreenTitle)),
+      appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
       body: Consumer(
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));

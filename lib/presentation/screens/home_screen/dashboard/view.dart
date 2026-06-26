@@ -4,6 +4,7 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/roles_repo.dart';
+import 'package:code_setup/presentation/chatbot/widgets/dashboard_app_bar_actions.dart';
 import 'package:code_setup/presentation/common_widgets/request_card.dart';
 import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
@@ -56,7 +57,7 @@ class AnnouncementScreen extends ConsumerWidget {
           avatarUrl: avatarUrl,
           greeting: l10n.goodMorning,
         ),
-        actions: const [_NotificationBellButton()],
+        actions: const [DashboardAppBarActions()],
         foregroundColor: AppColors.textHeading,
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
@@ -83,34 +84,6 @@ class AnnouncementScreen extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-@RoutePage()
-class LinksScreen extends StatelessWidget {
-  const LinksScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = DashboardL10n.of(context);
-    return KScaffold(
-      backgroundColor: AppColors.homeSurfaceColor,
-      appBar: AppBar(
-        title: Text(
-          l10n.links,
-          style: AppTextStyles.cairo(
-            fontSize: 20.toAutoScaledFont,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        toolbarHeight: 64,
-        foregroundColor: AppColors.textHeading,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        elevation: 0,
-      ),
-      body: const Center(child: Text('Coming Soon')),
     );
   }
 }
@@ -188,20 +161,20 @@ class ProfileScreen extends ConsumerWidget {
                     storedUser?.positionName,
                   ]) ??
                   '',
-              l10n.employeeId:
-                  _firstNonEmpty([
-                    profile?.employeeId,
-                    sessionProfile?.employeeId,
-                    storedUser?.employeeId,
-                  ]) ??
-                  '',
-              l10n.department:
-                  _firstNonEmpty([
-                    profile?.department?.departmentName,
-                    sessionProfile?.department?.departmentName,
-                    storedUser?.departmentName,
-                  ]) ??
-                  '',
+              // l10n.employeeId:
+              //     _firstNonEmpty([
+              //       profile?.employeeId,
+              //       sessionProfile?.employeeId,
+              //       storedUser?.employeeId,
+              //     ]) ??
+              //     '',
+              // l10n.department:
+              //     _firstNonEmpty([
+              //       profile?.department?.departmentName,
+              //       sessionProfile?.department?.departmentName,
+              //       storedUser?.departmentName,
+              //     ]) ??
+              //     '',
             },
           ),
         ],
@@ -282,19 +255,6 @@ class _HomeGreetingHeader extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _NotificationBellButton extends StatelessWidget {
-  const _NotificationBellButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      tooltip: 'Notifications',
-      icon: const Icon(Icons.notifications_none, color: Colors.black, size: 26),
-      onPressed: () {},
     );
   }
 }

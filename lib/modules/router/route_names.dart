@@ -12,6 +12,7 @@ class RouteNames {
   static const String bottomNavigator = '/bottomNavigator';
   static const String homeScreen = '/homeScreen';
   static const String notification = '/notification';
+  static const String chatbot = '/chatbot';
   static const String account = '/account';
 
   // These should also be absolute:

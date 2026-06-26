@@ -1,4 +1,5 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,6 +55,13 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
             color: currentTheme.colors.secondary.shade95,
           ),
         );
+  }
+
+  static Widget requestDetailsTitle(String title) {
+    return Text(
+      title,
+      style: AppTextStyles.requestDetailScreenTitle(),
+    );
   }
 
   void onBackButtonPressed() async {

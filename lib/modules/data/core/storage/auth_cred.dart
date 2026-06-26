@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -6,6 +7,7 @@ import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/models/user_model.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/mobile_service_scope.dart';
+import 'package:code_setup/utils/helper/role_context_sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // --- USER MODEL ---
@@ -151,6 +153,17 @@ class KAuthCred {
   // 🔥 Store only SelectedUserRole
   Future<void> storeSelectedRole(SelectedUserRole role) async {
     try {
+      int? previousRoleId;
+      final previousJson = await _persistentStorage.retrieve(
+        key: roleKey,
+        decoder: jsonDecode,
+      );
+      if (previousJson != null) {
+        previousRoleId = SelectedUserRole.fromJson(
+          Map<String, dynamic>.from(previousJson),
+        ).roleId;
+      }
+
       final scopedRole = MobileServiceScope.filterSelectedRole(role);
       KAppX.globalProvider.read(rolesProvider.notifier).state = scopedRole;
       await _persistentStorage.store(
@@ -160,6 +173,10 @@ class KAuthCred {
         overwrite: true,
       );
       log('✅ Selected role saved to persistent storage.');
+
+      if (previousRoleId != scopedRole.roleId) {
+        unawaited(RoleContextSync.syncAfterRoleChange(scopedRole));
+      }
     } catch (e, st) {
       log('❌ Error saving selected role: $e\n$st');
     }

@@ -328,7 +328,7 @@ class _VSController extends StateNotifier<_ViewState> {
     String Function(String key) titleForKey,
   ) => StatSummaryHelper.buildStatList(
     state.approvalKpiData.data?.toJson(),
-    isSecurityThreat: true,
+    // isSecurityThreat: true,
     titleForKey: titleForKey,
   );
 
@@ -534,10 +534,10 @@ class _VSController extends StateNotifier<_ViewState> {
   String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
     final approverMap = resolveApproverMap(approvals);
     if (approverMap.containsKey('name')) {
-      return approverMap['name']!;
+      return approverMap['name'] ?? '';
     }
     if (approverMap.containsKey('role')) {
-      return approverMap['role']!;
+      return approverMap['role'] ?? '';
     }
     if (approverMap.containsKey('department')) {
       return _buildDepartmentSection(approverMap);

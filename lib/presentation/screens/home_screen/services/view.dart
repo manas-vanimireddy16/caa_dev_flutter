@@ -4,6 +4,7 @@ import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/roles_repo.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
+import 'package:code_setup/presentation/chatbot/widgets/dashboard_app_bar_actions.dart';
 import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
@@ -109,7 +110,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
           ),
         ),
         // centerTitle: true,
-        actions: const [_ServicesNotificationBellButton()],
+        actions: const [DashboardAppBarActions()],
       ),
 
       body: RefreshIndicator(
@@ -199,19 +200,6 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
           },
         ),
       ),
-    );
-  }
-}
-
-class _ServicesNotificationBellButton extends StatelessWidget {
-  const _ServicesNotificationBellButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      tooltip: 'Notifications',
-      icon: const Icon(Icons.notifications_none, color: Colors.black, size: 26),
-      onPressed: () {},
     );
   }
 }

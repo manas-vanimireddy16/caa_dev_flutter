@@ -11,6 +11,10 @@ class ApiEndPoint {
   static const String authMobileSignin = '/auth/mobilesignin';
 
   ///
+  ///
+  static const String getSections = '/v1/user-service/department/users/count';
+  static const String getDepartments = '/v1/user-service/departments';
+
   static const String departments = '/v1/user-service/admin/departments';
 
   static const String rolesListing = '/v1/user-service/master/roles/listing';
@@ -50,6 +54,9 @@ class ApiEndPoint {
       '/v1/user-service/dashboard/sla/my-requests/analytics/trend-breakdown';
   static const String dashboardApprovalStatusBreakdown =
       '/v1/user-service/dashboard/sla/my-requests/analytics/status-breakdown';
+
+  static const String importantLinks = '/v1/user-service/important-links';
+  static const String setActiveRole = '/v1/user-service/userrole/set-active';
 
   ///Salalah
   /// Salalah Helpdesk APIs
@@ -2315,7 +2322,7 @@ class ApiEndPoint {
   static const String residentalUnitRentalApartmentTypes =
       '/v1/asset-affairs-service/admin-config/apartment-types';
   static const String residentalUnitRentalUnitLocations =
-      'https://caa.altomouhit.com/v1/asset-affairs-service/admin-config/unit-locations';
+      '/v1/asset-affairs-service/admin-config/unit-locations';
 
   /// ===================== REQUEST APIs =====================
 

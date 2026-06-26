@@ -82,13 +82,11 @@ class DioNetworkingBox
         ? DioNetworkingClient.fromOptions(
             this,
             options,
-            // authorizationToken: accessToken,
-            // timezone: currentTimezoneRegion,
+            authorizationToken: accessToken,
           )
         : DioNetworkingClient(
             this,
             authorizationToken: accessToken,
-            // timezone: currentTimezoneRegion,
           );
 
     return client;
