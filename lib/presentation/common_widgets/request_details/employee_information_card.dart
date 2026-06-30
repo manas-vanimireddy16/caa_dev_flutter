@@ -14,6 +14,7 @@ class EmployeeInformationCard extends StatefulWidget {
   final String? assignedTo;
   final UserModel? user;
   final String Function(String key)? labelBuilder;
+  final bool showStatusAndAssignedTo;
 
   const EmployeeInformationCard({
     super.key,
@@ -23,6 +24,7 @@ class EmployeeInformationCard extends StatefulWidget {
     this.assignedTo,
     this.user,
     this.labelBuilder,
+    this.showStatusAndAssignedTo = false,
   });
 
   @override
@@ -199,20 +201,15 @@ class _EmployeeInformationCardState extends State<EmployeeInformationCard> {
                       );
                     },
                   ),
-                  if (widget.status != null &&
-                      widget.status!.trim().isNotEmpty) ...[
-                    _StatusRow(label: _label('Status'), status: widget.status!),
-                    const SizedBox(height: 14),
-                  ],
-                  if (widget.assignedTo != null &&
-                      widget.assignedTo!.trim().isNotEmpty)
-                    _EmployeeFieldTile(
-                      field: _EmployeeField(
-                        icon: AppIcons.assignedToEmployeeCard,
-                        label: _label('Assigned To'),
-                        value: widget.assignedTo!,
+                  if (widget.showStatusAndAssignedTo) ...[
+                    if (widget.status != null &&
+                        widget.status!.trim().isNotEmpty) ...[
+                      _StatusRow(
+                        label: _label('Status'),
+                        status: widget.status!,
                       ),
-                    ),
+                    ],
+                  ],
                 ],
               ),
             ),

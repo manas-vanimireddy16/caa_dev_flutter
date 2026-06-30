@@ -15,6 +15,7 @@ import 'package:flutter/foundation.dart';
 
 class LogisticsForeignRepositoryImplementation
     implements LogisticsForeignRepository {
+  static const String _serviceLabel = 'Logistics Foreign Employee';
   final toast = ShowFlutterToast();
 
   @override
@@ -67,7 +68,7 @@ class LogisticsForeignRepositoryImplementation
           return requestData;
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -95,11 +96,11 @@ class LogisticsForeignRepositoryImplementation
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
       log('caught error');
       final message = error.response?.data['message'] ?? error.message;
@@ -125,11 +126,11 @@ class LogisticsForeignRepositoryImplementation
           return LogisticsTrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
       log('caught error');
       final message = error.response?.data['message'] ?? error.message;
@@ -153,11 +154,11 @@ class LogisticsForeignRepositoryImplementation
           return LogisticsForeignDetailModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
       log('caught error');
       final message = error.response?.data['message'] ?? error.message;
@@ -183,11 +184,11 @@ class LogisticsForeignRepositoryImplementation
           return response.data["message"] ?? "Success";
         } else {
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Something went wrong";
+          return response.data["message"] ?? "Failed to process $_serviceLabel request";
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
-        return "Something went wrong";
+        return "Client is null - cannot process $_serviceLabel request";
       }
     } on DioException catch (e) {
       debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');

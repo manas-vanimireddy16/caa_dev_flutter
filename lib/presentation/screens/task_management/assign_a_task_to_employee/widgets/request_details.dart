@@ -51,7 +51,9 @@ class _AssignaTasktoEmployeeDetailsScreenState
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
+      appBar: KAppBar(
+        title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle),
+      ),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(
@@ -89,21 +91,23 @@ class _AssignaTasktoEmployeeDetailsScreenState
           return SingleChildScrollView(
             child: Column(
               children: [
-                EmployeeInformationCard(
-                  l10n: l10n,
-                  requestId: requestId?.toString(),
-                  status: request?.status,
-                  user: request?.createdByUser,
-                  labelBuilder: l10n.requestDetailsLabel,
-                ),
-
-                5.toHorizontalSizedBox,
+                16.toVerticalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
                   subService: widget.subService,
                 ),
                 5.toHorizontalSizedBox,
+
+                EmployeeInformationCard(
+                  l10n: l10n,
+                  requestId: requestId?.toString(),
+                  status: request?.status,
+                  // assignedTo: controller.buildAssignedToLabel(approvals),
+                  user: request?.createdByUser,
+                  labelBuilder: l10n.requestDetailsLabel,
+                  showStatusAndAssignedTo: selectedTab != 0,
+                ),
 
                 /// ------------ TABS -----------------
                 if (selectedTab == 0)

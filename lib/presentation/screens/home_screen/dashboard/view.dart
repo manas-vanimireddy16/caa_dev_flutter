@@ -168,13 +168,20 @@ class ProfileScreen extends ConsumerWidget {
               //       storedUser?.employeeId,
               //     ]) ??
               //     '',
-              // l10n.department:
-              //     _firstNonEmpty([
-              //       profile?.department?.departmentName,
-              //       sessionProfile?.department?.departmentName,
-              //       storedUser?.departmentName,
-              //     ]) ??
-              //     '',
+              l10n.department:
+                  _firstNonEmpty([
+                    profile?.department?.departmentName,
+                    sessionProfile?.department?.departmentName,
+                    storedUser?.departmentName,
+                  ]) ??
+                  '',
+              l10n.section:
+                  _firstNonEmpty([
+                    profile?.section?.sectionName,
+                    sessionProfile?.section?.sectionName,
+                    storedUser?.sectionName,
+                  ]) ??
+                  '',
             },
           ),
         ],

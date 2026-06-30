@@ -1,6 +1,7 @@
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_form_dropdown_constants.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -208,20 +209,21 @@ class _MultiSelectSheetState extends State<_MultiSelectSheet> {
               ],
             ),
 
-            /// SEARCH
-            TextField(
-              decoration: InputDecoration(
-                hintText: widget.l10n.dynamicFormSearchHint,
-                prefixIcon: const Icon(Icons.search),
+            /// SEARCH (only when list is long)
+            if (dynamicFormDropdownNeedsSearch(widget.options.length)) ...[
+              TextField(
+                decoration: InputDecoration(
+                  hintText: widget.l10n.dynamicFormSearchHint,
+                  prefixIcon: const Icon(Icons.search),
+                ),
+                onChanged: (v) {
+                  setState(() {
+                    search = v;
+                  });
+                },
               ),
-              onChanged: (v) {
-                setState(() {
-                  search = v;
-                });
-              },
-            ),
-
-            const SizedBox(height: 10),
+              const SizedBox(height: 10),
+            ],
 
             /// LIST
             Expanded(

@@ -95,7 +95,7 @@ class _RequestAServiceToRespondToEnquiriesDetailsScreenState
             child: Column(
               children: [
                 /// ----------- Profile Section --------------
-                5.toHorizontalSizedBox,
+                16.toVerticalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
@@ -112,6 +112,8 @@ class _RequestAServiceToRespondToEnquiriesDetailsScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   CommonRequestDetails(
                     statusInformationTitle: l10n.requestDetailsLabel(
@@ -136,6 +138,8 @@ class _RequestAServiceToRespondToEnquiriesDetailsScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   CommentsCard(
                     from: widget.from,
@@ -193,6 +197,8 @@ class _RequestAServiceToRespondToEnquiriesDetailsScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   CommonAttachmentsTabContent(
                     attachments: attachments,
@@ -211,6 +217,8 @@ class _RequestAServiceToRespondToEnquiriesDetailsScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   RequestWorkflowTimeline(details: state.requestDetails),
                 ],

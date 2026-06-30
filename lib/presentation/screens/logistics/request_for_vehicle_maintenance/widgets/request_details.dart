@@ -52,7 +52,7 @@ class _RequestForVehicleMaintenanceDetailsTabScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
 
       /// IMPORTANT — This fixes your issue.
@@ -86,7 +86,7 @@ class _RequestForVehicleMaintenanceDetailsTabScreenState
           return SingleChildScrollView(
             child: Column(
               children: [
-                5.toHorizontalSizedBox,
+                16.toVerticalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
@@ -94,16 +94,18 @@ class _RequestForVehicleMaintenanceDetailsTabScreenState
                 ),
                 5.toHorizontalSizedBox,
 
+                EmployeeInformationCard(
+                  l10n: l10n,
+                  requestId: requestId?.toString(),
+                  status: request?.status,
+                  assignedTo: controller.buildAssignedToLabel(approvals),
+                  user: createdByUser,
+                  labelBuilder: l10n.requestDetailsLabel,
+                  showStatusAndAssignedTo: selectedTab != 0,
+                ),
+
                 /// ------------ TABS -----------------
                 if (selectedTab == 0) ...[
-                  EmployeeInformationCard(
-                    l10n: l10n,
-                    requestId: requestId?.toString(),
-                    status: request?.status,
-                    assignedTo: controller.buildAssignedToLabel(approvals),
-                    user: createdByUser,
-                    labelBuilder: l10n.requestDetailsLabel,
-                  ),
                   CommonRequestDetails(
                     statusInformationTitle: l10n.requestDetailsLabel(
                       'Status Information',

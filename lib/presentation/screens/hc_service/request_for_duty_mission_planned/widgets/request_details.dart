@@ -84,6 +84,8 @@ class _RequestforDutyMissionPlannedDetailsScreenState
             assignedTo: controller.buildAssignedToLabel(approvals),
             user: createdByUser,
             labelBuilder: l10n.requestDetailsLabel,
+
+            showStatusAndAssignedTo: selectedTab != 0,
           );
 
           return SingleChildScrollView(

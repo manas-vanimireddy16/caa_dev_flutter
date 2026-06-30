@@ -379,19 +379,20 @@ class _AllocateVehicleDialogWidgetState
                   Expanded(
                     child: SizedBox(
                       height: 36,
-                      child: OutlinedButton(
+                      child: OutlinedButton.icon(
                         onPressed: () {
                           Navigator.pop(context);
                         },
                         style: OutlinedButton.styleFrom(
                           backgroundColor: Colors.white,
                           side: BorderSide(color: Colors.grey.shade300),
-                          padding: EdgeInsets.zero,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        child: Text(
+                        icon: const Icon(Icons.close, size: 14, color: Colors.grey),
+                        label: Text(
                           l10n.transportFormCancel,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -411,17 +412,22 @@ class _AllocateVehicleDialogWidgetState
                   Expanded(
                     child: SizedBox(
                       height: 36,
-                      child: ElevatedButton(
+                      child: ElevatedButton.icon(
                         onPressed: onSubmit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF0D652D),
                           foregroundColor: Colors.white,
-                          padding: EdgeInsets.zero,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        child: Text(
+                        icon: const Icon(
+                          Icons.check_circle_outline,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                        label: Text(
                           l10n.transportFormSubmit,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

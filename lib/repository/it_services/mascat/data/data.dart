@@ -26,6 +26,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 class MuscatDashboardRepositoryImpl implements MuscatDashboardRepository {
+  static const String _serviceLabel = 'IT Helpdesk Muscat';
   // final token =
   //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwMTgsImlzX2FkbWluIjpmYWxzZSwiZW1wbG95ZWVfaWQiOiIxNDA0MiIsImVtcGxveWVlX25hbWUiOiJNYW5hcyIsImVtcGxveWVlX2FyYWJpY19uYW1lIjoi2YXZhtmK2LEg2KjZhiDYtdiv2YrZgiDYqNmGINi52YTZiiDYp9mE2KjZhNmI2LTZiiIsInBlcnNvbl90eXBlIjoiQ0FBIiwic2VjdGlvbiI6NjYsInNlY3Rpb25fbmFtZSI6IklUIFN1cHBvcnQiLCJwb3NpdGlvbiI6MjI1LCJwb3NpdGlvbl9uYW1lIjoiQ29tcHV0ZXIgTmV0d29yayBFbmdpbmVlciIsImRlcGFydG1lbnQiOjI1LCJkZXBhcnRtZW50X25hbWUiOiJJbmZvcm1hdGlvbiBUZWNobm9sb2d5IiwiZW1haWwiOiJtYW5hcy52YW5pbWlyZWRkeUBhbW5ldGRpZ2l0YWwuY29tIiwiaWF0IjoxNzU5OTk3Njc5LCJleHAiOjE3NjM1OTc2Nzl9.aMuGbNRTDag8C8IsmPHzgax96e7LQs1w6Ft6z8vm-vs';
 
@@ -167,17 +168,17 @@ class MuscatDashboardRepositoryImpl implements MuscatDashboardRepository {
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
-      log('caught error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching trend breakdown $e');
+      log('Failed to fetch $_serviceLabel trend breakdown: $e');
       throw ApiException(e.toString());
     }
   }
@@ -207,17 +208,17 @@ class MuscatDashboardRepositoryImpl implements MuscatDashboardRepository {
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
-      log('caught error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching status breakdown $e');
+      log('Failed to fetch $_serviceLabel status breakdown: $e');
       throw ApiException(e.toString());
     }
   }
@@ -250,17 +251,17 @@ class MuscatDashboardRepositoryImpl implements MuscatDashboardRepository {
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
-      log('caught error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching trend breakdown $e');
+      log('Failed to fetch $_serviceLabel trend breakdown: $e');
       throw ApiException(e.toString());
     }
   }
@@ -332,13 +333,13 @@ class MuscatDashboardRepositoryImpl implements MuscatDashboardRepository {
               .map((e) => ServiceData.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
-          throw Exception('Failed to fetch services: ${response.statusCode}');
+          throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching services: $e");
+      throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }
 
@@ -416,13 +417,13 @@ class MuscatDashboardRepositoryImpl implements MuscatDashboardRepository {
               .map((e) => RequestsData.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
-          throw Exception('Failed to fetch services: ${response.statusCode}');
+          throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching services: $e");
+      throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }
 
@@ -472,7 +473,7 @@ class MuscatDashboardRepositoryImpl implements MuscatDashboardRepository {
           return actionItems;
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -505,13 +506,13 @@ class MuscatDashboardRepositoryImpl implements MuscatDashboardRepository {
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw Exception('Failed: ${response.statusCode}');
+          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
         }
       } else {
         return null;
       }
     } catch (e) {
-      throw Exception("Error fetching request details: $e");
+      throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }
 
@@ -529,17 +530,17 @@ class MuscatDashboardRepositoryImpl implements MuscatDashboardRepository {
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
       return null;
     } on DioException catch (error) {
-      log('caught dio error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching KPI data $e');
+      log('Failed to fetch $_serviceLabel KPI data: $e');
       throw ApiException(e.toString());
     }
   }
@@ -557,17 +558,17 @@ class MuscatDashboardRepositoryImpl implements MuscatDashboardRepository {
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
-      log('caught error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching status breakdown $e');
+      log('Failed to fetch $_serviceLabel status breakdown: $e');
       throw ApiException(e.toString());
     }
   }

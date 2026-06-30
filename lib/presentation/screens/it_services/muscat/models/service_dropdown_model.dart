@@ -72,6 +72,16 @@ class ServiceData {
     );
   }
 
+  String displayName({required bool isArabic}) {
+    if (isArabic) {
+      final arabicName = nameInArabic?.trim();
+      if (arabicName != null && arabicName.isNotEmpty) {
+        return arabicName;
+      }
+    }
+    return name ?? '';
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -6,44 +6,64 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class KDrawerHeader extends ConsumerWidget {
-  const KDrawerHeader({Key? key}) : super(key: key);
+  final VoidCallback? onClose;
+
+  const KDrawerHeader({super.key, this.onClose});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentTheme = ref.watch(KAppX.theme.current).themeBox;
     final user = KAppX.globalProvider.read(userProvider);
+    final name = user?.employeeName?.trim() ?? '';
+    final email = user?.email?.trim() ?? '';
 
     return Padding(
-      padding: EdgeInsets.only(left: 16.toAutoScaledWidth),
+      padding: EdgeInsets.symmetric(horizontal: 16.toAutoScaledWidth),
       child: Row(
-        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CircularTextAvatar(
-            text: user?.employeeName ?? '',
+            text: name,
             width: 32.toAutoScaledWidth,
           ),
-          16.toHorizontalSizedBox,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                user?.employeeName ?? '',
-                style: TextStyle(
-                  fontSize: currentTheme.fontSizes.s18,
-                  fontWeight: currentTheme.fontWeights.wBolder,
-                  color: currentTheme.colors.onBackground,
+          12.toHorizontalSizedBox,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: currentTheme.fontSizes.s18,
+                    fontWeight: currentTheme.fontWeights.wBolder,
+                    color: currentTheme.colors.onBackground,
+                  ),
                 ),
-              ),
-              Text(
-                user?.email ?? '',
-                style: TextStyle(
-                  fontSize: currentTheme.fontSizes.s12,
-                  fontWeight: currentTheme.fontWeights.wRegular,
-                  color: currentTheme.colors.onBackground,
-                ),
-              ),
-            ],
+                if (email.isNotEmpty)
+                  Text(
+                    email,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: currentTheme.fontSizes.s12,
+                      fontWeight: currentTheme.fontWeights.wRegular,
+                      color: currentTheme.colors.onBackground,
+                    ),
+                  ),
+              ],
+            ),
           ),
+          if (onClose != null) ...[
+            IconButton(
+              icon: const Icon(Icons.close),
+              tooltip: 'Close',
+              onPressed: onClose,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+            ),
+          ],
         ],
       ),
     );

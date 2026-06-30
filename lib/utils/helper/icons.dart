@@ -42,5 +42,8 @@ class AppIcons {
 
   // Normal
   static const locationOn = 'assets/icons/location_on.svg';
-  static const defaultIcon = 'assets/icons/history';
+  static const defaultIcon = 'assets/icons/history.svg';
+  static const drawerSubServicePlaceholder =
+      'assets/icons/playlist_add_check.svg';
+  static const submitButtonIcon = 'assets/icons/sumbit_button.svg';
 }

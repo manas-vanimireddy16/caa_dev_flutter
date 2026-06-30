@@ -30,6 +30,7 @@ class _SalalahNewItTechnicianRequestScreenState
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
     final user = ref.read(userProvider);
     final userInfo = ref.read(userInfoProvider);
+    final l10n = DashboardL10n.of(context);
 
     String? selectedServiceTypeId;
 
@@ -122,7 +123,7 @@ class _SalalahNewItTechnicianRequestScreenState
                           // maxLines: 3,
                           width: 150.toAutoScaledWidth,
                           child: Text(
-                            service?.name ?? 'Select Service Type',
+                            service.displayName(isArabic: l10n.isArabic),
                             maxLines: 3,
                           ),
                         ),

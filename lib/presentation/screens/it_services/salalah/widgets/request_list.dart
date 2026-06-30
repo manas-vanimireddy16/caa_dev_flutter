@@ -32,7 +32,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
       if (_actionItemsController != null) return;
       _actionItemsController = PagingController<int, ApprovalData>(
         getNextPageKey: (state) =>
-            ListPagination.nextPageKey(state),
+            ItHelpdeskListPagination.nextPageKey(state),
         fetchPage: (pageKey) => controller.loadActionItemsPage(
           pageKey,
           searchText: controller.searchController.text.trim(),
@@ -49,7 +49,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
     if (_myRequestsController != null) return;
     _myRequestsController = PagingController<int, SalalahRequestModel>(
       getNextPageKey: (state) =>
-          ListPagination.nextPageKey(state),
+          ItHelpdeskListPagination.nextPageKey(state),
       fetchPage: (pageKey) => controller.loadMyRequestsPage(
         pageKey,
         searchText: controller.searchController.text.trim(),

@@ -43,24 +43,19 @@ import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_mo
 import 'package:code_setup/presentation/screens/hc_service/models/grade_list_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
-import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
 import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
-import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
-import 'package:code_setup/repository/it_services/request_event_support/domain/domain.dart';
 import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
-import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
 import 'package:code_setup/utils/helper/list_pagination.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
-import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
@@ -149,7 +144,7 @@ class _LogisticsRequestPortalScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

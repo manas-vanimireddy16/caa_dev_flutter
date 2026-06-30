@@ -571,6 +571,9 @@ class DashboardL10n {
 
   String get dynamicFormSubmit => _t('Submit', 'إرسال');
 
+  String get noDescriptionProvided =>
+      _t('No description provided', 'لا يوجد وصف');
+
   String dynamicFormSubtitle(String title) =>
       _t('Provide details about your $title', 'قدّم تفاصيل حول $title');
 
@@ -749,30 +752,22 @@ class DashboardL10n {
 
   String get goodMorning => _t('Good Morning', 'صباح الخير');
 
-  String get latestAnnouncements =>
-      _t('Latest Announcements', 'آخر الإعلانات');
+  String get latestAnnouncements => _t('Latest Announcements', 'آخر الإعلانات');
 
   String get requestMaintenanceSubService =>
       _t('Request Maintenance', 'طلب صيانة');
 
-  String get maintenanceOfExternalServiceSubService => _t(
-    'Maintenance of External Service',
-    'صيانة المحطات الخارجية',
-  );
+  String get maintenanceOfExternalServiceSubService =>
+      _t('Maintenance of External Service', 'صيانة المحطات الخارجية');
 
-  String get importExportMaterialPermissionSubService => _t(
-    'Import/Export Material Permission',
-    'تصريح استيراد / تصدير المواد',
-  );
+  String get importExportMaterialPermissionSubService =>
+      _t('Import/Export Material Permission', 'تصريح استيراد / تصدير المواد');
 
   String get requestForStudyLeaveSubService =>
       _t('Request for Study Leave', 'طلب إجازة دراسية');
 
   /// Resolves sub-service title for list/dashboard headers (EN or AR).
-  String subServiceDisplayName({
-    String? englishName,
-    String? arabicName,
-  }) {
+  String subServiceDisplayName({String? englishName, String? arabicName}) {
     final en = englishName?.trim() ?? '';
     if (!isArabic) {
       return en.isNotEmpty ? en : ticketRequests;
@@ -802,7 +797,9 @@ class DashboardL10n {
     if (key == 'import/export material permission' ||
         key == 'import export material permission' ||
         key == 'permission' ||
-        key.contains('import') && key.contains('export') && key.contains('permission')) {
+        key.contains('import') &&
+            key.contains('export') &&
+            key.contains('permission')) {
       return importExportMaterialPermissionSubService;
     }
     if (key == 'complaint/lost property report' ||
@@ -1768,15 +1765,15 @@ class DashboardL10n {
   String logisticsVehicleRequiredForOption(String en) {
     switch (en) {
       case 'Conferences':
-        return _t('Conferences', 'المؤتمرات');
+        return _t('Conferences', 'مؤتمرات');
       case 'Celebrations and Official Meetings':
         return _t(
           'Celebrations and Official Meetings',
-          'الاحتفالات والاجتماعات الرسمية',
+          'احتفالات واجتماعات رسمية',
         );
       case 'others':
       case 'Others':
-        return _t('Others', 'أخرى');
+        return _t('Others', 'اخرى ');
       default:
         return en;
     }
@@ -1785,9 +1782,9 @@ class DashboardL10n {
   String logisticsPurposeOfTravelOption(String en) {
     switch (en) {
       case 'Site Visit':
-        return _t('Site Visit', 'زيارة موقع');
+        return _t('Site Visit', 'زيارة ميدانية');
       case 'Airport Duty':
-        return _t('Airport Duty', 'مهمة مطار');
+        return _t('Airport Duty', 'مهمة في المطار');
       case 'Official Meeting':
         return _t('Official Meeting', 'اجتماع رسمي');
       case 'Other':
@@ -1801,10 +1798,10 @@ class DashboardL10n {
     switch (en) {
       case 'Light vehicle':
       case 'Light Vehicle':
-        return _t('Light Vehicle', 'مركبة خفيفة');
+        return _t('Light Vehicle', 'المركبة الخفيفة');
       case 'Heavy vehicle':
       case 'Heavy Vehicle':
-        return _t('Heavy Vehicle', 'مركبة ثقيلة');
+        return _t('Heavy Vehicle', 'المركبة الثقيلة');
       default:
         return en;
     }

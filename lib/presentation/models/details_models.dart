@@ -1122,6 +1122,7 @@ class RequestModel {
   final String? vehicleNumber;
   final String? fuelCard;
   final String? expectedVehicleReturnTime;
+  final String? expectedVehicleReturnDate;
   final String? expectedReturnDate;
   final String? actualVehicleReturnTime;
   final String? actualReturnDate;
@@ -1595,6 +1596,7 @@ class RequestModel {
     this.vehicleNumber,
     this.fuelCard,
     this.expectedVehicleReturnTime,
+    this.expectedVehicleReturnDate,
     this.expectedReturnDate,
     this.actualVehicleReturnTime,
     this.actualReturnDate,
@@ -2194,6 +2196,7 @@ class RequestModel {
       vehicleNumber: json['vehicle_number'],
       fuelCard: json['fuel_card'],
       expectedVehicleReturnTime: json['expected_vehicle_return_time'],
+      expectedVehicleReturnDate: json['expected_vehicle_return_date'],
       expectedReturnDate: json['expected_return_date'],
       actualVehicleReturnTime: json['actual_vehicle_return_time'],
       actualReturnDate: json['actual_return_date'],

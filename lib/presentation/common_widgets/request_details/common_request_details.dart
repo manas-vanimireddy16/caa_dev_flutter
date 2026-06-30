@@ -78,6 +78,7 @@ class CommonRequestDetails extends StatelessWidget {
             headerIcon: AppIcons.requestInfoRequestDetails,
             info: requestInfo!,
             requestDetailsBuilder: requestDetailsLabelBuilder,
+            hideEmptyValues: true,
             customContent: table != null
                 ? RequestDetailTableRenderer(
                     table:

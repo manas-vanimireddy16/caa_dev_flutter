@@ -118,6 +118,8 @@ class _AnnualTrainingPlanDetailsScreenState
                 approverMap['department'],
             user: createdByUser,
             labelBuilder: l10n.requestDetailsLabel,
+
+            showStatusAndAssignedTo: selectedTab != 0,
           );
 
           return SingleChildScrollView(

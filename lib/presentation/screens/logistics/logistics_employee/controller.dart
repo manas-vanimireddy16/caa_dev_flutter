@@ -793,11 +793,16 @@ class _VSController extends StateNotifier<_ViewState> {
       "Travel Date To": request?.travelDateTo ?? 'N/A',
       "Duration": request?.duration.toString() ?? 'N/A',
       "Description": request?.description ?? 'N/A',
-      // 'Type Of Enquire': request?.titleOfEnquiry ?? 'N/A',
-      // 'Phone Number': request?.phone ?? 'N/A',
-      // 'Budget Code': request?.budgetCode ?? 'N/A',
-      // 'Estimated Cost': request?.estimatedCost ?? 'N/A',
-      // 'Request Type': request?.requestType ?? 'N/A',
+      "Request Title": request?.title ?? 'N/A',
+
+      'Driver Name': request?.driverName ?? 'N/A',
+      'Vehicle Number': request?.vehicleNumber ?? 'N/A',
+      'Fuel Card': request?.fuelCard ?? 'N/A',
+      'Vehicle Return Date': request?.expectedReturnDate ?? 'N/A',
+      'Vehicle Return Time': request?.expectedVehicleReturnTime ?? 'N/A',
+      'Request Type': request?.requestType ?? 'N/A',
+      'Vehicle Condition': request?.vehicleCondition ?? 'N/A',
+      'Reason': request?.reason ?? 'N/A',
     };
   }
 
@@ -969,6 +974,10 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: true,
       placeholder: l10n.enterRequestTitle,
+      validator: (value, values) {
+        final word = value.toString().trim();
+        if (word.length < 5) return 'Must be at least 5 characters';
+      },
     ),
     DynamicField(
       name: 'type_of_request',
@@ -1035,8 +1044,24 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'travel_date_from',
       label: l10n.travelDateFrom,
       placeholder: l10n.select,
+      firstDate: DateTime.now(),
       type: FieldType.date,
       required: true,
+      onChanged: (value, ref) {
+        final toValue = ref
+            .read(dynamicFormProvider)
+            .values['travel_date_to']
+            ?.toString();
+        if (toValue == null || toValue.isEmpty) return;
+
+        final fromDate = DateTime.tryParse(value?.toString() ?? '');
+        final toDate = DateTime.tryParse(toValue);
+        if (fromDate != null && toDate != null && toDate.isBefore(fromDate)) {
+          ref
+              .read(dynamicFormProvider.notifier)
+              .updateValue('travel_date_to', '');
+        }
+      },
     ),
     DynamicField(
       name: 'travel_date_to',
@@ -1044,6 +1069,14 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: l10n.select,
       type: FieldType.date,
       required: true,
+      firstDateWhen: (values) {
+        final from = values['travel_date_from']?.toString();
+        if (from != null && from.isNotEmpty) {
+          final parsed = DateTime.tryParse(from);
+          if (parsed != null) return parsed;
+        }
+        return DateTime.now();
+      },
     ),
     DynamicField(
       name: 'duration',
@@ -1068,7 +1101,7 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: l10n.writeHereAr,
     ),
     DynamicField(
-      name: 'attachment',
+      name: 'attachments',
       label: l10n.attachFileOptional,
       type: FieldType.file,
       required: false,

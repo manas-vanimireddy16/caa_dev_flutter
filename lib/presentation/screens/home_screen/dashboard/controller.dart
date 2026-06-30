@@ -107,7 +107,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> initState() async {
     final savedRole = await KAuthCred().getSelectedRole();
     if (savedRole != null) {
-      // await Future.wait([fetchRequests(), fetchActionItems()]);
+      await Future.wait([fetchRequests(), fetchActionItems()]);
       return;
     }
 

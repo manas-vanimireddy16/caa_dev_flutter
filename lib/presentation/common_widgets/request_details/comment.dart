@@ -17,9 +17,10 @@ class _CommentsRoutingStyles {
   static const borderColor = Color(0xFFE5E7EB);
   static const fieldFill = Color(0xFFF3F4F6);
   static const needMoreInfoGreen = Color(0xFF1B5E3B);
-  static const approveGreen = Color(0xFF2E9B5F);
+  static const approveGreen = Color(0xFF0D652D);
   static const rejectRed = Color(0xFFC02211);
   static const cardBackground = Color(0xFFFAFAFA);
+  static const allocateBlue = Color(0xFF0274D1);
 }
 
 enum CommentStatus { pending, validating, approved }
@@ -231,6 +232,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
     bool disabled = false,
   }) {
     final isDisabled = widget.buttonsDisabled || disabled;
+    final borderRadius = BorderRadius.circular(4.toAutoScaledWidth);
 
     return ElevatedButton(
       onPressed: isDisabled ? null : onTap,
@@ -238,7 +240,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
         minimumSize: WidgetStateProperty.all(Size(0, 36.toAutoScaledHeight)),
         padding: WidgetStateProperty.all(
           EdgeInsets.symmetric(
-            horizontal: 14.toAutoScaledWidth,
+            horizontal: 8.toAutoScaledWidth,
             vertical: 8.toAutoScaledHeight,
           ),
         ),
@@ -248,27 +250,38 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           }
           return color;
         }),
+        shadowColor: WidgetStateProperty.all(Colors.transparent),
         elevation: WidgetStateProperty.all(0),
         shape: WidgetStateProperty.all(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
-          ),
+          RoundedRectangleBorder(borderRadius: borderRadius),
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ...[icon, SizedBox(width: 6.toAutoScaledWidth)],
-          Text(
-            text,
-            style: AppTextStyles.cairo(
-              color: Colors.white.withValues(alpha: isDisabled ? 0.7 : 1),
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+          if (icon != null) ...[icon, SizedBox(width: 4.toAutoScaledWidth)],
+          Flexible(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.cairo(
+                color: Colors.white.withValues(alpha: isDisabled ? 0.7 : 1),
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _whiteActionIcon(String assetPath) {
+    return SvgPicture.asset(
+      assetPath,
+      width: 14.toAutoScaledWidth,
+      height: 14.toAutoScaledHeight,
     );
   }
 
@@ -638,59 +651,64 @@ class _AddCommentBoxState extends State<AddCommentBox> {
 
       case ActionButtonsType.approveReject:
         return Row(
-          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _actionButton(
-              l10n.commentButtonApprove,
-              _CommentsRoutingStyles.approveGreen,
-              () async {
-                await widget.onApprove?.call();
-              },
-              icon: SvgPicture.asset(
-                'assets/icons/check_circle_24dp_white.svg',
-                width: 18.toAutoScaledWidth,
-                height: 18.toAutoScaledHeight,
+            Expanded(
+              child: _actionButton(
+                l10n.commentButtonApprove,
+                _CommentsRoutingStyles.approveGreen,
+                () async {
+                  await widget.onApprove?.call();
+                },
+                icon: _whiteActionIcon('assets/icons/check_circle_24dp_white.svg'),
               ),
             ),
             SizedBox(width: 8.toAutoScaledWidth),
-            _actionButton(
-              l10n.commentButtonReject,
-              _CommentsRoutingStyles.rejectRed,
-              () async {
-                await widget.onReject?.call();
-              },
-              icon: SvgPicture.asset(
-                'assets/icons/close_24dp_white.svg',
-                width: 18.toAutoScaledWidth,
-                height: 18.toAutoScaledHeight,
+            Expanded(
+              child: _actionButton(
+                l10n.commentButtonReject,
+                _CommentsRoutingStyles.rejectRed,
+                () async {
+                  await widget.onReject?.call();
+                },
+                icon: _whiteActionIcon('assets/icons/close_24dp_white.svg'),
               ),
             ),
           ],
         );
       case ActionButtonsType.approveRejectAllocateVehicle:
-        return Wrap(
+        return Row(
           children: [
-            _actionButton(
-              l10n.commentButtonApprove,
-              const Color(0xFF0D652D),
-              () async {
-                await widget.onApprove?.call();
-              },
+            Expanded(
+              child: _actionButton(
+                l10n.commentButtonAllocateVehicle,
+                _CommentsRoutingStyles.allocateBlue,
+                () async {
+                  await widget.onAssign?.call();
+                },
+                icon: _whiteActionIcon('assets/icons/check_circle_24dp_white.svg'),
+              ),
             ),
-            10.toHorizontalSizedBox,
-            _actionButton(
-              l10n.commentButtonReject,
-              const Color(0xFFC02211),
-              () async {
-                await widget.onReject?.call();
-              },
+            SizedBox(width: 8.toAutoScaledWidth),
+            Expanded(
+              child: _actionButton(
+                l10n.commentButtonReject,
+                _CommentsRoutingStyles.rejectRed,
+                () async {
+                  await widget.onReject?.call();
+                },
+                icon: _whiteActionIcon('assets/icons/close_24dp_white.svg'),
+              ),
             ),
-            _actionButton(
-              l10n.commentButtonAllocateVehicle,
-              const Color.fromARGB(189, 2, 116, 209),
-              () async {
-                await widget.onAssign?.call();
-              },
+            SizedBox(width: 8.toAutoScaledWidth),
+            Expanded(
+              child: _actionButton(
+                l10n.commentButtonApprove,
+                _CommentsRoutingStyles.approveGreen,
+                () async {
+                  await widget.onApprove?.call();
+                },
+                icon: _whiteActionIcon('assets/icons/check_circle_24dp_white.svg'),
+              ),
             ),
           ],
         );

@@ -10,6 +10,7 @@ import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/core_widgets/list_tile_divider.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/assets/icons.dart';
+import 'package:code_setup/utils/helper/drawer_service_icon.dart';
 import 'package:code_setup/utils/helper/sub_service_route_resolver.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
@@ -124,101 +125,103 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
             ],
           ),
           drawer: KDrawer(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 8.toAutoScaledWidth,
-                    right: 4.toAutoScaledWidth,
-                    top: 12.toAutoScaledHeight,
-                  ),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: const Icon(Icons.close),
-                      tooltip: 'Close',
-                      onPressed: () => _closeDrawer(tabsContext),
+            child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 12.toAutoScaledHeight),
+                    child: KDrawerHeader(
+                      onClose: () => _closeDrawer(tabsContext),
                     ),
                   ),
-                ),
-                20.toVerticalSizedBox,
-                const KDrawerHeader(),
-                20.toVerticalSizedBox,
-                KDivider(color: Colors.grey, padding: EdgeInsets.zero),
-                20.toVerticalSizedBox,
-                Padding(
-                  padding: EdgeInsets.only(left: 10.toAutoScaledWidth),
-                  child: Row(
-                    children: [
-                      KImageProvider(
-                        image: KIcons.security,
-                        height: 20.toAutoScaledHeight,
-                        width: 20.toAutoScaledWidth,
-                        tintColor: Colors.black,
-                      ),
-                      16.toHorizontalSizedBox,
-                      Expanded(
-                        child: Text(
-                          widget.service.name ?? '',
-                          style: AppTextStyles.serviceScreenTitle(),
+                  20.toVerticalSizedBox,
+                  KDivider(color: Colors.grey, padding: EdgeInsets.zero),
+                  20.toVerticalSizedBox,
+                  Padding(
+                    padding: EdgeInsets.only(left: 10.toAutoScaledWidth),
+                    child: Row(
+                      children: [
+                        KImageProvider(
+                          image: KIcons.security,
+                          height: 20.toAutoScaledHeight,
+                          width: 20.toAutoScaledWidth,
+                          tintColor: Colors.black,
                         ),
-                      ),
-                    ],
+                        16.toHorizontalSizedBox,
+                        Expanded(
+                          child: Text(
+                            widget.service.name ?? '',
+                            style: AppTextStyles.serviceScreenTitle(),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                10.toVerticalSizedBox,
-                Expanded(
-                  child: ListView.separated(
-                    padding: EdgeInsets.zero,
-                    itemCount: destinations.length + 1,
-                    separatorBuilder: (_, __) => const SizedBox(height: 4),
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
+                  10.toVerticalSizedBox,
+                  Expanded(
+                    child: ListView.separated(
+                      padding: EdgeInsets.zero,
+                      itemCount: destinations.length + 1,
+                      separatorBuilder: (_, __) => const SizedBox(height: 4),
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return DrawerMenuItem(
+                            data: DrawerItemData(
+                              index: 0,
+                              icon: KImageProvider(image: KIcons.dashboard),
+                              label: 'Dashboard',
+                            ),
+                            isSelected: activeIndex == 0,
+                            currentTheme: theme,
+                            onTap: () {
+                              tabsRouter.setActiveIndex(0);
+                              _closeDrawer(context);
+                            },
+                          );
+                        }
+
+                        final destination = destinations[index - 1];
+                        final subService = destination.subService;
+
                         return DrawerMenuItem(
                           data: DrawerItemData(
-                            index: 0,
-                            icon: KImageProvider(image: KIcons.dashboard),
-                            label: 'Dashboard',
+                            index: index,
+                            icon: KImageProvider(
+                              image: DrawerServiceIcon.pathForSubService(
+                                subServiceCode: subService.code,
+                                serviceCode: widget.service.code,
+                                serviceName: subService.subServiceName,
+                              ),
+                              height: 22.toAutoScaledHeight,
+                              width: 22.toAutoScaledWidth,
+                            ),
+                            label:
+                                subService.subServiceName ??
+                                subService.code ??
+                                'Unnamed sub-service',
+                            code: subService.code,
                           ),
-                          isSelected: activeIndex == 0,
+                          isSelected: activeIndex == index,
                           currentTheme: theme,
                           onTap: () {
-                            tabsRouter.setActiveIndex(0);
+                            ref
+                                .read(selectedServiceProvider.notifier)
+                                .state = SelectedServiceState(
+                              service: widget.service,
+                              subService: subService,
+                            );
+                            tabsRouter.setActiveIndex(index);
                             _closeDrawer(context);
                           },
                         );
-                      }
-
-                      final destination = destinations[index - 1];
-
-                      return DrawerMenuItem(
-                        data: DrawerItemData(
-                          index: index,
-                          icon: KImageProvider(image: KIcons.dashboard),
-                          label:
-                              destination.subService.subServiceName ??
-                              destination.subService.code ??
-                              'Unnamed sub-service',
-                          code: destination.subService.code,
-                        ),
-                        isSelected: activeIndex == index,
-                        currentTheme: theme,
-                        onTap: () {
-                          ref
-                              .read(selectedServiceProvider.notifier)
-                              .state = SelectedServiceState(
-                            service: widget.service,
-                            subService: destination.subService,
-                          );
-                          tabsRouter.setActiveIndex(index);
-                          _closeDrawer(context);
-                        },
-                      );
-                    },
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           body: AnimatedSwitcher(

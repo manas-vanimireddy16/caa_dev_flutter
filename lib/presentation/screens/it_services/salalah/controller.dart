@@ -478,20 +478,17 @@ class _VSController extends StateNotifier<_ViewState> {
     final request = state.requestDetails.request;
     final approvals = state.requestDetails.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
+    final assignedTo = buildAssignedToLabel(approvals);
+
     return {
-      "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": formatDate(request?.createdAt) ?? 'N/A',
-      "Assigned To": approvals?[0].approverRole?.name ?? 'N/A',
-      if (approvals?[0].approverUser?.email?.isNotEmpty == true) ...{
-        'Approver': approvals?[0].approverUser?.email ?? 'N/A',
-      },
-      // "Last Updated":
-      //     request?.updatedAt?.split('T').first ?? 'N/A',
+      if (assignedTo.trim().isNotEmpty && assignedTo != 'N/A')
+        'Assigned To': assignedTo,
+      'Approval Status': request?.status ?? 'N/A',
+      'Requested Date': formatDate(request?.createdAt) ?? 'N/A',
       if (nextApprover.containsKey('department'))
         'Department': nextApprover['department']!,
       if (nextApprover.containsKey('section'))
         'Section': nextApprover['section']!,
-
       if (nextApprover.containsKey('name'))
         'Approver Name': nextApprover['name']!,
       if (nextApprover.containsKey('email'))
@@ -722,14 +719,18 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.serviceType,
       type: FieldType.select,
       required: true,
-      options: (state.serviceDropDown ?? [])
-          .map(
-            (service) => DropdownOption(
-              value: service.id.toString(), // ✅ FIX
-              label: service.name ?? '',
-            ),
-          )
-          .toList(),
+      optionsBuilder: (ref) {
+        final currentState = ref.watch(_vsProvider(params));
+
+        return (currentState.serviceDropDown ?? [])
+            .map(
+              (service) => DropdownOption(
+                value: service.id.toString(),
+                label: service.displayName(isArabic: l10n.isArabic),
+              ),
+            )
+            .toList();
+      },
     ),
 
     /// ================= PROBLEM =================
@@ -1173,8 +1174,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
     try {
       return await dashboardinstance.getRequests(
-        offset: ListPagination.offsetForPage(pageKey),
-        limit: ListPagination.pageSize,
+        offset: ItHelpdeskListPagination.offsetForPage(pageKey),
+        limit: ItHelpdeskListPagination.pageSize,
         searchText: searchText,
         status: status,
         serviceId: service.id ?? 0,
@@ -1197,8 +1198,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
     try {
       return await dashboardinstance.getActionItems(
-        offset: ListPagination.offsetForPage(pageKey),
-        limit: ListPagination.pageSize,
+        offset: ItHelpdeskListPagination.offsetForPage(pageKey),
+        limit: ItHelpdeskListPagination.pageSize,
         searchText: searchText,
         status: status,
         serviceId: service.id ?? 0,
@@ -1806,7 +1807,7 @@ class _VSController extends StateNotifier<_ViewState> {
       final response = await dashboardinstance.sendRequest(payload);
 
       if (response['status'] == 'success') {
-        await Future.delayed(const Duration(milliseconds: 1200));
+        await Future.delayed(const Duration(milliseconds: 2000));
         _refreshDashboard();
       }
     } catch (e, st) {

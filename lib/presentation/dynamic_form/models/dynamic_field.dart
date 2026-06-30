@@ -33,6 +33,8 @@ class DynamicField {
   final DateTime? firstDate;
   final DateTime? lastDate;
   final DateTime? initialDate;
+  final DateTime? Function(Map<String, dynamic> values)? firstDateWhen;
+  final DateTime? Function(Map<String, dynamic> values)? lastDateWhen;
 
   const DynamicField({
     required this.name,
@@ -58,6 +60,8 @@ class DynamicField {
     this.firstDate,
     this.lastDate,
     this.initialDate,
+    this.firstDateWhen,
+    this.lastDateWhen,
   });
 }
 

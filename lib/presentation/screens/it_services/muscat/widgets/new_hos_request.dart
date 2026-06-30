@@ -34,6 +34,7 @@ class _MuscatHOSNewRequestScreenState
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
     final userInfo = ref.read(userInfoProvider);
+    final l10n = DashboardL10n.of(context);
 
     return Scaffold(
       appBar: KAppBar(title: const Text('New Ticket')),
@@ -186,7 +187,7 @@ class _MuscatHOSNewRequestScreenState
                           value: s.id.toString(),
                           child: SizedBox(
                             width: 150.toAutoScaledWidth,
-                            child: Text(s.name ?? ''),
+                            child: Text(s.displayName(isArabic: l10n.isArabic)),
                           ),
                         ),
                       )

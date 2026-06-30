@@ -169,11 +169,28 @@ class _DateFieldWidgetState extends ConsumerState<DateFieldWidget> {
                     } catch (_) {}
                   }
 
+                  final resolvedFirstDate =
+                      widget.field.firstDateWhen?.call(values) ??
+                      widget.field.firstDate ??
+                      DateTime(1900);
+                  final resolvedLastDate =
+                      widget.field.lastDateWhen?.call(values) ??
+                      widget.field.lastDate ??
+                      DateTime(2100);
+
+                  var pickerInitialDate = widget.field.initialDate ?? initialDate;
+                  if (pickerInitialDate.isBefore(resolvedFirstDate)) {
+                    pickerInitialDate = resolvedFirstDate;
+                  }
+                  if (pickerInitialDate.isAfter(resolvedLastDate)) {
+                    pickerInitialDate = resolvedLastDate;
+                  }
+
                   final pickedDate = await KAppX.extendedRouter.showKDatePicker(
                     context: KAppX.currentContext,
-                    initialDate: widget.field.initialDate ?? initialDate,
-                    firstDate: widget.field.firstDate ?? DateTime(1900),
-                    lastDate: widget.field.lastDate ?? DateTime(2100),
+                    initialDate: pickerInitialDate,
+                    firstDate: resolvedFirstDate,
+                    lastDate: resolvedLastDate,
                   );
 
                   if (pickedDate != null) {

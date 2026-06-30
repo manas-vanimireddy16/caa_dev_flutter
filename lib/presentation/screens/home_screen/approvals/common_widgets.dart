@@ -164,6 +164,8 @@ class ProfileCard extends StatelessWidget {
         normalized.contains('دور') ||
         normalized.contains('department') ||
         normalized.contains('دائرة') ||
+        normalized.contains('section') ||
+        normalized.contains('قسم') ||
         normalized.contains('employee id') ||
         normalized.contains('موظف')) {
       return AppIcons.departmentEmployeeCard;

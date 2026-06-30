@@ -89,12 +89,14 @@ class _AssignmentDecisionDetailsScreenState
             assignedTo: controller.buildAssignedToLabel(approvals),
             user: createdByUser,
             labelBuilder: l10n.requestDetailsLabel,
+
+            showStatusAndAssignedTo: selectedTab != 0,
           );
 
           return SingleChildScrollView(
             child: Column(
               children: [
-                5.toHorizontalSizedBox,
+                16.toVerticalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,

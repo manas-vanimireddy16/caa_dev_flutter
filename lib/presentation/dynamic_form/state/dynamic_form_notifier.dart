@@ -820,6 +820,69 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
     return errors.isEmpty;
   }
 
+  bool isStepValid(List<DynamicField> fields) {
+    for (final field in fields) {
+      final value = state.values[field.name];
+      final isDisabled =
+          field.disabled || (field.disabledWhen?.call(state.values) ?? false);
+
+      if (isDisabled) continue;
+
+      if (field.type == FieldType.file) {
+        final files = value as List<FileUploadItem>?;
+        final isRequired =
+            field.required || (field.requiredWhen?.call(state.values) ?? false);
+
+        if (isRequired && (files == null || files.isEmpty)) {
+          return false;
+        }
+        continue;
+      }
+
+      if (field.type == FieldType.acknowledgement) {
+        final items = value as List<AcknowledgementItem>?;
+
+        if (items == null || items.isEmpty) {
+          return false;
+        }
+
+        final hasUncheckedRequired = items.any(
+          (item) => item.isRequired && !item.isChecked,
+        );
+
+        if (hasUncheckedRequired) {
+          return false;
+        }
+
+        continue;
+      }
+
+      if (field.validator != null) {
+        final error = field.validator!(value, state.values);
+        if (error != null) {
+          return false;
+        }
+      }
+
+      final isRequired =
+          field.required || (field.requiredWhen?.call(state.values) ?? false);
+
+      if (isRequired) {
+        if (value == null) {
+          return false;
+        }
+        if (value is String && value.trim().isEmpty) {
+          return false;
+        }
+        if (value is List && value.isEmpty) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   /// ------------------------------------------------
   /// STEPS
   /// ------------------------------------------------

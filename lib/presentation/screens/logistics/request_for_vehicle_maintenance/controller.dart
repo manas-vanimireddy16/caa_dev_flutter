@@ -1484,8 +1484,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // 3️⃣ Send request
       await vehicleMaintenanceInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
-      KAppX.router.pop();
+      await Future.delayed(Duration(seconds: 1));
+      // KAppX.router.pop();
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
@@ -1961,6 +1961,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void _refreshDashboard() {
+    Future.delayed(Duration(seconds: 2));
     fetchKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());

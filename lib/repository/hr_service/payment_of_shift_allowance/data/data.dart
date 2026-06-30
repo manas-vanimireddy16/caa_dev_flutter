@@ -24,11 +24,12 @@ import 'package:http_parser/http_parser.dart';
 
 class PaymentofShiftAllowanceRepositoryImple
     implements PaymentofShiftAllowanceRepository {
+  static const String _serviceLabel = 'Payment of Shift Allowance';
   @override
   Future<List<EmployeeList>> getUsers(int departmentId) async {
     final client = await KAppX.network.secureClient();
     if (client == null) {
-      throw Exception("HTTP client not initialized");
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     }
 
     try {
@@ -53,13 +54,11 @@ class PaymentofShiftAllowanceRepositoryImple
             .toList();
       }
 
-      throw Exception(
-        'Failed to fetch positions request for coverage: ${response.statusCode}',
-      );
+      throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
     } catch (e, st) {
       debugPrint('getUsers error: $e');
       debugPrintStack(stackTrace: st);
-      throw Exception("Error fetching positions request for coverage");
+      throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }
 
@@ -72,7 +71,7 @@ class PaymentofShiftAllowanceRepositoryImple
 
     try {
       if (client == null) {
-        throw ApiException('Client is null — cannot send Study Leave request');
+        throw ApiException('Client is null - cannot create $_serviceLabel request');
       }
 
       final response = await client.post(url, data: payload);
@@ -208,7 +207,7 @@ class PaymentofShiftAllowanceRepositoryImple
         return LocationListResponseModel.fromJson(data);
       } else {
         final errorMessage =
-            response.data?['message'] ?? 'Unexpected error occurred';
+            response.data?['message'] ?? 'Failed to process $_serviceLabel request';
         throw ApiException(errorMessage);
       }
     } on DioException catch (error) {
@@ -240,17 +239,17 @@ class PaymentofShiftAllowanceRepositoryImple
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
       return null;
     } on DioException catch (error) {
-      log('caught dio error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching KPI data $e');
+      log('Failed to fetch $_serviceLabel KPI data: $e');
       throw ApiException(e.toString());
     }
   }
@@ -276,17 +275,17 @@ class PaymentofShiftAllowanceRepositoryImple
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
       return null;
     } on DioException catch (error) {
-      log('caught dio error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching KPI data $e');
+      log('Failed to fetch $_serviceLabel KPI data: $e');
       throw ApiException(e.toString());
     }
   }
@@ -316,17 +315,17 @@ class PaymentofShiftAllowanceRepositoryImple
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
-      log('caught error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching status breakdown $e');
+      log('Failed to fetch $_serviceLabel status breakdown: $e');
       throw ApiException(e.toString());
     }
   }
@@ -355,17 +354,17 @@ class PaymentofShiftAllowanceRepositoryImple
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
-      log('caught error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching trend breakdown $e');
+      log('Failed to fetch $_serviceLabel trend breakdown: $e');
       throw ApiException(e.toString());
     }
   }
@@ -395,17 +394,17 @@ class PaymentofShiftAllowanceRepositoryImple
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
-      log('caught error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching status breakdown $e');
+      log('Failed to fetch $_serviceLabel status breakdown: $e');
       throw ApiException(e.toString());
     }
   }
@@ -438,17 +437,17 @@ class PaymentofShiftAllowanceRepositoryImple
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     } on DioException catch (error) {
-      log('caught error');
+      log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
       throw ApiException(message);
     } catch (e) {
-      log('error fetching trend breakdown $e');
+      log('Failed to fetch $_serviceLabel trend breakdown: $e');
       throw ApiException(e.toString());
     }
   }
@@ -493,9 +492,7 @@ class PaymentofShiftAllowanceRepositoryImple
               .map((e) => TemporaryDecision.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
-          throw Exception(
-            'Failed to fetch request for payment of shift allowance request: ${response.statusCode}',
-          );
+          throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
         }
       } else {
         return [];
@@ -557,7 +554,7 @@ class PaymentofShiftAllowanceRepositoryImple
           return actionItems;
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -590,11 +587,11 @@ class PaymentofShiftAllowanceRepositoryImple
           return response.data["message"] ?? "Success";
         } else {
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Something went wrong";
+          return response.data["message"] ?? "Failed to process $_serviceLabel request";
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
-        return "Something went wrong";
+        return "Client is null - cannot process $_serviceLabel request";
       }
     } on DioException catch (e) {
       debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
@@ -625,11 +622,11 @@ class PaymentofShiftAllowanceRepositoryImple
           return response.data["message"] ?? "Success";
         } else {
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Something went wrong";
+          return response.data["message"] ?? "Failed to process $_serviceLabel request";
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
-        return "Something went wrong";
+        return "Client is null - cannot process $_serviceLabel request";
       }
     } on DioException catch (e) {
       debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
@@ -644,7 +641,7 @@ class PaymentofShiftAllowanceRepositoryImple
   Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
     final client = await KAppX.network.secureClient();
     if (client == null) {
-      throw ApiException('Client is null');
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
     }
 
     final url = ApiEndPoint.paymentForShiftAllowanceAttachmentById(
@@ -657,7 +654,7 @@ class PaymentofShiftAllowanceRepositoryImple
           response.statusCode != 201 &&
           response.statusCode != 204) {
         throw ApiException(
-          response.data?['message'] ?? 'Failed to delete attachment',
+          response.data?['message'] ?? 'Failed to delete $_serviceLabel attachment',
         );
       }
     } on DioException catch (error) {
@@ -716,13 +713,13 @@ class PaymentofShiftAllowanceRepositoryImple
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw Exception('Failed: ${response.statusCode}');
+          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching chatById details: $e");
+      throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }
 
@@ -744,13 +741,13 @@ class PaymentofShiftAllowanceRepositoryImple
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw Exception('Failed: ${response.statusCode}');
+          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching attachmentById details: $e");
+      throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }
 
@@ -780,13 +777,13 @@ class PaymentofShiftAllowanceRepositoryImple
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw Exception('Failed: ${response.statusCode}');
+          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
         }
       } else {
         return null;
       }
     } catch (e) {
-      throw Exception("Error fetching request details: $e");
+      throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }
 
@@ -815,7 +812,7 @@ class PaymentofShiftAllowanceRepositoryImple
         debugPrint('❌ Client is null — cannot Fail to Assign Employee');
       }
     } on DioException catch (e) {
-      log('caught error');
+      log('Failed to process $_serviceLabel request');
       final message = e.response?.data['message'] ?? e.message;
       throw ApiException(message);
       throw e;
@@ -852,13 +849,13 @@ class PaymentofShiftAllowanceRepositoryImple
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw Exception('Failed: ${response.statusCode}');
+          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
         }
       } else {
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching chatById details: $e");
+      throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }
 
@@ -887,7 +884,7 @@ class PaymentofShiftAllowanceRepositoryImple
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching engineers: $e");
+      throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }
 
@@ -915,7 +912,7 @@ class PaymentofShiftAllowanceRepositoryImple
         return [];
       }
     } catch (e) {
-      throw Exception("Error fetching roles list: $e");
+      throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }
 
@@ -944,7 +941,7 @@ class PaymentofShiftAllowanceRepositoryImple
         debugPrint('❌ Client is null — cannot Fail to Assign engineer');
       }
     } on DioException catch (e) {
-      log('caught error');
+      log('Failed to process $_serviceLabel request');
       final message = e.response?.data['message'] ?? e.message;
       throw ApiException(message);
       throw e;

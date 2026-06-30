@@ -18,6 +18,7 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool? centerTitle;
   final Future<bool> Function()? onPopCallback;
   final bool showArrow;
+  final bool useCloseButton;
   final double? leadingWidth;
   final bool automaticallyImplyLeading;
   final double titleSpacing;
@@ -36,6 +37,7 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.centerTitle,
     this.onPopCallback,
     this.showArrow = false,
+    this.useCloseButton = false,
     this.leadingWidth,
     this.automaticallyImplyLeading = true,
     this.titleSpacing = 0,
@@ -82,8 +84,9 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
     final ModalRoute<dynamic>? parentRoute = ModalRoute.of(context);
     final canPop = parentRoute?.canPop ?? false;
-    final useCloseButton =
+    final routeWantsCloseButton =
         parentRoute is PageRoute<dynamic> && parentRoute.fullscreenDialog;
+    final showCloseButton = this.useCloseButton || routeWantsCloseButton;
 
     return SafeArea(
       child: AppBar(
@@ -102,7 +105,7 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
                         );
                       } else {
                         widget = KBackButton(
-                          cancel: useCloseButton,
+                          cancel: showCloseButton,
                           onPressed: onBackButtonPressed,
                           color: foregroundColor,
                         );

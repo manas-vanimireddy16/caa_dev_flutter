@@ -17,7 +17,10 @@ import 'package:code_setup/presentation/dynamic_form/widget/fields/time_field_wi
 import 'package:code_setup/presentation/dynamic_form/widget/fields/toggle_field_widget.dart';
 import 'package:code_setup/presentation/dynamic_form/widget/step_header.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -169,9 +172,12 @@ class DynamicForm extends ConsumerStatefulWidget {
 
   /// When non-null, the **Next** button is only enabled if this returns true
   /// for the current step (e.g. custom widgets storing state outside [values]).
-  final bool Function(WidgetRef ref, int currentStep, Map<String, dynamic>
-          values)?
-      canProceedFromStep;
+  final bool Function(
+    WidgetRef ref,
+    int currentStep,
+    Map<String, dynamic> values,
+  )?
+  canProceedFromStep;
 
   const DynamicForm({
     super.key,
@@ -248,6 +254,7 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
 
     return KScaffold(
       appBar: KAppBar(
+        useCloseButton: true,
         title: Text(
           widget.title,
           style: TextStyle(
@@ -258,84 +265,146 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
       ),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            20.toVerticalSizedBox,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.dynamicFormSubtitle(widget.title),
+                style: TextStyle(
+                  fontSize: currentTheme.fontSizes.s15,
+                  fontWeight: currentTheme.fontWeights.wRegular,
+                  color: const Color(0XFF818184),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Divider(color: Color(0xFFE6E6EA), height: 1, thickness: 1),
+              const SizedBox(height: 16),
 
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.toAutoScaledWidth),
-              child: Wrap(
-                children: [
-                  Text(
-                    l10n.dynamicFormSubtitle(widget.title),
-                    style: TextStyle(
-                      fontSize: currentTheme.fontSizes.s15,
-                      fontWeight: currentTheme.fontWeights.wRegular,
-                      color: const Color(0XFF818184),
-                    ),
+              if (widget.steps.length > 1) ...[
+                StepHeader(currentStep: currentStep, steps: widget.stepTitles),
+                const SizedBox(height: 16),
+              ],
+
+              /// Scrollable form fields — submit sits at the end on the last step
+              Expanded(
+                child: ListView(
+                  controller: _scrollController,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom + 16,
                   ),
-                ],
+                  children: [
+                    for (final field in visibleFields)
+                      FieldRenderer(field: field),
+                    if (isLastStep) ...[
+                      if (currentStep > 0) ...[
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: notifier.previousStep,
+                            child: Text(l10n.dynamicFormPrevious),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      _FormSubmitButton(
+                        l10n: l10n,
+                        visibleFields: visibleFields,
+                        onSubmit: () {
+                          if (notifier.validateStep(visibleFields)) {
+                            widget.onSubmit(state.values);
+                          }
+                        },
+                        enableSubmitWhen: widget.enableSubmitWhen,
+                      ),
+                    ],
+                  ],
+                ),
               ),
-            ),
 
-            if (widget.steps.length == 1) 20.toVerticalSizedBox,
-
-            if (widget.steps.length > 1)
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: StepHeader(
+              if (!isLastStep)
+                _FormStepNavigationBar(
+                  l10n: l10n,
+                  showPrevious: currentStep > 0,
+                  visibleFields: visibleFields,
+                  onPrevious: notifier.previousStep,
+                  onNext: () {
+                    if (notifier.validateStep(visibleFields)) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      Future.microtask(() {
+                        notifier.nextStep();
+                      });
+                    }
+                  },
+                  canProceedFromStep: widget.canProceedFromStep,
                   currentStep: currentStep,
-                  steps: widget.stepTitles,
                 ),
-              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-            /// 🔥 MAIN SCROLL AREA
-            Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
+class _FormSubmitButton extends ConsumerWidget {
+  final DashboardL10n l10n;
+  final List<DynamicField> visibleFields;
+  final VoidCallback onSubmit;
+  final bool Function(Map<String, dynamic> values)? enableSubmitWhen;
 
-                /// 👇 dismiss keyboard on scroll
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
+  const _FormSubmitButton({
+    required this.l10n,
+    required this.visibleFields,
+    required this.onSubmit,
+    this.enableSubmitWhen,
+  });
 
-                /// 🔥 KEY FIX → dynamic bottom padding
-                padding: EdgeInsets.fromLTRB(
-                  16,
-                  0,
-                  16,
-                  MediaQuery.of(context).viewInsets.bottom + 20,
-                ),
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final formState = ref.watch(dynamicFormProvider);
+    final notifier = ref.read(dynamicFormProvider.notifier);
 
-                itemCount: visibleFields.length,
-                itemBuilder: (_, index) {
-                  return FieldRenderer(field: visibleFields[index]);
-                },
-              ),
+    var enableSubmit = notifier.isStepValid(visibleFields);
+    if (enableSubmitWhen != null) {
+      enableSubmit = enableSubmit && enableSubmitWhen!(formState.values);
+    }
+
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: enableSubmit
+              ? AppColors.buttonGreen
+              : const Color(0xFFB8C9BA),
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: const Color(0xFFB8C9BA),
+          disabledForegroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        onPressed: enableSubmit ? onSubmit : null,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            KImageProvider(
+              image: AppIcons.submitButtonIcon,
+              width: 14,
+              height: 14,
+              tintColor: Colors.white,
             ),
-
-            _BottomActionBar(
-              l10n: l10n,
-              showPrevious: currentStep > 0,
-              isLast: isLastStep,
-              onPrevious: notifier.previousStep,
-              onNext: () {
-                if (notifier.validateStep(visibleFields)) {
-                  /// 🔥 IMPORTANT (already correct in your code)
-                  FocusManager.instance.primaryFocus?.unfocus();
-
-                  Future.microtask(() {
-                    notifier.nextStep();
-                  });
-                }
-              },
-              onSubmit: () {
-                if (notifier.validateStep(visibleFields)) {
-                  widget.onSubmit(state.values);
-                }
-              },
-              enableSubmitWhen: widget.enableSubmitWhen,
-              canProceedFromStep: widget.canProceedFromStep,
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                l10n.dynamicFormSubmit,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),
@@ -344,28 +413,27 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
   }
 }
 
-class _BottomActionBar extends ConsumerWidget {
+class _FormStepNavigationBar extends ConsumerWidget {
   final DashboardL10n l10n;
   final bool showPrevious;
-  final bool isLast;
+  final List<DynamicField> visibleFields;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
-  final VoidCallback onSubmit;
+  final int currentStep;
+  final bool Function(
+    WidgetRef ref,
+    int currentStep,
+    Map<String, dynamic> values,
+  )?
+  canProceedFromStep;
 
-  final bool Function(Map<String, dynamic> values)? enableSubmitWhen;
-
-  final bool Function(WidgetRef ref, int currentStep, Map<String, dynamic>
-          values)?
-      canProceedFromStep;
-
-  const _BottomActionBar({
+  const _FormStepNavigationBar({
     required this.l10n,
     required this.showPrevious,
-    required this.isLast,
+    required this.visibleFields,
     required this.onPrevious,
     required this.onNext,
-    required this.onSubmit,
-    this.enableSubmitWhen,
+    required this.currentStep,
     this.canProceedFromStep,
   });
 
@@ -373,15 +441,8 @@ class _BottomActionBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final formState = ref.watch(dynamicFormProvider);
 
-    bool enableSubmit = true;
-
-    /// run validation rule if provided
-    if (enableSubmitWhen != null) {
-      enableSubmit = enableSubmitWhen!(formState.values);
-    }
-
-    bool enableNext = true;
-    if (!isLast && canProceedFromStep != null) {
+    var enableNext = true;
+    if (canProceedFromStep != null) {
       enableNext = canProceedFromStep!(
         ref,
         formState.currentStep,
@@ -389,14 +450,8 @@ class _BottomActionBar extends ConsumerWidget {
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(blurRadius: 8, color: Colors.black.withOpacity(0.08)),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
       child: Row(
         children: [
           if (showPrevious)
@@ -406,28 +461,20 @@ class _BottomActionBar extends ConsumerWidget {
                 child: Text(l10n.dynamicFormPrevious),
               ),
             ),
-
           if (showPrevious) const SizedBox(width: 12),
-
           Expanded(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: isLast
-                    ? const Color(0xFF0D652D)
-                    : Colors.white,
-                foregroundColor: isLast
-                    ? Colors.white
-                    : const Color(0xFF0D652D),
-                side: isLast
-                    ? BorderSide.none
-                    : const BorderSide(color: Colors.grey),
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF0D652D),
+                side: const BorderSide(color: Colors.grey),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-              onPressed: isLast
-                  ? (enableSubmit ? onSubmit : null)
-                  : (enableNext ? onNext : null),
-              child: Text(
-                isLast ? l10n.dynamicFormSubmit : l10n.dynamicFormNext,
-              ),
+              onPressed: enableNext ? onNext : null,
+              child: Text(l10n.dynamicFormNext),
             ),
           ),
         ],

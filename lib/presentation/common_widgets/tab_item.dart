@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class TabItem extends StatelessWidget {
   static const _tabBorderColor = Color(0xFFBFBFBF);
-  static const _tabWidth = 140.0;
+  static const _tabWidth = 168.0;
   static const _tabHeight = 38.0;
   static const _tabGap = 8.0;
 

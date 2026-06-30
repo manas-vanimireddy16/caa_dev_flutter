@@ -56,6 +56,7 @@ import 'package:code_setup/repository/it_services/request_event_support/domain/d
 import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
 import 'package:code_setup/repository/logistics/transportation_for_foreign_employee/domain/domain.dart';
 import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
@@ -152,15 +153,15 @@ class _LogisticsForeignersRequestPortalScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
           /// KPI
           StatSummaryRow(
             stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -179,6 +180,7 @@ class _LogisticsForeignersRequestPortalScreenState
             ),
             breakdown: state.statusBreakdown.data,
           ),
+          16.toVerticalSizedBox,
 
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
@@ -193,7 +195,7 @@ class _LogisticsForeignersRequestPortalScreenState
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

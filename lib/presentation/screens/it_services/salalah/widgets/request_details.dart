@@ -84,7 +84,7 @@ class _SalalahRequestDetailsTabScreenState
           return SingleChildScrollView(
             child: Column(
               children: [
-                5.toHorizontalSizedBox,
+                16.toVerticalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
@@ -101,6 +101,8 @@ class _SalalahRequestDetailsTabScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   CommonRequestDetails(
                     statusInformationTitle: l10n.requestDetailsLabel(
@@ -123,6 +125,8 @@ class _SalalahRequestDetailsTabScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
 
                   CommentsCard(
@@ -171,6 +175,8 @@ class _SalalahRequestDetailsTabScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   CommonAttachmentsTabContent(
                     attachments: attachments,
@@ -191,6 +197,8 @@ class _SalalahRequestDetailsTabScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   ITServicesRequestWorkflowTimeline(
                     details: state.requestDetails,

@@ -99,7 +99,7 @@ class _AppealAgainstAdministrativeDecisionsDetailsScreenState
           return SingleChildScrollView(
             child: Column(
               children: [
-                5.toHorizontalSizedBox,
+                16.toVerticalSizedBox,
                 RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
@@ -116,6 +116,8 @@ class _AppealAgainstAdministrativeDecisionsDetailsScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   CommonRequestDetails(
                     statusInfo: controller.buildStatusInformation(),
@@ -132,6 +134,8 @@ class _AppealAgainstAdministrativeDecisionsDetailsScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   CommentsCard(
                     from: widget.from,
@@ -187,6 +191,8 @@ class _AppealAgainstAdministrativeDecisionsDetailsScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   CommonAttachmentsTabContent(
                     attachments: attachments,
@@ -205,6 +211,8 @@ class _AppealAgainstAdministrativeDecisionsDetailsScreenState
                     assignedTo: controller.buildAssignedToLabel(approvals),
                     user: createdByUser,
                     labelBuilder: l10n.requestDetailsLabel,
+
+                    showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   RequestWorkflowTimeline(details: state.requestDetails),
                 ],

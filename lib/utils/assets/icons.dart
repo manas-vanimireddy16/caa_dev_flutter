@@ -68,36 +68,6 @@ class KIcons {
   static const premiumSubscriptionIcon =
       'assets/icon/premim_subscription_icon.svg';
   static const myTransactionIcon = 'assets/icon/my_transactions_icon.svg';
+
+  /// Placeholder for drawer sub-service icons until service-specific assets are added.
 }
-
-// import 'package:flutter/material.dart';
-
-// class KIcons {
-//   KIcons._();
-
-//   static const IconData account = Icons.account_circle;
-//   static const IconData download = Icons.download;
-//   static const IconData home = Icons.home;
-//   static const IconData menu = Icons.menu;
-//   static const IconData records = Icons.receipt_long;
-//   static const IconData reports = Icons.assessment;
-//   static const IconData share = Icons.share;
-//   static const IconData view = Icons.visibility;
-//   static const IconData notification = Icons.notifications;
-//   static const IconData camera = Icons.camera_alt;
-//   static const IconData gallery = Icons.photo_library;
-//   static const IconData location = Icons.location_on;
-//   static const IconData question = Icons.help_outline;
-//   static const IconData success = Icons.check_circle_outline;
-//   static const IconData logout = Icons.logout;
-//   static const IconData settings = Icons.settings;
-//   static const IconData support = Icons.support_agent;
-//   static const IconData termsCondition = Icons.description;
-//   static const IconData newsBlogs = Icons.article;
-//   static const IconData manageMembers = Icons.group;
-//   static const IconData paymentSuccess = Icons.check_circle;
-//   static const IconData paymentFail = Icons.cancel;
-//   static const IconData subscription = Icons.subscriptions;
-//   static const IconData premium = Icons.workspace_premium;
-//   static const IconData transactions = Icons.receipt_long;
-// }

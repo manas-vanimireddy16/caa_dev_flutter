@@ -1,5 +1,7 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/icons.dart';
 import 'package:flutter/material.dart';
 
 class ProfileCard extends StatelessWidget {
@@ -115,6 +117,7 @@ class ProfileCard extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: InfoRow(
+                  iconAsset: _getIconAssetForKey(entry.key),
                   icon: _getIconForKey(entry.key),
                   title: entry.key,
                   text: entry.value,
@@ -128,26 +131,51 @@ class ProfileCard extends StatelessWidget {
   }
 
   /// Helper: Map field names to icons
+  String? _getIconAssetForKey(String key) {
+    if (_isPhoneKey(key)) return AppIcons.phoneEmployeeCard;
+    return null;
+  }
+
+  bool _isPhoneKey(String key) {
+    final normalized = key.toLowerCase();
+    return normalized.contains('phone') || key.contains('هاتف');
+  }
+
   IconData _getIconForKey(String key) {
-    switch (key.toLowerCase()) {
+    final normalized = key.toLowerCase();
+    if (_isPhoneKey(key)) return Icons.phone;
+    if (normalized.contains('email') || normalized.contains('mail') || key.contains('بريد')) {
+      return Icons.email;
+    }
+    if (normalized.contains('location') || key.contains('موقع')) {
+      return Icons.location_on;
+    }
+    if (normalized.contains('role') || key.contains('دور')) {
+      return Icons.work;
+    }
+    if (normalized.contains('department') || key.contains('دائرة')) {
+      return Icons.apartment;
+    }
+    if (normalized.contains('section') || key.contains('قسم')) {
+      return Icons.apartment;
+    }
+    if (normalized.contains('designation')) {
+      return Icons.badge;
+    }
+
+    switch (normalized) {
       case "email":
         return Icons.email;
-
       case "phone":
         return Icons.phone;
-
       case "location":
         return Icons.location_on;
-
       case "role":
         return Icons.work;
-
       case "department":
         return Icons.apartment;
-
       case "designation":
         return Icons.badge;
-
       default:
         return Icons.info_outline;
     }
@@ -156,12 +184,14 @@ class ProfileCard extends StatelessWidget {
 
 class InfoRow extends StatelessWidget {
   final IconData icon;
+  final String? iconAsset;
   final String title;
   final String text;
 
   const InfoRow({
     super.key,
     required this.icon,
+    this.iconAsset,
     required this.title,
     required this.text,
   });
@@ -175,7 +205,15 @@ class InfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: Colors.indigo.shade900, size: 20.toAutoScaledHeight),
+        if (iconAsset != null)
+          KImageProvider(
+            image: iconAsset,
+            width: 20.toAutoScaledHeight,
+            height: 20.toAutoScaledHeight,
+            tintColor: Colors.indigo.shade900,
+          )
+        else
+          Icon(icon, color: Colors.indigo.shade900, size: 20.toAutoScaledHeight),
 
         12.toHorizontalSizedBox,
 

@@ -36,6 +36,7 @@ import 'package:code_setup/presentation/screens/maintenance/models/station_model
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/common_dashboard_all_services/domain/domain.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/dashboard_request_details_navigator.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
@@ -124,7 +125,7 @@ class _LogisticsServicesDashboardScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

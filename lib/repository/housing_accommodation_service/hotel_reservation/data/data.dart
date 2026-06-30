@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 
 class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
+  static const String _serviceLabel = 'Hotel Reservation';
+
   @override
   Future<Map<String, dynamic>> hotelReservationCreateRequest(
     Map<String, dynamic> payload,
@@ -27,27 +29,32 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
 
     try {
       if (client == null) {
-        throw ApiException('Client is null — cannot send Study Leave request');
+        throw ApiException(
+          'Client is null — cannot create $_serviceLabel request',
+        );
       }
 
       final response = await client.post(url, data: payload);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         ShowFlutterToast().showFlutterToastSuccess(
-          response.data['message'] ?? 'Request sent successfully',
+          response.data['message'] ?? '$_serviceLabel request sent successfully',
         );
         return response.data as Map<String, dynamic>; // ✅ RETURN HERE
       } else {
         ShowFlutterToast().showFlutterToastFailure(
-          response.data['message'] ?? 'Failed to send request',
+          response.data['message'] ??
+              'Failed to create $_serviceLabel request',
         );
         return response.data as Map<String, dynamic>; // ✅ RETURN HERE
       }
     } on DioException catch (e) {
-      final message = e.response?.data['message'] ?? e.message;
+      final message =
+          e.response?.data['message'] ??
+          'Failed to create $_serviceLabel request';
       throw ApiException(message);
     } catch (e) {
-      throw ApiException(e.toString());
+      throw ApiException('Failed to create $_serviceLabel request: $e');
     }
   }
 
@@ -59,7 +66,9 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
     final List<Map<String, dynamic>> uploadedResults = [];
 
     if (client == null) {
-      debugPrint('❌ Client is null — cannot send request');
+      debugPrint(
+        '❌ Client is null — cannot upload $_serviceLabel attachments',
+      );
       return uploadedResults;
     }
 
@@ -136,9 +145,12 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           );
         }
       } on DioException catch (e) {
-        debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+        debugPrint(
+          '❌ Failed to upload $_serviceLabel attachment: '
+          '${e.response?.data ?? e.message}',
+        );
       } catch (e) {
-        debugPrint('❌ Unexpected error: $e');
+        debugPrint('❌ Unexpected error uploading $_serviceLabel attachment: $e');
         throw e;
       }
     }
@@ -164,18 +176,21 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ??
+              'Failed to fetch $_serviceLabel KPI data';
           throw ApiException(errorMessage);
         }
       }
       return null;
     } on DioException catch (error) {
-      log('caught dio error');
-      final message = error.response?.data['message'] ?? error.message;
+      log('Failed to fetch $_serviceLabel KPI data');
+      final message =
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel KPI data';
       throw ApiException(message);
     } catch (e) {
-      log('error fetching KPI data $e');
-      throw ApiException(e.toString());
+      log('Failed to fetch $_serviceLabel KPI data: $e');
+      throw ApiException('Failed to fetch $_serviceLabel KPI data: $e');
     }
   }
 
@@ -200,18 +215,21 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ??
+              'Failed to fetch $_serviceLabel approval KPI data';
           throw ApiException(errorMessage);
         }
       }
       return null;
     } on DioException catch (error) {
-      log('caught dio error');
-      final message = error.response?.data['message'] ?? error.message;
+      log('Failed to fetch $_serviceLabel approval KPI data');
+      final message =
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel approval KPI data';
       throw ApiException(message);
     } catch (e) {
-      log('error fetching KPI data $e');
-      throw ApiException(e.toString());
+      log('Failed to fetch $_serviceLabel approval KPI data: $e');
+      throw ApiException('Failed to fetch $_serviceLabel approval KPI data: $e');
     }
   }
 
@@ -240,18 +258,25 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ??
+              'Failed to fetch $_serviceLabel approval status breakdown';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException(
+        'Client is null — cannot fetch $_serviceLabel approval status breakdown',
+      );
     } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
+      log('Failed to fetch $_serviceLabel approval status breakdown');
+      final message =
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel approval status breakdown';
       throw ApiException(message);
     } catch (e) {
-      log('error fetching status breakdown $e');
-      throw ApiException(e.toString());
+      log('Failed to fetch $_serviceLabel approval status breakdown: $e');
+      throw ApiException(
+        'Failed to fetch $_serviceLabel approval status breakdown: $e',
+      );
     }
   }
 
@@ -283,18 +308,25 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ??
+              'Failed to fetch $_serviceLabel approval trend breakdown';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException(
+        'Client is null — cannot fetch $_serviceLabel approval trend breakdown',
+      );
     } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
+      log('Failed to fetch $_serviceLabel approval trend breakdown');
+      final message =
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel approval trend breakdown';
       throw ApiException(message);
     } catch (e) {
-      log('error fetching trend breakdown $e');
-      throw ApiException(e.toString());
+      log('Failed to fetch $_serviceLabel approval trend breakdown: $e');
+      throw ApiException(
+        'Failed to fetch $_serviceLabel approval trend breakdown: $e',
+      );
     }
   }
 
@@ -323,18 +355,23 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ??
+              'Failed to fetch $_serviceLabel status breakdown';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException(
+        'Client is null — cannot fetch $_serviceLabel status breakdown',
+      );
     } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
+      log('Failed to fetch $_serviceLabel status breakdown');
+      final message =
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel status breakdown';
       throw ApiException(message);
     } catch (e) {
-      log('error fetching status breakdown $e');
-      throw ApiException(e.toString());
+      log('Failed to fetch $_serviceLabel status breakdown: $e');
+      throw ApiException('Failed to fetch $_serviceLabel status breakdown: $e');
     }
   }
 
@@ -366,18 +403,23 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ??
+              'Failed to fetch $_serviceLabel trend breakdown';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null');
+      throw ApiException(
+        'Client is null — cannot fetch $_serviceLabel trend breakdown',
+      );
     } on DioException catch (error) {
-      log('caught error');
-      final message = error.response?.data['message'] ?? error.message;
+      log('Failed to fetch $_serviceLabel trend breakdown');
+      final message =
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel trend breakdown';
       throw ApiException(message);
     } catch (e) {
-      log('error fetching trend breakdown $e');
-      throw ApiException(e.toString());
+      log('Failed to fetch $_serviceLabel trend breakdown: $e');
+      throw ApiException('Failed to fetch $_serviceLabel trend breakdown: $e');
     }
   }
 
@@ -423,15 +465,20 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
               )
               .toList();
         } else {
-          throw Exception(
-            'Failed to fetch Accommodation Muscat request: ${response.statusCode}',
+          throw ApiException(
+            'Failed to fetch $_serviceLabel requests: ${response.statusCode}',
           );
         }
       } else {
         return [];
       }
+    } on DioException catch (error) {
+      final message =
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel requests';
+      throw ApiException(message);
     } catch (e) {
-      throw Exception("Error fetching Accommodation Muscat request: $e");
+      throw ApiException('Failed to fetch $_serviceLabel requests: $e');
     }
   }
 
@@ -486,7 +533,8 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           return actionItems;
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Unexpected error occurred';
+              response.data?['message'] ??
+              'Failed to fetch $_serviceLabel action items';
           throw ApiException(errorMessage);
         }
       }
@@ -495,10 +543,11 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
       return [];
     } on DioException catch (error) {
       final message =
-          '${error.response?.data['message']} Accommodation Muscat request';
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel action items';
       throw ApiException(message);
     } catch (e) {
-      throw ApiException('${e.toString()} Accommodation Muscat request');
+      throw ApiException('Failed to fetch $_serviceLabel action items: $e');
     }
   }
 
@@ -513,24 +562,34 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           ShowFlutterToast().showFlutterToastSuccess(
-            response.data['message'] ?? 'Request sent successfully',
+            response.data['message'] ??
+                '$_serviceLabel chat message sent successfully',
           );
-          debugPrint('✅ Message sent successfully');
+          debugPrint('✅ $_serviceLabel chat message sent successfully');
 
           return response.data["message"] ?? "Success";
         } else {
-          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Something went wrong";
+          debugPrint(
+            '⚠️ Failed to send $_serviceLabel chat message: '
+            '${response.statusCode}',
+          );
+          return response.data["message"] ??
+              'Failed to send $_serviceLabel chat message';
         }
       } else {
-        debugPrint('❌ Client is null — cannot send request');
-        return "Something went wrong";
+        debugPrint(
+          '❌ Client is null — cannot send $_serviceLabel chat message',
+        );
+        return 'Client is null — cannot send $_serviceLabel chat message';
       }
     } on DioException catch (e) {
-      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      debugPrint(
+        '❌ Failed to send $_serviceLabel chat message: '
+        '${e.response?.data ?? e.message}',
+      );
       throw e;
     } catch (e) {
-      debugPrint('❌ Unexpected error: $e');
+      debugPrint('❌ Unexpected error sending $_serviceLabel chat message: $e');
       throw e;
     }
   }
@@ -546,24 +605,34 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           ShowFlutterToast().showFlutterToastSuccess(
-            response.data['message'] ?? 'Request sent successfully',
+            response.data['message'] ??
+                '$_serviceLabel attachment sent successfully',
           );
-          debugPrint('✅ Message sent successfully');
+          debugPrint('✅ $_serviceLabel attachment sent successfully');
 
           return response.data["message"] ?? "Success";
         } else {
-          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Something went wrong";
+          debugPrint(
+            '⚠️ Failed to send $_serviceLabel attachment: '
+            '${response.statusCode}',
+          );
+          return response.data["message"] ??
+              'Failed to send $_serviceLabel attachment';
         }
       } else {
-        debugPrint('❌ Client is null — cannot send request');
-        return "Something went wrong";
+        debugPrint(
+          '❌ Client is null — cannot send $_serviceLabel attachment',
+        );
+        return 'Client is null — cannot send $_serviceLabel attachment';
       }
     } on DioException catch (e) {
-      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      debugPrint(
+        '❌ Failed to send $_serviceLabel attachment: '
+        '${e.response?.data ?? e.message}',
+      );
       throw e;
     } catch (e) {
-      debugPrint('❌ Unexpected error: $e');
+      debugPrint('❌ Unexpected error sending $_serviceLabel attachment: $e');
       throw e;
     }
   }
@@ -572,7 +641,9 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
   Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
     final client = await KAppX.network.secureClient();
     if (client == null) {
-      throw ApiException('Client is null');
+      throw ApiException(
+        'Client is null — cannot delete $_serviceLabel attachment',
+      );
     }
 
     final url = ApiEndPoint.hotelReservationDeleteAttachment(attachmentId);
@@ -583,11 +654,14 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           response.statusCode != 201 &&
           response.statusCode != 204) {
         throw ApiException(
-          response.data?['message'] ?? 'Failed to delete attachment',
+          response.data?['message'] ??
+              'Failed to delete $_serviceLabel attachment',
         );
       }
     } on DioException catch (error) {
-      final message = error.response?.data['message'] ?? error.message;
+      final message =
+          error.response?.data['message'] ??
+          'Failed to delete $_serviceLabel attachment';
       throw ApiException(message);
     }
   }
@@ -605,21 +679,30 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           ShowFlutterToast().showFlutterToastSuccess(
             '${response.data['message']}',
           );
-          debugPrint('✅ Request sent successfully');
+          debugPrint('✅ $_serviceLabel request approved successfully');
         } else {
-          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          debugPrint(
+            '⚠️ Failed to approve $_serviceLabel request: '
+            '${response.statusCode}',
+          );
           ShowFlutterToast().showFlutterToastFailure(
-            '${response.statusMessage}',
+            response.data?['message'] ??
+                'Failed to approve $_serviceLabel request',
           );
         }
       } else {
-        debugPrint('❌ Client is null — cannot send request');
+        debugPrint(
+          '❌ Client is null — cannot approve $_serviceLabel request',
+        );
       }
     } on DioException catch (e) {
-      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      debugPrint(
+        '❌ Failed to approve $_serviceLabel request: '
+        '${e.response?.data ?? e.message}',
+      );
       throw e;
     } catch (e) {
-      debugPrint('❌ Unexpected error: $e');
+      debugPrint('❌ Unexpected error approving $_serviceLabel request: $e');
       throw e;
     }
   }
@@ -642,13 +725,20 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw Exception('Failed: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel chat messages: ${response.statusCode}',
+          );
         }
       } else {
         return [];
       }
+    } on DioException catch (error) {
+      final message =
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel chat messages';
+      throw ApiException(message);
     } catch (e) {
-      throw Exception("Error fetching chatById details: $e");
+      throw ApiException('Failed to fetch $_serviceLabel chat messages: $e');
     }
   }
 
@@ -670,13 +760,20 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw Exception('Failed: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel attachments: ${response.statusCode}',
+          );
         }
       } else {
         return [];
       }
+    } on DioException catch (error) {
+      final message =
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel attachments';
+      throw ApiException(message);
     } catch (e) {
-      throw Exception("Error fetching attachmentById details: $e");
+      throw ApiException('Failed to fetch $_serviceLabel attachments: $e');
     }
   }
 
@@ -706,13 +803,20 @@ class HotelReservationRepoistoryImple implements HotelReservationRepoistory {
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw Exception('Failed: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel request details: ${response.statusCode}',
+          );
         }
       } else {
         return null;
       }
+    } on DioException catch (error) {
+      final message =
+          error.response?.data['message'] ??
+          'Failed to fetch $_serviceLabel request details';
+      throw ApiException(message);
     } catch (e) {
-      throw Exception("Error fetching request details: $e");
+      throw ApiException('Failed to fetch $_serviceLabel request details: $e');
     }
   }
 }
