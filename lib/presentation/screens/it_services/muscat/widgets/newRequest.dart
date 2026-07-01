@@ -58,7 +58,7 @@ class _MuscatEmployeeNewRequestScreenState
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: l10n.salalahNewRequest,
+          title: 'New Request',
           stepTitles: const [''],
           steps: [controller.buildSalalahFields(l10n)],
 

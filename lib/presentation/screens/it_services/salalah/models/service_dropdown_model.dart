@@ -37,6 +37,8 @@ class ServiceData {
   final String? nameInArabic;
   final int? serviceId;
   final int? subServiceId;
+  final int? departmentId;
+  final int? sectionId;
   final String? description;
   final bool? isActive;
   final Service? service;
@@ -48,6 +50,8 @@ class ServiceData {
     this.nameInArabic,
     this.serviceId,
     this.subServiceId,
+    this.departmentId,
+    this.sectionId,
     this.description,
     this.isActive,
     this.service,
@@ -61,6 +65,8 @@ class ServiceData {
       nameInArabic: json['name_in_arabic'],
       serviceId: json['service_id'],
       subServiceId: json['sub_service_id'],
+      departmentId: json['department_id'],
+      sectionId: json['section_id'],
       description: json['description'],
       isActive: json['is_active'],
       service: json['service'] != null
@@ -89,6 +95,8 @@ class ServiceData {
       'name_in_arabic': nameInArabic,
       'service_id': serviceId,
       'sub_service_id': subServiceId,
+      'department_id': departmentId,
+      'section_id': sectionId,
       'description': description,
       'is_active': isActive,
       'service': service?.toJson(),

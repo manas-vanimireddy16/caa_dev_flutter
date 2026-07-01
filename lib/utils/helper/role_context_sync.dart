@@ -11,6 +11,7 @@ class RoleContextSync {
   RoleContextSync._();
 
   static Future<void> syncAfterRoleChange(SelectedUserRole role) async {
+    log('syncAfterRoleChange');
     try {
       final user = await KAuthCred().getUserInfoData();
       // final userInfo = await KAuthCred().getUserInfoData();

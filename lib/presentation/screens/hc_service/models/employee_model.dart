@@ -19,6 +19,7 @@ class EmployeesResponse {
 class EmployeeSummary {
   final int? userId;
   final String? employeeName;
+  // final String? employeeArabicName;
   final String? email;
   final String? mobile;
 
@@ -46,6 +47,7 @@ class EmployeeSummary {
     this.lastRequestId,
     this.lastStatus,
     this.lastHandledAt,
+    // this.employeeArabicName,
   });
 
   factory EmployeeSummary.fromJson(Map<String, dynamic> json) {
@@ -64,6 +66,7 @@ class EmployeeSummary {
       lastHandledAt: json['last_handled_at'] != null
           ? DateTime.tryParse(json['last_handled_at'])
           : null,
+      // employeeArabicName: json['employee_arabic_name'] as String?,
     );
   }
 }

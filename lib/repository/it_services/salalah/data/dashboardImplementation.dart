@@ -295,15 +295,11 @@ class DashboardRepositoryImpl implements DashboardRepository {
       if (client != null) {
         final url = ApiEndPoint.salalahITTechnician;
 
-        /// Build query parameters dynamically
         final queryParams = {
-          "role_name": "IT Technician",
-          "department_id": departmentId.toString(),
-          "section_id": sectionId.toString(),
+          'role_name': 'IT Technician',
+          'department_id': departmentId.toString(),
+          'section_id': sectionId.toString(),
         };
-
-        /// Remove null values
-        queryParams.removeWhere((key, value) => value == null);
 
         final response = await client.get(url, queryParameters: queryParams);
 

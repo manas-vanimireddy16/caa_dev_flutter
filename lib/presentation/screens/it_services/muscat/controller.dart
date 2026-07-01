@@ -585,7 +585,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> openNewRequestForm() async {
-    await fetchitTechnician();
+    clearItTechnicians();
     KAppX.router.push(
       MuscatEmployeeNewRequestRoute(
         serviceId: service.id ?? 0,
@@ -629,7 +629,7 @@ class _VSController extends StateNotifier<_ViewState> {
         DropdownOption(value: 'Behalf of', label: l10n.behalfOf),
       ],
 
-      onChanged: (value, ref) {
+      onChanged: (value, ref) async {
         final notifier = ref.read(dynamicFormProvider.notifier);
 
         if (value == 'Self') {
@@ -648,8 +648,12 @@ class _VSController extends StateNotifier<_ViewState> {
             'department': userInfo?.data?.department?.id?.toString(),
             'section': userInfo?.data?.section?.id?.toString(),
           });
+
+          await ref
+              .read(_vsProvider(params).notifier)
+              .fetchItTechniciansForForm(ref);
         } else {
-          /// ✅ CLEAR ALL FIELDS FOR BEHALF
+          ref.read(_vsProvider(params).notifier).clearItTechnicians();
           notifier.autoPopulate({
             'person_name': '',
             'contact_number': '',
@@ -658,6 +662,8 @@ class _VSController extends StateNotifier<_ViewState> {
             'email': '',
             'problem': '',
             'description': '',
+            'service_type': '',
+            'assigned_to': '',
           });
         }
       },
@@ -704,6 +710,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
         /// ✅ RESET SELECTED SECTION
         notifier.updateValue('section', '');
+        notifier.updateValue('assigned_to', '');
+
+        ref.read(_vsProvider(params).notifier).clearItTechnicians();
 
         final departmentId = int.tryParse(value.toString()) ?? 0;
 
@@ -725,9 +734,9 @@ class _VSController extends StateNotifier<_ViewState> {
       disabledWhen: (values) => (values['request_for'] ?? 'Self') == 'Self',
 
       optionsBuilder: (ref) {
-        final state = ref.watch(_vsProvider(params));
+        final sectionState = ref.watch(_vsProvider(params));
 
-        return (state.sections ?? [])
+        return (sectionState.sections ?? [])
             .map(
               (s) => DropdownOption(
                 value: s.id.toString(),
@@ -735,6 +744,15 @@ class _VSController extends StateNotifier<_ViewState> {
               ),
             )
             .toList();
+      },
+
+      onChanged: (value, ref) async {
+        final notifier = ref.read(dynamicFormProvider.notifier);
+        notifier.updateValue('assigned_to', '');
+        ref.read(_vsProvider(params).notifier).updateTechnicianId(0);
+        await ref
+            .read(_vsProvider(params).notifier)
+            .fetchItTechniciansForForm(ref);
       },
     ),
 
@@ -755,6 +773,24 @@ class _VSController extends StateNotifier<_ViewState> {
               ),
             )
             .toList();
+      },
+
+      onChanged: (value, ref) async {
+        final notifier = ref.read(dynamicFormProvider.notifier);
+        notifier.updateValue('assigned_to', '');
+
+        final serviceTypeId = int.tryParse(value?.toString() ?? '') ?? 0;
+        ref
+            .read(_vsProvider(params).notifier)
+            .updateServiceTypeId(serviceTypeId);
+        ref.read(_vsProvider(params).notifier).updateTechnicianId(0);
+
+        await ref
+            .read(_vsProvider(params).notifier)
+            .fetchItTechniciansForForm(
+              ref,
+              serviceTypeId: serviceTypeId,
+            );
       },
     ),
 
@@ -797,18 +833,36 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.assignedTo,
       type: FieldType.select,
       required: true,
+      placeholder: l10n.isArabic
+          ? 'اختر نوع الخدمة أولاً'
+          : 'Select service type first',
 
       visibleWhen: (values) => userRoleInfo?.roleId == 4,
 
       requiredWhen: (values) => userRoleInfo?.roleId == 4,
-      optionsBuilder: (ref) => (state.itTechnician ?? [])
-          .map(
-            (user) => DropdownOption(
-              value: user.userId.toString(), // ✅ FIX
-              label: '\u200E${user.employeeName ?? ''}',
-            ),
-          )
-          .toList(),
+
+      disabledWhen: (values) {
+        final serviceType = values['service_type']?.toString() ?? '';
+        return serviceType.isEmpty;
+      },
+
+      optionsBuilder: (ref) {
+        final technicianState = ref.watch(_vsProvider(params));
+
+        return (technicianState.itTechnician)
+            .map(
+              (user) => DropdownOption(
+                value: user.userId.toString(),
+                label: '\u200E${user.employeeName ?? ''}',
+              ),
+            )
+            .toList();
+      },
+
+      onChanged: (value, ref) {
+        final technicianId = int.tryParse(value?.toString() ?? '') ?? 0;
+        ref.read(_vsProvider(params).notifier).updateTechnicianId(technicianId);
+      },
     ),
 
     /// ================= EXTENSION NUMBER =================
@@ -1137,14 +1191,25 @@ class _VSController extends StateNotifier<_ViewState> {
     /// SHOW CLOSE + REJECT
     /// =========================================================
     ///
-    if (status == 'pending' && level.approverUserId == 9 ||
-        level.approverRoleId == 30 && level.level == 1) {
-      debugPrint('✅ SHOW ASSIGN BUTTON');
+    if (status == 'pending' && level.level == 1 && level.approverRoleId == 4) {
+      debugPrint('✅ SHOW CLOSE + REJECT');
+
+      return ActionButtonsType.reassignCloseReject;
+    }
+    if (status == 'pending' && level.approverUserId != null) {
+      debugPrint('✅ SHOW CLOSE + REJECT');
 
       return ActionButtonsType.closeReject;
     }
+
+    // if (status == 'pending' && level.approverUserId == 9 ||
+    //     level.approverRoleId == 30 && level.level == 1) {
+    //   // debugPrint('✅ SHOW ASSIGN BUTTON');
+
+    //   return ActionButtonsType.closeReject;
+    // }
     if (status == 'pending' && level.level == 1) {
-      debugPrint('✅ SHOW CLOSE + REJECT');
+      // debugPrint('✅ SHOW CLOSE + REJECT');
 
       return ActionButtonsType.assign;
     } else if (status == 'pending' && level.level == 2) {
@@ -1492,29 +1557,74 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchitTechnician() async {
+  void clearItTechnicians() {
+    state = state.copyWith(itTechnician: [], itTechnicianId: 0);
+  }
+
+  ServiceData? _findServiceType(int serviceTypeId) {
+    for (final service in state.serviceDropDown) {
+      if (service.id == serviceTypeId) {
+        return service;
+      }
+    }
+    return null;
+  }
+
+  Future<void> fetchItTechniciansForForm(
+    WidgetRef ref, {
+    int? serviceTypeId,
+  }) async {
+    final formValues = ref.read(dynamicFormProvider).values;
+
+    final serviceType =
+        serviceTypeId ??
+        int.tryParse(formValues['service_type']?.toString() ?? '') ??
+        0;
+
+    if (serviceType <= 0) {
+      clearItTechnicians();
+      return;
+    }
+
+    final selectedService = _findServiceType(serviceType);
+    if (selectedService == null) {
+      clearItTechnicians();
+      return;
+    }
+
+    final dept = selectedService.departmentId ?? 0;
+    final section = selectedService.sectionId ?? 0;
+
+    await fetchitTechnician(
+      departmentId: dept,
+      sectionId: section,
+    );
+  }
+
+  Future<void> fetchitTechnician({
+    required int departmentId,
+    required int sectionId,
+  }) async {
+    if (departmentId <= 0 || sectionId <= 0) {
+      clearItTechnicians();
+      return;
+    }
+
     try {
-      final userInfo = KAppX.globalProvider.read(userInfoProvider);
-      final departmentId =
-          int.tryParse(userInfo?.data?.department?.id ?? '') ?? 0;
-      final sectionId = int.tryParse(userInfo?.data?.section?.id ?? '') ?? 0;
+      state = state.copyWith(itTechnician: [], itTechnicianId: 0);
+
       final itTechnician = await dashboardinstance.getItTechnicianDetails(
         departmentId: departmentId,
         sectionId: sectionId,
       );
 
-      if (itTechnician != null) {
-        state = state.copyWith(itTechnician: itTechnician.data);
-        for (var user in state.itTechnician ?? []) {
-          print(
-            "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",
-          );
-          print('${user.employeeName} , ${user.userId}');
-        }
-      }
+      state = state.copyWith(itTechnician: itTechnician.data ?? []);
     } on ApiException catch (apiError) {
+      clearItTechnicians();
       Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
+    } catch (e) {
+      clearItTechnicians();
+    }
   }
 
   Future<void> fetchTrendBreakDown(String period) async {
@@ -1787,7 +1897,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // 3️⃣ Send request
       await dashboardinstance.onClose(payload);
       KAppX.router.pop();
-      KAppX.router.pop();
+      // KAppX.router.pop();
       refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');

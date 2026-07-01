@@ -2798,6 +2798,7 @@ class DepartmentModel {
   final String? createdAt;
   final int? updatedBy;
   final String? updatedAt;
+  final String? departmentNameInArabic;
 
   DepartmentModel({
     this.jsonIgnore,
@@ -2810,6 +2811,7 @@ class DepartmentModel {
     this.createdAt,
     this.updatedBy,
     this.updatedAt,
+    this.departmentNameInArabic,
   });
 
   factory DepartmentModel.fromJson(Map<String, dynamic> json) {
@@ -2826,6 +2828,7 @@ class DepartmentModel {
       createdAt: json["created_at"],
       updatedBy: json["updated_by"],
       updatedAt: json["updated_at"],
+      departmentNameInArabic: json["department_arabic_name"],
     );
   }
   Map<String, dynamic> toJson() => {
@@ -2848,6 +2851,7 @@ class SectionModel {
   final String? createdAt;
   final int? updatedBy;
   final String? updatedAt;
+  final String? sectionNameInArabic;
 
   SectionModel({
     this.jsonIgnore,
@@ -2861,6 +2865,7 @@ class SectionModel {
     this.createdAt,
     this.updatedBy,
     this.updatedAt,
+    this.sectionNameInArabic,
   });
 
   factory SectionModel.fromJson(Map<String, dynamic> json) {
@@ -2880,6 +2885,7 @@ class SectionModel {
       createdAt: json["created_at"],
       updatedBy: json["updated_by"],
       updatedAt: json["updated_at"],
+      sectionNameInArabic: json["section_arabic_name"],
     );
   }
   Map<String, dynamic> toJson() => {

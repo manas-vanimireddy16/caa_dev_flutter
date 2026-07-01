@@ -20,7 +20,8 @@ class RequestTabs extends StatelessWidget {
       selectedIndex: selectedIndex,
       actionItemCount: actionItemCount,
       onTabChanged: onTabChanged,
-      myRequestsLabel: l10n.myRequests,
+      actionItemsFirst: true,
+      myRequestsLabel: l10n.myTickets,
       actionItemsLabel: l10n.actionItems,
     );
   }

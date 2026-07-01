@@ -300,6 +300,7 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
                     for (final field in visibleFields)
                       FieldRenderer(field: field),
                     if (isLastStep) ...[
+                      const SizedBox(height: 16),
                       if (currentStep > 0) ...[
                         SizedBox(
                           width: double.infinity,

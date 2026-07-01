@@ -155,7 +155,13 @@ class _SalalahDashboardState extends ConsumerState<SalalahDashboard>
         children: [
           // KPI Cards
           StatSummaryRow(
-            stats: controller.currentStats((key) => l10n.statTitle(key)),
+            stats: controller.currentStats((key) {
+              final normalized = key.toLowerCase().replaceAll('_', '');
+              if (normalized == 'totalrequests' || normalized == 'total') {
+                return l10n.totalTickets;
+              }
+              return l10n.statTitle(key);
+            }),
           ),
           16.toVerticalSizedBox,
 

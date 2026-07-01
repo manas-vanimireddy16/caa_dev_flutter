@@ -44,28 +44,20 @@ import 'package:code_setup/presentation/screens/hc_service/models/grade_list_mod
 import 'package:code_setup/presentation/screens/hc_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/cyber_security_risk_management/widgets/terms.dart';
-import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/technicians_list_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/vpn_request_model.dart';
-import 'package:code_setup/presentation/screens/logistics/models/request_vehicle_model.dart';
-import 'package:code_setup/presentation/screens/logistics/models/vehicle_maintenance_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
-import 'package:code_setup/presentation/screens/tender_service/models/respond_to_enquiry.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
-import 'package:code_setup/repository/it_services/request_event_support/domain/domain.dart';
 import 'package:code_setup/repository/it_services/vpn/domain/domain.dart';
-import 'package:code_setup/repository/logistics/request_a_vehicle/domain/domain.dart';
-import 'package:code_setup/repository/logistics/vehicle_maintenance/domain/domain.dart';
-import 'package:code_setup/repository/tender_services/request_a_service_to_respond_to_enquiries/domain/domain.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
 import 'package:code_setup/utils/helper/list_pagination.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/presentation/screens/it_services/vpn/widgets/vpn_dashboard_labels.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
@@ -129,7 +121,7 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
     );
 
     _focusNode = FocusNode();
-    _pageController = PageController();
+    _pageController = PageController(initialPage: 1);
   }
 
   @override
@@ -153,7 +145,7 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
           /// KPI
           StatSummaryRow(
             stats: controller.currentStats(
-              (key) => l10n.statTitle(key, isSecurityThreat: true),
+              (key) => VpnDashboardLabels.statTitle(l10n, key),
             ),
           ),
 
@@ -167,9 +159,10 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
             title: l10n.requestsStatusBreakdown,
             filterLabel: l10n.periodFilterLabels[0],
             filterLabelList: l10n.periodFilterLabels,
-            centerMetricLabel: l10n.totalRequests,
+            centerMetricLabel: l10n.totalTickets,
             legendHeading: l10n.breakdown,
-            statusLabelBuilder: l10n.statusLabel,
+            statusLabelBuilder: (status) =>
+                VpnDashboardLabels.statusLabel(l10n, status),
             preserveFilterLabelOnChange: true,
             onChanged: (value) => controller.onStatusFilterChanged(
               value != null ? l10n.periodFilterValue(value) : null,
@@ -185,14 +178,14 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
             title: l10n.requestTrendBreakdown,
-            metric: l10n.totalRequests,
+            metric: l10n.totalTickets,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

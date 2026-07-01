@@ -43,14 +43,11 @@ import 'package:code_setup/presentation/screens/hc_service/models/grade_list_mod
 import 'package:code_setup/presentation/screens/hc_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/event_support_model.dart';
-import 'package:code_setup/presentation/screens/legal_consultation_services/models/legal_contract_review_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
 import 'package:code_setup/repository/it_services/request_event_support/domain/domain.dart';
-import 'package:code_setup/repository/legal_consultation_services/legal_consultation_and_review_of_administrative_decisions/domain/domain.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
@@ -140,13 +137,13 @@ class _RequestEventSupportScreenState
     return KScaffold(
       backgroundColor: Colors.white,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
           /// KPI
           StatSummaryRow(
             stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -166,6 +163,8 @@ class _RequestEventSupportScreenState
             breakdown: state.statusBreakdown.data,
           ),
 
+          16.toVerticalSizedBox,
+
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
@@ -179,7 +178,7 @@ class _RequestEventSupportScreenState
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

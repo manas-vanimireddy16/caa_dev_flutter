@@ -9,7 +9,11 @@ abstract class KNetworkingBox<C, O> {
 
   static final KNetworkingDefaults defaults = KNetworkingDefaults._();
 
-  Future<C?> secureClient({O? options, bool loggingEnabled = true});
+  Future<C?> secureClient({
+    O? options,
+    bool loggingEnabled = true,
+    bool includeRoleCookies = true,
+  });
 
   Future<C?> unsecureClient({O? options, bool loggingEnabled = true});
 }

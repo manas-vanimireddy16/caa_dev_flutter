@@ -65,7 +65,7 @@ class VpnRepositoryImpl implements VpnRepository {
   Future<Map<String, dynamic>> vpnCreateRequest(
     Map<String, dynamic> payload,
   ) async {
-    final client = await KAppX.network.secureClient();
+    final client = await KAppX.network.secureClient(includeRoleCookies: false);
     final String url = ApiEndPoint.vpnSendRequest;
 
     try {

@@ -44,6 +44,7 @@ class KNetworkingBoxImpl
   Future<DioNetworkingClient?> secureClient({
     DioNetworkingOptions? options,
     bool loggingEnabled = true,
+    bool includeRoleCookies = true,
   }) async {
     DioNetworkingClient? client;
 
@@ -61,16 +62,18 @@ class KNetworkingBoxImpl
       return null;
     }
 
-    final cookieParts = <String>[
-      if (userId.isNotEmpty) 'userId=$userId',
-      'authToken=$authToken',
-      if (roleName.isNotEmpty) 'roleName=${Uri.encodeComponent(roleName)}',
-    ];
-
     final mergedHeaders = <String, String>{
       ...?options?.headers,
-      'Cookie': cookieParts.join('; '),
     };
+
+    if (includeRoleCookies) {
+      final cookieParts = <String>[
+        if (userId.isNotEmpty) 'userId=$userId',
+        'authToken=$authToken',
+        if (roleName.isNotEmpty) 'roleName=${Uri.encodeComponent(roleName)}',
+      ];
+      mergedHeaders['Cookie'] = cookieParts.join('; ');
+    }
 
     client = await _networkingBoxService.client(
       options: DioNetworkingOptions(

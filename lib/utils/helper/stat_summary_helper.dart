@@ -71,8 +71,17 @@ class StatSummaryHelper {
     );
   }
 
+  static String _normalizeKey(String key) {
+    return key
+        .replaceAllMapped(
+          RegExp(r'([a-z])([A-Z])'),
+          (match) => '${match.group(1)}_${match.group(2)}',
+        )
+        .toLowerCase();
+  }
+
   static String getIcon(String key) {
-    switch (key) {
+    switch (_normalizeKey(key)) {
       case 'total_requests':
         return AppIcons.kpiTotalRequests;
 
@@ -84,6 +93,7 @@ class StatSummaryHelper {
         return AppIcons.kpiPending;
 
       case 'rejected':
+      case 'expired':
         return AppIcons.kpiRejected;
 
       default:
@@ -92,7 +102,7 @@ class StatSummaryHelper {
   }
 
   static Color getColor(String key) {
-    switch (key) {
+    switch (_normalizeKey(key)) {
       case 'total_requests':
         return AppColors.totalRequestsBGColor;
 
@@ -104,6 +114,7 @@ class StatSummaryHelper {
         return AppColors.pendingBGColor;
 
       case 'rejected':
+      case 'expired':
         return AppColors.rejectedBGColor;
 
       default:
@@ -112,7 +123,7 @@ class StatSummaryHelper {
   }
 
   static Color getIconColor(String key) {
-    switch (key) {
+    switch (_normalizeKey(key)) {
       case 'total_requests':
         return AppColors.totalRequestsIconColor;
 
@@ -124,6 +135,7 @@ class StatSummaryHelper {
         return AppColors.pendingIconColor;
 
       case 'rejected':
+      case 'expired':
         return AppColors.rejectedIconColor;
 
       default:

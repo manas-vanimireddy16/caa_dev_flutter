@@ -12,7 +12,7 @@ import 'package:code_setup/presentation/screens/it_services/salalah/models/reque
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestDetail.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/service_dropdown_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/status_break_down.dart';
-import 'package:code_setup/repository/it_services/mascat/data/data.dart';
+import 'package:code_setup/repository/it_services/muscat/data/data.dart';
 import 'package:code_setup/repository/it_services/salalah/data/dashboardImplementation.dart';
 
 abstract class MuscatDashboardRepository {
@@ -48,7 +48,10 @@ abstract class MuscatDashboardRepository {
   Future<TrendBreakdownModel> getTrendBreakdownData(String period);
   Future<List<DepartmentModel>> getDepartments();
   Future<List<SectionModel>> getSections(int id);
-  Future<ITTechnicianListModel> getItTechnicianDetails();
+  Future<ITTechnicianListModel> getItTechnicianDetails({
+    required int departmentId,
+    required int sectionId,
+  });
   Future<StatusBreakdownModel?> getApprovalStatusBreakdownData({
     required String period,
     required int serviceId,

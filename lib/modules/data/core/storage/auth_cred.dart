@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -175,7 +174,7 @@ class KAuthCred {
       log('✅ Selected role saved to persistent storage.');
 
       if (previousRoleId != scopedRole.roleId) {
-        unawaited(RoleContextSync.syncAfterRoleChange(scopedRole));
+        await RoleContextSync.syncAfterRoleChange(scopedRole);
       }
     } catch (e, st) {
       log('❌ Error saving selected role: $e\n$st');

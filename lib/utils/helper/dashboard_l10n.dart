@@ -145,7 +145,7 @@ class DashboardL10n {
 
   String get commentButtonAssign => _t('Assign', 'تعيين');
 
-  String get commentButtonApprove => _t('Approve', 'موافقة');
+  String get commentButtonApprove => _t('Approve', 'الموافقة');
 
   String get commentButtonReject => _t('Reject', 'رفض');
 
@@ -350,6 +350,7 @@ class DashboardL10n {
 
   String get transportActualVehicleReturnTime =>
       _t('Vehicle Return Time', 'وقت إرجاع المركبة');
+  String get allocateVehicleButton => _t('Allocate Vehicle', 'تخصيص المركبة');
 
   String get transportUpdateActualReturnTitle =>
       _t('Update Actual Return', 'تحديث الإرجاع الفعلي');
@@ -738,7 +739,7 @@ class DashboardL10n {
 
   String get requestName => _t('Request Name', 'اسم الطلب');
 
-  String get myTickets => _t('My Requests', 'التذاكر الخاصة بي');
+  String get myTickets => _t('My Tickets', 'تذاكري');
 
   String get searchByName => _t('Search by Request Id', 'البحث برقم الطلب');
 
@@ -1600,7 +1601,7 @@ class DashboardL10n {
 
   String get taskTitle => _t('Task Title', 'عنوان المهمة');
 
-  String get high => _t('High', 'عالي');
+  String get high => _t('High', 'عالٍ');
 
   String get medium => _t('Medium', 'متوسط');
 

@@ -6,13 +6,9 @@ import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensio
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/approval_comment_dialog.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/chat.dart';
-import 'package:code_setup/presentation/common_widgets/request_details/comment.dart';
-import 'package:code_setup/presentation/common_widgets/request_details/comment_box.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/common_attachments.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/common_request_details.dart';
-import 'package:code_setup/presentation/common_widgets/request_details/common_workflow.dart';
-import 'package:code_setup/presentation/common_widgets/profile_card.dart';
 import 'package:code_setup/presentation/common_widgets/request_card.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
@@ -26,7 +22,6 @@ import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.da
 import 'package:code_setup/presentation/models/buttons_enum.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/presentation/models/file_upload_model.dart';
-import 'package:code_setup/presentation/models/kpi.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
 import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
@@ -38,7 +33,6 @@ import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/muscat_roles_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/muscat_user_model.dart';
-import 'package:code_setup/presentation/screens/it_services/salalah/models/action_item_model.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/it_technician.dart';
 import 'package:code_setup/presentation/screens/it_services/salalah/models/requestData.dart'
     hide Service;
@@ -50,7 +44,6 @@ import 'package:code_setup/presentation/screens/it_services/salalah/models/servi
     hide Service, SubService;
 import 'package:code_setup/presentation/screens/it_services/salalah/models/status_break_down.dart'
     hide ChartData;
-import 'package:code_setup/presentation/screens/it_services/salalah/widgets/request_details_tab.dart';
 import 'package:code_setup/presentation/screens/it_services/widgets/workflow.dart';
 import 'package:code_setup/repository/it_services/salalah/domain/dashboard.dart'
     show DashboardRepository;
@@ -65,7 +58,6 @@ import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -158,9 +150,15 @@ class _MuscatDashboardState extends ConsumerState<MuscatDashboard>
         children: [
           // KPI Cards
           StatSummaryRow(
-            stats: controller.currentStats((key) => l10n.statTitle(key)),
+            stats: controller.currentStats((key) {
+              final normalized = key.toLowerCase().replaceAll('_', '');
+              if (normalized == 'totalrequests' || normalized == 'total') {
+                return l10n.totalTickets;
+              }
+              return l10n.statTitle(key);
+            }),
           ),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -179,7 +177,7 @@ class _MuscatDashboardState extends ConsumerState<MuscatDashboard>
             ),
             breakdown: state.statusBreakdown.data,
           ),
-
+          16.toVerticalSizedBox,
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
@@ -193,286 +191,13 @@ class _MuscatDashboardState extends ConsumerState<MuscatDashboard>
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           TicketRequestsCard(
             providerArgs: _providerArgs,
             focusNode: _focusNode,
             pageController: _pageController,
           ),
-
-          // Ticket Requests Section
-          // Card(
-          //   color: Colors.white,
-          //   shape: RoundedRectangleBorder(
-          //     borderRadius: BorderRadius.circular(12.toAutoScaledHeight),
-          //   ),
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(16),
-          //     child: Column(
-          //       children: [
-          //         // Header
-          //         Row(
-          //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //           children: [
-          //             Text(
-          //               "Ticket Requests",
-          //               style: TextStyle(
-          //                 fontWeight: currentTheme.fontWeights.wBold,
-          //                 fontSize: currentTheme.fontSizes.s16,
-          //               ),
-          //             ),
-          //             ElevatedButton(
-          //               onPressed: () {
-          //                 showModalBottomSheet(
-          //                   context: context,
-          //                   shape: const RoundedRectangleBorder(
-          //                     borderRadius: BorderRadius.vertical(
-          //                       top: Radius.circular(16),
-          //                     ),
-          //                   ),
-          //                   builder: (_) {
-          //                     return Padding(
-          //                       padding: const EdgeInsets.all(20),
-          //                       child: Column(
-          //                         mainAxisSize: MainAxisSize.min,
-          //                         children: [
-          //                           const Text(
-          //                             "Select Request Type",
-          //                             style: TextStyle(
-          //                               fontSize: 18,
-          //                               fontWeight: FontWeight.bold,
-          //                             ),
-          //                           ),
-
-          //                           const SizedBox(height: 20),
-
-          //                           /// Option 1 - Salalah HOS
-          //                           ListTile(
-          //                             leading: const Icon(
-          //                               Icons.account_circle,
-          //                               color: Colors.blue,
-          //                             ),
-          //                             title: const Text(
-          //                               "Salalah HOS New Request",
-          //                             ),
-          //                             onTap: () {
-          //                               Navigator.pop(context);
-          //                               KAppX.router.push(
-          //                                 SalalahHOSNewRequestRoute(
-          //                                   service: widget.service,
-          //                                   subService: widget.subService,
-          //                                 ),
-          //                               );
-          //                             },
-          //                           ),
-
-          //                           /// Option 2 - Salalah New Request
-          //                           ListTile(
-          //                             leading: const Icon(
-          //                               Icons.assignment,
-          //                               color: Colors.green,
-          //                             ),
-          //                             title: const Text("Salalah New Request"),
-          //                             onTap: () {
-          //                               // Navigator.pop(context);
-          //                               KAppX.router.push(
-          //                                 SalalahNewRequestRoute(
-          //                                   service: widget.service,
-          //                                   subService: widget.subService,
-          //                                 ),
-          //                               );
-          //                             },
-          //                           ),
-
-          //                           ListTile(
-          //                             leading: const Icon(
-          //                               Icons.assignment,
-          //                               color: Colors.green,
-          //                             ),
-          //                             title: const Text(
-          //                               "Salalah Technician New Request",
-          //                             ),
-          //                             onTap: () {
-          //                               // Navigator.pop(context);
-          //                               KAppX.router.push(
-          //                                 SalalahNewItTechnicianRequestRoute(
-          //                                   service: widget.service,
-          //                                   subService: widget.subService,
-          //                                 ),
-          //                               );
-          //                             },
-          //                           ),
-          //                         ],
-          //                       ),
-          //                     );
-          //                   },
-          //                 );
-          //               },
-          //               child: const Text('New Request'),
-          //             ),
-
-          //             // ElevatedButton(
-          //             //   onPressed: () {
-          //             //     KAppX.router.push(SalalahNewRequestRoute());
-          //             //   },
-          //             //   child: Text('New Request'),
-          //             // ),
-          //           ],
-          //         ),
-          //         12.toHorizontalSizedBox,
-
-          //         // Search box
-          //         KTextField(
-          //           focusNode: _focusNode,
-          //           hintText: "Search by ID or Name",
-          //           controller: searchController,
-          //           textInputAction: TextInputAction.search,
-          //           onSubmitted: (value) {
-          //             ref.read(searchQueryProvider.notifier).state = value;
-          //           },
-          //           decoration: InputDecoration(
-          //             prefixIcon: const Icon(Icons.search, color: Colors.black),
-          //             suffixIcon: searchController.text.isNotEmpty
-          //                 ? IconButton(
-          //                     icon: const Icon(
-          //                       Icons.clear,
-          //                       color: Colors.black,
-          //                     ),
-          //                     onPressed: () {
-          //                       searchController.clear();
-          //                       ref.read(searchQueryProvider.notifier).state =
-          //                           "";
-          //                       Future.microtask(() {
-          //                         if (!_focusNode.hasFocus) {
-          //                           _focusNode.requestFocus();
-          //                         }
-          //                       });
-          //                     },
-          //                   )
-          //                 : null,
-          //             border: OutlineInputBorder(
-          //               borderRadius: BorderRadius.circular(12),
-          //             ),
-          //           ),
-          //         ),
-          //         12.toHorizontalSizedBox,
-
-          //         // Tabs below the search bar
-          //         TabBar(
-          //           controller: _tabController,
-          //           indicatorColor: Colors.blue,
-          //           labelColor: Colors.blue,
-          //           unselectedLabelColor: Colors.grey,
-          //           tabs: const [
-          //             Tab(text: "My Requests"),
-          //             Tab(text: "Action Items"),
-          //           ],
-          //         ),
-
-          //         // Tab content
-          //         SizedBox(
-          //           height: 400, // adjust height as needed
-          //           child: TabBarView(
-          //             controller: _tabController,
-          //             // physics:   const NeverScrollableScrollPhysics(), // ❌ disables swipe
-          //             children: [
-          //               // Tab 0
-          //               Consumer(
-          //                 builder: (context, ref, _) {
-          //                   final data = state.requests;
-          //                   return ListView.builder(
-          //                     itemCount: data.length,
-          //                     itemBuilder: (context, index) {
-          //                       final item = data[index];
-          //                       return RequestCard(
-          //                         from: 'salalah',
-          //                         data: {
-          //                           "id": item.id,
-          //                           "status": item.status,
-          //                           "problem": item.problem,
-          //                           "service_type": item.serviceType?.name,
-          //                           "created_at": item.createdAt,
-          //                           "assigned_to": item
-          //                               .approvalDetails?[0]
-          //                               .approverUser
-          //                               ?.employeeName,
-          //                         },
-          //                         onTap: () async {
-          //                           // await controller.fetchRequestDetailsById(
-          //                           //   item.id ?? 0,
-          //                           // );
-          //                           // final details =
-          //                           //     controller.state.requestDetails;
-          //                           KAppX.router.push(
-          //                             SalalahRequestDetailsTabRoute(
-          //                               id: item.id ?? 0,
-          //                               service: widget.service,
-          //                               subService: widget.subService,
-          //                               // data: details,
-          //                             ),
-          //                           );
-          //                         },
-          //                       );
-          //                     },
-          //                   );
-          //                 },
-          //               ),
-          //               // Tab 1
-          //               Consumer(
-          //                 builder: (context, ref, _) {
-          //                   final data = state.actionItems;
-          //                   return ListView.builder(
-          //                     itemCount: data.length,
-          //                     itemBuilder: (context, index) {
-          //                       final item = data[index];
-          //                       return RequestCard(
-          //                         from: 'salalahactionitems',
-          //                         data: {
-          //                           "id": item.requestId,
-          //                           "status": item.request?.status,
-          //                           "problem": item.request?.problem,
-          //                           "service_type":
-          //                               item.request?.serviceType?.name,
-          //                           "created_at": item.createdAt,
-          //                           "assigned_to":
-          //                               item.approverUser?.employeeName ??
-          //                               'IT Technician',
-          //                           'isAssigned': item.approverUserId != null,
-          //                         },
-          //                         onSelfAssign: () {
-          //                           controller.selfAssign(
-          //                             item.request?.workflowExecutionId ?? '',
-          //                             item.requestId.toString(),
-          //                           );
-          //                         },
-          //                         onTap: () async {
-          //                           // await controller.fetchRequestDetailsById(
-          //                           //   item.id ?? 0,
-          //                           // );
-          //                           // final details =
-          //                           //     controller.state.requestDetails;
-          //                           KAppX.router.push(
-          //                             SalalahRequestDetailsTabRoute(
-          //                               id: item.requestId ?? 0,
-          //                               service: widget.service,
-          //                               subService: widget.subService,
-          //                               // data: details,
-          //                             ),
-          //                           );
-          //                         },
-          //                       );
-          //                     },
-          //                   );
-          //                 },
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

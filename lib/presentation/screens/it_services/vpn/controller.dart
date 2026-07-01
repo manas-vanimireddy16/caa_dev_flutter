@@ -534,7 +534,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.jobTitle,
       type: FieldType.text,
       required: true,
-      initialValue: userInfo?.data?.category ?? '',
+      initialValue: userInfo?.data?.position?.name ?? '',
       disabled: true,
     ),
 
@@ -2070,7 +2070,7 @@ Violation of this policy may result in:
       "request_for": values['request_for'],
 
       /// STAFF / CONTRACTOR
-      "employee_identifier": values['emp_id'],
+      "employee_identifier": values['emp_id'].toString().trim(),
       "employee_email": values['email'],
 
       "contractor_user_id": values['request_for'] == 'CONTRACTOR'
@@ -2096,14 +2096,16 @@ Violation of this policy may result in:
       "country": values['country'],
 
       /// DATES
-      "start_date": values['start_date'],
+      "start_date": (values['start_date']?.toString().isNotEmpty ?? false)
+          ? values['start_date']
+          : DateTime.now().toIso8601String().split('T').first,
 
       "end_date": values['request_time_period'] == 'Permanent'
           ? null
           : values['end_date'],
 
       /// ACCESS TYPE
-      "access_type": values['request_time_period'],
+      "access_type": values["access_type"].toString().toUpperCase(),
 
       /// DEVICE TYPE
       "device_type": List<String>.from(values['device_type'] ?? []),
