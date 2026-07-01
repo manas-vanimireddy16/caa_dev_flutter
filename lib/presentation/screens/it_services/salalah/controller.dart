@@ -791,7 +791,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     /// ================= ATTACHMENT =================
     DynamicField(
-      name: 'attachment',
+      name: 'attachments',
       label: l10n.attachFile,
       type: FieldType.file,
       required: false,

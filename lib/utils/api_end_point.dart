@@ -3951,7 +3951,7 @@ class ApiEndPoint {
 
   /// Delete attachment
   static String vehicleMaintenanceDeleteAttachment(int attachmentId) =>
-      '/v1/it-service/logistics/vehicle-maintenance/attachments/$attachmentId';
+      '/v1/it-service/logistics/attachment/$attachmentId';
 
   /// ===================== KPI APIs =====================
 
@@ -4166,7 +4166,7 @@ class ApiEndPoint {
 
   /// Delete attachment
   static String foreignEmployeeVehicleDeleteAttachment(int attachmentId) =>
-      '/v1/it-service/logistics/attachments/$attachmentId';
+      '/v1/it-service/logistics/request/$attachmentId/attachments';
 
   /// ===================== ANALYTICS APIs =====================
 

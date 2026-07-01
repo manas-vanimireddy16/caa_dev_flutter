@@ -184,11 +184,14 @@ class DashboardRepositoryImpl implements DashboardRepository {
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -274,7 +277,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
               .map((e) => ServiceData.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel requests: ${response.statusCode}',
+          );
         }
       } else {
         return [];
@@ -297,8 +302,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
         final queryParams = {
           'role_name': 'IT Technician',
-          'department_id': departmentId.toString(),
-          'section_id': sectionId.toString(),
+          'department_id': '104'.toString(),
+          'section_id': '272'.toString(),
         };
 
         final response = await client.get(url, queryParameters: queryParams);
@@ -378,7 +383,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
               )
               .toList();
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel requests: ${response.statusCode}',
+          );
         }
       } else {
         return [];
@@ -437,7 +444,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
           return actionItems;
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -473,7 +481,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -506,7 +515,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel data: ${response.statusCode}',
+          );
         }
       } else {
         return null;
@@ -537,7 +548,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -576,11 +588,14 @@ class DashboardRepositoryImpl implements DashboardRepository {
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -616,11 +631,14 @@ class DashboardRepositoryImpl implements DashboardRepository {
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -659,11 +677,14 @@ class DashboardRepositoryImpl implements DashboardRepository {
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -692,7 +713,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
           return response.data["message"] ?? "Success";
         } else {
           debugPrint('Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Failed to process $_serviceLabel request";
+          return response.data["message"] ??
+              "Failed to process $_serviceLabel request";
         }
       } else {
         debugPrint('Client is null - cannot send request');
@@ -725,7 +747,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
           return response.data["message"] ?? "Success";
         } else {
           debugPrint('Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Failed to process $_serviceLabel request";
+          return response.data["message"] ??
+              "Failed to process $_serviceLabel request";
         }
       } else {
         debugPrint('Client is null - cannot send request');
@@ -744,7 +767,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
   Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
     final client = await KAppX.network.secureClient();
     if (client == null) {
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     }
 
     final url = ApiEndPoint.salalahGetAttachments(attachmentId);
@@ -755,7 +780,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
           response.statusCode != 201 &&
           response.statusCode != 204) {
         throw ApiException(
-          response.data?['message'] ?? 'Failed to delete $_serviceLabel attachment',
+          response.data?['message'] ??
+              'Failed to delete $_serviceLabel attachment',
         );
       }
     } on DioException catch (error) {
@@ -778,7 +804,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
           final result = ChatByIdResponseModel.fromJson(json);
           return result.data;
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel data: ${response.statusCode}',
+          );
         }
       } else {
         return [];
@@ -802,7 +830,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
           final result = AttachmentByIdResponseModel.fromJson(json);
           return result.data;
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel data: ${response.statusCode}',
+          );
         }
       } else {
         return [];
@@ -835,7 +865,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
           return RolesResponseModel.fromJson(data);
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel requests: ${response.statusCode}',
+          );
         }
       } else {
         return null;
@@ -870,7 +902,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
           return UsersResponseModel.fromJson(data);
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel requests: ${response.statusCode}',
+          );
         }
       } else {
         return null;
