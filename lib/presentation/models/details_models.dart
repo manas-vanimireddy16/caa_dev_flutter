@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:code_setup/utils/helper/localized_display_name.dart';
+
 import 'package:code_setup/presentation/screens/asset_affairs/models/accommodation_in_muscat_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/airport_entry_request_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_model.dart';
@@ -1447,7 +1449,7 @@ class RequestModel {
   final String? decisionDate;
   final String? decisionSubject;
   final String? grievanceDetails;
-  final String? individualsInvolved;
+  final List<String>? individualsInvolved;
   final List<String>? times;
   final List<String>? dates;
   final List<String>? requests;
@@ -2303,7 +2305,7 @@ class RequestModel {
       decisionDate: json['decision_date'],
       decisionSubject: json['decision_subject'],
       grievanceDetails: json['grievance_details'],
-      individualsInvolved: json['individuals_involved'],
+      individualsInvolved: parseStringList(json['individuals_involved']),
       times: parseStringList(json['times']),
       dates: parseStringList(json['dates']),
       requests: parseStringList(json['requests']),
@@ -2837,6 +2839,12 @@ class DepartmentModel {
     'department_code': departmentCode,
     'department_description': departmentDescription,
   };
+
+  String displayName({required bool isArabic}) => localizedDisplayName(
+    isArabic: isArabic,
+    english: departmentName,
+    arabic: departmentNameInArabic,
+  );
 }
 
 class SectionModel {
@@ -2895,6 +2903,12 @@ class SectionModel {
     'section_description': sectionDescription,
     'department_id': departmentId,
   };
+
+  String displayName({required bool isArabic}) => localizedDisplayName(
+    isArabic: isArabic,
+    english: sectionName,
+    arabic: sectionNameInArabic,
+  );
 }
 
 // class DepartmentModel {

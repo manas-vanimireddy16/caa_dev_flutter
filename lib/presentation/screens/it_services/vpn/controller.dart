@@ -544,7 +544,11 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.requestDetailsLabel('Department'),
       type: FieldType.text,
       required: true,
-      initialValue: userInfo?.data?.department?.departmentName ?? '',
+      initialValue: userInfo?.data?.department?.displayName(
+            isArabic: l10n.isArabic,
+          ) ??
+          userInfo?.data?.department?.departmentName ??
+          '',
       disabled: true,
     ),
 

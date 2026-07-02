@@ -453,46 +453,48 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DATE OF REQUEST =================
     DynamicField(
       name: 'date_of_request',
-      label: 'Date of Request',
+      label: l10n.dateOfRequest,
       type: FieldType.date,
-      // initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       required: true,
-      placeholder: 'Select Date',
+      placeholder: l10n.selectDate,
     ),
 
     /// ================= TYPE OF REQUEST =================
     DynamicField(
       name: 'type_of_request',
-      label: 'Type of Request',
+      label: l10n.typeOfRequest,
       type: FieldType.radio,
       required: true,
-      options: const ['Import', 'Export', 'Both'],
+      options: [
+        DropdownOption(value: 'Import', label: l10n.import),
+        DropdownOption(value: 'Export', label: l10n.export),
+        DropdownOption(value: 'Both', label: l10n.importAndExportBoth),
+      ],
     ),
 
     /// ================= REQUESTED DATE OF MATERIAL MOVEMENT =================
     DynamicField(
       name: 'requested_material_movement_date',
-      label: 'Requested Date of Material Movement',
+      label: l10n.requestedDateOfMaterialMovement,
       type: FieldType.date,
-      // initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       required: true,
-      placeholder: 'MM/DD/YYYY',
+      placeholder: l10n.selectMaterialMovementDate,
     ),
 
     /// ================= HAZARDOUS / SENSITIVE MATERIAL =================
     DynamicField(
       name: 'hazardous_sensitive_material',
-      label: 'Is the material hazardous or sensitive?',
+      label: l10n.isTheMaterialHazardousOrSensitive,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter if the material is hazardous or sensitive',
+      placeholder: l10n.enterHazardousOrSensitiveMaterial,
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return 'Is the material hazardous or sensitive? is required';
+          return l10n.hazardousMaterialRequired;
         }
 
         return null;
@@ -502,15 +504,15 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PURPOSE OF IMPORT / EXPORT =================
     DynamicField(
       name: 'purpose_of_import_export',
-      label: 'Purpose of Import/Export',
+      label: l10n.purposeOfImportExport,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter the purpose of import export',
+      placeholder: l10n.enterPurposeOfImportExport,
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return 'Purpose of Import/Export is required';
+          return l10n.purposeOfImportExportRequired;
         }
 
         return null;
@@ -520,15 +522,15 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= MATERIAL NAME / DESCRIPTION =================
     DynamicField(
       name: 'material_name_description',
-      label: 'Material Name/Description',
+      label: l10n.materialNameDescription,
       type: FieldType.textarea,
       required: true,
-      placeholder: 'Enter the description of material',
+      placeholder: l10n.enterDescriptionOfMaterial,
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
         if (text.length < 5) {
-          return 'Material Name/Description must be at least 5 characters';
+          return l10n.materialDescriptionMinFiveChars;
         }
 
         return null;
@@ -538,14 +540,14 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= MODE OF TRANSPORT =================
     DynamicField(
       name: 'mode_of_transport',
-      label: 'Mode of Transport',
+      label: l10n.modeOfTransport,
       type: FieldType.text,
       required: true,
-      placeholder: 'Select the mode of transport',
+      placeholder: l10n.enterModeOfTransport,
 
       validator: (value, values) {
         if (value == null || value.toString().isEmpty) {
-          return 'Mode of Transport is required';
+          return l10n.modeOfTransportRequired;
         }
 
         return null;
@@ -555,24 +557,24 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= VEHICLE NUMBER =================
     DynamicField(
       name: 'vehicle_number',
-      label: 'Vehicle Number',
+      label: l10n.vehicleNumber,
       type: FieldType.text,
-      placeholder: 'Enter the vehicle number',
+      placeholder: l10n.enterVehicleNumber,
       required: false,
     ),
 
     /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
-      label: 'Description',
+      label: l10n.requestDetailsLabel('Description'),
       type: FieldType.textarea,
       required: true,
-      placeholder: 'Enter Description',
+      placeholder: l10n.enterDescription,
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
         if (text.length < 5) {
-          return 'Description must be at least 5 characters';
+          return l10n.descriptionMinFiveChars;
         }
 
         return null;
@@ -582,7 +584,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= ATTACHMENTS =================
     DynamicField(
       name: 'attachments',
-      label: 'Attachments',
+      label: l10n.attachmentsTabLabel,
       type: FieldType.file,
       required: false,
     ),

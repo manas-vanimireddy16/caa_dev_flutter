@@ -1,5 +1,6 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 
 class StepHeader extends StatelessWidget {
@@ -21,7 +22,10 @@ class StepHeader extends StatelessWidget {
       children: [
         // Step count
         Text(
-          'Step ${currentStep + 1} of ${steps.length}',
+          DashboardL10n.of(context).dynamicFormStepOf(
+            currentStep + 1,
+            steps.length,
+          ),
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.primary,
             fontWeight: FontWeight.w600,

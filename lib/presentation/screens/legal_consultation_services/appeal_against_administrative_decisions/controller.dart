@@ -311,8 +311,16 @@ class _VSController extends StateNotifier<_ViewState> {
   List<StatSummaryData> get approverStatsList =>
       StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? StatSummaryHelper.buildStatList(
+          state.kpiData.data?.toJson(),
+          titleForKey: titleForKey,
+        )
+      : StatSummaryHelper.buildStatList(
+          state.approvalKpiData.data?.toJson(),
+          titleForKey: titleForKey,
+        );
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -416,7 +424,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Decision Date': request?.decisionDate ?? '-',
       'Decision Subject': request?.decisionSubject ?? '-',
       'Grievance Details': request?.grievanceDetails ?? '-',
-      'Individuals Involved': request?.individualsInvolved ?? '-',
+      'Individuals Involved': request?.individualsInvolved?.join(', ') ?? '-',
       // 'Times': request?.times ?? '-',
       'Dates': request?.dates?.join(', ') ?? '-',
       'Location': request?.location ?? '-',
@@ -514,150 +522,119 @@ class _VSController extends StateNotifier<_ViewState> {
   final appealAgainstAdministrativeDecisionsInstance =
       AppealAgainstAdministrativeDecisionsRepository();
   final dutyMissionInstance = AnnualDutyMissionRepoistry();
-  List<DynamicField> get appealStepOneFields => [
-    /// DATE
+  List<DynamicField> buildAppealStepOneFields(DashboardL10n l10n) => [
     DynamicField(
       name: 'submission_date',
-      label: 'Submission Date',
+      label: l10n.submissionDate,
       type: FieldType.date,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       required: true,
     ),
-
-    /// TITLE
     DynamicField(
       name: 'request_title',
-      label: 'Title of Complaint',
+      label: l10n.titleOfComplaint,
       type: FieldType.text,
-      placeholder: 'Enter request title (min 5, max 250 characters)',
+      placeholder: l10n.enterRequestTitleMinMax,
       required: true,
     ),
-
-    /// APPEAL AGAINST
     DynamicField(
       name: 'appeal_against_decision',
-      label: 'Appeal Against Decision',
+      label: l10n.appealAgainstDecision,
       type: FieldType.text,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
       required: true,
     ),
-
-    /// DESCRIPTION
     DynamicField(
       name: 'description',
-      label: 'Description',
+      label: l10n.requestDetailsLabel('Description'),
       type: FieldType.text,
-      placeholder: 'Write here (min 5, max 250 characters)',
+      placeholder: l10n.writeHereMinMax,
       required: true,
     ),
-
-    /// ATTACHMENTS
     DynamicField(
       name: 'attachments',
-      label: 'Attachments',
+      label: l10n.attachmentsTabLabel,
       type: FieldType.file,
       required: false,
     ),
   ];
 
-  List<DynamicField> get appealStepTwoFields => [
-    /// DECISION NUMBER
+  List<DynamicField> buildAppealStepTwoFields(DashboardL10n l10n) => [
     DynamicField(
       name: 'decision_number',
-      label: 'Decision Number',
+      label: l10n.decisionNumber,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
-
-    /// DECISION DATE
     DynamicField(
       name: 'decision_date',
-      label: 'Decision Date',
+      label: l10n.decisionDate,
       type: FieldType.date,
       required: true,
-      placeholder: 'Select',
+      placeholder: l10n.select,
     ),
-
-    /// SUBJECT
     DynamicField(
       name: 'decision_subject',
-      label: 'Decision Subject',
+      label: l10n.decisionSubject,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
-
-    /// INDIVIDUALS
     DynamicField(
       name: 'individuals_involved',
-      label: 'Individuals Involved',
+      label: l10n.individualsInvolved,
       type: FieldType.text,
-      placeholder: 'Enter',
-      // required: true,
+      placeholder: l10n.enter,
     ),
-
-    /// TIME
     DynamicField(
       name: 'time',
-      label: 'Times',
+      label: l10n.times,
       type: FieldType.time,
-      // required: true,
-      placeholder: 'Select',
+      placeholder: l10n.select,
     ),
-
-    /// LOCATION
     DynamicField(
       name: 'location',
-      label: 'Location',
+      label: l10n.location,
       type: FieldType.text,
-      // required: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
-
-    /// REQUESTS
     DynamicField(
       name: 'requests',
-      label: 'Requests',
+      label: l10n.requests,
       type: FieldType.text,
-      // required: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
-
-    /// EVENTS
     DynamicField(
       name: 'events',
-      label: 'Events',
+      label: l10n.events,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
-
-    /// EXTRA DETAILS
-    // DynamicField(
-    //   name: 'grievance_details',
-    //   label: 'Any Other Details Related to the Grievance',
-    //   type: FieldType.text,
-    //   required: true,
-    // ),
   ];
-  List<DynamicField> get appealStepThreeFields => [
-    /// NAME (DROPDOWN)
+
+  List<DynamicField> buildAppealStepThreeFields(DashboardL10n l10n) => [
     DynamicField(
       name: 'grievant_name',
-      label: 'Grievant Name',
+      label: l10n.grievantName,
       type: FieldType.select,
-      options: state.usersList
-          .map(
-            (user) => DropdownOption(
-              label: user.employeeName,
-              value: user.id.toString(),
-            ),
-          )
-          .toList(),
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+
+        return state.usersList
+            .map(
+              (user) => DropdownOption(
+                label: user.displayName(isArabic: formL10n.isArabic),
+                value: user.id.toString(),
+              ),
+            )
+            .toList();
+      },
       required: true,
       onChanged: (value, ref) {
+        final formL10n = DashboardL10n.of(ref.context);
         final selectedUser = state.usersList.firstWhere(
           (e) => e.id.toString() == value,
         );
@@ -665,98 +642,83 @@ class _VSController extends StateNotifier<_ViewState> {
         ref.read(dynamicFormProvider.notifier).autoPopulate({
           'grievant_employee_number': selectedUser.employeeId,
           'grievant_directorate': selectedUser.directorate,
-          'grievant_department': selectedUser.department?.departmentName,
-          'grievant_section': selectedUser.section?.sectionName,
+          'grievant_department': selectedUser.department?.displayName(
+            isArabic: formL10n.isArabic,
+          ),
+          'grievant_section': selectedUser.section?.displayName(
+            isArabic: formL10n.isArabic,
+          ),
         });
       },
-      placeholder: 'Select Employee',
+      placeholder: l10n.selectEmployee,
     ),
-
-    /// EMPLOYEE NUMBER
     DynamicField(
       name: 'grievant_employee_number',
-      label: 'Grievant Employee Number',
+      label: l10n.grievantEmployeeNumber,
       type: FieldType.text,
       required: true,
       disabled: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
-
-    /// DIRECTORATE
     DynamicField(
       name: 'grievant_directorate',
-      label: 'Grievant Directorate',
+      label: l10n.grievantDirectorate,
       type: FieldType.text,
       required: true,
       disabled: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
-
-    /// RELATIONSHIP
-
-    /// DEPARTMENT
     DynamicField(
       name: 'grievant_department',
-      label: 'Grievant Department',
+      label: l10n.grievantDepartment,
       type: FieldType.text,
       required: true,
       disabled: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
-
-    /// SECTION
     DynamicField(
       name: 'grievant_section',
-      label: 'Grievant Section',
+      label: l10n.grievantSection,
       type: FieldType.text,
       required: true,
       disabled: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
-
     DynamicField(
       name: 'grievant_relationship',
-      label: 'Grievant Relationship to Matter',
+      label: l10n.grievantRelationshipToMatter,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter',
+      placeholder: l10n.enter,
     ),
-
     DynamicField(
       name: 'grievance_details',
-      label: 'Grievance Details',
+      label: l10n.grievanceDetails,
       type: FieldType.text,
       required: true,
-      placeholder: 'Write here(min 5, max 250 characters)',
+      placeholder: l10n.writeHereMinMax,
     ),
-
-    /// ATTACHMENT 1
     DynamicField(
       name: 'attachment_1',
-      label: 'Attachment 1',
+      label: l10n.attachment1,
       type: FieldType.file,
       required: false,
     ),
-
-    /// ATTACHMENT 2
     DynamicField(
       name: 'attachment_2',
-      label: 'Attachment 2',
+      label: l10n.attachment2,
       type: FieldType.file,
       required: false,
     ),
-
-    /// DECLARATION
     DynamicField(
       name: 'acknowledgement',
-      label: 'Declaration',
+      label: l10n.declaration,
       type: FieldType.acknowledgement,
       required: true,
       acknowledgements: [
         AcknowledgementItem(
           id: 'Declaration Acknowledged',
-          text:
-              'Declaration of the accuracy of the attached information. The grievant shall bear legal responsibility for any incorrect data.',
+          text: l10n.appealDeclarationAcknowledgementText,
         ),
       ],
     ),
@@ -1029,9 +991,6 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-
-
-
   Future<List<AppealAgainstAdministrativeModel>> loadMyRequestsPage(
     int pageKey, {
     String searchText = '',
@@ -1079,6 +1038,7 @@ class _VSController extends StateNotifier<_ViewState> {
       rethrow;
     }
   }
+
   bool lastApprover(List<ApprovalDetailModel> approvals) {
     if (approvals.isEmpty) return false;
 

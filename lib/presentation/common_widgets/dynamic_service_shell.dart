@@ -13,6 +13,7 @@ import 'package:code_setup/utils/assets/icons.dart';
 import 'package:code_setup/utils/helper/drawer_service_icon.dart';
 import 'package:code_setup/utils/helper/sub_service_route_resolver.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -57,6 +58,7 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
   @override
   Widget build(BuildContext context) {
     final theme = KAppX.globalProvider.read(KAppX.theme.current).themeBox;
+    final l10n = DashboardL10n.of(context);
     final destinations = SubServiceRouteResolver.destinationsFor(
       widget.service,
     ).where((destination) => destination.isSupported).toList(growable: false);
@@ -93,10 +95,14 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
 
         final activeIndex = tabsRouter.activeIndex;
         final activeTitle = activeIndex == 0
-            ? 'Dashboard'
-            : destinations[activeIndex - 1].subService.subServiceName ??
-                  destinations[activeIndex - 1].subService.code ??
-                  'Service';
+            ? l10n.dashboard
+            : l10n.subServiceDisplayName(
+                englishName:
+                    destinations[activeIndex - 1].subService.subServiceName,
+                arabicName: destinations[activeIndex - 1]
+                    .subService
+                    .arabicsubServiceName,
+              );
 
         return Scaffold(
           backgroundColor: theme.colors.background,
@@ -172,7 +178,7 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
                             data: DrawerItemData(
                               index: 0,
                               icon: KImageProvider(image: KIcons.dashboard),
-                              label: 'Dashboard',
+                              label: l10n.dashboard,
                             ),
                             isSelected: activeIndex == 0,
                             currentTheme: theme,
@@ -198,10 +204,10 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
                               height: 22.toAutoScaledHeight,
                               width: 22.toAutoScaledWidth,
                             ),
-                            label:
-                                subService.subServiceName ??
-                                subService.code ??
-                                'Unnamed sub-service',
+                            label: l10n.subServiceDisplayName(
+                              englishName: subService.subServiceName,
+                              arabicName: subService.arabicsubServiceName,
+                            ),
                             code: subService.code,
                           ),
                           isSelected: activeIndex == index,

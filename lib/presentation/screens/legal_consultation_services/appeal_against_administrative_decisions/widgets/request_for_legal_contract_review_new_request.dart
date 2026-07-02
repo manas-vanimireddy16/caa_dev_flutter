@@ -42,13 +42,12 @@ class _AppealAgainstAdministrativeDecisionsNewRequestScreenState
 
   @override
   Widget build(BuildContext context) {
-    /// Watch state only if needed
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
-      // appBar: KAppBar(title: Text('Mission Transfer Request')),
 
       /// ✅ DynamicForm MUST be root-level in a screen
       body: ProviderScope(
@@ -56,16 +55,16 @@ class _AppealAgainstAdministrativeDecisionsNewRequestScreenState
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: 'Performance Management',
-          stepTitles: const [
-            'Appeal Against Administrative Decisions',
-            'Decision Being Grieveant',
-            'Grieveant Information',
+          title: l10n.appealAgainstAdministrativeDecisionsTitle,
+          stepTitles: [
+            l10n.appealAgainstAdministrativeDecisionsTitle,
+            l10n.appealStepDecisionBeingGrieved,
+            l10n.appealStepGrievantInformation,
           ],
           steps: [
-            controller.appealStepOneFields,
-            controller.appealStepTwoFields,
-            controller.appealStepThreeFields,
+            controller.buildAppealStepOneFields(l10n),
+            controller.buildAppealStepTwoFields(l10n),
+            controller.buildAppealStepThreeFields(l10n),
           ],
 
           /// ⭐ VERY IMPORTANT

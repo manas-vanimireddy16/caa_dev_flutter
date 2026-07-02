@@ -715,14 +715,18 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.assignedToEmployeeNameId,
       type: FieldType.select,
       required: true,
-      options: state.usersList
-          .map(
-            (e) => DropdownOption<String>(
-              value: e.id.toString(),
-              label: e.employeeName ?? '',
-            ),
-          )
-          .toList(),
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+
+        return state.usersList
+            .map(
+              (e) => DropdownOption<String>(
+                value: e.id.toString(),
+                label: e.displayName(isArabic: formL10n.isArabic),
+              ),
+            )
+            .toList();
+      },
       placeholder: l10n.select,
     ),
 
@@ -771,11 +775,23 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.requestDetailsLabel('Priority'),
       type: FieldType.select,
       required: true,
-      options: [
-        DropdownOption(value: 'High', label: l10n.priorityOption('High')),
-        DropdownOption(value: 'Medium', label: l10n.priorityOption('Medium')),
-        DropdownOption(value: 'Low', label: l10n.priorityOption('Low')),
-      ],
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        return [
+          DropdownOption(
+            value: 'High',
+            label: formL10n.priorityOption('High'),
+          ),
+          DropdownOption(
+            value: 'Medium',
+            label: formL10n.priorityOption('Medium'),
+          ),
+          DropdownOption(
+            value: 'Low',
+            label: formL10n.priorityOption('Low'),
+          ),
+        ];
+      },
       placeholder: l10n.select,
     ),
 

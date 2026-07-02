@@ -696,14 +696,19 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       initialValue: userInfo?.data?.department?.id?.toString(),
       disabledWhen: (values) => (values['request_for'] ?? 'Self') == 'Self',
-      options: (state.departments ?? [])
-          .map(
-            (d) => DropdownOption(
-              value: d.id.toString(),
-              label: d.departmentName ?? '',
-            ),
-          )
-          .toList(),
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final formState = ref.watch(_vsProvider(params));
+
+        return (formState.departments ?? [])
+            .map(
+              (d) => DropdownOption(
+                value: d.id.toString(),
+                label: d.displayName(isArabic: formL10n.isArabic),
+              ),
+            )
+            .toList();
+      },
 
       onChanged: (value, ref) async {
         final notifier = ref.read(dynamicFormProvider.notifier);
@@ -734,13 +739,14 @@ class _VSController extends StateNotifier<_ViewState> {
       disabledWhen: (values) => (values['request_for'] ?? 'Self') == 'Self',
 
       optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
         final sectionState = ref.watch(_vsProvider(params));
 
         return (sectionState.sections ?? [])
             .map(
               (s) => DropdownOption(
                 value: s.id.toString(),
-                label: s.sectionName ?? '',
+                label: s.displayName(isArabic: formL10n.isArabic),
               ),
             )
             .toList();
@@ -763,13 +769,14 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.select,
       required: true,
       optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
         final currentState = ref.watch(_vsProvider(params));
 
         return (currentState.serviceDropDown ?? [])
             .map(
               (service) => DropdownOption(
                 value: service.id.toString(),
-                label: service.displayName(isArabic: l10n.isArabic),
+                label: service.displayName(isArabic: formL10n.isArabic),
               ),
             )
             .toList();
@@ -833,9 +840,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.assignedTo,
       type: FieldType.select,
       required: true,
-      placeholder: l10n.isArabic
-          ? 'اختر نوع الخدمة أولاً'
-          : 'Select service type first',
+      placeholder: l10n.selectServiceType,
 
       visibleWhen: (values) => userRoleInfo?.roleId == 4,
 
@@ -847,13 +852,14 @@ class _VSController extends StateNotifier<_ViewState> {
       },
 
       optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
         final technicianState = ref.watch(_vsProvider(params));
 
-        return (technicianState.itTechnician)
+        return technicianState.itTechnician
             .map(
               (user) => DropdownOption(
                 value: user.userId.toString(),
-                label: '\u200E${user.employeeName ?? ''}',
+                label: '\u200E${user.displayName(isArabic: formL10n.isArabic)}',
               ),
             )
             .toList();

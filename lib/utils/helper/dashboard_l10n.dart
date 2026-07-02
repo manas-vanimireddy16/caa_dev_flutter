@@ -429,6 +429,8 @@ class DashboardL10n {
 
   String get import => _t('Import', 'استيراد');
 
+  String get importAndExportBoth => _t('Both', 'كلاهما');
+
   String get vehicleNumber => _t('Vehicle Number', 'رقم المركبة');
 
   String get modeOfTransport => _t('Mode of Transport', 'وسيلة النقل');
@@ -812,6 +814,10 @@ class DashboardL10n {
     if (key == 'request for study leave' || key == 'study leave') {
       return requestForStudyLeaveSubService;
     }
+    if (key == 'appeal against administrative decisions' ||
+        key.contains('appeal against administrative')) {
+      return appealAgainstAdministrativeDecisionsTitle;
+    }
 
     return null;
   }
@@ -878,6 +884,58 @@ class DashboardL10n {
   );
 
   String get dateOfRequest => _t('Date of Request', 'تاريخ الطلب');
+
+  String get dateOfLoss => _t('Date of Loss', 'تاريخ الفقدان');
+
+  String get timeOfLoss => _t('Time of Loss', 'وقت الفقدان');
+
+  String get itemDescriptionLabel => _t('Item Description', 'وصف المفقودات');
+
+  String get dateOfLossRequired =>
+      _t('Date of loss is required', 'تاريخ الفقدان مطلوب');
+
+  String get timeOfLossRequired =>
+      _t('Time of loss is required', 'وقت الفقدان مطلوب');
+
+  String get locationWhereItemWasLostRequired => _t(
+    'Location where item was lost is required',
+    'موقع فقدان المفقودات مطلوب',
+  );
+
+  String get itemDescriptionRequired =>
+      _t('Item description is required', 'وصف المفقودات مطلوب');
+
+  String get attachmentRequired => _t('Attachment is required', 'المرفق مطلوب');
+
+  String get uploadAtLeastOneAttachment => _t(
+    'Please upload at least one attachment',
+    'يرجى رفع مرفق واحد على الأقل',
+  );
+
+  String get descriptionMinFiveChars => _t(
+    'Description must be at least 5 characters',
+    'يجب أن يكون الوصف 5 أحرف على الأقل',
+  );
+
+  String get materialDescriptionMinFiveChars => _t(
+    'Material Name/Description must be at least 5 characters',
+    'يجب أن يكون اسم/وصف المادة 5 أحرف على الأقل',
+  );
+
+  String get hazardousMaterialRequired => _t(
+    'Is the material hazardous or sensitive? is required',
+    'هل المادة خطرة أو حساسة؟ مطلوب',
+  );
+
+  String get purposeOfImportExportRequired => _t(
+    'Purpose of Import/Export is required',
+    'الغرض من الاستيراد/التصدير مطلوب',
+  );
+
+  String get modeOfTransportRequired =>
+      _t('Mode of Transport is required', 'وسيلة النقل مطلوبة');
+
+  String get selectDate => _t('Select Date', 'اختر التاريخ');
 
   String get enterLocationWhereItemWasLost =>
       _t('Enter Location Where Item Was Lost', 'أدخل موقع فقدان المفقودات');
@@ -2258,7 +2316,45 @@ class DashboardL10n {
   String get appealAgainstDecision =>
       _t('Appeal Against Decision', 'التظلم على القرار');
 
+  String get appealAgainstAdministrativeDecisionsTitle => _t(
+    'Appeal Against Administrative Decisions',
+    'التظلم ضد القرارات الإدارية',
+  );
+
+  String get appealStepDecisionBeingGrieved =>
+      _t('Decision Being Grievant', 'القرار محل التظلم');
+
+  String get appealStepGrievantInformation =>
+      _t('Grievant Information', 'بيانات مقدم التظلم');
+
+  String get appealDeclarationAcknowledgementText => _t(
+    'Declaration of the accuracy of the attached information. The grievant shall bear legal responsibility for any incorrect data.',
+    'إقرار بصحة المعلومات المرفقة. يتحمل مقدم الشكوى المسؤولية القانونية عن أي بيانات غير صحيحة.',
+  );
+
+  String get attachment1 => _t('Attachment 1', 'مرفق 1');
+
+  String get attachment2 => _t('Attachment 2', 'مرفق 2');
+
+  String get selectEmployee => _t('Select Employee', 'اختر الموظف');
+
+  String get enterRequestTitleMinMax => _t(
+    'Enter request title (min 5, max 250 characters)',
+    'أدخل عنوان الطلب (الحد الأدنى 5 والحد الأقصى 250 حرفاً)',
+  );
+
+  String get writeHereMinMax => _t(
+    'Write here (min 5, max 250 characters)',
+    'اكتب هنا (الحد الأدنى 5 والحد الأقصى 250 حرفاً)',
+  );
+
+  String dynamicFormStepOf(int current, int total) =>
+      _t('Step $current of $total', 'الخطوة $current من $total');
+
   String get titleOfComplaint => _t('Title of the Complaint', 'عنوان الشكوى');
+
+  String get requestClassification =>
+      _t('Request Classification', 'تصنيف الطلب');
 
   String get submissionDate => _t('Submission Date', 'تاريخ التقديم');
 
@@ -2328,6 +2424,8 @@ class DashboardL10n {
     }
 
     switch (normalized) {
+      case 'totaltickets':
+        return totalTickets;
       case 'totalapprovals':
         return _t('Total Approvals', 'إجمالي الموافقات');
       case 'totalrequests':
@@ -2529,6 +2627,10 @@ class DashboardL10n {
         return typeOfProject;
       case 'Project Code/Budget Code':
         return projectCodeBudgetCode;
+      case 'Title of the Complaint':
+        return titleOfComplaint;
+      case 'Appeal Against Decision':
+        return appealAgainstDecision;
       default:
         return _formatKey(key);
     }
@@ -2922,6 +3024,18 @@ class DashboardL10n {
       case 'Type of Request':
         return typeOfRequest;
 
+      case 'Date of Loss':
+        return dateOfLoss;
+
+      case 'Time of Loss':
+        return timeOfLoss;
+
+      case 'Location Where Item Was Lost':
+        return locationWhereItemWasLost;
+
+      case 'Item Description':
+        return itemDescriptionLabel;
+
       case 'Type of Vehicle Required':
         return typeOfVehicleRequired;
 
@@ -3111,6 +3225,45 @@ class DashboardL10n {
 
       case 'Company Name':
         return companyName;
+
+      case 'Title of the Complaint':
+        return titleOfComplaint;
+
+      case 'Appeal Against Decision':
+        return appealAgainstDecision;
+
+      case 'Request Classification':
+        return requestClassification;
+
+      case 'Decision Number':
+        return decisionNumber;
+
+      case 'Decision Date':
+        return decisionDate;
+
+      case 'Decision Subject':
+        return decisionSubject;
+
+      case 'Grievance Details':
+        return grievanceDetails;
+
+      case 'Individuals Involved':
+        return individualsInvolved;
+
+      case 'Dates':
+        return _t('Dates', 'التواريخ');
+
+      case 'Requests':
+        return requests;
+
+      case 'Events':
+        return events;
+
+      case 'Grievant Name':
+        return grievantName;
+
+      case 'Grievant Employee Number':
+        return grievantEmployeeNumber;
 
       default:
         return _formatKey(key);

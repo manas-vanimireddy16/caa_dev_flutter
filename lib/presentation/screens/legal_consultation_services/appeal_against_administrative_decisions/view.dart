@@ -135,6 +135,7 @@ class _AppealAgainstAdministrativeDecisionsScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -142,7 +143,9 @@ class _AppealAgainstAdministrativeDecisionsScreenState
         padding: const EdgeInsets.all(16),
         children: [
           /// KPI
-          StatSummaryRow(stats: controller.currentStats),
+          StatSummaryRow(
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
+          ),
           16.toVerticalSizedBox,
 
           /// Status Breakdown
@@ -150,7 +153,10 @@ class _AppealAgainstAdministrativeDecisionsScreenState
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
+            title: l10n.requestsStatusBreakdown,
+            centerMetricLabel: l10n.totalTickets,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
             onChanged: controller.onStatusFilterChanged,
             breakdown: state.statusBreakdown.data,
           ),
@@ -161,7 +167,8 @@ class _AppealAgainstAdministrativeDecisionsScreenState
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalTickets,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,

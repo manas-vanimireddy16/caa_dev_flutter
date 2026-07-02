@@ -1,3 +1,5 @@
+import 'package:code_setup/utils/helper/localized_display_name.dart';
+
 class ITTechnicianListModel {
   final String? status;
   final List<UserItem>? data;
@@ -84,6 +86,12 @@ class UserItem {
     "section_id": sectionId,
     "section_name": sectionName,
   };
+
+  String displayName({required bool isArabic}) => localizedDisplayName(
+    isArabic: isArabic,
+    english: employeeName,
+    arabic: employeeArabicName,
+  );
 }
 
 class Filters {

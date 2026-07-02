@@ -120,6 +120,14 @@ class _AppealAgainstAdministrativeDecisionsDetailsScreenState
                     showStatusAndAssignedTo: selectedTab != 0,
                   ),
                   CommonRequestDetails(
+                    statusInformationTitle: l10n.requestDetailsLabel(
+                      'Status Information',
+                    ),
+                    requestInformationTitle: l10n.requestDetailsLabel(
+                      'Request Information',
+                    ),
+                    technicalInformationTitle: l10n.technicalDetailsSection,
+                    requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: controller.buildStatusInformation(),
 
                     requestInfo: controller.buildRequestInformationData(),

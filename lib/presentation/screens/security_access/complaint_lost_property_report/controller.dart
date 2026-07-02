@@ -502,14 +502,14 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= DATE OF LOSS =================
     DynamicField(
       name: 'date_of_loss',
-      label: l10n.requestDetailsLabel('Date of Loss'),
+      label: l10n.dateOfLoss,
       type: FieldType.date,
       required: true,
-      placeholder: 'MM/DD/YYYY',
+      placeholder: l10n.selectDate,
 
       validator: (value, values) {
         if (value == null || value.toString().isEmpty) {
-          return 'Date of loss is required';
+          return l10n.dateOfLossRequired;
         }
 
         return null;
@@ -519,14 +519,14 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= TIME OF LOSS =================
     DynamicField(
       name: 'time_of_loss',
-      label: l10n.requestDetailsLabel('Time of Loss'),
+      label: l10n.timeOfLoss,
       type: FieldType.time,
       required: true,
-      placeholder: 'hh:mm aa',
+      placeholder: l10n.select,
 
       validator: (value, values) {
         if (value == null || value.toString().isEmpty) {
-          return 'Time of loss is required';
+          return l10n.timeOfLossRequired;
         }
 
         return null;
@@ -536,16 +536,16 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= LOCATION WHERE ITEM WAS LOST =================
     DynamicField(
       name: 'location_where_item_was_lost',
-      label: l10n.requestDetailsLabel('Location Where Item Was Lost'),
+      label: l10n.locationWhereItemWasLost,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter Location Where Item Was Lost',
+      placeholder: l10n.enterLocationWhereItemWasLost,
 
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return 'Location where item was lost is required';
+          return l10n.locationWhereItemWasLostRequired;
         }
 
         return null;
@@ -555,16 +555,16 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= ITEM DESCRIPTION =================
     DynamicField(
       name: 'item_description',
-      label: l10n.requestDetailsLabel('Item Description'),
+      label: l10n.itemDescriptionLabel,
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter Item Description',
+      placeholder: l10n.enterItemDescription,
 
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return 'Item description is required';
+          return l10n.itemDescriptionRequired;
         }
 
         return null;
@@ -576,13 +576,13 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'description',
       label: l10n.requestDetailsLabel('Description'),
       type: FieldType.textarea,
-      placeholder: 'Enter Description',
+      placeholder: l10n.enterDescription,
 
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
         if (text.isNotEmpty && text.length < 5) {
-          return 'Description must be at least 5 characters';
+          return l10n.descriptionMinFiveChars;
         }
 
         return null;
@@ -592,17 +592,17 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= ATTACHMENTS =================
     DynamicField(
       name: 'attachments',
-      label: l10n.requestDetailsLabel('Attachments'),
+      label: l10n.attachmentsTabLabel,
       type: FieldType.file,
       required: true,
 
       validator: (value, values) {
         if (value == null) {
-          return 'Attachment is required';
+          return l10n.attachmentRequired;
         }
 
         if (value is List && value.isEmpty) {
-          return 'Please upload at least one attachment';
+          return l10n.uploadAtLeastOneAttachment;
         }
 
         return null;

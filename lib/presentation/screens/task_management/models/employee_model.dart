@@ -1,4 +1,5 @@
 import 'package:code_setup/presentation/models/details_models.dart';
+import 'package:code_setup/utils/helper/localized_display_name.dart';
 
 class EmployeeResponse {
   final String status;
@@ -162,4 +163,10 @@ class EmployeeList {
       isAdmin: json['is_admin'] ?? false,
     );
   }
+
+  String displayName({required bool isArabic}) => localizedDisplayName(
+    isArabic: isArabic,
+    english: employeeName,
+    arabic: employeeArabicName,
+  );
 }

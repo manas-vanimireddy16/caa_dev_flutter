@@ -1,3 +1,5 @@
+import 'package:code_setup/utils/helper/localized_display_name.dart';
+
 class UserInformation {
   final String? status;
   final UserData? data;
@@ -233,6 +235,7 @@ class Department {
   final String? createdBy;
   final String? updatedBy;
   final String? departmentName;
+  final String? departmentNameInArabic;
   final String? departmentCode;
   final String? departmentDescription;
   final String? createdAt;
@@ -243,6 +246,7 @@ class Department {
     this.createdBy,
     this.updatedBy,
     this.departmentName,
+    this.departmentNameInArabic,
     this.departmentCode,
     this.departmentDescription,
     this.createdAt,
@@ -257,6 +261,7 @@ class Department {
       createdBy: s(json['created_by']),
       updatedBy: s(json['updated_by']),
       departmentName: s(json['department_name']),
+      departmentNameInArabic: s(json['department_arabic_name']),
       departmentCode: s(json['department_code']),
       departmentDescription: s(json['department_description']),
       createdAt: s(json['created_at']),
@@ -269,11 +274,18 @@ class Department {
     'created_by': createdBy,
     'updated_by': updatedBy,
     'department_name': departmentName,
+    'department_arabic_name': departmentNameInArabic,
     'department_code': departmentCode,
     'department_description': departmentDescription,
     'created_at': createdAt,
     'updated_at': updatedAt,
   };
+
+  String displayName({required bool isArabic}) => localizedDisplayName(
+    isArabic: isArabic,
+    english: departmentName,
+    arabic: departmentNameInArabic,
+  );
 }
 
 class Section {
@@ -281,6 +293,7 @@ class Section {
   final String? createdBy;
   final String? updatedBy;
   final String? sectionName;
+  final String? sectionNameInArabic;
   final String? sectionCode;
   final String? sectionDescription;
   final String? departmentId;
@@ -292,6 +305,7 @@ class Section {
     this.createdBy,
     this.updatedBy,
     this.sectionName,
+    this.sectionNameInArabic,
     this.sectionCode,
     this.sectionDescription,
     this.departmentId,
@@ -307,6 +321,7 @@ class Section {
       createdBy: s(json['created_by']),
       updatedBy: s(json['updated_by']),
       sectionName: s(json['section_name']),
+      sectionNameInArabic: s(json['section_arabic_name']),
       sectionCode: s(json['section_code']),
       sectionDescription: s(json['section_description']),
       departmentId: s(json['department_id']),
@@ -320,12 +335,19 @@ class Section {
     'created_by': createdBy,
     'updated_by': updatedBy,
     'section_name': sectionName,
+    'section_arabic_name': sectionNameInArabic,
     'section_code': sectionCode,
     'section_description': sectionDescription,
     'department_id': departmentId,
     'created_at': createdAt,
     'updated_at': updatedAt,
   };
+
+  String displayName({required bool isArabic}) => localizedDisplayName(
+    isArabic: isArabic,
+    english: sectionName,
+    arabic: sectionNameInArabic,
+  );
 }
 
 class Position {
