@@ -111,7 +111,7 @@ class ServicesFilterToggle extends StatelessWidget {
 
   static const _barHeight = 38.0;
   static const _buttonHeight = 38.0;
-  static const _gap = 16.0;
+  static const _gap = 8.0;
   static const _buttonRadius = 4.0;
   static const _buttonPaddingH = 10.0;
   static const _buttonPaddingV = 7.0;
@@ -291,7 +291,7 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
                       width: 40.toAutoScaledWidth,
@@ -311,18 +311,15 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
                     ),
                     SizedBox(width: 12.toAutoScaledWidth),
                     Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 2.toAutoScaledHeight),
-                        child: Text(
-                          widget.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.cairo(
-                            fontSize: 16.toAutoScaledWidth,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black,
-                            height: 1.25,
-                          ),
+                      child: Text(
+                        widget.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.cairo(
+                          fontSize: 16.toAutoScaledWidth,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                          height: 1.25,
                         ),
                       ),
                     ),

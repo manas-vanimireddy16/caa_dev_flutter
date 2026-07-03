@@ -66,6 +66,7 @@ import 'package:file_picker/file_picker.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
 // import 'package:flutter/rendering.dart' hide Border;
 // import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -154,7 +155,7 @@ class _AppealAgainstAdministrativeDecisionsScreenState
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
             title: l10n.requestsStatusBreakdown,
-            centerMetricLabel: l10n.totalTickets,
+            centerMetricLabel: l10n.totalRequests,
             legendHeading: l10n.breakdown,
             statusLabelBuilder: l10n.statusLabel,
             onChanged: controller.onStatusFilterChanged,
@@ -168,7 +169,7 @@ class _AppealAgainstAdministrativeDecisionsScreenState
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
             title: l10n.requestTrendBreakdown,
-            metric: l10n.totalTickets,
+            metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,

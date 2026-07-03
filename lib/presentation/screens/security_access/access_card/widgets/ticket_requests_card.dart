@@ -54,6 +54,7 @@ class TicketRequestsCard extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 12, 12),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   width: 36,
@@ -71,11 +72,17 @@ class TicketRequestsCard extends ConsumerWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    _screenTitle(l10n),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.serviceScreenTitle(),
+                  child: SizedBox(
+                    height: 36,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        _screenTitle(l10n),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.serviceScreenTitle(),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),

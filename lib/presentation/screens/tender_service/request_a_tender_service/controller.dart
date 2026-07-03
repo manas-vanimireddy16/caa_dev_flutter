@@ -240,6 +240,8 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchRequests();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalKpi();
+
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 

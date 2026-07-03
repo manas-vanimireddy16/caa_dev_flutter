@@ -61,7 +61,7 @@ class _LegalConsultationandReviewofAdministrativeDecisionsNewRequestScreenState
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: 'Performance Management',
+          title: 'New Request',
           stepTitles: const [''],
           steps: [controller.legalConsultationFormFields],
 

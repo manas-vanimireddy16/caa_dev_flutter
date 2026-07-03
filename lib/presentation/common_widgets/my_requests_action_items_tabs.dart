@@ -2,6 +2,8 @@ import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:flutter/material.dart';
 
+export 'my_requests_tab_page_sync_registry.dart';
+
 /// My Requests / Action Items tab row used on service list screens.
 class MyRequestsActionItemsTabs extends StatelessWidget {
   static const _borderColor = Color(0xFFD8D8D8);

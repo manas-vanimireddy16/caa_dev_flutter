@@ -4,6 +4,7 @@ import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/approval_comment_dialog.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/chat.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/common_attachments.dart';
@@ -15,6 +16,7 @@ import 'package:code_setup/presentation/common_widgets/analytics/request_status_
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
 import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
 import 'package:code_setup/presentation/screens/logistics/widgets/update_actual_return_dialog.dart';

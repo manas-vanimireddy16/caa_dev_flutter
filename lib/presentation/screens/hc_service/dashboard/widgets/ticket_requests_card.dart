@@ -53,6 +53,7 @@ class TicketRequestsCard extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 12, 12),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   width: 36,

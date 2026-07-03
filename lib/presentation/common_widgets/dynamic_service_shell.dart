@@ -147,6 +147,7 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
                   Padding(
                     padding: EdgeInsets.only(left: 10.toAutoScaledWidth),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         KImageProvider(
                           image: KIcons.security,
@@ -156,11 +157,17 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
                         ),
                         16.toHorizontalSizedBox,
                         Expanded(
-                          child: Text(
-                            widget.service.name ?? '',
-                            style: AppTextStyles.serviceScreenTitle(),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                          child: SizedBox(
+                            height: 20.toAutoScaledHeight,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                widget.service.name ?? '',
+                                style: AppTextStyles.serviceScreenTitle(),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ),
                         ),
                       ],

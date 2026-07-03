@@ -567,8 +567,25 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'checkInDate',
       label: l10n.checkInDate,
       type: FieldType.date,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now().add(const Duration(days: 2)),
       required: true,
       placeholder: l10n.select,
+      onChanged: (value, ref) {
+        final checkOutValue = ref
+            .read(dynamicFormProvider)
+            .values['checkOutDate']
+            ?.toString();
+        if (checkOutValue == null || checkOutValue.isEmpty) return;
+
+        final checkInDate = DateTime.tryParse(value?.toString() ?? '');
+        final checkOutDate = DateTime.tryParse(checkOutValue);
+        if (checkInDate != null &&
+            checkOutDate != null &&
+            checkOutDate.isBefore(checkInDate)) {
+          ref.read(dynamicFormProvider.notifier).updateValue('checkOutDate', '');
+        }
+      },
     ),
     DynamicField(
       name: 'checkInTime',
@@ -583,6 +600,29 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.date,
       required: true,
       placeholder: l10n.select,
+      firstDateWhen: (values) {
+        final checkIn = values['checkInDate']?.toString();
+        if (checkIn != null && checkIn.isNotEmpty) {
+          final parsed = DateTime.tryParse(checkIn);
+          if (parsed != null) return parsed;
+        }
+        return DateTime.now().add(const Duration(days: 2));
+      },
+      validator: (value, values) {
+        if (value == null || value.toString().isEmpty) return null;
+
+        final checkIn = values['checkInDate']?.toString();
+        if (checkIn == null || checkIn.isEmpty) return null;
+
+        final checkInDate = DateTime.tryParse(checkIn);
+        final checkOutDate = DateTime.tryParse(value.toString());
+        if (checkInDate != null &&
+            checkOutDate != null &&
+            checkOutDate.isBefore(checkInDate)) {
+          return l10n.checkOutMustBeAfterCheckIn;
+        }
+        return null;
+      },
     ),
     DynamicField(
       name: 'checkOutTime',
@@ -1158,10 +1198,10 @@ info@caa.gov.om
 
       // 3️⃣ Send request
       await hotelReservationinstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(Duration(seconds: 2));
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
       refreshRequestLists();
     } catch (e) {

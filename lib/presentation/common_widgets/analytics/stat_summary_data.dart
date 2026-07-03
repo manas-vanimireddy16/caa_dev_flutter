@@ -101,10 +101,7 @@ class StatSummaryCard extends StatelessWidget {
                       style: AppTextStyles.kpiLabel(),
                     ),
                     const Spacer(),
-                    Text(
-                      data.count,
-                      style: AppTextStyles.kpiCountValue(),
-                    ),
+                    Text(data.count, style: AppTextStyles.kpiCountValue()),
                   ],
                 ),
               ),

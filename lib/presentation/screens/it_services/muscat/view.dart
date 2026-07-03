@@ -49,6 +49,7 @@ import 'package:code_setup/repository/it_services/salalah/domain/dashboard.dart'
     show DashboardRepository;
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/helper/dashboard_metric_labels.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
@@ -137,6 +138,11 @@ class _MuscatDashboardState extends ConsumerState<MuscatDashboard>
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
     final l10n = DashboardL10n.of(context);
+    final subServiceCode = widget.subService.code;
+    final totalMetricLabel = DashboardMetricLabels.totalMetricLabel(
+      l10n,
+      subServiceCode: subServiceCode,
+    );
 
     return KScaffold(
       backgroundColor: Colors.white,
@@ -150,13 +156,13 @@ class _MuscatDashboardState extends ConsumerState<MuscatDashboard>
         children: [
           // KPI Cards
           StatSummaryRow(
-            stats: controller.currentStats((key) {
-              final normalized = key.toLowerCase().replaceAll('_', '');
-              if (normalized == 'totalrequests' || normalized == 'total') {
-                return l10n.totalTickets;
-              }
-              return l10n.statTitle(key);
-            }),
+            stats: controller.currentStats(
+              (key) => DashboardMetricLabels.statTitle(
+                l10n,
+                key,
+                subServiceCode: subServiceCode,
+              ),
+            ),
           ),
           16.toVerticalSizedBox,
 
@@ -168,7 +174,7 @@ class _MuscatDashboardState extends ConsumerState<MuscatDashboard>
             title: l10n.requestsStatusBreakdown,
             filterLabel: l10n.periodFilterLabels[0],
             filterLabelList: l10n.periodFilterLabels,
-            centerMetricLabel: l10n.totalTickets,
+            centerMetricLabel: totalMetricLabel,
             legendHeading: l10n.breakdown,
             statusLabelBuilder: l10n.statusLabel,
             preserveFilterLabelOnChange: true,
@@ -184,7 +190,7 @@ class _MuscatDashboardState extends ConsumerState<MuscatDashboard>
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
             title: l10n.requestTrendBreakdown,
-            metric: l10n.totalTickets,
+            metric: totalMetricLabel,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,

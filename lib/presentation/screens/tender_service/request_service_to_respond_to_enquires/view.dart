@@ -160,7 +160,7 @@ class _RequestAServiceToRespondToEnquiriesScreenState
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
             title: l10n.requestsStatusBreakdown,
-            centerMetricLabel: l10n.totalTickets,
+            centerMetricLabel: l10n.totalRequests,
             legendHeading: l10n.breakdown,
             statusLabelBuilder: l10n.statusLabel,
             onChanged: controller.onStatusFilterChanged,
@@ -174,7 +174,7 @@ class _RequestAServiceToRespondToEnquiriesScreenState
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
             title: l10n.requestTrendBreakdown,
-            metric: l10n.totalTickets,
+            metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,

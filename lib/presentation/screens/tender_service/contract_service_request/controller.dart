@@ -273,6 +273,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void initState() {
+    fetchApprovalKpi();
     fetchKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
@@ -571,6 +572,8 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.dateOfSubmission,
       type: FieldType.date,
       placeholder: l10n.select,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now().add(const Duration(days: 1)),
       required: true,
     ),
 
@@ -1082,12 +1085,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // 3️⃣ Send request
       await contractServiceInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
-      KAppX.router.pop();
+
+      // KAppX.router.pop();
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
       refreshRequestLists();
+      await Future.delayed(Duration(seconds: 3));
       await fetchApprovalKpi();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');

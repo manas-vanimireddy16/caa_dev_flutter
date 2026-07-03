@@ -532,6 +532,7 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'date',
       label: 'Date',
       type: FieldType.date,
+      placeholder: 'Select',
       required: true,
     ),
 
@@ -540,6 +541,7 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'title',
       label: 'Title',
       type: FieldType.text,
+      placeholder: 'Enter',
       required: true,
     ),
 
@@ -548,6 +550,7 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'description',
       label: 'Description',
       type: FieldType.text,
+      placeholder: 'Enter',
       required: true,
     ),
 
@@ -965,9 +968,6 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-
-
-
   Future<List<LegalRequestModel>> loadMyRequestsPage(
     int pageKey, {
     String searchText = '',
@@ -1015,6 +1015,7 @@ class _VSController extends StateNotifier<_ViewState> {
       rethrow;
     }
   }
+
   bool lastApprover(List<ApprovalDetailModel> approvals) {
     if (approvals.isEmpty) return false;
 
@@ -1297,6 +1298,9 @@ class _VSController extends StateNotifier<_ViewState> {
   ) async {
     try {
       state = state.copyWith(isLoading: true);
+      final level = getActiveApprovalLevel(
+        state.requestDetails.approvalDetails ?? [],
+      );
 
       // 1️⃣ Upload files
 
@@ -1307,6 +1311,9 @@ class _VSController extends StateNotifier<_ViewState> {
         "comment": comment,
         "approval_id": approverId,
       };
+      if (level == 2) {
+        payload['approval_level'] = "DIRECT";
+      }
       if (decisionNo != null) {
         payload['decision_number'] = decisionNo;
       }

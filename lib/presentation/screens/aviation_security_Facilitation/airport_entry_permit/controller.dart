@@ -2108,7 +2108,7 @@ If you suspect privacy compromise: Close all tabs and windows you are browsing C
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
       refreshRequestLists();
     } catch (e) {

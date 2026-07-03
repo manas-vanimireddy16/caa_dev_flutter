@@ -887,7 +887,25 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    }
+
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
@@ -896,7 +914,7 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
-    refreshRequestLists();
+    refreshActiveRequestList();
   }
 
   void clearPassengerNames() {

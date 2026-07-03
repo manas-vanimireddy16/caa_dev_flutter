@@ -55,7 +55,7 @@ class AnnouncementScreen extends ConsumerWidget {
         title: _HomeGreetingHeader(
           userName: userName,
           avatarUrl: avatarUrl,
-          greeting: l10n.goodMorning,
+          greeting: l10n.greetingForTime(),
         ),
         actions: const [DashboardAppBarActions()],
         foregroundColor: AppColors.textHeading,

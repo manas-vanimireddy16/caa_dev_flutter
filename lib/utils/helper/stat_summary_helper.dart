@@ -83,6 +83,7 @@ class StatSummaryHelper {
   static String getIcon(String key) {
     switch (_normalizeKey(key)) {
       case 'total_requests':
+      case 'total_tickets':
         return AppIcons.kpiTotalRequests;
 
       case 'approved':
@@ -104,6 +105,7 @@ class StatSummaryHelper {
   static Color getColor(String key) {
     switch (_normalizeKey(key)) {
       case 'total_requests':
+      case 'total_tickets':
         return AppColors.totalRequestsBGColor;
 
       case 'approved':
@@ -125,6 +127,7 @@ class StatSummaryHelper {
   static Color getIconColor(String key) {
     switch (_normalizeKey(key)) {
       case 'total_requests':
+      case 'total_tickets':
         return AppColors.totalRequestsIconColor;
 
       case 'approved':

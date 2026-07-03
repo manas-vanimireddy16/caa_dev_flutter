@@ -16,14 +16,29 @@ class RequestsPage extends ConsumerStatefulWidget {
   ConsumerState<RequestsPage> createState() => _RequestsPageState();
 }
 
-class _RequestsPageState extends ConsumerState<RequestsPage> {
+class _RequestsPageState extends ConsumerState<RequestsPage>
+    with AutomaticKeepAliveClientMixin {
   PagingController<int, ForeignEmployeeVehicleRequestModel>? _pagingController;
   bool _controllerInitialized = false;
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void dispose() {
+    final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
+    if (widget.isActionItemsTab) {
+      controller.onActionItemsListRefresh = null;
+    } else {
+      controller.onMyRequestsListRefresh = null;
+    }
     _pagingController?.dispose();
     super.dispose();
+  }
+
+  void _refreshList() {
+    if (!mounted) return;
+    _pagingController?.refresh();
   }
 
   void _ensureController(_VSController controller) {
@@ -43,7 +58,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               .actionItemsStatusFilter,
         ),
       );
-      controller.onActionItemsListRefresh = () => _pagingController?.refresh();
+      controller.onActionItemsListRefresh = _refreshList;
     } else {
       _pagingController =
           PagingController<int, ForeignEmployeeVehicleRequestModel>(
@@ -57,12 +72,13 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               .myRequestsStatusFilter,
         ),
       );
-      controller.onMyRequestsListRefresh = () => _pagingController?.refresh();
+      controller.onMyRequestsListRefresh = _refreshList;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
     _ensureController(controller);
 
@@ -72,7 +88,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
             ? s.actionItemsStatusFilter
             : s.myRequestsStatusFilter,
       ),
-      (_, __) => _pagingController?.refresh(),
+      (_, __) => _refreshList(),
     );
 
     return PaginatedListSection<ForeignEmployeeVehicleRequestModel>(
@@ -88,7 +104,6 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               item.base?.id ?? 0,
               fromActionItems: widget.isActionItemsTab,
             );
-            controller.updateTabIndex(0);
           },
         );
       },

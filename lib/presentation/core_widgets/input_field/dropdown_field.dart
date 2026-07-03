@@ -43,6 +43,7 @@ class KDropdownField<T> extends ConsumerWidget {
   final String? hintText;
   final String? errorText;
   final bool? isRequired;
+  final bool includeBottomSpacing;
   const KDropdownField({
     Key? key,
     this.fieldHeading,
@@ -79,6 +80,7 @@ class KDropdownField<T> extends ConsumerWidget {
     this.errorText,
     this.focusedBorderColor,
     this.isRequired,
+    this.includeBottomSpacing = true,
   }) : super(key: key);
 
   @override
@@ -86,7 +88,9 @@ class KDropdownField<T> extends ConsumerWidget {
     final currentTheme = ref.watch(KAppX.theme.current).themeBox;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: 15.toAutoScaledHeight),
+      padding: includeBottomSpacing
+          ? EdgeInsets.only(bottom: 15.toAutoScaledHeight)
+          : EdgeInsets.zero,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

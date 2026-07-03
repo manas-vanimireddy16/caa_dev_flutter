@@ -79,7 +79,8 @@ class HotelReservationScreen extends ConsumerStatefulWidget {
       _HotelReservationScreenState();
 }
 
-class _HotelReservationScreenState extends ConsumerState<HotelReservationScreen> {
+class _HotelReservationScreenState
+    extends ConsumerState<HotelReservationScreen> {
   late FocusNode _focusNode;
   late _VSControllerParams _providerArgs;
   late PageController _pageController;
@@ -128,13 +129,13 @@ class _HotelReservationScreenState extends ConsumerState<HotelReservationScreen>
     return KScaffold(
       backgroundColor: Colors.white,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
           /// KPI
           StatSummaryRow(
             stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -153,21 +154,21 @@ class _HotelReservationScreenState extends ConsumerState<HotelReservationScreen>
             ),
             breakdown: state.statusBreakdown.data,
           ),
-
+          16.toVerticalSizedBox,
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
             title: l10n.requestTrendBreakdown,
-            metric: l10n.totalTickets,
+            metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
             barColor: const Color(0xFF283593),
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

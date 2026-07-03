@@ -794,10 +794,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await ref
             .read(_vsProvider(params).notifier)
-            .fetchItTechniciansForForm(
-              ref,
-              serviceTypeId: serviceTypeId,
-            );
+            .fetchItTechniciansForForm(ref, serviceTypeId: serviceTypeId);
       },
     ),
 
@@ -1200,25 +1197,24 @@ class _VSController extends StateNotifier<_ViewState> {
     if (status == 'pending' && level.level == 1 && level.approverRoleId == 4) {
       debugPrint('✅ SHOW CLOSE + REJECT');
 
-      return ActionButtonsType.reassignCloseReject;
+      return ActionButtonsType.assign;
+    }
+    if (status == 'pending' && level.level == 1 && level.approverRoleId == 9) {
+      debugPrint('✅ SHOW CLOSE + REJECT');
+
+      return ActionButtonsType.closeReject;
     }
     if (status == 'pending' && level.approverUserId != null) {
       debugPrint('✅ SHOW CLOSE + REJECT');
 
       return ActionButtonsType.closeReject;
     }
-
     // if (status == 'pending' && level.approverUserId == 9 ||
     //     level.approverRoleId == 30 && level.level == 1) {
     //   // debugPrint('✅ SHOW ASSIGN BUTTON');
-
     //   return ActionButtonsType.closeReject;
     // }
-    if (status == 'pending' && level.level == 1) {
-      // debugPrint('✅ SHOW CLOSE + REJECT');
-
-      return ActionButtonsType.assign;
-    } else if (status == 'pending' && level.level == 2) {
+    else if (status == 'pending' && level.level == 2) {
       debugPrint('✅ SHOW CLOSE + REJECT');
 
       return ActionButtonsType.reassignCloseReject;
@@ -1601,10 +1597,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final dept = selectedService.departmentId ?? 0;
     final section = selectedService.sectionId ?? 0;
 
-    await fetchitTechnician(
-      departmentId: dept,
-      sectionId: section,
-    );
+    await fetchitTechnician(departmentId: dept, sectionId: section);
   }
 
   Future<void> fetchitTechnician({

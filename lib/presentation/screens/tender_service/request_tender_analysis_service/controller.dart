@@ -273,6 +273,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void initState() {
     fetchKpi();
+    fetchApprovalKpi();
+
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
   }
@@ -560,7 +562,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.dateOfSubmission,
       type: FieldType.date,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
+      firstDate: DateTime.now().add(const Duration(days: 1)),
       placeholder: l10n.select,
       required: true,
     ),

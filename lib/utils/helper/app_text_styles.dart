@@ -215,7 +215,7 @@ abstract final class AppTextStyles {
   /// KPI card label text.
   static TextStyle kpiLabel({double? fontSize}) {
     return cairo(
-      fontSize: fontSize ?? 12,
+      fontSize: fontSize ?? 14.toAutoScaledFont,
       fontWeight: FontWeight.w600,
       color: AppColors.kpiTextColor,
       height: 20 / 12,
@@ -238,7 +238,7 @@ abstract final class AppTextStyles {
       fontSize: fontSize ?? 16,
       fontWeight: FontWeight.w700,
       color: AppColors.textHeading,
-      height: 1.25,
+      height: 1,
     );
   }
 }

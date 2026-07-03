@@ -788,6 +788,19 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.number,
       required: true,
       placeholder: l10n.enterExtensionNumber,
+      validator: (validator, values) {
+        final extn = values['extension_number']?.toString() ?? '';
+        if (extn.isEmpty) {
+          return l10n.extensionNumberIsRequired;
+        }
+        ;
+
+        if (extn.length != 5) {
+          return l10n.extensionNumberMustBeExactly5Digits;
+        }
+
+        return null;
+      },
     ),
 
     /// ================= EMAIL =================
@@ -1553,7 +1566,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // 3️⃣ Send request
       await dashboardinstance.onClose(payload);
       KAppX.router.pop();
-      KAppX.router.pop();
+      // KAppX.router.pop();
       refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -1793,7 +1806,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     /// ✅ ADD ONLY FOR ROLE 4
     if (roleId == 4) {
-      payload["approval_user_id"] = state.itTechnicianId;
+      payload["approval_user_id"] = values['assigned_to'] ?? 0;
     }
 
     return payload;

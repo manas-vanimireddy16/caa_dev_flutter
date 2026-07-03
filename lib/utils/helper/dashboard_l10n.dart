@@ -755,6 +755,17 @@ class DashboardL10n {
 
   String get goodMorning => _t('Good Morning', 'صباح الخير');
 
+  String get goodAfternoon => _t('Good Afternoon', 'مساء الخير');
+
+  String get goodEvening => _t('Good Evening', 'مساء الخير');
+
+  String greetingForTime([DateTime? time]) {
+    final hour = (time ?? DateTime.now()).hour;
+    if (hour < 12) return goodMorning;
+    if (hour < 16) return goodAfternoon;
+    return goodEvening;
+  }
+
   String get latestAnnouncements => _t('Latest Announcements', 'آخر الإعلانات');
 
   String get requestMaintenanceSubService =>
@@ -2312,7 +2323,13 @@ class DashboardL10n {
   String get decisionDate => _t('Decision Date', 'تاريخ القرار');
 
   String get decisionNumber => _t('Decision Number', 'رقم القرار');
+  String get extensionNumberIsRequired =>
+      _t('Extension Number is required', 'رقم التحويلة مطلوب');
 
+  String get extensionNumberMustBeExactly5Digits => _t(
+    'Extension Number must be exactly 5 digits',
+    'يجب أن يتكون رقم التحويلة من 5 أرقام بالضبط',
+  );
   String get appealAgainstDecision =>
       _t('Appeal Against Decision', 'التظلم على القرار');
 
@@ -2425,7 +2442,7 @@ class DashboardL10n {
 
     switch (normalized) {
       case 'totaltickets':
-        return totalTickets;
+        return totalRequests;
       case 'totalapprovals':
         return _t('Total Approvals', 'إجمالي الموافقات');
       case 'totalrequests':

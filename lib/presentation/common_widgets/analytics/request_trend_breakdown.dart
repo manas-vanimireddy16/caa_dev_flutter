@@ -329,7 +329,8 @@
 import 'dart:math';
 
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/analytics_card_header.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/analytics_period_dropdown.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/chart_utils.dart';
@@ -382,51 +383,16 @@ class RequestTrendBreakdownCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header Row
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFDCE7F6),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: const Icon(
-                    Icons.insert_chart_outlined,
-                    color: Colors.black87,
-                  ),
-                ),
-                12.toHorizontalSizedBox,
-                Expanded(
-                  child: Text(
-                    title,
-                    style: AppTextStyles.requestTrendBreakdownTitle(),
-                  ),
-                ),
-                // _YearDropdown(label: selectedYear.toString(), onTap: onYearTap),
-                SizedBox(
-                  width: 120.toAutoScaledWidth,
-                  child: KDropdownField<dynamic>(
-                    value: selectedYear,
-                    // fieldHeadingText: 'New Bank Name *',
-                    hintText: 'Select',
-
-                    items:
-                        filterLabelList
-                            ?.map<KDropdownItem<dynamic>>(
-                              (opt) => KDropdownItem<dynamic>(
-                                value: opt,
-                                child: Text(opt),
-                              ),
-                            )
-                            .toList() ??
-                        [],
-
-                    onChanged: (v) {
-                      onChanged(v);
-                    },
-                  ),
-                ),
-              ],
+            AnalyticsCardHeader(
+              icon: Icons.insert_chart_outlined,
+              iconBackgroundColor: const Color(0xFFDCE7F6),
+              title: title,
+              titleStyle: AppTextStyles.requestTrendBreakdownTitle(),
+              trailing: AnalyticsPeriodDropdown(
+                value: selectedYear,
+                filterLabelList: filterLabelList,
+                onChanged: (v) => onChanged(v as String?),
+              ),
             ),
             const SizedBox(height: 16),
             Divider(thickness: 1, color: const Color(0xFFE5E7EB)),
@@ -470,10 +436,7 @@ class _RequestTrendBarChart extends StatefulWidget {
   final List<int> data;
   final List<String> labels;
 
-  const _RequestTrendBarChart({
-    required this.data,
-    required this.labels,
-  });
+  const _RequestTrendBarChart({required this.data, required this.labels});
 
   @override
   State<_RequestTrendBarChart> createState() => _RequestTrendBarChartState();

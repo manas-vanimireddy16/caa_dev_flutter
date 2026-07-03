@@ -1,5 +1,6 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/analytics_card_header.dart';
+import 'package:code_setup/presentation/common_widgets/analytics/analytics_period_dropdown.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
@@ -8,6 +9,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class RequestStatusBreakdownCard extends StatelessWidget {
+  static const double _cardBorderRadius = 8;
+  static const double _cardPadding = 16;
+  static const double _sectionGap = 16;
+  static const double _chartSize = 174;
+  static const double _chartToBreakdownGap = 12;
+
   // Dynamic, fully flexible input
   final StatusData? breakdown;
   final List<ChartData> data;
@@ -41,25 +48,25 @@ class RequestStatusBreakdownCard extends StatelessWidget {
   //int get totalValue => data.values.fold(0, (prev, e) => prev + e.value);
   @override
   Widget build(BuildContext context) {
-    final currentTheme = KAppX.globalProvider
-        .read(KAppX.theme.current)
-        .themeBox;
     final chartSections = data;
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
       color: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(_cardBorderRadius),
         side: const BorderSide(color: Color(0xFFE5E7EB), width: 1),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(_cardPadding),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
             _buildHeader(context),
-            20.toVerticalSizedBox,
+            const SizedBox(height: _sectionGap),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFE5E7EB)),
+            const SizedBox(height: _sectionGap),
             _buildContent(context, chartSections),
           ],
         ),
@@ -68,55 +75,23 @@ class RequestStatusBreakdownCard extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Row(
-      children: [
-        if (icon != null) ...[
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            padding: const EdgeInsets.all(10),
-            child: Icon(icon, size: 20, color: const Color(0xFF374151)),
-          ),
-          14.toHorizontalSizedBox,
-        ],
-        Expanded(
-          child: Text(
-            title,
-            style: AppTextStyles.requestStatusBreakdownTitle(),
-          ),
-        ),
-        // _FilterDropdown(label: filterLabel, onTap: onFilterTap),
-        SizedBox(
-          width: 120.toAutoScaledWidth,
-          child: KDropdownField<dynamic>(
-            value: filterLabel,
-            style: TextStyle(color: AppColors.headingColor),
-            // fieldHeadingText: 'New Bank Name *',
-            hintText: 'Select',
-
-            items:
-                filterLabelList
-                    ?.map<KDropdownItem<dynamic>>(
-                      (opt) =>
-                          KDropdownItem<dynamic>(value: opt, child: Text(opt)),
-                    )
-                    .toList() ??
-                [],
-
-            onChanged: (v) {
-              if (v != null) {
-                onChanged(
-                  preserveFilterLabelOnChange
-                      ? v.toString()
-                      : v.toString().toLowerCase(),
-                );
-              }
-            },
-          ),
-        ),
-      ],
+    return AnalyticsCardHeader(
+      icon: icon ?? Icons.pie_chart_outline,
+      title: title,
+      titleStyle: AppTextStyles.requestStatusBreakdownTitle(),
+      trailing: AnalyticsPeriodDropdown(
+        value: filterLabel,
+        filterLabelList: filterLabelList,
+        onChanged: (v) {
+          if (v != null) {
+            onChanged(
+              preserveFilterLabelOnChange
+                  ? v.toString()
+                  : v.toString().toLowerCase(),
+            );
+          }
+        },
+      ),
     );
   }
 
@@ -217,46 +192,42 @@ class RequestStatusBreakdownCard extends StatelessWidget {
               .toList()
         : chartSections;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Pie Chart Section
-        SizedBox(
-          height: 190,
-          width: 140,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              PieChart(
-                PieChartData(
-                  sectionsSpace: 3,
-                  centerSpaceRadius: 40,
-
-                  sections: filteredSections
-                      .where(
-                        (section) => section.status?.toLowerCase() != 'total',
-                      )
-                      .map((section) {
-                        return PieChartSectionData(
-                          color: getStatusColor(section.status),
-                          value: section.percentage,
-                          title: '',
-                          radius: 22,
-                          borderSide: const BorderSide(
-                            color: Colors.white,
-                            width: 2,
-                          ),
-                        );
-                      })
-                      .toList(),
+        Center(
+          child: SizedBox(
+            height: _chartSize,
+            width: _chartSize,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                PieChart(
+                  PieChartData(
+                    sectionsSpace: 3,
+                    centerSpaceRadius: 50,
+                    sections: filteredSections
+                        .where(
+                          (section) => section.status?.toLowerCase() != 'total',
+                        )
+                        .map((section) {
+                          return PieChartSectionData(
+                            color: getStatusColor(section.status),
+                            value: section.percentage,
+                            title: '',
+                            radius: 26,
+                            borderSide: const BorderSide(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                          );
+                        })
+                        .toList(),
+                  ),
+                  swapAnimationDuration: const Duration(milliseconds: 800),
+                  swapAnimationCurve: Curves.easeInOut,
                 ),
-                swapAnimationDuration: const Duration(milliseconds: 800),
-                swapAnimationCurve: Curves.easeInOut,
-              ),
-
-              // ✅ Properly centered content
-              Center(
-                child: Column(
+                Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -270,30 +241,25 @@ class RequestStatusBreakdownCard extends StatelessWidget {
                             height: 1,
                           ),
                     ),
-
                     4.toVerticalSizedBox,
-
                     Text(
                       centerMetricLabel,
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.requestStatusBreakdownDescriptionLabel(),
+                      style:
+                          AppTextStyles.requestStatusBreakdownDescriptionLabel(),
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-
-        32.toHorizontalSizedBox,
-
-        // Legend Section
-        Expanded(
-          child: _BreakdownLegend(
-            sections: filteredSections,
-            legendHeading: legendHeading,
-            statusLabelBuilder: statusLabelBuilder,
-          ),
+        const SizedBox(height: _chartToBreakdownGap),
+        _BreakdownLegend(
+          sections: filteredSections,
+          legendHeading: legendHeading,
+          centerMetricLabel: centerMetricLabel,
+          statusLabelBuilder: statusLabelBuilder,
         ),
       ],
     );
@@ -303,42 +269,60 @@ class RequestStatusBreakdownCard extends StatelessWidget {
 class _BreakdownLegend extends StatelessWidget {
   final List<ChartData> sections;
   final String legendHeading;
+  final String centerMetricLabel;
   final String Function(String status)? statusLabelBuilder;
 
   const _BreakdownLegend({
     required this.sections,
     required this.legendHeading,
+    required this.centerMetricLabel,
     this.statusLabelBuilder,
   });
+
+  bool _isTotalStatus(String? status) {
+    final normalized = status?.toLowerCase().trim() ?? '';
+    return normalized == 'total' ||
+        normalized == 'total requests' ||
+        normalized == 'total tickets';
+  }
+
+  String _resolveLabel(ChartData section) {
+    if (_isTotalStatus(section.status)) {
+      return centerMetricLabel;
+    }
+
+    if (statusLabelBuilder != null) {
+      return statusLabelBuilder!(section.status ?? 'NA');
+    }
+
+    return section.status ?? 'NA';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          legendHeading,
-          style: AppTextStyles.requestStatusBreakdownStatusLabel(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            legendHeading,
+            style: AppTextStyles.requestStatusBreakdownStatusLabel(),
+          ),
         ),
-        16.toVerticalSizedBox,
-        // Total Tickets Row
-        // _LegendItem(
-        //   color: const Color(0xFFE5E7EB),
-        //   label: 'Total Tickets',
-        //   value: totalValue,
-        // ),
-        8.toVerticalSizedBox,
-        // Dynamic legend
+        const SizedBox(height: RequestStatusBreakdownCard._sectionGap),
         ...sections
             .where((section) => section.status?.toLowerCase() != 'cancelled')
             .map(
               (section) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(
+                  bottom: RequestStatusBreakdownCard._sectionGap / 2,
+                  left: 12,
+                  right: 12,
+                ),
                 child: _LegendItem(
                   color: getStatusColor(section.status),
-                  label: statusLabelBuilder != null
-                      ? statusLabelBuilder!(section.status ?? 'NA')
-                      : (section.status ?? 'NA'),
+                  label: _resolveLabel(section),
                   value: section.count ?? 0,
                 ),
               ),
@@ -375,10 +359,7 @@ class _LegendItem extends StatelessWidget {
             style: AppTextStyles.requestStatusBreakdownDescriptionLabel(),
           ),
         ),
-        Text(
-          '$value',
-          style: AppTextStyles.requestStatusBreakdownCountValue(),
-        ),
+        Text('$value', style: AppTextStyles.requestStatusBreakdownCountValue()),
       ],
     );
   }
