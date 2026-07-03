@@ -766,6 +766,11 @@ class DashboardL10n {
     return goodEvening;
   }
 
+  String get requestForCoverageUrgentContactMessage => _t(
+    'You may contact the Media Department for urgent requests.',
+    'يمكنك التواصل مع قسم الإعلام للطلبات العاجلة.',
+  );
+
   String get latestAnnouncements => _t('Latest Announcements', 'آخر الإعلانات');
 
   String get requestMaintenanceSubService =>

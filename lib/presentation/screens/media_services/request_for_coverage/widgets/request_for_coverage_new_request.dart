@@ -33,6 +33,10 @@ class _RequestforCoverageRequestScreenState
       service: widget.service,
       subService: widget.subService,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(_vsProvider(_providerArgs).notifier).fetchDepartments();
+    });
   }
 
   @override
@@ -55,13 +59,13 @@ class _RequestforCoverageRequestScreenState
           steps: [controller.requestMediaCoverageFields],
 
           onSubmit: (values) async {
-            await controller.submitRequestForCoverageRequest(
+            final success = await controller.submitRequestForCoverageRequest(
               widget.serviceId,
               widget.subServiceId,
               values,
             );
 
-            if (context.mounted) {
+            if (context.mounted && success) {
               context.router.pop();
             }
           },

@@ -15,6 +15,8 @@ abstract class RequestForCoverageRepository {
 
   Future<List<EmployeeList>> getUsers(int departmentId);
 
+  Future<List<DepartmentModel>> getDepartments();
+
   Future<void> sendRequestForCoverageRequest(Map<String, dynamic> payload);
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,

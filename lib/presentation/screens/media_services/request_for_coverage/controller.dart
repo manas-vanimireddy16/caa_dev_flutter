@@ -941,9 +941,25 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   final requestForCoverageInstance = RequestForCoverageRepository();
-  final securityAccessInstance = SecurityAccessRepoistory();
 
   final tripType = 'Planned';
+
+  _VSControllerParams get _providerParams =>
+      _VSControllerParams(service: service, subService: subService);
+
+  bool isEventWithinSevenDays(Map<String, dynamic> values) {
+    final fromStr = values['eventFromDate']?.toString();
+    if (fromStr == null || fromStr.isEmpty) return false;
+
+    final fromDate = DateTime.tryParse(fromStr);
+    if (fromDate == null) return false;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final eventDay = DateTime(fromDate.year, fromDate.month, fromDate.day);
+
+    return eventDay.difference(today).inDays < 7;
+  }
 
   List<DynamicField> get requestMediaCoverageFields => [
     /// -------- REQUIRED FOR PRESIDENT --------
@@ -977,14 +993,19 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Department',
       type: FieldType.select,
       required: true,
-      options: state.departments
-          .map(
-            (e) => DropdownOption<String>(
-              value: e.id.toString(),
-              label: e.departmentName ?? '',
-            ),
-          )
-          .toList(),
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final formState = ref.watch(_vsProvider(_providerParams));
+
+        return formState.departments
+            .map(
+              (d) => DropdownOption<String>(
+                value: d.id.toString(),
+                label: d.displayName(isArabic: formL10n.isArabic),
+              ),
+            )
+            .toList();
+      },
     ),
 
     /// -------- EXTENSION NUMBER --------
@@ -1005,13 +1026,78 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: 'Enter Suggested Photography',
     ),
 
-    /// -------- EVENT DATE --------
+    /// -------- EVENT FROM DATE --------
     DynamicField(
-      name: 'eventDate',
-      label: 'Event Date',
+      name: 'eventFromDate',
+      label: 'Event From Date',
       type: FieldType.date,
       required: true,
       placeholder: 'dd-mm-yyyy',
+      onChanged: (value, ref) {
+        final checkOutValue = ref
+            .read(dynamicFormProvider)
+            .values['eventToDate']
+            ?.toString();
+        if (checkOutValue == null || checkOutValue.isEmpty) return;
+
+        final fromDate = DateTime.tryParse(value?.toString() ?? '');
+        final toDate = DateTime.tryParse(checkOutValue);
+        if (fromDate != null && toDate != null && toDate.isBefore(fromDate)) {
+          ref.read(dynamicFormProvider.notifier).updateValue('eventToDate', '');
+        }
+      },
+    ),
+
+    DynamicField(
+      name: 'eventUrgentWarning',
+      label: '',
+      type: FieldType.custom,
+      visibleWhen: isEventWithinSevenDays,
+      builder: (context, ref) {
+        final l10n = DashboardL10n.of(context);
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(
+                Icons.info_outline,
+                size: 18,
+                color: Color(0xFF5C6BC0),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.requestForCoverageUrgentContactMessage,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF5C6BC0),
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    ),
+
+    /// -------- EVENT TO DATE --------
+    DynamicField(
+      name: 'eventToDate',
+      label: 'Event To Date',
+      type: FieldType.date,
+      required: true,
+      placeholder: 'dd-mm-yyyy',
+      disabledWhen: isEventWithinSevenDays,
+      firstDateWhen: (values) {
+        final from = values['eventFromDate']?.toString();
+        if (from != null && from.isNotEmpty) {
+          final parsed = DateTime.tryParse(from);
+          if (parsed != null) return parsed;
+        }
+        return DateTime.now();
+      },
     ),
 
     /// -------- EVENT TIME --------
@@ -1020,6 +1106,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Event Time',
       type: FieldType.time,
       required: true,
+      disabledWhen: isEventWithinSevenDays,
     ),
 
     /// -------- EVENT LOCATION --------
@@ -1029,6 +1116,7 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: true,
       placeholder: 'Hall Name / Number',
+      disabledWhen: isEventWithinSevenDays,
     ),
 
     /// -------- NEWS SIZE --------
@@ -1037,6 +1125,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'News Size (Optional)',
       type: FieldType.radio,
       required: false,
+      disabledWhen: isEventWithinSevenDays,
       options: ['Small', 'Medium', 'Large'],
     ),
 
@@ -1047,6 +1136,7 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: false,
       placeholder: 'Add Entity',
+      disabledWhen: isEventWithinSevenDays,
     ),
 
     /// -------- HOSTED PERSON --------
@@ -1056,6 +1146,7 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: false,
       placeholder: 'Add Person',
+      disabledWhen: isEventWithinSevenDays,
     ),
 
     /// -------- AUDIENCE --------
@@ -1065,6 +1156,7 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: false,
       placeholder: 'Enter Audience',
+      disabledWhen: isEventWithinSevenDays,
     ),
 
     /// -------- IMPORTANCE OF PUBLISHING --------
@@ -1074,12 +1166,14 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.textarea,
       required: true,
       placeholder: 'Write here (min 10 characters, max 500 characters)',
+      disabledWhen: isEventWithinSevenDays,
     ),
     DynamicField(
       name: 'documentType',
       label: 'Document Type',
       type: FieldType.select,
       required: true,
+      disabledWhen: isEventWithinSevenDays,
       options: [
         DropdownOption<String>(value: 'Video', label: 'Video'),
         DropdownOption<String>(value: 'Photo', label: 'Photo'),
@@ -1097,6 +1191,7 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.textarea,
       required: true,
       placeholder: 'Write here (min 10 characters, max 500 characters)',
+      disabledWhen: isEventWithinSevenDays,
     ),
 
     /// -------- ATTACH FILE --------
@@ -1105,6 +1200,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Attach File (Optional)',
       type: FieldType.file,
       required: false,
+      disabledWhen: isEventWithinSevenDays,
     ),
   ];
 
@@ -1139,9 +1235,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchDepartments() async {
     try {
-      final departments = await securityAccessInstance.getDepartments();
+      final departments = await requestForCoverageInstance.getDepartments();
 
-      if (departments != null) {
+      if (departments.isNotEmpty) {
         state = state.copyWith(departments: departments);
       }
     } on ApiException catch (apiError) {
@@ -1877,12 +1973,18 @@ class _VSController extends StateNotifier<_ViewState> {
   //   }
   // }
 
-  Future<void> submitRequestForCoverageRequest(
+  Future<bool> submitRequestForCoverageRequest(
     int serviceId,
     int subServiceId,
     Map<String, dynamic> values,
   ) async {
     try {
+      if (isEventWithinSevenDays(values)) {
+        final l10n = DashboardL10n.of(KAppX.currentContext!);
+        Fluttertoast.showToast(msg: l10n.requestForCoverageUrgentContactMessage);
+        return false;
+      }
+
       state = state.copyWith(isLoading: true);
 
       final userData = KAppX.globalProvider.read(rolesProvider);
@@ -1921,7 +2023,8 @@ class _VSController extends StateNotifier<_ViewState> {
         "news_size": values['newsSize'],
 
         // Event Info
-        "event_date": values['eventDate'], // yyyy-MM-dd
+        "event_from_date": values['eventFromDate'], // yyyy-MM-dd
+        "event_to_date": values['eventToDate'], // yyyy-MM-dd
         "event_time": values['eventTime'], // HH:mm:ss
         "event_location": values['eventLocation'],
 
@@ -1956,8 +2059,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
       fetchApprovalKpi();
       refreshRequestLists();
+      return true;
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
+      return false;
     } finally {
       state = state.copyWith(isLoading: false);
     }

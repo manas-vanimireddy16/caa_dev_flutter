@@ -26,42 +26,47 @@ class FileFieldWidget extends ConsumerWidget {
     final errorText = state.errors[field.name];
     final isRequired =
         field.required || (field.requiredWhen?.call(values) ?? false);
+    final isDisabled =
+        field.disabled || (field.disabledWhen?.call(values) ?? false);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        FileUploadWidget(
-          title: field.label.trim().isNotEmpty ? field.label.trim() : null,
-          maxFiles: field.maxFiles ?? 1,
-          maxFileSizeInMB: field.maxFileSizeInMB ?? 10,
-          isRequired: isRequired,
-          existingFiles: uploadedFiles,
-          allowedExtensions:
-              field.allowedExtensions ??
-              ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],
-          onUploadSuccess: (file) {
-            notifier.onUploadFileSuccess(field.name, file);
-          },
-
-          onDelete: (index) {
-            notifier.onRemoveFile(field.name, index);
-          },
-        ),
-
-        // 🔴 Validation error
-        if (errorText != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              errorText,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
+    return Opacity(
+      opacity: isDisabled ? 0.5 : 1,
+      child: AbsorbPointer(
+        absorbing: isDisabled,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FileUploadWidget(
+              title: field.label.trim().isNotEmpty ? field.label.trim() : null,
+              maxFiles: field.maxFiles ?? 1,
+              maxFileSizeInMB: field.maxFileSizeInMB ?? 10,
+              isRequired: isRequired,
+              existingFiles: uploadedFiles,
+              allowedExtensions:
+                  field.allowedExtensions ??
+                  ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],
+              onUploadSuccess: (file) {
+                notifier.onUploadFileSuccess(field.name, file);
+              },
+              onDelete: (index) {
+                notifier.onRemoveFile(field.name, index);
+              },
             ),
-          ),
-      ],
+            if (errorText != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  errorText,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

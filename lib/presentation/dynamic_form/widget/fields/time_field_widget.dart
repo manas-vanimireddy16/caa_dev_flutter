@@ -54,7 +54,12 @@ class _TimeFieldWidgetState extends ConsumerState<TimeFieldWidget> {
 
   Future<void> _pickTime() async {
     if (widget.field.type != FieldType.time) return;
-    if (widget.field.disabled) return;
+
+    final values = ref.read(dynamicFormProvider).values;
+    final isDisabled =
+        widget.field.disabled ||
+        (widget.field.disabledWhen?.call(values) ?? false);
+    if (isDisabled) return;
 
     final notifier = ref.read(dynamicFormProvider.notifier);
     final state = ref.read(dynamicFormProvider);
@@ -77,6 +82,10 @@ class _TimeFieldWidgetState extends ConsumerState<TimeFieldWidget> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(dynamicFormProvider);
+    final values = state.values;
+    final isDisabled =
+        widget.field.disabled ||
+        (widget.field.disabledWhen?.call(values) ?? false);
 
     final valueStr = state.values[widget.field.name]?.toString() ?? '';
     if (_controller.text != valueStr) {
@@ -92,7 +101,7 @@ class _TimeFieldWidgetState extends ConsumerState<TimeFieldWidget> {
         controller: _controller,
         isRequired: widget.field.required,
         readOnly: true,
-        enabled: !widget.field.disabled,
+        enabled: !isDisabled,
         hintText: widget.field.placeholder ?? 'Select Time',
         fieldHeadingText: widget.field.label,
         fieldHeadingTextStyle: DynamicFieldLabelStyle.text,
