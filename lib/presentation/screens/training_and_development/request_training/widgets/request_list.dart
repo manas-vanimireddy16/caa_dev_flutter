@@ -82,7 +82,6 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               item.base?.id ?? 0,
               fromActionItems: widget.isActionItemsTab,
             );
-            controller.updateTabIndex(0);
           },
         );
       },

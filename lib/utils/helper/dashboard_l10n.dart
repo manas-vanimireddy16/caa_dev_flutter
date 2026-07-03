@@ -2358,6 +2358,59 @@ class DashboardL10n {
 
   String get attachment2 => _t('Attachment 2', 'مرفق 2');
 
+  /// Raise Legal Complaint
+  String get raiseLegalComplaintTitle =>
+      _t('Raise Legal Complaint', 'تقديم شكوى قانونية');
+
+  String get legalComplaintStepRequestDetails =>
+      _t('Request Details', 'تفاصيل الطلب');
+
+  String get legalComplaintStepComplaintIncident =>
+      _t('Complaint Incident', 'حادثة الشكوى');
+
+  String get legalComplaintStepUserDetails =>
+      _t('User Details', 'بيانات المستخدم');
+
+  String get legalComplaintStepReviewSubmit =>
+      _t('Review & Submit', 'مراجعة وإرسال');
+
+  String get legalComplaintComplainantDetails =>
+      _t('Complainant Details', 'بيانات مقدم الشكوى');
+
+  String get legalComplaintComplainedEmployeeDetails =>
+      _t('Complained Employee Details', 'بيانات الموظف محل الشكوى');
+
+  String get incidentDate => _t('Date', 'التاريخ');
+
+  String get incidentTime => _t('Time', 'الوقت');
+
+  String get incidentLocation => _t('Location', 'الموقع');
+
+  String get incidentEvents => _t('Events', 'الاحداث');
+
+  String get otherDetailsRelatedToComplaint =>
+      _t('Other Details Related to Complaint', 'تفاصيل أخرى متعلقة بالشكوى');
+
+  String get complainantName => _t('Name', 'الاسم');
+
+  String get positionLabel => _t('Position', 'المنصب');
+
+  String get salaryGrade => _t('Salary Grade', 'الدرجة الوظيفية');
+
+  String get directorateLabel => _t('Directorate', 'المديرية');
+
+  // String get selectDepartment => _t('Select Department', 'اختر الدائرة');
+
+  // String get selectSection => _t('Select Section', 'اختر القسم');
+
+  String get requestDate => _t('Request Date', 'تاريخ الطلب');
+
+  String get titleLabel => _t('Title', 'العنوان');
+
+  String get descriptionLabel => _t('Description', 'الوصف');
+
+  String get reviewSummaryTitle => _t('Review your request', 'راجع طلبك');
+
   String get selectEmployee => _t('Select Employee', 'اختر الموظف');
 
   String get enterRequestTitleMinMax => _t(

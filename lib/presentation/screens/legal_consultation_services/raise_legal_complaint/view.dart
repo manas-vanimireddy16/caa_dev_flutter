@@ -13,11 +13,12 @@ import 'package:code_setup/presentation/common_widgets/request_card.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
+import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
-import 'package:code_setup/presentation/dynamic_form/models/acknowledgement_item.dart';
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_notifier.dart';
@@ -39,14 +40,12 @@ import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_mo
 import 'package:code_setup/presentation/screens/hc_service/models/grade_list_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
-import 'package:code_setup/presentation/screens/legal_consultation_services/models/appeal_against_administrative_model.dart';
 import 'package:code_setup/presentation/screens/legal_consultation_services/models/legal_contract_review_model.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
-import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
-import 'package:code_setup/repository/legal_consultation_services/appeal_against_administrative_decisions/domain/domain.dart';
+import 'package:code_setup/repository/legal_consultation_services/raise_a_legal_complaint/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
@@ -54,6 +53,8 @@ import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
 // import 'package:flutter/rendering.dart' hide Border;
@@ -61,6 +62,7 @@ import 'package:code_setup/presentation/common_widgets/my_requests_action_items_
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
 part 'widgets/request_for_legal_contract_review_new_request.dart';
 part 'controller.dart';
@@ -105,6 +107,11 @@ class _RaiseLegalComplaintScreenState
 
     _focusNode = FocusNode();
     _pageController = PageController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(_vsProvider(_providerArgs).notifier).initState();
+    });
   }
 
   @override
@@ -118,41 +125,47 @@ class _RaiseLegalComplaintScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
-          /// KPI
-          StatSummaryRow(stats: controller.currentStats),
-          20.toHorizontalSizedBox,
-
-          /// Status Breakdown
+          StatSummaryRow(
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
+          ),
+          16.toVerticalSizedBox,
           RequestStatusBreakdownCard(
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
-            onChanged: controller.onStatusFilterChanged,
+            title: l10n.requestsStatusBreakdown,
+            filterLabel: l10n.periodFilterLabels[0],
+            filterLabelList: l10n.periodFilterLabels,
+            centerMetricLabel: l10n.totalRequests,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
+            preserveFilterLabelOnChange: true,
+            onChanged: (value) => controller.onStatusFilterChanged(
+              value != null ? l10n.periodFilterValue(value) : null,
+            ),
             breakdown: state.statusBreakdown.data,
           ),
-
+          16.toVerticalSizedBox,
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
-            barColor: Colors.blue,
+            barColor: const Color(0xFF283593),
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),
-
-          16.toHorizontalSizedBox,
-
-          /// MAIN CARD
+          16.toVerticalSizedBox,
           TicketRequestsCard(
             providerArgs: _providerArgs,
             focusNode: _focusNode,

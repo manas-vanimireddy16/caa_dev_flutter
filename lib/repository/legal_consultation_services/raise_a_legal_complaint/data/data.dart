@@ -722,13 +722,57 @@ class RaiseALegalComplaintRepositoryImple
   }
 
   @override
+  Future<List<EmployeeList>> getAllUsers() async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw ApiException(
+        'Client is null - cannot fetch users',
+      );
+    }
+
+    try {
+      final response = await client.get(ApiEndPoint.dutyMissionUsers);
+
+      if (response.statusCode != 200) {
+        throw ApiException('Failed to fetch users: ${response.statusCode}');
+      }
+
+      final dynamic responseData = response.data;
+      List<dynamic> employeeRawList = [];
+
+      if (responseData is Map &&
+          responseData['data'] is List &&
+          (responseData['data'] as List).isNotEmpty &&
+          (responseData['data'] as List).first is List) {
+        employeeRawList = (responseData['data'] as List).first as List<dynamic>;
+      } else if (responseData is Map && responseData['data'] is List) {
+        employeeRawList = responseData['data'] as List<dynamic>;
+      } else if (responseData is Map &&
+          responseData['data'] is Map &&
+          (responseData['data'] as Map).containsKey('rows')) {
+        employeeRawList =
+            (responseData['data']['rows'] as List<dynamic>? ?? []);
+      }
+
+      return employeeRawList
+          .map((e) => EmployeeList.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (error) {
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
   Future<List<DepartmentModel>> getDepartments() async {
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
         final url = ApiEndPoint.departmentsList;
-        final queryParams = {'offset': 1, 'limit': 1000};
+        final queryParams = {'offset': 1, 'limit': 10000};
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
@@ -757,7 +801,7 @@ class RaiseALegalComplaintRepositoryImple
       if (client != null) {
         final queryParams = {
           'offset': 1,
-          'limit': 1000,
+          'limit': 10000,
           'department_id': userDepartmentId,
         };
         final url = ApiEndPoint.sections;

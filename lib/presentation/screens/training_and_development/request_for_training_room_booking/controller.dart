@@ -335,8 +335,10 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
-  void openRequestDetails(int id, {bool fromActionItems = false}) {
-    KAppX.router.push(
+  Future<void> openRequestDetails(int id, {bool fromActionItems = false}) async {
+    updateRequestTab(0);
+
+    await KAppX.router.push(
       RequestforTrainingRoomBookingDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
@@ -346,6 +348,29 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceId: subService.id ?? 0,
       ),
     );
+
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    }
+
+    await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    updateTabIndex(0);
+  }
+
+  Future<void> refreshAfterReturn() async {
+    await Future.wait([
+      fetchKpi(),
+      fetchApprovalKpi(),
+      fetchStatusBreakdown('monthly'),
+      fetchTrendBreakDown(DateTime.now().year.toString()),
+      fetchApprovalStatusBreakdown('monthly'),
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString()),
+    ]);
+    await fetchRequests(isRefresh: true);
+    await fetchActionItems(isRefresh: true);
   }
 
   void openNewRequestForm(BuildContext context) {

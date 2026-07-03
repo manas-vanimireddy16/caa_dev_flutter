@@ -317,7 +317,7 @@ class _RequestforTrainingRoomBookingScreenState
                                     data: controller.buildRequestCardData(item),
 
                                     onTap: () async {
-                                      controller.openRequestDetails(
+                                      await controller.openRequestDetails(
                                         item.base?.id ?? 0,
                                       );
                                     },
@@ -357,7 +357,7 @@ class _RequestforTrainingRoomBookingScreenState
                                     data: controller.buildRequestCardData(item),
 
                                     onTap: () async {
-                                      controller.openRequestDetails(
+                                      await controller.openRequestDetails(
                                         item.base?.id ?? 0,
                                         fromActionItems: true,
                                       );

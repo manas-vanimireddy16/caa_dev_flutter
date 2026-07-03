@@ -28,61 +28,68 @@ class _RaiseLegalComplaintNewRequestScreenState
   void initState() {
     super.initState();
 
-    /// ✅ Create provider params ONCE
     _providerArgs = _VSControllerParams(
       service: widget.service,
       subService: widget.subService,
     );
-    // Future.microtask(() {
-    //   ref.read(_vsProvider(_providerArgs).notifier).initialize();
-    // });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller = ref.read(_vsProvider(_providerArgs).notifier);
+      controller.fetchDepartments();
+      controller.fetchUsers();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    /// Watch state only if needed
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
-    return KScaffold(
-      backgroundColor: Colors.white,
-      // appBar: KAppBar(title: Text('Mission Transfer Request')),
+    return Stack(
+      children: [
+        KScaffold(
+          backgroundColor: Colors.white,
+          body: ProviderScope(
+            overrides: [
+              dynamicFormProvider.overrideWith(
+                (ref) => DynamicFormNotifier(ref),
+              ),
+            ],
+            child: DynamicForm(
+              title: l10n.raiseLegalComplaintTitle,
+              stepTitles: [
+                l10n.legalComplaintStepRequestDetails,
+                l10n.legalComplaintStepComplaintIncident,
+                l10n.legalComplaintComplainantDetails,
+                l10n.legalComplaintComplainedEmployeeDetails,
+              ],
+              steps: [
+                controller.buildLegalComplaintStepOneFields(l10n),
+                controller.buildLegalComplaintStepTwoFields(l10n),
+                controller.buildLegalComplaintStepThreeFields(l10n),
+                controller.buildLegalComplaintStepFourFields(l10n),
+              ],
+              onSubmit: (values) async {
+                await controller.submitRaiseLegalComplaintRequest(
+                  widget.serviceId,
+                  widget.subServiceId,
+                  values,
+                );
 
-      /// ✅ DynamicForm MUST be root-level in a screen
-      body: ProviderScope(
-        overrides: [
-          dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
-        ],
-        child: DynamicForm(
-          title: 'Performance Management',
-          stepTitles: const [
-            'Appeal Against Administrative Decisions',
-            'Decision Being Grieveant',
-            'Grieveant Information',
-          ],
-          steps: [
-            controller.appealStepOneFields,
-            controller.appealStepTwoFields,
-            controller.appealStepThreeFields,
-          ],
-
-          /// ⭐ VERY IMPORTANT
-          // enableSubmitWhen: (values) {
-          //   return state.hrTasks.isNotEmpty;
-          // },
-          onSubmit: (values) async {
-            await controller.submitAppealAgainstAdministrativeDecisionsRequest(
-              widget.serviceId,
-              widget.subServiceId,
-              values,
-            );
-
-            if (context.mounted) {
-              context.router.pop();
-            }
-          },
+                if (context.mounted) {
+                  context.router.pop();
+                }
+              },
+            ),
+          ),
         ),
-      ),
+        if (state.isLoading)
+          const ColoredBox(
+            color: Color(0x55000000),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+      ],
     );
   }
 }

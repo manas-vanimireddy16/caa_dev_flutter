@@ -44,11 +44,13 @@ class _ViewState {
 
   final int tabIndex;
   final int selectedTab;
+  final String myRequestsStatusFilter;
+  final String actionItemsStatusFilter;
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
-  final List<AppealAgainstAdministrativeModel> requestData;
-  final List<AppealAgainstAdministrativeModel> actionItems;
+  final List<LegalRequestModel> requestData;
+  final List<LegalRequestModel> actionItems;
   final RequestDetailData requestDetails;
   final int requestDetailTab;
   final int approvalId;
@@ -56,6 +58,13 @@ class _ViewState {
   final bool isButtonDisabled;
   final List<ChatMessageModel> chatById;
   final List<AttachmentModel> attachmentsById;
+
+  final List<DepartmentModel> departments;
+  final List<SectionModel> sections;
+  final List<SectionModel> complainantSections;
+  final List<EmployeeList> usersList;
+  final DepartmentModel? selectedDepartment;
+  final SectionModel? selectedSection;
 
   final List<String> months = [
     'January',
@@ -86,6 +95,8 @@ class _ViewState {
     required this.requestDataById,
     required this.tabIndex,
     required this.selectedTab,
+    required this.myRequestsStatusFilter,
+    required this.actionItemsStatusFilter,
     required this.approvalStatusBreakdown,
     required this.approvalTrendData,
     required this.requestData,
@@ -96,6 +107,12 @@ class _ViewState {
     required this.isButtonDisabled,
     required this.chatById,
     required this.attachmentsById,
+    required this.departments,
+    required this.sections,
+    required this.complainantSections,
+    required this.usersList,
+    this.selectedDepartment,
+    this.selectedSection,
   });
 
   _ViewState.init()
@@ -110,6 +127,8 @@ class _ViewState {
         requestDataById: RequestDetailModel(),
         tabIndex: 0,
         selectedTab: 0,
+        myRequestsStatusFilter: '',
+        actionItemsStatusFilter: '',
         approvalStatusBreakdown: StatusBreakdownModel(),
         approvalTrendData: TrendBreakdownModel(),
         requestData: [],
@@ -119,8 +138,13 @@ class _ViewState {
         approvalId: 0,
         isButtonDisabled: false,
         chatById: [],
-
         attachmentsById: [],
+        departments: [],
+        sections: [],
+        complainantSections: [],
+        usersList: [],
+        selectedDepartment: null,
+        selectedSection: null,
       );
 
   _ViewState copyWith({
@@ -141,8 +165,10 @@ class _ViewState {
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
     int? selectedTab,
-    List<AppealAgainstAdministrativeModel>? requestData,
-    List<AppealAgainstAdministrativeModel>? actionItems,
+    String? myRequestsStatusFilter,
+    String? actionItemsStatusFilter,
+    List<LegalRequestModel>? requestData,
+    List<LegalRequestModel>? actionItems,
     RequestDetailData? requestDetails,
     int? requestDetailTab,
     String? permitCategory,
@@ -186,6 +212,9 @@ class _ViewState {
     List<EmployeeList>? selectedUsersList,
     List<ResidentalUnitRentalLocationModel>? unitLocations,
     List<SectionModel>? sections,
+    List<SectionModel>? complainantSections,
+    DepartmentModel? selectedDepartment,
+    SectionModel? selectedSection,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -198,6 +227,10 @@ class _ViewState {
       requestDataById: requestDataById ?? this.requestDataById,
       tabIndex: tabIndex ?? this.tabIndex,
       selectedTab: selectedTab ?? this.selectedTab,
+      myRequestsStatusFilter:
+          myRequestsStatusFilter ?? this.myRequestsStatusFilter,
+      actionItemsStatusFilter:
+          actionItemsStatusFilter ?? this.actionItemsStatusFilter,
       approvalStatusBreakdown:
           approvalStatusBreakdown ?? this.approvalStatusBreakdown,
       approvalTrendData: approvalTrendData ?? this.approvalTrendData,
@@ -209,11 +242,24 @@ class _ViewState {
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
       chatById: chatById ?? this.chatById,
       attachmentsById: attachmentsById ?? this.attachmentsById,
+      departments: departments ?? this.departments,
+      sections: sections ?? this.sections,
+      complainantSections: complainantSections ?? this.complainantSections,
+      usersList: usersList ?? this.usersList,
+      selectedDepartment: selectedDepartment ?? this.selectedDepartment,
+      selectedSection: selectedSection ?? this.selectedSection,
     );
   }
 }
 
 class _VSController extends StateNotifier<_ViewState> {
+  static const List<String> requestListStatusFilters = [
+    '',
+    'Approved',
+    'Pending',
+    'Rejected',
+  ];
+
   final Service service;
   final SubService subService;
   late final _VSControllerParams params;
@@ -241,18 +287,55 @@ class _VSController extends StateNotifier<_ViewState> {
 
   int _searchVersion = 0;
 
+  String get currentStatusFilter => state.tabIndex == 0
+      ? state.myRequestsStatusFilter
+      : state.actionItemsStatusFilter;
+
+  String requestListStatusFilterLabel(String status, DashboardL10n l10n) {
+    if (status.isEmpty) {
+      return l10n.isArabic ? 'الكل' : 'All';
+    }
+    return l10n.statusLabel(status);
+  }
+
+  void onRequestStatusFilterChanged(String status) {
+    if (state.tabIndex == 0) {
+      state = state.copyWith(myRequestsStatusFilter: status);
+      fetchRequests(
+        isRefresh: true,
+        searchText: searchController.text.trim(),
+        status: status,
+      );
+    } else {
+      state = state.copyWith(actionItemsStatusFilter: status);
+      fetchactionItems(
+        isRefresh: true,
+        searchText: searchController.text.trim(),
+        status: status,
+      );
+    }
+  }
+
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
     final int currentVersion = ++_searchVersion;
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
       if (state.tabIndex == 0) {
-        await fetchRequests(isRefresh: true, searchText: value);
+        await fetchRequests(
+          isRefresh: true,
+          searchText: value,
+          status: state.myRequestsStatusFilter,
+        );
       } else {
-        await fetchactionItems(isRefresh: true, searchText: value);
+        await fetchactionItems(
+          isRefresh: true,
+          searchText: value,
+          status: state.actionItemsStatusFilter,
+        );
       }
 
-      if (currentVersion != _searchVersion) return; // ignore old response
+      if (currentVersion != _searchVersion) return;
     });
   }
 
@@ -260,14 +343,26 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.kpiData.data?.toJson(),
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.approvalKpiData.data?.toJson(),
+        titleForKey: titleForKey,
+      );
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -312,9 +407,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return state.approvalStatusBreakdown.data?.breakdown ?? [];
   }
 
-  Map<String, String> buildRequestCardData(
-    AppealAgainstAdministrativeModel item,
-  ) {
+  Map<String, String> buildRequestCardData(LegalRequestModel item) {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
@@ -400,7 +493,7 @@ class _VSController extends StateNotifier<_ViewState> {
     updateRequestTab(0);
 
     await KAppX.router.push(
-      AppealAgainstAdministrativeDecisionsDetailsRoute(
+      RaiseLegalComplaintDetailsRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
@@ -410,7 +503,25 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    }
+
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
@@ -423,10 +534,10 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void openNewRequestForm() {
-    // fetchbyCycleGoals(cycle: 'Jan-Jun');
-    // state = state.copyWith(selectedUsersList: []);
+    fetchDepartments();
+    fetchUsers();
     KAppX.router.push(
-      AppealAgainstAdministrativeDecisionsNewRequestRoute(
+      RaiseLegalComplaintNewRequestRoute(
         serviceId: service.id ?? 0,
         subServiceId: subService.id ?? 0,
         service: service,
@@ -435,250 +546,475 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
-  final appealAgainstAdministrativeDecisionsInstance =
-      AppealAgainstAdministrativeDecisionsRepository();
-  final residentalUnitRentalInstance = ResidentalUnitRentalRepository();
-  List<DynamicField> get appealStepOneFields => [
-    /// ================= REQUEST ID (OPTIONAL / AUTO) =================
-
-    /// ================= DATE =================
+  final raiseLegalComplaintInstance = RaiseALegalComplaintRepository();
+  List<DynamicField> buildLegalComplaintStepOneFields(DashboardL10n l10n) => [
     DynamicField(
-      name: 'submission_date',
-      label: 'Date',
+      name: 'request_date',
+      label: l10n.requestDate,
       type: FieldType.date,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
       required: true,
     ),
-
-    /// ================= TITLE OF COMPLAINT =================
     DynamicField(
-      name: 'request_title',
-      label: 'Title of Complaint',
+      name: 'title',
+      label: l10n.titleLabel,
       type: FieldType.text,
+      placeholder: l10n.enter,
       required: true,
     ),
-
-    /// ================= APPEAL AGAINST DECISION =================
-    DynamicField(
-      name: 'appeal_against_decision',
-      label: 'Appeal against Decision',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= DESCRIPTION =================
     DynamicField(
       name: 'description',
-      label: 'Description',
-      type: FieldType.text,
+      label: l10n.descriptionLabel,
+      type: FieldType.textarea,
+      placeholder: l10n.enter,
       required: true,
     ),
-
-    /// ================= ATTACHMENTS =================
     DynamicField(
-      name: 'attachments',
-      label: 'Attachments',
+      name: 'attachments1',
+      label: l10n.attachmentsTabLabel,
       type: FieldType.file,
       required: false,
+      maxFiles: 5,
+      maxFileSizeInMB: 10,
+      allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'],
     ),
   ];
 
-  List<DynamicField> get appealStepTwoFields => [
-    /// ================= DECISION NUMBER =================
-    DynamicField(
-      name: 'decision_number',
-      label: 'Decision Number',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= DATE =================
-    DynamicField(
-      name: 'decision_date',
-      label: 'Date',
-      type: FieldType.date,
-      required: true,
-    ),
-
-    /// ================= SUBJECT =================
-    DynamicField(
-      name: 'subject',
-      label: 'Subject',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= INDIVIDUALS INVOLVED =================
+  List<DynamicField> buildLegalComplaintStepTwoFields(DashboardL10n l10n) => [
     DynamicField(
       name: 'individuals_involved',
-      label: 'Individuals Involved',
+      label: l10n.individualsInvolved,
       type: FieldType.text,
+      placeholder: l10n.enter,
       required: true,
     ),
-
-    /// ================= TIMES =================
     DynamicField(
-      name: 'times',
-      label: 'Times',
-      type: FieldType.text,
+      name: 'incident_time',
+      label: l10n.incidentTime,
+      type: FieldType.time,
+      placeholder: l10n.select,
       required: true,
     ),
-
-    /// ================= DATES =================
     DynamicField(
-      name: 'incident_dates',
-      label: 'Dates',
+      name: 'incident_date',
+      label: l10n.incidentDate,
       type: FieldType.date,
+      placeholder: l10n.select,
       required: true,
     ),
-
-    /// ================= LOCATION =================
     DynamicField(
-      name: 'location',
-      label: 'Location',
+      name: 'incident_location',
+      label: l10n.incidentLocation,
       type: FieldType.text,
+      placeholder: l10n.enter,
       required: true,
     ),
-
-    /// ================= REQUESTS =================
     DynamicField(
-      name: 'requests',
-      label: 'Requests',
+      name: 'incident_events',
+      label: l10n.incidentEvents,
       type: FieldType.text,
+      placeholder: l10n.enter,
       required: true,
     ),
-
-    /// ================= EVENTS =================
     DynamicField(
-      name: 'events',
-      label: 'Events',
-      type: FieldType.text,
+      name: 'incident_other_details',
+      label: l10n.otherDetailsRelatedToComplaint,
+      type: FieldType.textarea,
+      placeholder: l10n.enter,
       required: true,
-    ),
-
-    /// ================= OTHER DETAILS =================
-    DynamicField(
-      name: 'other_details',
-      label: 'Any Other Details Related to the Grievance',
-      type: FieldType.text,
-      required: false,
-    ),
-  ];
-  List<DynamicField> get appealStepThreeFields => [
-    /// ================= NAME =================
-    DynamicField(
-      name: 'name',
-      label: 'Name',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= EMPLOYEE NUMBER =================
-    DynamicField(
-      name: 'employee_number',
-      label: 'Employee Number',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= DIRECTORATE =================
-    DynamicField(
-      name: 'directorate',
-      label: 'Directorate',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= RELATIONSHIP =================
-    DynamicField(
-      name: 'relationship',
-      label: 'Relationship of the Grievant to the Subject Matter',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= DEPARTMENT =================
-    DynamicField(
-      name: 'department',
-      label: 'Department',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= SECTION =================
-    DynamicField(
-      name: 'section',
-      label: 'Section',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= REQUESTS =================
-    DynamicField(
-      name: 'final_requests',
-      label: 'Requests',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= EVENTS =================
-    DynamicField(
-      name: 'final_events',
-      label: 'Events',
-      type: FieldType.text,
-      required: true,
-    ),
-
-    /// ================= OTHER DETAILS =================
-    DynamicField(
-      name: 'final_details',
-      label: 'Any Other Details Related to Complaint',
-      type: FieldType.text,
-      required: false,
-    ),
-
-    /// ================= ATTACHMENT 1 =================
-    DynamicField(
-      name: 'attachment_1',
-      label: 'Attachment 1',
-      type: FieldType.file,
-      required: false,
-    ),
-
-    /// ================= ATTACHMENT 2 =================
-    DynamicField(
-      name: 'attachment_2',
-      label: 'Attachment 2',
-      type: FieldType.file,
-      required: false,
-    ),
-
-    /// ================= DECLARATION =================
-    DynamicField(
-      name: 'acknowledgement',
-      label: 'Declaration',
-      type: FieldType.acknowledgement,
-      required: true,
-      acknowledgements: [
-        AcknowledgementItem(
-          id: 'declaration',
-          text:
-              'I hereby declare that all information provided is true and correct.',
-        ),
-      ],
     ),
   ];
 
-  /// ========================= API CALLS =========================
+  List<DynamicField> buildLegalComplaintStepThreeFields(DashboardL10n l10n) => [
+    DynamicField(
+      name: 'complainant_name',
+      label: l10n.complainantName,
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.selectEmployee,
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final vsState = ref.watch(_vsProvider(params));
+        return vsState.usersList
+            .map(
+              (user) => DropdownOption(
+                label: user.displayName(isArabic: formL10n.isArabic),
+                value: user.id.toString(),
+              ),
+            )
+            .toList();
+      },
+      onChanged: (value, ref) async {
+        final selectedUser = _findUser(value);
+        if (selectedUser == null) return;
+
+        final formL10n = DashboardL10n.of(ref.context);
+        final formNotifier = ref.read(dynamicFormProvider.notifier);
+        formNotifier.autoPopulate({
+          'complainant_name_display': selectedUser.displayName(
+            isArabic: formL10n.isArabic,
+          ),
+          'complainant_position': _userPositionLabel(
+            selectedUser,
+            formL10n.isArabic,
+          ),
+          'complainant_employee_id': selectedUser.employeeId,
+          'complainant_directorate': selectedUser.directorate,
+          'complainant_department': selectedUser.department?.id?.toString(),
+          'complainant_section': '',
+        });
+
+        final departmentId = selectedUser.department?.id;
+        if (departmentId != null && departmentId > 0) {
+          await ref
+              .read(_vsProvider(params).notifier)
+              .fetchComplainantSections(departmentId);
+          final sectionId = selectedUser.section?.id;
+          if (sectionId != null) {
+            formNotifier.updateValue('complainant_section', sectionId.toString());
+          }
+        }
+      },
+    ),
+    DynamicField(
+      name: 'complainant_position',
+      label: l10n.positionLabel,
+      type: FieldType.text,
+      required: true,
+      placeholder: l10n.enter,
+    ),
+    DynamicField(
+      name: 'complainant_employee_id',
+      label: l10n.employeeId,
+      type: FieldType.text,
+      required: true,
+      placeholder: l10n.enter,
+    ),
+    DynamicField(
+      name: 'complainant_directorate',
+      label: l10n.directorateLabel,
+      type: FieldType.text,
+      required: true,
+      placeholder: l10n.enter,
+    ),
+    DynamicField(
+      name: 'complainant_department',
+      label: l10n.department,
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.selectDepartment,
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final vsState = ref.watch(_vsProvider(params));
+        return vsState.departments
+            .map(
+              (department) => DropdownOption(
+                value: department.id.toString(),
+                label: department.displayName(isArabic: formL10n.isArabic),
+              ),
+            )
+            .toList();
+      },
+      onChanged: (value, ref) async {
+        ref.read(dynamicFormProvider.notifier).updateValue(
+          'complainant_section',
+          '',
+        );
+        final departmentId = int.tryParse(value.toString()) ?? 0;
+        if (departmentId > 0) {
+          await ref
+              .read(_vsProvider(params).notifier)
+              .fetchComplainantSections(departmentId);
+        } else {
+          ref.read(_vsProvider(params).notifier).clearComplainantSections();
+        }
+      },
+    ),
+    DynamicField(
+      name: 'complainant_section',
+      label: l10n.section,
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.selectSection,
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final vsState = ref.watch(_vsProvider(params));
+        return vsState.complainantSections
+            .map(
+              (section) => DropdownOption(
+                value: section.id.toString(),
+                label: section.displayName(isArabic: formL10n.isArabic),
+              ),
+            )
+            .toList();
+      },
+    ),
+  ];
+
+  List<DynamicField> buildLegalComplaintStepFourFields(DashboardL10n l10n) => [
+    DynamicField(
+      name: 'complained_employee_name',
+      label: l10n.complainantName,
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.selectEmployee,
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final vsState = ref.watch(_vsProvider(params));
+        return vsState.usersList
+            .map(
+              (user) => DropdownOption(
+                label: user.displayName(isArabic: formL10n.isArabic),
+                value: user.id.toString(),
+              ),
+            )
+            .toList();
+      },
+      onChanged: (value, ref) async {
+        final selectedUser = _findUser(value);
+        if (selectedUser == null) return;
+
+        final formL10n = DashboardL10n.of(ref.context);
+        final formNotifier = ref.read(dynamicFormProvider.notifier);
+        formNotifier.autoPopulate({
+          'complained_employee_name_display': selectedUser.displayName(
+            isArabic: formL10n.isArabic,
+          ),
+          'complained_employee_position': _userPositionLabel(
+            selectedUser,
+            formL10n.isArabic,
+          ),
+          'complained_employee_salary_grade': selectedUser.grade.toString(),
+          'complained_employee_directorate': selectedUser.directorate,
+          'complained_employee_department':
+              selectedUser.department?.id?.toString(),
+          'complained_employee_section': '',
+        });
+
+        final departmentId = selectedUser.department?.id;
+        if (departmentId != null && departmentId > 0) {
+          await ref
+              .read(_vsProvider(params).notifier)
+              .fetchComplainedEmployeeSections(departmentId);
+          final sectionId = selectedUser.section?.id;
+          if (sectionId != null) {
+            formNotifier.updateValue(
+              'complained_employee_section',
+              sectionId.toString(),
+            );
+          }
+        }
+      },
+    ),
+    DynamicField(
+      name: 'complained_employee_position',
+      label: l10n.positionLabel,
+      type: FieldType.text,
+      required: true,
+      placeholder: l10n.enter,
+    ),
+    DynamicField(
+      name: 'complained_employee_salary_grade',
+      label: l10n.salaryGrade,
+      type: FieldType.text,
+      required: true,
+      placeholder: l10n.enter,
+    ),
+    DynamicField(
+      name: 'complained_employee_directorate',
+      label: l10n.directorateLabel,
+      type: FieldType.text,
+      required: true,
+      placeholder: l10n.enter,
+    ),
+    DynamicField(
+      name: 'complained_employee_department',
+      label: l10n.department,
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.selectDepartment,
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final vsState = ref.watch(_vsProvider(params));
+        return vsState.departments
+            .map(
+              (department) => DropdownOption(
+                value: department.id.toString(),
+                label: department.displayName(isArabic: formL10n.isArabic),
+              ),
+            )
+            .toList();
+      },
+      onChanged: (value, ref) async {
+        ref.read(dynamicFormProvider.notifier).updateValue(
+          'complained_employee_section',
+          '',
+        );
+        final departmentId = int.tryParse(value.toString()) ?? 0;
+        if (departmentId > 0) {
+          await ref
+              .read(_vsProvider(params).notifier)
+              .fetchComplainedEmployeeSections(departmentId);
+        } else {
+          ref
+              .read(_vsProvider(params).notifier)
+              .clearComplainedEmployeeSections();
+        }
+      },
+    ),
+    DynamicField(
+      name: 'complained_employee_section',
+      label: l10n.section,
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.selectSection,
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final vsState = ref.watch(_vsProvider(params));
+        return vsState.sections
+            .map(
+              (section) => DropdownOption(
+                value: section.id.toString(),
+                label: section.displayName(isArabic: formL10n.isArabic),
+              ),
+            )
+            .toList();
+      },
+    ),
+    DynamicField(
+      name: 'attachments',
+      label: l10n.attachmentsTabLabel,
+      type: FieldType.file,
+      required: false,
+      maxFiles: 5,
+      maxFileSizeInMB: 10,
+      allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'],
+    ),
+  ];
+
+  EmployeeList? _findUser(dynamic value) {
+    final userId = int.tryParse(value?.toString() ?? '');
+    if (userId == null) return null;
+
+    for (final user in state.usersList) {
+      if (user.id == userId) return user;
+    }
+    return null;
+  }
+
+  String _userPositionLabel(EmployeeList user, bool isArabic) {
+    if (isArabic && user.arabicPosition.isNotEmpty) {
+      return user.arabicPosition;
+    }
+    return user.position?.name ?? user.arabicPosition;
+  }
+
+  String _departmentLabel(
+    String? id,
+    List<DepartmentModel> departments,
+    bool isArabic,
+  ) {
+    final departmentId = int.tryParse(id ?? '');
+    if (departmentId == null) return '-';
+
+    for (final department in departments) {
+      if (department.id == departmentId) {
+        return department.displayName(isArabic: isArabic);
+      }
+    }
+    return id ?? '-';
+  }
+
+  String _sectionLabel(String? id, List<SectionModel> sections, bool isArabic) {
+    final sectionId = int.tryParse(id ?? '');
+    if (sectionId == null) return '-';
+
+    for (final section in sections) {
+      if (section.id == sectionId) {
+        return section.displayName(isArabic: isArabic);
+      }
+    }
+    return id ?? '-';
+  }
+
+  String _userNameLabel(String? userId, bool isArabic) {
+    final user = _findUser(userId);
+    if (user == null) return userId ?? '-';
+    return user.displayName(isArabic: isArabic);
+  }
+
+  Future<void> fetchDepartments() async {
+    try {
+      final departments = await raiseLegalComplaintInstance.getDepartments();
+      state = state.copyWith(departments: departments);
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      debugPrint('fetchDepartments error: $e');
+    }
+  }
+
+  Future<void> fetchSections(int departmentId) async {
+    try {
+      state = state.copyWith(sections: [], selectedSection: null);
+      final sections = await raiseLegalComplaintInstance.getSections(
+        userDepartmentId: departmentId.toString(),
+      );
+      state = state.copyWith(sections: sections);
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      debugPrint('fetchSections error: $e');
+    }
+  }
+
+  Future<void> fetchComplainedEmployeeSections(int departmentId) async {
+    await fetchSections(departmentId);
+  }
+
+  void clearComplainedEmployeeSections() {
+    state = state.copyWith(sections: [], selectedSection: null);
+  }
+
+  Future<void> fetchComplainantSections(int departmentId) async {
+    try {
+      state = state.copyWith(complainantSections: []);
+      final sections = await raiseLegalComplaintInstance.getSections(
+        userDepartmentId: departmentId.toString(),
+      );
+      state = state.copyWith(complainantSections: sections);
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      debugPrint('fetchComplainantSections error: $e');
+    }
+  }
+
+  void clearComplainantSections() {
+    state = state.copyWith(complainantSections: []);
+  }
+
+  Future<void> fetchUsers() async {
+    try {
+      final users = await raiseLegalComplaintInstance.getAllUsers();
+      state = state.copyWith(usersList: users);
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      debugPrint('fetchUsers error: $e');
+    }
+  }
 
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
-      final requests = await appealAgainstAdministrativeDecisionsInstance
-          .getRequestsById(
-            id: id,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final requests = await raiseLegalComplaintInstance.getRequestsById(
+        id: id,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       if (requests != null) {
         state = state.copyWith(requestDetails: requests, isLoading: false);
@@ -708,8 +1044,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchChatById(int id) async {
     try {
-      final requests = await appealAgainstAdministrativeDecisionsInstance
-          .getchatById(id);
+      final requests = await raiseLegalComplaintInstance.getchatById(id);
       if (requests != null) {
         final chats = requests.reversed.toList();
         state = state.copyWith(chatById: chats);
@@ -724,8 +1059,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAttachmentsById(int id) async {
     try {
-      final attachments = await appealAgainstAdministrativeDecisionsInstance
-          .getAttachmentsById(id);
+      final attachments = await raiseLegalComplaintInstance.getAttachmentsById(
+        id,
+      );
       if (attachments != null) {
         state = state.copyWith(attachmentsById: attachments);
       }
@@ -746,7 +1082,7 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
       final effectiveRequestId = requestId ?? state.requestDetails.request?.id;
-      await appealAgainstAdministrativeDecisionsInstance.deleteAttachment(
+      await raiseLegalComplaintInstance.deleteAttachment(
         attachmentId,
         requestId: effectiveRequestId,
       );
@@ -772,8 +1108,10 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await appealAgainstAdministrativeDecisionsInstance
-          .getKpiData(service.id ?? 0, subService.id ?? 0);
+      final kpis = await raiseLegalComplaintInstance.getKpiData(
+        service.id ?? 0,
+        subService.id ?? 0,
+      );
 
       if (kpis != null) {
         state = state.copyWith(kpiData: kpis, isLoading: false);
@@ -788,7 +1126,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await appealAgainstAdministrativeDecisionsInstance
+      final data = await raiseLegalComplaintInstance
           .getApprovalTrendBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -808,7 +1146,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await appealAgainstAdministrativeDecisionsInstance
+      final statusBreakdown = await raiseLegalComplaintInstance
           .getApprovalStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -832,7 +1170,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final statusBreakdown = await appealAgainstAdministrativeDecisionsInstance
+      final statusBreakdown = await raiseLegalComplaintInstance
           .getStatusBreakdownData(
             period: period,
             serviceId: service.id ?? 0,
@@ -856,12 +1194,11 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchTrendBreakDown(String period) async {
     state = state.copyWith(isLoading: true);
     try {
-      final data = await appealAgainstAdministrativeDecisionsInstance
-          .getTrendBreakdownData(
-            period: period,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final data = await raiseLegalComplaintInstance.getTrendBreakdownData(
+        period: period,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       if (data != null) {
         state = state.copyWith(trendData: data, isLoading: false);
@@ -876,11 +1213,10 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalKpi() async {
     state = state.copyWith(isLoading: true);
     try {
-      final kpis = await appealAgainstAdministrativeDecisionsInstance
-          .getApprovalKpiData(
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final kpis = await raiseLegalComplaintInstance.getApprovalKpiData(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       if (kpis != null) {
         state = state.copyWith(approvalKpiData: kpis, isLoading: false);
@@ -904,15 +1240,14 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(requestData: [], isLoading: false);
       }
 
-      final requests = await appealAgainstAdministrativeDecisionsInstance
-          .getRequests(
-            offset: 1,
-            limit: 8,
-            searchText: searchText,
-            status: status,
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+      final requests = await raiseLegalComplaintInstance.getRequests(
+        offset: 1,
+        limit: 8,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       // No merging needed
       state = state.copyWith(requestData: requests);
@@ -934,16 +1269,15 @@ class _VSController extends StateNotifier<_ViewState> {
         state = state.copyWith(actionItems: [], isLoading: false);
       }
 
-      final items = await appealAgainstAdministrativeDecisionsInstance
-          .getActionItems(
-            offset: 1,
-            limit: 8,
-            searchText: searchText,
-            status: status,
+      final items = await raiseLegalComplaintInstance.getActionItems(
+        offset: 1,
+        limit: 8,
+        searchText: searchText,
+        status: status,
 
-            serviceId: service.id ?? 0,
-            subServiceId: subService.id ?? 0,
-          );
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
 
       // No merging needed
       state = state.copyWith(actionItems: items, isLoading: false);
@@ -1031,7 +1365,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final category = getFileTypeFromPath(localFile['file_name']);
         messageType = mapCategoryToMessageType(category); // image | file
 
-        final uploadedFiles = await appealAgainstAdministrativeDecisionsInstance
+        final uploadedFiles = await raiseLegalComplaintInstance
             .uploadAttachments(state.attachments);
 
         if (uploadedFiles.isEmpty) {
@@ -1062,10 +1396,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        await appealAgainstAdministrativeDecisionsInstance.sendAttachment(
-          payload,
-          requestId,
-        );
+        await raiseLegalComplaintInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
@@ -1086,10 +1417,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('💬 Chat payload: $payload');
 
-        await appealAgainstAdministrativeDecisionsInstance.sendChat(
-          payload,
-          requestId,
-        );
+        await raiseLegalComplaintInstance.sendChat(payload, requestId);
       }
       fetchChatById(requestId);
       fetchAttachmentsById(requestId);
@@ -1121,7 +1449,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await appealAgainstAdministrativeDecisionsInstance.onApprove(payload);
+      await raiseLegalComplaintInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       fetchactionItems();
@@ -1166,7 +1494,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      await appealAgainstAdministrativeDecisionsInstance.onApprove(payload);
+      await raiseLegalComplaintInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
@@ -1193,7 +1521,7 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint("✅ Final Payload: $payload");
 
       // 3️⃣ Send request
-      // await appealAgainstAdministrativeDecisionsInstance.onSendInProgress(payload);
+      // await raiseLegalComplaintInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
@@ -1476,17 +1804,22 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateTabIndex(int index) {
-    state = state.copyWith(tabIndex: index);
+    state = state.copyWith(
+      tabIndex: index,
+      myRequestsStatusFilter: index == 0 ? '' : state.myRequestsStatusFilter,
+      actionItemsStatusFilter: index == 1 ? '' : state.actionItemsStatusFilter,
+    );
+    searchController.text = '';
     if (index == 0) {
       fetchRequests();
       fetchKpi();
       fetchStatusBreakdown('weekly');
-      fetchTrendBreakDown('2026');
+      fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
       fetchactionItems();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
-      fetchApprovalTrendBreakDown('2026');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }
 
@@ -1544,9 +1877,16 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {
-    return (values['attachments'] as List<FileUploadItem>? ?? [])
-        .map((file) => file.toJson())
-        .toList();
+    final List<FileUploadItem> allFiles = [];
+
+    for (final entry in values.entries) {
+      if ((entry.key == 'attachments' || entry.key == 'attachments1') &&
+          entry.value is List<FileUploadItem>) {
+        allFiles.addAll(entry.value as List<FileUploadItem>);
+      }
+    }
+
+    return allFiles.map((file) => file.toJson()).toList();
   }
 
   Map<String, dynamic> _buildPayload(
@@ -1555,41 +1895,96 @@ class _VSController extends StateNotifier<_ViewState> {
     Map<String, dynamic> values,
   ) {
     final userInfo = KAppX.globalProvider.read(userInfoProvider);
-    final selectedRole = KAppX.globalProvider.read(rolesProvider);
 
-    final payload = {
-      /// ⭐ SERVICE INFO
-      "service_id": serviceId,
-      "sub_service_id": subServiceId,
+    final complainantDepartmentId =
+        int.tryParse(values['complainant_department']?.toString() ?? '') ?? 0;
+    final complainantSectionId =
+        int.tryParse(values['complainant_section']?.toString() ?? '') ?? 0;
+    final complainedDepartmentId =
+        int.tryParse(
+          values['complained_employee_department']?.toString() ?? '',
+        ) ??
+        0;
+    final complainedSectionId =
+        int.tryParse(values['complained_employee_section']?.toString() ?? '') ??
+        0;
 
-      /// ⭐ REQUEST DETAILS
-      "request_title": values['request_title'] ?? "",
-      "request_type": values['request_type'] ?? "",
-      "description": values['description'] ?? "",
+    final complainantDepartmentName = _departmentLabel(
+      values['complainant_department']?.toString(),
+      state.departments,
+      false,
+    );
+    final complainantSectionName = _sectionLabel(
+      values['complainant_section']?.toString(),
+      state.complainantSections.isNotEmpty
+          ? state.complainantSections
+          : state.sections,
+      false,
+    );
+    final complainedDepartmentName = _departmentLabel(
+      values['complained_employee_department']?.toString(),
+      state.departments,
+      false,
+    );
+    final complainedSectionName = _sectionLabel(
+      values['complained_employee_section']?.toString(),
+      state.sections,
+      false,
+    );
 
-      /// ⭐ USER / DEPARTMENT INFO
-      "department_id": userInfo?.data?.department?.id,
-      "hos_or_department_name": selectedRole?.roleName,
-
-      /// ⭐ ACKNOWLEDGEMENT
-      "acknowledgement":
-          (values['acknowledgement'] as List?)?.isNotEmpty ?? false,
-
-      /// ⭐ DATE
-      "submission_date": values['submission_date'],
-
-      /// ⭐ ATTACHMENTS
-      "attachments": _buildAttachments(values),
+    return {
+      'req_user_department_id': userInfo?.data?.department?.id ?? 0,
+      'req_user_section_id': userInfo?.data?.section?.id ?? 0,
+      'service_id': serviceId,
+      'sub_service_id': subServiceId,
+      'request_date': values['request_date'],
+      'title': values['title'] ?? '',
+      'description': values['description'] ?? '',
+      'complaint_incident': {
+        'individuals_involved': values['individuals_involved'] ?? '',
+        'incident_time': values['incident_time'] ?? '',
+        'incident_date': values['incident_date'],
+        'incident_location': values['incident_location'] ?? '',
+        'incident_events': values['incident_events'] ?? '',
+        'incident_other_details': values['incident_other_details'] ?? '',
+      },
+      'complainant': {
+        'name':
+            values['complainant_name_display']?.toString() ??
+            _userNameLabel(values['complainant_name']?.toString(), false),
+        'position': values['complainant_position'] ?? '',
+        'employee_id': values['complainant_employee_id']?.toString() ?? '',
+        'directorate': values['complainant_directorate'] ?? '',
+        'department_id': complainantDepartmentId,
+        'department_name': complainantDepartmentName,
+        'section_id': complainantSectionId,
+        'section_name': complainantSectionName,
+        'department': complainantDepartmentName,
+        'section': complainantSectionName,
+      },
+      'complained_employee': {
+        'name':
+            values['complained_employee_name_display']?.toString() ??
+            _userNameLabel(
+              values['complained_employee_name']?.toString(),
+              false,
+            ),
+        'position': values['complained_employee_position'] ?? '',
+        'salary_grade':
+            values['complained_employee_salary_grade']?.toString() ?? '',
+        'directorate': values['complained_employee_directorate'] ?? '',
+        'department_id': complainedDepartmentId,
+        'department_name': complainedDepartmentName,
+        'section_id': complainedSectionId,
+        'section_name': complainedSectionName,
+        'department': complainedDepartmentName,
+        'section': complainedSectionName,
+      },
+      'attachments': _buildAttachments(values),
     };
-
-    return payload;
   }
 
-  int _toInt(dynamic value) {
-    return int.tryParse(value?.toString() ?? '0') ?? 0;
-  }
-
-  Future<void> submitAppealAgainstAdministrativeDecisionsRequest(
+  Future<void> submitRaiseLegalComplaintRequest(
     int serviceId,
     int subServiceId,
     Map<String, dynamic> values,
@@ -1597,17 +1992,12 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      final payload = _buildPayload(
-        serviceId,
-        subServiceId,
-        values,
-        // state.hrTasks,
-      );
+      final payload = _buildPayload(serviceId, subServiceId, values);
 
-      debugPrint("✅ Final Payload: $payload");
+      debugPrint('✅ Final Payload: $payload');
 
-      final response = await appealAgainstAdministrativeDecisionsInstance
-          .sendAppealAgainstAdministrativeDecisionsNewRequest(payload);
+      final response = await raiseLegalComplaintInstance
+          .sendRaiseALegalComplaintNewRequest(payload);
 
       if (response['status'] == 'success') {
         _refreshDashboard();

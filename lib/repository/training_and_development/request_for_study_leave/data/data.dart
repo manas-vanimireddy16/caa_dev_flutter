@@ -510,8 +510,8 @@ class RequestForStudyLeaveRepositoryImple
         final Map<String, dynamic> queryParams = {
           'offset': offset,
           'limit': limit,
-          'service_id': serviceId,
-          'sub_service_id': subServiceId,
+          // 'service_id': serviceId,
+          // 'sub_service_id': subServiceId,
         };
 
         if (searchText.isNotEmpty) {
