@@ -47,7 +47,9 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
               .map((e) => Position.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel requests: ${response.statusCode}',
+          );
         }
       } else {
         return [];
@@ -61,16 +63,18 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
   Future<List<EmployeeList>> getUsers() async {
     final client = await KAppX.network.secureClient();
     if (client == null) {
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     }
 
     try {
       /// ⚠️ Use offset = 0 unless backend clearly says otherwise
-      final queryParams = {'offset': 0, 'limit': 20};
+      // final queryParams = {'offset': 0, 'limit': 20};
 
       final response = await client.get(
         ApiEndPoint.dutyMissionUsers,
-        queryParameters: queryParams,
+        // queryParameters: queryParams,
       );
 
       debugPrint('🟢 getUsers RESPONSE: ${response.data}');
@@ -122,7 +126,9 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
             .toList();
       }
 
-      throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
+      throw ApiException(
+        'Failed to fetch $_serviceLabel requests: ${response.statusCode}',
+      );
     } catch (e, st) {
       debugPrint('❌ getUsers error: $e');
       debugPrintStack(stackTrace: st);
@@ -267,7 +273,9 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
   Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
     final client = await KAppX.network.secureClient();
     if (client == null) {
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     }
 
     final url = ApiEndPoint.dutyMissionAttachmentsById(attachmentId);
@@ -278,7 +286,8 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           response.statusCode != 201 &&
           response.statusCode != 204) {
         throw ApiException(
-          response.data?['message'] ?? 'Failed to delete $_serviceLabel attachment',
+          response.data?['message'] ??
+              'Failed to delete $_serviceLabel attachment',
         );
       }
     } on DioException catch (error) {
@@ -310,7 +319,8 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -407,7 +417,8 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -442,11 +453,14 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -480,11 +494,14 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -515,11 +532,14 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -553,11 +573,14 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -606,7 +629,9 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
               .map((e) => DutyMissionModel.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel requests: ${response.statusCode}',
+          );
         }
       } else {
         return [];
@@ -648,7 +673,9 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
               .map((e) => DutyMissionModel.fromJson(e as Map<String, dynamic>))
               .toList();
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel requests: ${response.statusCode}',
+          );
         }
       } else {
         return [];
@@ -706,7 +733,8 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           return actionItems;
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -842,7 +870,9 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel data: ${response.statusCode}',
+          );
         }
       } else {
         return null;
@@ -867,7 +897,8 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           return response.data["message"] ?? "Success";
         } else {
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Failed to process $_serviceLabel request";
+          return response.data["message"] ??
+              "Failed to process $_serviceLabel request";
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
@@ -1091,7 +1122,9 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel data: ${response.statusCode}',
+          );
         }
       } else {
         return [];
@@ -1128,7 +1161,9 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel data: ${response.statusCode}',
+          );
         }
       } else {
         return [];

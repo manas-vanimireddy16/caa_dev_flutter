@@ -1311,8 +1311,8 @@ class _VSController extends StateNotifier<_ViewState> {
         "comment": comment,
         "approval_id": approverId,
       };
-      if (level == 2) {
-        payload['approval_level'] = "DIRECT";
+      if (level?.level == 2) {
+        payload['routing_branch'] = "DIRECT";
       }
       if (decisionNo != null) {
         payload['decision_number'] = decisionNo;
@@ -1322,11 +1322,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // 3️⃣ Send request
       await legalConsultationandReviewoInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
+
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
+      await Future.delayed(Duration(seconds: 3));
+
       refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -1738,13 +1740,13 @@ class _VSController extends StateNotifier<_ViewState> {
       "sub_service_id": subServiceId,
 
       /// ⭐ DATES
-      "request_date": values['date'] ?? "",
+      // "request_date": values['date'] ?? "",
       "date": values['date'] ?? "",
 
       /// ⭐ REQUEST DETAILS
       "title": values['title'] ?? "",
       "description": values['description'] ?? "",
-      "comment": values['comment'] ?? "",
+      // "comment": values['comment'] ?? "",
 
       /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),

@@ -290,6 +290,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Timer? _searchDebounce;
 
   final dashboardinstance = DashboardRepository();
+  final muscatRepository = MuscatDashboardRepository();
 
   // TextEditingControllers
   late TextEditingController personNameController;
@@ -677,6 +678,19 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       initialValue: userInfo?.data?.employeeName ?? '',
       disabledWhen: (values) => (values['request_for'] ?? 'Self') == 'Self',
+      validator: (validator, values) {
+        final contact = values['contact_number']?.toString().trim() ?? '';
+
+        if (contact.isEmpty) {
+          return 'Contact Number is required';
+        }
+
+        if (contact.length < 8) {
+          return 'Contact Number must be at least 8 digits';
+        }
+
+        return null;
+      },
     ),
 
     /// ================= CONTACT NUMBER =================
@@ -687,6 +701,19 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       initialValue: userInfo?.data?.mobile ?? '',
       disabledWhen: (values) => (values['request_for'] ?? 'Self') == 'Self',
+      validator: (validator, values) {
+        final contact = values['contact_number']?.toString().trim() ?? '';
+
+        if (contact.isEmpty) {
+          return 'Contact Number is required';
+        }
+
+        if (contact.length < 8) {
+          return 'Contact Number must be at least 8 digits';
+        }
+
+        return null;
+      },
     ),
 
     DynamicField(
@@ -907,6 +934,23 @@ class _VSController extends StateNotifier<_ViewState> {
       visibleWhen: (values) => values['request_for'] == 'Behalf of',
       requiredWhen: (values) => values['request_for'] == 'Behalf of',
       placeholder: l10n.enterEmail,
+      validator: (validator, values) {
+        final email = values['email']?.toString().trim() ?? '';
+
+        if (email.isEmpty) {
+          return "Email is required";
+        }
+
+        final emailRegex = RegExp(
+          r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
+        );
+
+        if (!emailRegex.hasMatch(email)) {
+          return "Invalid email format";
+        }
+
+        return null;
+      },
     ),
 
     /// ================= ATTACHMENT =================
@@ -932,6 +976,8 @@ class _VSController extends StateNotifier<_ViewState> {
     KAppX.extendedRouter.dialog.showKDialog(
       builder: (_) => ApprovalCommentDialog(
         type: type,
+        // cancelButtonLabel: 'Close',
+        // submitButtonLabel: 'Submit',
         // showDecisionNumber: showDecionNumber,
         onSubmit: (comment, decisionNo) async {
           final status = type == ApprovalDialogType.close
@@ -1203,6 +1249,11 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint('✅ SHOW CLOSE + REJECT');
 
       return ActionButtonsType.closeReject;
+    }
+    if (status == 'pending' && level.level == 2 && level.approverRoleId == 9) {
+      debugPrint('✅ SHOW CLOSE + REJECT');
+
+      return ActionButtonsType.reassignCloseReject;
     }
     if (status == 'pending' && level.approverUserId != null) {
       debugPrint('✅ SHOW CLOSE + REJECT');
@@ -1612,7 +1663,7 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(itTechnician: [], itTechnicianId: 0);
 
-      final itTechnician = await dashboardinstance.getItTechnicianDetails(
+      final itTechnician = await muscatRepository.getItTechnicianDetails(
         departmentId: departmentId,
         sectionId: sectionId,
       );

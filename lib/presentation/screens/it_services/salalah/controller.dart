@@ -646,6 +646,15 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       initialValue: userInfo?.data?.employeeName ?? '',
       disabledWhen: (values) => (values['request_for'] ?? 'Self') == 'Self',
+      validator: (validator, values) {
+        final name = values['person_name']?.toString().trim() ?? '';
+
+        if (name.isEmpty) {
+          return 'Person Name is required';
+        }
+
+        return null;
+      },
     ),
 
     /// ================= CONTACT NUMBER =================
@@ -656,6 +665,19 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       initialValue: userInfo?.data?.mobile ?? '',
       disabledWhen: (values) => (values['request_for'] ?? 'Self') == 'Self',
+      validator: (validator, values) {
+        final contact = values['contact_number']?.toString().trim() ?? '';
+
+        if (contact.isEmpty) {
+          return 'Contact Number is required';
+        }
+
+        if (contact.length < 8) {
+          return 'Contact Number must be at least 8 digits';
+        }
+
+        return null;
+      },
     ),
 
     DynamicField(
@@ -812,6 +834,23 @@ class _VSController extends StateNotifier<_ViewState> {
       visibleWhen: (values) => values['request_for'] == 'Behalf of',
       requiredWhen: (values) => values['request_for'] == 'Behalf of',
       placeholder: l10n.enterEmail,
+      validator: (validator, values) {
+        final email = values['email']?.toString().trim() ?? '';
+
+        if (email.isEmpty) {
+          return "Email is Required";
+        }
+
+        final emailRegex = RegExp(
+          r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
+        );
+
+        if (!emailRegex.hasMatch(email)) {
+          return "Invalid Email Address";
+        }
+
+        return null;
+      },
     ),
 
     /// ================= ATTACHMENT =================
@@ -837,6 +876,8 @@ class _VSController extends StateNotifier<_ViewState> {
     KAppX.extendedRouter.dialog.showKDialog(
       builder: (_) => ApprovalCommentDialog(
         type: type,
+        // cancelButtonLabel: 'Close',
+        // submitButtonLabel: 'Submit',
         // showDecisionNumber: showDecionNumber,
         onSubmit: (comment, decisionNo) async {
           final status = type == ApprovalDialogType.close

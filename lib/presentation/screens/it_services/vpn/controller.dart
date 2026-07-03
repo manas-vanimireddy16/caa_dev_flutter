@@ -544,9 +544,8 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.requestDetailsLabel('Department'),
       type: FieldType.text,
       required: true,
-      initialValue: userInfo?.data?.department?.displayName(
-            isArabic: l10n.isArabic,
-          ) ??
+      initialValue:
+          userInfo?.data?.department?.displayName(isArabic: l10n.isArabic) ??
           userInfo?.data?.department?.departmentName ??
           '',
       disabled: true,
@@ -1202,6 +1201,8 @@ Violation of this policy may result in:
     KAppX.extendedRouter.dialog.showKDialog(
       builder: (_) => ApprovalCommentDialog(
         type: type,
+        // cancelButtonLabel: 'Close',
+        // submitButtonLabel: 'Submit',
         // showDecisionNumber: showDecionNumber,
         onSubmit: (comment, decisionNo) async {
           final status = type == ApprovalDialogType.approve
@@ -1612,7 +1613,7 @@ Violation of this policy may result in:
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
       refreshRequestLists();
     } catch (e) {
@@ -1839,11 +1840,11 @@ Violation of this policy may result in:
     final int approvalLevel = level.level ?? 0;
     final bool ishasReplace = level.isReplace ?? false;
 
-    if (isManager == true) {
-      debugPrint('this user can only approve');
+    if (level.level == 4 || level.level == 1) {
+      return ActionButtonsType.approveReject;
+    } else if (level.level == 5 || level.level == 2) {
       return ActionButtonsType.assignCloseReject;
-    } else if (level != null) {
-      debugPrint('this user can approve and reject');
+    } else {
       return ActionButtonsType.closeReject;
     }
 
