@@ -947,11 +947,30 @@ class _VSController extends StateNotifier<_ViewState> {
   _VSControllerParams get _providerParams =>
       _VSControllerParams(service: service, subService: subService);
 
-  bool isEventWithinSevenDays(Map<String, dynamic> values) {
-    final fromStr = values['eventFromDate']?.toString();
-    if (fromStr == null || fromStr.isEmpty) return false;
+  DateTime? _parseFormDateValue(dynamic raw) {
+    final text = raw?.toString().trim();
+    if (text == null || text.isEmpty) return null;
 
-    final fromDate = DateTime.tryParse(fromStr);
+    final parsed = DateTime.tryParse(text);
+    if (parsed != null) return parsed;
+
+    final segments = text.split(RegExp(r'[-/]'));
+    if (segments.length == 3) {
+      if (segments[0].length == 4) {
+        return DateTime.tryParse(text);
+      }
+      final day = int.tryParse(segments[0]);
+      final month = int.tryParse(segments[1]);
+      final year = int.tryParse(segments[2]);
+      if (day != null && month != null && year != null) {
+        return DateTime(year, month, day);
+      }
+    }
+    return null;
+  }
+
+  bool isEventWithinSevenDays(Map<String, dynamic> values) {
+    final fromDate = _parseFormDateValue(values['eventFromDate']);
     if (fromDate == null) return false;
 
     final now = DateTime.now();
@@ -961,38 +980,94 @@ class _VSController extends StateNotifier<_ViewState> {
     return eventDay.difference(today).inDays < 7;
   }
 
+  bool _fieldsBelowEventWarningDisabled(Map<String, dynamic> values) =>
+      isEventWithinSevenDays(values);
+
+  void _onEventFromDateChanged(dynamic value, WidgetRef ref) {
+    final notifier = ref.read(dynamicFormProvider.notifier);
+    final values = ref.read(dynamicFormProvider).values;
+
+    final toValue = values['eventToDate']?.toString();
+    final fromDate = _parseFormDateValue(value);
+    final toDate = _parseFormDateValue(toValue);
+
+    if (fromDate != null && toDate != null && toDate.isBefore(fromDate)) {
+      notifier.updateValue('eventToDate', '');
+    }
+
+    if (isEventWithinSevenDays({...values, 'eventFromDate': value})) {
+      const fieldsToClear = [
+        'eventToDate',
+        'eventTime',
+        'eventLocation',
+        'organizingEntity',
+        'hostedPerson',
+        'audience',
+        'eventDetails',
+      ];
+      for (final fieldName in fieldsToClear) {
+        notifier.updateValue(fieldName, '');
+      }
+      notifier.updateValue('attachment', <FileUploadItem>[]);
+    }
+  }
+
   List<DynamicField> get requestMediaCoverageFields => [
-    /// -------- REQUIRED FOR PRESIDENT --------
     DynamicField(
-      name: 'requiredForPresident',
-      label: 'Required for President',
-      type: FieldType.radio,
-      required: true,
-      options: ['Yes', 'No'],
-    ),
-    DynamicField(
-      name: 'eventTitle',
-      label: 'Event Title',
+      name: 'eventName',
+      label: 'Event Name',
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter Event Title',
+      placeholder: 'Enter Event Name',
     ),
-
-    /// -------- DIRECTORATE --------
+    DynamicField(
+      name: 'importanceOfPublishing',
+      label: 'Importance of Publishing',
+      type: FieldType.textarea,
+      required: true,
+      placeholder: 'Write here (min 5, max 250 characters)',
+    ),
+    DynamicField(
+      name: 'objective',
+      label: 'Objective',
+      type: FieldType.textarea,
+      required: true,
+      placeholder: 'Write here (min 5, max 250 characters)',
+    ),
+    DynamicField(
+      name: 'newsSize',
+      label: 'News Size (Optional)',
+      type: FieldType.radio,
+      required: false,
+      initialValue: 'Small',
+      options: ['Small', 'Medium', 'Large'],
+    ),
     DynamicField(
       name: 'directorate',
       label: 'Directorate',
-      type: FieldType.text,
+      type: FieldType.select,
       required: true,
-      placeholder: 'Enter Directorate',
-    ),
+      placeholder: 'Select',
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final formState = ref.watch(_vsProvider(_providerParams));
 
-    /// -------- DEPARTMENT --------
+        return formState.departments
+            .map(
+              (d) => DropdownOption<String>(
+                value: d.displayName(isArabic: formL10n.isArabic),
+                label: d.displayName(isArabic: formL10n.isArabic),
+              ),
+            )
+            .toList();
+      },
+    ),
     DynamicField(
       name: 'departmentId',
       label: 'Department',
       type: FieldType.select,
       required: true,
+      placeholder: 'Select',
       optionsBuilder: (ref) {
         final formL10n = DashboardL10n.of(ref.context);
         final formState = ref.watch(_vsProvider(_providerParams));
@@ -1007,53 +1082,37 @@ class _VSController extends StateNotifier<_ViewState> {
             .toList();
       },
     ),
-
-    /// -------- EXTENSION NUMBER --------
     DynamicField(
       name: 'extensionNumber',
-      label: 'Extension Number',
+      label: 'Extension Number | Phone Number',
       type: FieldType.text,
       required: true,
-      placeholder: 'Add Extension Number',
+      placeholder: 'Extension or phone number (8–10 digits)',
     ),
-
-    /// -------- SUGGESTED PHOTOGRAPHY --------
     DynamicField(
       name: 'suggestedPhotography',
-      label: 'Suggested Photography',
+      label: 'Proposed Shooting Date & Time',
       type: FieldType.text,
       required: true,
-      placeholder: 'Enter Suggested Photography',
+      placeholder: 'Enter Proposed Shooting Date & Time',
     ),
-
-    /// -------- EVENT FROM DATE --------
     DynamicField(
       name: 'eventFromDate',
       label: 'Event From Date',
       type: FieldType.date,
       required: true,
-      placeholder: 'dd-mm-yyyy',
-      onChanged: (value, ref) {
-        final checkOutValue = ref
-            .read(dynamicFormProvider)
-            .values['eventToDate']
-            ?.toString();
-        if (checkOutValue == null || checkOutValue.isEmpty) return;
-
-        final fromDate = DateTime.tryParse(value?.toString() ?? '');
-        final toDate = DateTime.tryParse(checkOutValue);
-        if (fromDate != null && toDate != null && toDate.isBefore(fromDate)) {
-          ref.read(dynamicFormProvider.notifier).updateValue('eventToDate', '');
-        }
-      },
+      placeholder: 'MM/DD/YYYY',
+      onChanged: _onEventFromDateChanged,
     ),
-
     DynamicField(
       name: 'eventUrgentWarning',
       label: '',
       type: FieldType.custom,
-      visibleWhen: isEventWithinSevenDays,
+      visibleWhen: _fieldsBelowEventWarningDisabled,
       builder: (context, ref) {
+        ref.watch(
+          dynamicFormProvider.select((s) => s.values['eventFromDate']),
+        );
         final l10n = DashboardL10n.of(context);
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
@@ -1081,126 +1140,73 @@ class _VSController extends StateNotifier<_ViewState> {
         );
       },
     ),
-
-    /// -------- EVENT TO DATE --------
     DynamicField(
       name: 'eventToDate',
       label: 'Event To Date',
       type: FieldType.date,
       required: true,
-      placeholder: 'dd-mm-yyyy',
-      disabledWhen: isEventWithinSevenDays,
+      placeholder: 'MM/DD/YYYY',
+      disabledWhen: _fieldsBelowEventWarningDisabled,
       firstDateWhen: (values) {
-        final from = values['eventFromDate']?.toString();
-        if (from != null && from.isNotEmpty) {
-          final parsed = DateTime.tryParse(from);
-          if (parsed != null) return parsed;
-        }
+        final fromDate = _parseFormDateValue(values['eventFromDate']);
+        if (fromDate != null) return fromDate;
         return DateTime.now();
       },
     ),
-
-    /// -------- EVENT TIME --------
     DynamicField(
       name: 'eventTime',
       label: 'Event Time',
       type: FieldType.time,
       required: true,
-      disabledWhen: isEventWithinSevenDays,
+      placeholder: 'Select',
+      disabledWhen: _fieldsBelowEventWarningDisabled,
     ),
-
-    /// -------- EVENT LOCATION --------
     DynamicField(
       name: 'eventLocation',
       label: 'Event Location',
       type: FieldType.text,
       required: true,
-      placeholder: 'Hall Name / Number',
-      disabledWhen: isEventWithinSevenDays,
+      placeholder: 'Hall Name/Number',
+      disabledWhen: _fieldsBelowEventWarningDisabled,
     ),
-
-    /// -------- NEWS SIZE --------
-    DynamicField(
-      name: 'newsSize',
-      label: 'News Size (Optional)',
-      type: FieldType.radio,
-      required: false,
-      disabledWhen: isEventWithinSevenDays,
-      options: ['Small', 'Medium', 'Large'],
-    ),
-
-    /// -------- ORGANIZING ENTITY --------
     DynamicField(
       name: 'organizingEntity',
-      label: 'Organizing Entity (Optional)',
+      label: 'Organizing Entity',
       type: FieldType.text,
-      required: false,
+      required: true,
       placeholder: 'Add Entity',
-      disabledWhen: isEventWithinSevenDays,
+      disabledWhen: _fieldsBelowEventWarningDisabled,
     ),
-
-    /// -------- HOSTED PERSON --------
     DynamicField(
       name: 'hostedPerson',
-      label: 'Hosted Person (if any) (Optional)',
+      label: 'Hosted Person (if any)',
       type: FieldType.text,
-      required: false,
+      required: true,
       placeholder: 'Add Person',
-      disabledWhen: isEventWithinSevenDays,
+      disabledWhen: _fieldsBelowEventWarningDisabled,
     ),
-
-    /// -------- AUDIENCE --------
     DynamicField(
       name: 'audience',
       label: 'Audience (Optional)',
       type: FieldType.text,
       required: false,
       placeholder: 'Enter Audience',
-      disabledWhen: isEventWithinSevenDays,
+      disabledWhen: _fieldsBelowEventWarningDisabled,
     ),
-
-    /// -------- IMPORTANCE OF PUBLISHING --------
-    DynamicField(
-      name: 'importanceOfPublishing',
-      label: 'Importance of Publishing',
-      type: FieldType.textarea,
-      required: true,
-      placeholder: 'Write here (min 10 characters, max 500 characters)',
-      disabledWhen: isEventWithinSevenDays,
-    ),
-    DynamicField(
-      name: 'documentType',
-      label: 'Document Type',
-      type: FieldType.select,
-      required: true,
-      disabledWhen: isEventWithinSevenDays,
-      options: [
-        DropdownOption<String>(value: 'Video', label: 'Video'),
-        DropdownOption<String>(value: 'Photo', label: 'Photo'),
-        DropdownOption<String>(
-          value: 'Video and Photo',
-          label: 'Video and Photo',
-        ),
-      ],
-    ),
-
-    /// -------- EVENT DETAILS --------
     DynamicField(
       name: 'eventDetails',
-      label: 'Event Details ',
+      label: 'Event Details',
       type: FieldType.textarea,
       required: true,
-      placeholder: 'Write here (min 10 characters, max 500 characters)',
-      disabledWhen: isEventWithinSevenDays,
+      placeholder: 'Write here (min 5, max 250 characters)',
+      disabledWhen: _fieldsBelowEventWarningDisabled,
     ),
-
-    /// -------- ATTACH FILE --------
     DynamicField(
       name: 'attachment',
       label: 'Attach File (Optional)',
       type: FieldType.file,
       required: false,
-      disabledWhen: isEventWithinSevenDays,
+      disabledWhen: _fieldsBelowEventWarningDisabled,
     ),
   ];
 
@@ -2008,7 +2014,7 @@ class _VSController extends StateNotifier<_ViewState> {
         "sub_service_id": subServiceId,
 
         // President Requirement
-        "required_for_president": values['requiredForPresident'] == 'Yes',
+        "required_for_president": false,
 
         // Directorate & Department
         "directorate_name": values['directorate'],
@@ -2021,6 +2027,7 @@ class _VSController extends StateNotifier<_ViewState> {
         // Media Info
         "suggested_photography": values['suggestedPhotography'],
         "news_size": values['newsSize'],
+        "event_name": values['eventName'],
 
         // Event Info
         "event_from_date": values['eventFromDate'], // yyyy-MM-dd
@@ -2029,15 +2036,12 @@ class _VSController extends StateNotifier<_ViewState> {
         "event_location": values['eventLocation'],
 
         // Optional / Nullable Fields
-        "event_objective": values['eventTitle'],
+        "event_objective": values['objective'],
         "organizing_entity": values['organizingEntity'],
         "hosted_person": values['hostedPerson'],
         "audience": values['audience'],
         "event_details": values['eventDetails'],
         "importance_of_publishing": values['importanceOfPublishing'],
-
-        // Document Type (NEW FIELD)
-        "document_event": values['documentEvent'], // e.g. "Video"
         // Attachments
         "attachments": attachments,
       };

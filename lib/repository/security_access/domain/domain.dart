@@ -72,4 +72,5 @@ abstract class SecurityAccessRepoistory {
     required int subServiceId,
   });
   Future<List<DepartmentModel>> getDepartments();
+  Future<List<DepartmentModel>> getAdminDepartments();
 }

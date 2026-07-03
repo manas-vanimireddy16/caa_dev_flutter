@@ -2823,14 +2823,17 @@ class DepartmentModel {
           .toList(),
       isDeleted: json["is_deleted"],
       id: json["id"],
-      departmentName: json["department_name"],
-      departmentCode: json["department_code"],
-      departmentDescription: json["department_description"],
+      departmentName:
+          json["department_name"]?.toString() ?? json["name"]?.toString(),
+      departmentCode: json["department_code"]?.toString(),
+      departmentDescription: json["department_description"]?.toString(),
       createdBy: json["created_by"],
-      createdAt: json["created_at"],
+      createdAt: json["created_at"]?.toString(),
       updatedBy: json["updated_by"],
-      updatedAt: json["updated_at"],
-      departmentNameInArabic: json["department_arabic_name"],
+      updatedAt: json["updated_at"]?.toString(),
+      departmentNameInArabic:
+          json["department_arabic_name"]?.toString() ??
+          json["arabic_name"]?.toString(),
     );
   }
   Map<String, dynamic> toJson() => {

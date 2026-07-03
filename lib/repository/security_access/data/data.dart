@@ -704,4 +704,29 @@ class SecurityAccessImple implements SecurityAccessRepoistory {
       throw Exception('Error in getActionItems: $e');
     }
   }
+
+  @override
+  Future<List<DepartmentModel>> getAdminDepartments() async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.departments;
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return (data['data'] as List)
+              .map((e) => DepartmentModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        } else {
+          throw Exception('Failed with status code: ${response.statusCode}');
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      throw Exception('Error fetching admin departments: $e');
+    }
+  }
 }

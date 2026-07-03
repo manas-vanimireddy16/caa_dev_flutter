@@ -610,14 +610,19 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       initialValue: userInfo?.data?.department?.id?.toString(),
       disabledWhen: (v) => (v['request_for'] ?? 'Self') == 'Self',
-      options: (state.departments ?? [])
-          .map(
-            (d) => DropdownOption(
-              value: d.id.toString(),
-              label: d.departmentName ?? '',
-            ),
-          )
-          .toList(),
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final formState = ref.watch(_vsProvider(params));
+
+        return formState.departments
+            .map(
+              (d) => DropdownOption(
+                value: d.id.toString(),
+                label: d.displayName(isArabic: formL10n.isArabic),
+              ),
+            )
+            .toList();
+      },
     ),
 
     /// ================= TYPE =================
@@ -759,9 +764,9 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchDepartments() async {
     try {
-      final departments = await securityAccessInstance.getDepartments();
+      final departments = await securityAccessInstance.getAdminDepartments();
 
-      if (departments != []) {
+      if (departments.isNotEmpty) {
         state = state.copyWith(departments: departments);
       }
     } on ApiException catch (apiError) {
