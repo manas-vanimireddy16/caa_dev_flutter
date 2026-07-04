@@ -1074,7 +1074,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
       // await fetchactionItems();
       refreshRequestLists();
@@ -1472,6 +1472,7 @@ class _VSController extends StateNotifier<_ViewState> {
     int subServiceId,
     Map<String, dynamic> values,
   ) {
+    final user = KAppX.globalProvider.read(userInfoProvider);
     return {
       "service_id": serviceId,
       "sub_service_id": subServiceId,
@@ -1492,9 +1493,9 @@ class _VSController extends StateNotifier<_ViewState> {
       "vehicle_number": values['vehicle_number'] ?? "",
 
       // If these come from logged-in user data
-      "req_user_department_id": values['req_user_department_id'] ?? 0,
+      "req_user_department_id": user?.data?.department?.id ?? 0,
 
-      "req_user_section_id": values['req_user_section_id'] ?? 0,
+      "req_user_section_id": user?.data?.section?.id ?? 0,
 
       "attachments": _buildAttachments(values),
     };

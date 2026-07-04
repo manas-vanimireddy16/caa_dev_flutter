@@ -55,9 +55,25 @@ abstract class RequestForCoverageRepository {
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
   Future<List<ChatMessageModel>> getchatById(int id);
   Future<void> deleteAttachment(int attachmentId, {int? requestId});
-  Future<StatusBreakdownModel?> getApprovalStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(String period);
+  Future<StatusBreakdownModel?> getApprovalStatusBreakdownData(
+    String period,
+    int serviceId,
+    int subServiceId,
+  );
+  Future<TrendBreakdownModel> getApprovalTrendBreakdownData(
+    String period,
+    int serviceId,
+    int subServiceId,
+  );
 
-  Future<StatusBreakdownModel?> getStatusBreakdownData(String period);
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period);
+  Future<StatusBreakdownModel?> getStatusBreakdownData(
+    String period,
+    int serviceId,
+    int subServiceId,
+  );
+  Future<TrendBreakdownModel> getTrendBreakdownData(
+    String period,
+    int serviceId,
+    int subServiceId,
+  );
 }

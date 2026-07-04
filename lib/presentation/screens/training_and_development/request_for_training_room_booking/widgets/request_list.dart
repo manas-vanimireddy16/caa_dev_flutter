@@ -18,7 +18,7 @@ class RequestsPage extends ConsumerStatefulWidget {
 
 class _RequestsPageState extends ConsumerState<RequestsPage>
     with AutomaticKeepAliveClientMixin {
-  PagingController<int, LogisticsVehicleRequestModel>? _pagingController;
+  PagingController<int, TrainingandDevelopmentRequestModel>? _pagingController;
   bool _controllerInitialized = false;
   VoidCallback? _disposeCleanup;
 
@@ -42,9 +42,9 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
     _controllerInitialized = true;
 
     if (widget.isActionItemsTab) {
-      _pagingController = PagingController<int, LogisticsVehicleRequestModel>(
-        getNextPageKey: (state) =>
-            ListPagination.nextPageKey(state),
+      _pagingController =
+          PagingController<int, TrainingandDevelopmentRequestModel>(
+        getNextPageKey: (state) => ListPagination.nextPageKey(state),
         fetchPage: (pageKey) => controller.loadActionItemsPage(
           pageKey,
           searchText: controller.searchController.text.trim(),
@@ -56,9 +56,9 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
       controller.onActionItemsListRefresh = _refreshList;
       _disposeCleanup = () => controller.onActionItemsListRefresh = null;
     } else {
-      _pagingController = PagingController<int, LogisticsVehicleRequestModel>(
-        getNextPageKey: (state) =>
-            ListPagination.nextPageKey(state),
+      _pagingController =
+          PagingController<int, TrainingandDevelopmentRequestModel>(
+        getNextPageKey: (state) => ListPagination.nextPageKey(state),
         fetchPage: (pageKey) => controller.loadMyRequestsPage(
           pageKey,
           searchText: controller.searchController.text.trim(),
@@ -87,7 +87,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
       (_, __) => _refreshList(),
     );
 
-    return PaginatedListSection<LogisticsVehicleRequestModel>(
+    return PaginatedListSection<TrainingandDevelopmentRequestModel>(
       pagingController: _pagingController!,
       emptyMessage: widget.l10n.noDataFound,
       itemBuilder: (context, item, index) {
@@ -97,7 +97,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
           requestIdLabelBuilder: widget.l10n.requestIdLabel,
           onTap: () async {
             await controller.openRequestDetails(
-              item.base?.id ?? 0,
+              item.base?.id ?? item.id ?? 0,
               fromActionItems: widget.isActionItemsTab,
             );
           },

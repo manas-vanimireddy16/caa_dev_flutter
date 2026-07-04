@@ -535,9 +535,8 @@ class CardInfo extends StatelessWidget {
     final approverDetails = _extractApproverDetails(resolvedInfo);
     final isStatusSection = _isStatusSection(title);
     final showApproverCard =
-        isStatusSection &&
-        (approverDetails.name?.isNotEmpty == true ||
-            approverDetails.email?.isNotEmpty == true);
+        approverDetails.name?.isNotEmpty == true ||
+        approverDetails.email?.isNotEmpty == true;
 
     // Split grid fields vs long-text fields
     final gridEntries = resolvedInfo.entries.where(

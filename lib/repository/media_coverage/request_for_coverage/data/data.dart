@@ -291,11 +291,17 @@ class RequestForCoverageRepositoryImple
   @override
   Future<StatusBreakdownModel> getApprovalStatusBreakdownData(
     String period,
+    int serviceId,
+    int subServiceId,
   ) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {'time_period': period};
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
           ApiEndPoint.reportSecurityThreatApprovalStatusBreakdown,
@@ -325,11 +331,17 @@ class RequestForCoverageRepositoryImple
   @override
   Future<TrendBreakdownModel> getApprovalTrendBreakdownData(
     String period,
+    int serviceId,
+    int subServiceId,
   ) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {"year": period};
+        final queryParams = {
+          "year": period,
+          "service_id": serviceId,
+          "sub_service_id": subServiceId,
+        };
 
         /// Remove null values
         queryParams.removeWhere((key, value) => value == null);
@@ -360,11 +372,19 @@ class RequestForCoverageRepositoryImple
   }
 
   @override
-  Future<StatusBreakdownModel> getStatusBreakdownData(String period) async {
+  Future<StatusBreakdownModel> getStatusBreakdownData(
+    String period,
+    int serviceId,
+    int subServiceId,
+  ) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {'time_period': period};
+        final queryParams = {
+          'time_period': period,
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
           ApiEndPoint.requestForCoverageTrendBreakdown,
@@ -392,11 +412,19 @@ class RequestForCoverageRepositoryImple
   }
 
   @override
-  Future<TrendBreakdownModel> getTrendBreakdownData(String period) async {
+  Future<TrendBreakdownModel> getTrendBreakdownData(
+    String period,
+    int serviceId,
+    int subServiceId,
+  ) async {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {"year": period};
+        final queryParams = {
+          "year": period,
+          "service_id": serviceId,
+          "sub_service_id": subServiceId,
+        };
 
         /// Remove null values
         queryParams.removeWhere((key, value) => value == null);

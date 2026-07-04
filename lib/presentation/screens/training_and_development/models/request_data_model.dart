@@ -10,6 +10,7 @@ class TrainingandDevelopmentRequestModel {
 
   final String? purposeOfTraining;
   final String? dateOfEvent;
+  final String? endDateOfEvent;
   final String? startTime;
   final String? endTime;
   final String? roomType;
@@ -59,6 +60,7 @@ class TrainingandDevelopmentRequestModel {
 
   final int? courseId;
   final String? nameOfAttendeesSelection;
+  final List<String>? nameOfParticipants;
 
   const TrainingandDevelopmentRequestModel({
     this.base,
@@ -68,6 +70,7 @@ class TrainingandDevelopmentRequestModel {
     this.status,
     this.purposeOfTraining,
     this.dateOfEvent,
+    this.endDateOfEvent,
     this.startTime,
     this.endTime,
     this.roomType,
@@ -108,7 +111,21 @@ class TrainingandDevelopmentRequestModel {
     this.instituteName,
     this.courseId,
     this.nameOfAttendeesSelection,
+    this.nameOfParticipants,
   });
+
+  static Map<String, dynamic> _resolveSource(Map<String, dynamic> json) {
+    final source = Map<String, dynamic>.from(json);
+
+    if (json['request'] is Map) {
+      source.addAll(Map<String, dynamic>.from(json['request'] as Map));
+    }
+    if (json['base'] is Map) {
+      source.addAll(Map<String, dynamic>.from(json['base'] as Map));
+    }
+
+    return source;
+  }
 
   factory TrainingandDevelopmentRequestModel.fromJson(
     Map<String, dynamic>? json,
@@ -117,73 +134,76 @@ class TrainingandDevelopmentRequestModel {
       return const TrainingandDevelopmentRequestModel();
     }
 
+    final source = _resolveSource(json);
+
     return TrainingandDevelopmentRequestModel(
-      base: json['base'] != null
-          ? BaseRequestModel.fromJson(json['base'])
+      base: BaseRequestModel.fromJson(source),
+
+      id: source['id'],
+      isDeleted: source['is_deleted'],
+      userId: source['user_id'],
+      status: source['status'],
+
+      purposeOfTraining: source['purpose_of_training'],
+      dateOfEvent: source['date_of_event'],
+      endDateOfEvent: source['end_date_of_event'],
+      startTime: source['start_time'],
+      endTime: source['end_time'],
+      roomType: source['room_type'],
+      numberOfAttendees: source['number_of_attendees'],
+      networkSupportRequired: source['network_support_required'],
+      mealsRequired: source['meals_required'],
+
+      serviceId: source['service_id'],
+      subServiceId: source['sub_service_id'],
+
+      reqUserDepartmentId: source['req_user_department_id'],
+      reqUserSectionId: source['req_user_section_id'],
+      reqUserPositionId: source['req_user_position_id'],
+
+      remarks: source['remarks'],
+      reviewerUserId: source['reviewer_user_id'],
+      assignedToUserId: source['assigned_to_user_id'],
+      assignedAt: source['assigned_at'],
+      workflowExecutionId: source['workflow_execution_id'],
+
+      createdBy: source['created_by'],
+      updatedBy: source['updated_by'],
+
+      createdAt: source['created_at'] != null
+          ? DateTime.tryParse(source['created_at'].toString())
           : null,
 
-      id: json['id'],
-      isDeleted: json['is_deleted'],
-      userId: json['user_id'],
-      status: json['status'],
-
-      purposeOfTraining: json['purpose_of_training'],
-      dateOfEvent: json['date_of_event'],
-      startTime: json['start_time'],
-      endTime: json['end_time'],
-      roomType: json['room_type'],
-      numberOfAttendees: json['number_of_attendees'],
-      networkSupportRequired: json['network_support_required'],
-      mealsRequired: json['meals_required'],
-
-      serviceId: json['service_id'],
-      subServiceId: json['sub_service_id'],
-
-      reqUserDepartmentId: json['req_user_department_id'],
-      reqUserSectionId: json['req_user_section_id'],
-      reqUserPositionId: json['req_user_position_id'],
-
-      remarks: json['remarks'],
-      reviewerUserId: json['reviewer_user_id'],
-      assignedToUserId: json['assigned_to_user_id'],
-      assignedAt: json['assigned_at'],
-      workflowExecutionId: json['workflow_execution_id'],
-
-      createdBy: json['created_by'],
-      updatedBy: json['updated_by'],
-
-      createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'])
+      updatedAt: source['updated_at'] != null
+          ? DateTime.tryParse(source['updated_at'].toString())
           : null,
 
-      updatedAt: json['updated_at'] != null
-          ? DateTime.tryParse(json['updated_at'])
-          : null,
+      courseName: source['course_name'],
+      noOfParticipants: source['no_of_participants'],
+      courseCost: source['course_cost'],
+      totalCost: source['total_cost'],
+      description: source['description'],
+      place: source['place'],
+      reason: source['reason'],
+      location: source['location'],
+      proposedImplementationDate: source['proposed_implementation_date'],
 
-      courseName: json['course_name'],
-      noOfParticipants: json['no_of_participants'],
-      courseCost: json['course_cost'],
-      totalCost: json['total_cost'],
-      description: json['description'],
-      place: json['place'],
-      reason: json['reason'],
-      location: json['location'],
-      // employeeList: json['employee_list'],
-      proposedImplementationDate: json['proposed_implementation_date'],
+      typeOfTraining: source['type_of_training'],
+      typeOfCategory: source['type_of_category'],
+      startDate: source['start_date'],
+      endDate: source['end_date'],
+      noOfAttendees: source['no_of_attendees'],
+      mediaCoverageRequired: source['media_coverage_required'],
 
-      typeOfTraining: json['type_of_training'],
-      typeOfCategory: json['type_of_category'],
-      startDate: json['start_date'],
-      endDate: json['end_date'],
-      noOfAttendees: json['no_of_attendees'],
-      mediaCoverageRequired: json['media_coverage_required'],
+      durationOfCourse: source['duration_of_course'],
+      instituteName: source['institute_name'],
 
-      durationOfCourse: json['duration_of_course'],
-      instituteName: json['institute_name'],
+      courseId: source['course_id'],
 
-      courseId: json['course_id'],
-
-      nameOfAttendeesSelection: json['name_of_attendees_selection'],
+      nameOfAttendeesSelection: source['name_of_attendees_selection'],
+      nameOfParticipants: (source['name_of_participants'] as List?)
+          ?.map((e) => e.toString())
+          .toList(),
     );
   }
 
@@ -197,6 +217,7 @@ class TrainingandDevelopmentRequestModel {
 
       "purpose_of_training": purposeOfTraining,
       "date_of_event": dateOfEvent,
+      "end_date_of_event": endDateOfEvent,
       "start_time": startTime,
       "end_time": endTime,
       "room_type": roomType,

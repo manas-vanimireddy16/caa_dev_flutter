@@ -54,6 +54,10 @@ class MediaRequestModel {
   final String? organizingEntity;
   final String? hostedPerson;
   final String? audience;
+  final String? eventFromDate;
+  final String? eventToDate;
+  final String? eventName;
+  final String? tags;
 
   final int? reviewerUserId;
   final int? assignedToUserId;
@@ -104,6 +108,10 @@ class MediaRequestModel {
     this.organizingEntity,
     this.hostedPerson,
     this.audience,
+    this.eventFromDate,
+    this.eventToDate,
+    this.eventName,
+    this.tags,
     this.reviewerUserId,
     this.assignedToUserId,
     this.assignedAt,
@@ -157,6 +165,10 @@ class MediaRequestModel {
       organizingEntity: json['organizing_entity'],
       hostedPerson: json['hosted_person'],
       audience: json['audience'],
+      eventFromDate: json['event_from_date'],
+      eventToDate: json['event_to_date'],
+      eventName: json['event_name'],
+      tags: json['tags']?.toString(),
 
       reviewerUserId: json['reviewer_user_id'],
       assignedToUserId: json['assigned_to_user_id'],

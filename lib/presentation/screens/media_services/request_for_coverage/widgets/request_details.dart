@@ -56,10 +56,6 @@ class _RequestforCoverageDetailsScreenState
             return const Center(child: CircularProgressIndicator());
           }
 
-          final request = state.requestDetails.request;
-          final createdByUser =
-              request?.createdByUser ?? state.requestDetails.createdByUser;
-          final requestId = request?.id;
           final attachments = state.requestDetails.attachments ?? [];
           final chats = state.chatById;
           final approvals = state.requestDetails.approvalDetails ?? [];
@@ -71,18 +67,22 @@ class _RequestforCoverageDetailsScreenState
             state.requestDetails,
             approvals,
           );
+          final requestId =
+              state.requestDetails.request?.id ?? state.requestDetails.id;
           final approverId = active?.id;
           final isFromActionItems = widget.from.toLowerCase() == 'action items';
+          final coverageDetails = controller.buildCoverageDetailsCardData(l10n);
 
-          Widget employeeSection() => EmployeeInformationCard(
+          Widget coverageSection() => CoverageDetailsCard(
             l10n: l10n,
-            requestId: requestId?.toString(),
-            status: request?.status,
-            assignedTo: controller.buildAssignedToLabel(approvals),
-            user: createdByUser,
-            labelBuilder: l10n.requestDetailsLabel,
-
-            showStatusAndAssignedTo: selectedTab != 0,
+            eventName: coverageDetails.eventName,
+            status: coverageDetails.status,
+            suggestedPhotography: coverageDetails.suggestedPhotography,
+            eventDetails: coverageDetails.eventDetails,
+            postedOn: coverageDetails.postedOn,
+            department: coverageDetails.department,
+            phone: coverageDetails.phone,
+            email: coverageDetails.email,
           );
 
           return SingleChildScrollView(
@@ -96,22 +96,18 @@ class _RequestforCoverageDetailsScreenState
                 ),
                 5.toHorizontalSizedBox,
                 if (selectedTab == 0) ...[
-                  employeeSection(),
+                  coverageSection(),
                   CommonRequestDetails(
-                    statusInformationTitle: l10n.requestDetailsLabel(
-                      'Status Information',
-                    ),
+                    statusInformationTitle: l10n.coverageInformationSection,
                     requestInformationTitle: l10n.requestDetailsLabel(
                       'Request Information',
                     ),
-                    technicalInformationTitle: l10n.technicalDetailsSection,
                     requestDetailsLabelBuilder: l10n.requestDetailsLabel,
-                    statusInfo: controller.buildStatusInformation(),
-                    requestInfo: controller.buildRequestInformationData(),
-                    technicalInfo: controller.buildTechnicalInformation(),
+                    statusInfo: controller.buildCoverageInformation(l10n),
+                    requestInfo: controller.buildRequestInformationData(l10n),
                   ),
                 ] else if (selectedTab == 1) ...[
-                  employeeSection(),
+                  coverageSection(),
                   CommentsCard(
                     from: widget.from,
                     showButtons:
@@ -149,7 +145,7 @@ class _RequestforCoverageDetailsScreenState
                     },
                   ),
                 ] else if (selectedTab == 2) ...[
-                  employeeSection(),
+                  coverageSection(),
                   CommonAttachmentsTabContent(
                     attachments: attachments,
                     l10n: l10n,
@@ -162,7 +158,7 @@ class _RequestforCoverageDetailsScreenState
                     },
                   ),
                 ] else if (selectedTab == 3) ...[
-                  employeeSection(),
+                  coverageSection(),
                   RequestWorkflowTimeline(
                     details: state.requestDetails,
                     l10n: l10n,

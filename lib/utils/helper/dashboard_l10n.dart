@@ -65,6 +65,17 @@ class DashboardL10n {
   String get coverageInformationSection =>
       _t('Coverage Information', 'معلومات التغطية');
 
+  String get coverageDetailsSection =>
+      _t('Coverage Details', 'تفاصيل التغطية');
+
+  String get nameOfAttendeesLabel =>
+      _t('Name of Attendees', 'أسماء الحاضرين');
+
+  String get addAttendeeName => _t('Add Name', 'إضافة الاسم');
+
+  String attendeeNameHint(int index) =>
+      _t('Attendee $index Name', 'اسم الحاضر $index');
+
   String get technicalDetailsSection =>
       _t('Technical Details', 'التفاصيل الفنية');
 

@@ -763,47 +763,114 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
-  Map<String, String> buildRequestInformationData() {
-    final request = state.requestDetails;
+  Map<String, String> buildRequestInformationData(DashboardL10n l10n) {
+    final detail = state.requestDetails;
+    final request = detail.request;
     return {
-      /// ───── RIGHT COLUMN ─────
-      "Service Type": request?.service?.name ?? 'N/A',
-
-      /// ───── LEFT COLUMN ─────
-      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-
-      "Scheduled Date": request?.eventDate ?? 'N/A',
-      "Time": request?.eventTime ?? 'N/A',
-
-      "Contact Number":
-          request?.createdByUser?.mobile ?? request?.phoneNumber ?? 'N/A',
-
-      "Attendees Count": request?.audience ?? 'N/A',
-
-      "Requested By": request?.createdByUser?.employeeName ?? 'N/A',
-
-      "Department": request?.createdByUser?.department?.departmentName ?? 'N/A',
-
-      "Section": request?.createdByUser?.section?.sectionName ?? 'N/A',
-      "Document Type": request?.documentType ?? 'N/A',
-      // 'Quarter': request?.quarter ?? 'N/A',
+      'Request System': _coverageValue(
+        request?.service?.name,
+        detail.service?.name,
+      ),
+      'Description': _coverageValue(request?.eventDetails, detail.eventDetails),
+      'Importance of Publishing': _coverageValue(
+        request?.importanceOfPublishing,
+        detail.importanceOfPublishing,
+      ),
+      'Directorate Name': _coverageValue(
+        request?.directorateName,
+        detail.directorateName,
+      ),
+      'Organizing Entity': _coverageValue(
+        request?.organizingEntity,
+        detail.organizingEntity,
+      ),
+      'Hosted Person': _coverageValue(
+        request?.hostedPerson,
+        detail.hostedPerson,
+      ),
+      'Objective': _coverageValue(
+        request?.eventObjective,
+        detail.eventObjective,
+      ),
+      'Event Details': _coverageValue(
+        request?.eventDetails,
+        detail.eventDetails,
+      ),
+      'News Size': _coverageValue(request?.newsSize, detail.newsSize),
+      'Audience': _displayAudience(
+        _coverageValue(request?.audience, detail.audience, allowEmpty: true),
+        l10n,
+      ),
+      'Extension Number': _coverageValue(
+        request?.extensionNumber ?? request?.extnNum,
+        detail.extensionNumber ?? detail.extnNum,
+      ),
+      'Required for President': _formatRequiredForPresident(
+        request?.requiredForPresident ?? detail.requiredForPresident,
+        l10n,
+      ),
     };
   }
 
-  Map<String, String> buildStatusInformation() {
-    final request = state.requestDetails;
-    final approvals = state.requestDetails.approvalDetails;
+  Map<String, String> buildCoverageInformation(DashboardL10n l10n) {
+    final detail = state.requestDetails;
+    final request = detail.request;
+    final approvals = detail.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
-    return {
-      "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
-      // "Last Updated":
-      //     request?.updatedAt?.split('T').first ?? 'N/A',
-      if (nextApprover.containsKey('department'))
-        'Department': nextApprover['department']!,
-      if (nextApprover.containsKey('section'))
-        'Section': nextApprover['section']!,
+    final attachments = detail.attachments ?? [];
+    final filesLabel = attachments.isEmpty
+        ? l10n.notAvailableValue()
+        : attachments.length.toString();
 
+    return {
+      'Event Name': _coverageValue(request?.eventName, detail.eventName),
+      'Time': _formatCoverageTime(
+        _coverageValue(request?.eventTime, detail.eventTime, allowEmpty: true),
+        l10n,
+      ),
+      'Scheduled Date': _formatCoverageDate(
+        _coverageValue(request?.eventDate, detail.eventDate, allowEmpty: true),
+        l10n,
+      ),
+      'Attendees Count': _displayAudience(
+        _coverageValue(request?.audience, detail.audience, allowEmpty: true),
+        l10n,
+      ),
+      'Event From Date': _formatCoverageDate(
+        _coverageValue(
+          request?.eventFromDate,
+          detail.eventFromDate,
+          allowEmpty: true,
+        ),
+        l10n,
+      ),
+      'Files': filesLabel,
+      'Event To Date': _formatCoverageDate(
+        _coverageValue(
+          request?.eventToDate,
+          detail.eventToDate,
+          allowEmpty: true,
+        ),
+        l10n,
+      ),
+      'Document Type': _coverageValue(
+        request?.documentType,
+        detail.documentType,
+      ),
+      'Contact number': _coverageValue(
+        request?.extensionNumber ??
+            request?.extnNum ??
+            request?.createdByUser?.mobile,
+        detail.extensionNumber ??
+            detail.extnNum ??
+            detail.createdByUser?.mobile ??
+            detail.phoneNumber,
+      ),
+      'Approval Status': _coverageValue(request?.status, detail.status),
+      'Requested By': _coverageValue(
+        request?.createdByUser?.employeeName,
+        detail.createdByUser?.employeeName,
+      ),
       if (nextApprover.containsKey('name'))
         'Approver Name': nextApprover['name']!,
       if (nextApprover.containsKey('email'))
@@ -811,12 +878,111 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
-  Map<String, String> buildTechnicalInformation() {
-    final request = state.requestDetails;
-    return {
-      'Extension Number':
-          request?.createdByUser?.extensionNumber.toString() ?? '0',
-    };
+  ({
+    String eventName,
+    String status,
+    String suggestedPhotography,
+    String eventDetails,
+    String postedOn,
+    String department,
+    String phone,
+    String email,
+  })
+  buildCoverageDetailsCardData(DashboardL10n l10n) {
+    final detail = state.requestDetails;
+    final request = detail.request;
+    final createdByUser = request?.createdByUser ?? detail.createdByUser;
+    final createdAt = request?.createdAt ?? detail.createdAt;
+
+    return (
+      eventName: _coverageValue(request?.eventName, detail.eventName),
+      status: _coverageValue(request?.status, detail.status),
+      suggestedPhotography: _coverageValue(
+        request?.suggestedPhotography,
+        detail.suggestedPhotography,
+        allowEmpty: true,
+      ),
+      eventDetails: _coverageValue(
+        request?.eventDetails,
+        detail.eventDetails,
+        allowEmpty: true,
+      ),
+      postedOn: _formatPostedOn(createdAt, l10n),
+      department: _coverageValue(
+        createdByUser?.section?.sectionName ??
+            createdByUser?.department?.departmentName,
+        detail.reqSection?.sectionName ?? detail.reqDepartment?.departmentName,
+        allowEmpty: true,
+      ),
+      phone: _coverageValue(
+        request?.extensionNumber ?? request?.extnNum ?? createdByUser?.mobile,
+        detail.extensionNumber ??
+            detail.extnNum ??
+            createdByUser?.mobile ??
+            detail.phoneNumber,
+        allowEmpty: true,
+      ),
+      email: _coverageValue(
+        createdByUser?.email,
+        detail.createdByUser?.email,
+        allowEmpty: true,
+      ),
+    );
+  }
+
+  String _coverageValue(
+    String? fromRequest,
+    String? fromDetail, {
+    bool allowEmpty = false,
+  }) {
+    if (fromRequest != null && fromRequest.trim().isNotEmpty) {
+      return fromRequest.trim();
+    }
+    if (fromDetail != null && fromDetail.trim().isNotEmpty) {
+      return fromDetail.trim();
+    }
+    return allowEmpty ? '' : 'N/A';
+  }
+
+  String _displayAudience(String value, DashboardL10n l10n) {
+    if (value.isEmpty) return l10n.notAvailableValue();
+    return value;
+  }
+
+  String _formatRequiredForPresident(bool? value, DashboardL10n l10n) {
+    if (value == null) return l10n.notAvailableValue();
+    return value ? l10n.yesNoYes : l10n.yesNoNo;
+  }
+
+  String _formatCoverageDate(String raw, DashboardL10n l10n) {
+    if (raw.isEmpty) return l10n.notAvailableValue();
+    return l10n.formatDetailDate(raw);
+  }
+
+  String _formatCoverageTime(String raw, DashboardL10n l10n) {
+    if (raw.isEmpty) return l10n.notAvailableValue();
+    try {
+      final parts = raw.split(':');
+      if (parts.length >= 2) {
+        final hour = int.parse(parts[0]);
+        final minute = int.parse(parts[1]);
+        final dt = DateTime(2000, 1, 1, hour, minute);
+        return DateFormat.jm(l10n.isArabic ? 'ar' : 'en').format(dt);
+      }
+    } catch (_) {}
+    return raw;
+  }
+
+  String _formatPostedOn(String? raw, DashboardL10n l10n) {
+    if (raw == null || raw.trim().isEmpty) return '';
+    try {
+      final dt = DateTime.parse(raw).toLocal();
+      final date = DateFormat.yMMMd(l10n.isArabic ? 'ar' : 'en').format(dt);
+      final time = DateFormat.jm(l10n.isArabic ? 'ar' : 'en').format(dt);
+      return '$date | $time';
+    } catch (_) {
+      return raw;
+    }
   }
 
   String _buildDepartmentSection(Map<String, String> approverMap) {
@@ -1048,19 +1214,32 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.select,
       required: true,
       placeholder: 'Select',
-      optionsBuilder: (ref) {
-        final formL10n = DashboardL10n.of(ref.context);
-        final formState = ref.watch(_vsProvider(_providerParams));
-
-        return formState.departments
-            .map(
-              (d) => DropdownOption<String>(
-                value: d.displayName(isArabic: formL10n.isArabic),
-                label: d.displayName(isArabic: formL10n.isArabic),
-              ),
-            )
-            .toList();
-      },
+      options: [
+        DropdownOption(
+          value: 'General Directorate of Strategic Planning',
+          label: 'General Directorate of Strategic Planning',
+        ),
+        DropdownOption(
+          value: 'General Directorate of Aviation Regulation',
+          label: 'General Directorate of Aviation Regulation',
+        ),
+        DropdownOption(
+          value: 'General Directorate of Air Navigation',
+          label: 'General Directorate of Air Navigation',
+        ),
+        DropdownOption(
+          value: 'General Directorate of Meteorology',
+          label: 'General Directorate of Meteorology',
+        ),
+        DropdownOption(
+          value: 'General Directorate of Support Services',
+          label: 'General Directorate of Support Services',
+        ),
+        DropdownOption(
+          value: 'General Directorate of Civil Aviation in Dhofar',
+          label: 'General Directorate of Civil Aviation in Dhofar',
+        ),
+      ],
     ),
     DynamicField(
       name: 'departmentId',
@@ -1110,9 +1289,7 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.custom,
       visibleWhen: _fieldsBelowEventWarningDisabled,
       builder: (context, ref) {
-        ref.watch(
-          dynamicFormProvider.select((s) => s.values['eventFromDate']),
-        );
+        ref.watch(dynamicFormProvider.select((s) => s.values['eventFromDate']));
         final l10n = DashboardL10n.of(context);
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
@@ -1317,7 +1494,11 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalTrendBreakDown(String period) async {
     try {
       final data = await requestForCoverageInstance
-          .getApprovalTrendBreakdownData(period);
+          .getApprovalTrendBreakdownData(
+            period,
+            service.id ?? 0,
+            subService.id ?? 0,
+          );
 
       if (data != null) {
         state = state.copyWith(approvalTrendData: data);
@@ -1330,7 +1511,11 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchApprovalStatusBreakdown(String period) async {
     try {
       final statusBreakdown = await requestForCoverageInstance
-          .getApprovalStatusBreakdownData(period);
+          .getApprovalStatusBreakdownData(
+            period,
+            service.id ?? 0,
+            subService.id ?? 0,
+          );
       if (statusBreakdown != null) {
         state = state.copyWith(approvalStatusBreakdown: statusBreakdown);
       }
@@ -1345,7 +1530,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchStatusBreakdown(String period) async {
     try {
       final statusBreakdown = await requestForCoverageInstance
-          .getStatusBreakdownData(period);
+          .getStatusBreakdownData(period, service.id ?? 0, subService.id ?? 0);
       if (statusBreakdown != null) {
         state = state.copyWith(statusBreakdown: statusBreakdown);
       }
@@ -1361,6 +1546,8 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       final data = await requestForCoverageInstance.getTrendBreakdownData(
         period,
+        service.id ?? 0,
+        subService.id ?? 0,
       );
 
       if (data != null) {
@@ -1987,7 +2174,9 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       if (isEventWithinSevenDays(values)) {
         final l10n = DashboardL10n.of(KAppX.currentContext!);
-        Fluttertoast.showToast(msg: l10n.requestForCoverageUrgentContactMessage);
+        Fluttertoast.showToast(
+          msg: l10n.requestForCoverageUrgentContactMessage,
+        );
         return false;
       }
 

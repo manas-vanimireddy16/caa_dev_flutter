@@ -34,7 +34,7 @@ import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/area_permission.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
-import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/coverage_details_card.dart';
 import 'package:code_setup/presentation/screens/media_services/models/request_data_model.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
@@ -49,6 +49,7 @@ import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
@@ -150,7 +151,7 @@ class _RequestforCoverageScreenState
         children: [
           /// KPI
           StatSummaryRow(stats: controller.currentStats),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -161,6 +162,7 @@ class _RequestforCoverageScreenState
             onChanged: controller.onStatusFilterChanged,
             breakdown: state.statusBreakdown.data,
           ),
+          16.toVerticalSizedBox,
 
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
@@ -174,7 +176,7 @@ class _RequestforCoverageScreenState
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

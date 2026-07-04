@@ -20,18 +20,14 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
     with AutomaticKeepAliveClientMixin {
   PagingController<int, ForeignEmployeeVehicleRequestModel>? _pagingController;
   bool _controllerInitialized = false;
+  VoidCallback? _disposeCleanup;
 
   @override
   bool get wantKeepAlive => true;
 
   @override
   void dispose() {
-    final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
-    if (widget.isActionItemsTab) {
-      controller.onActionItemsListRefresh = null;
-    } else {
-      controller.onMyRequestsListRefresh = null;
-    }
+    _disposeCleanup?.call();
     _pagingController?.dispose();
     super.dispose();
   }
@@ -59,6 +55,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
         ),
       );
       controller.onActionItemsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onActionItemsListRefresh = null;
     } else {
       _pagingController =
           PagingController<int, ForeignEmployeeVehicleRequestModel>(
@@ -73,6 +70,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
         ),
       );
       controller.onMyRequestsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onMyRequestsListRefresh = null;
     }
   }
 

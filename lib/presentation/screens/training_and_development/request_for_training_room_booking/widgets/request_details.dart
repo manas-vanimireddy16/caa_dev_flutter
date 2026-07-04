@@ -53,15 +53,16 @@ class _RequestforTrainingRoomBookingDetailsScreenState
       body: Consumer(
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));
+          final request = state.requestDetails.request;
+          final loadedRequestId = request?.id ?? state.requestDetails.id;
 
-          if (state.requestDetails == null || state.isLoading) {
+          if (state.isLoading && loadedRequestId != widget.id) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final request = state.requestDetails.request;
           final createdByUser =
               request?.createdByUser ?? state.requestDetails.createdByUser;
-          final requestId = request?.id;
+          final requestId = loadedRequestId ?? widget.id;
           final attachments = state.requestDetails.attachments ?? [];
           final chats = state.chatById;
           final approvals = state.requestDetails.approvalDetails ?? [];
@@ -73,7 +74,6 @@ class _RequestforTrainingRoomBookingDetailsScreenState
             state.requestDetails,
             approvals,
           );
-          final nextApprover = controller.resolveApproverDisplayList(approvals);
           final approverId = active?.id;
           final isFromActionItems = widget.from.toLowerCase() == 'action items';
 
@@ -92,7 +92,7 @@ class _RequestforTrainingRoomBookingDetailsScreenState
             child: Column(
               children: [
                 5.toHorizontalSizedBox,
-                RequestTabs(
+                RequestDetailsTabs(
                   selectedTab: selectedTab,
                   service: widget.service,
                   subService: widget.subService,
@@ -109,45 +109,9 @@ class _RequestforTrainingRoomBookingDetailsScreenState
                     ),
                     technicalInformationTitle: l10n.technicalDetailsSection,
                     requestDetailsLabelBuilder: l10n.requestDetailsLabel,
-                    statusInfo: {
-                      "Approval Status": request?.status ?? 'N/A',
-                      "Requested Date":
-                          request?.createdAt?.split('T').first ?? 'N/A',
-                      "Last Updated":
-                          request?.updatedAt?.split('T').first ?? 'N/A',
-                      if (nextApprover.length == 2) ...{
-                        'Department': nextApprover[0],
-                        'Section': nextApprover[1],
-                      } else if (nextApprover.length == 1) ...{
-                        'Approver': nextApprover[0],
-                      },
-                    },
-                    requestInfo: {
-                      "Sub Service Type":
-                          request?.subService?.subServiceName ?? 'N/A',
-                      "Date of Event": request?.dateOfEvent ?? 'N/A',
-                      "Select Classroom / Training Hall":
-                          request?.roomType ?? 'N/A',
-                      "Meals Required": request?.mealsRequired == true
-                          ? "Yes"
-                          : "No",
-                      "Remarks": (request?.remarks?.isNotEmpty ?? false)
-                          ? request!.remarks!
-                          : "NA",
-                      "Service Type": request?.service?.name ?? 'N/A',
-                      "Purpose of Training":
-                          request?.purposeOfTraining ?? 'N/A',
-                      "Timing of Event":
-                          (request?.startTime != null &&
-                              request?.endTime != null)
-                          ? "${request!.startTime} - ${request.endTime}"
-                          : "N/A",
-                    },
-                    technicalInfo: {
-                      'Extension Number':
-                          request?.createdByUser?.extensionNumber.toString() ??
-                          '0',
-                    },
+                    statusInfo: controller.buildStatusInformation(),
+                    requestInfo: controller.buildRequestInformationData(),
+                    technicalInfo: controller.buildTechnicalInformation(),
                   ),
                 ] else if (selectedTab == 1) ...[
                   employeeSection(),

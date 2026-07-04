@@ -1172,11 +1172,11 @@ class ApiEndPoint {
 
   /// Status breakdown
   static const String requestForCoverageStatusBreakdown =
-      '/v1/hr-service/analytics/request-for-coverage/status-breakdown';
+      '/v1/hr-service/request-for-coverage/request-for-coverage-request/analytics/status-breakdown';
 
   /// Trend breakdown
   static const String requestForCoverageTrendBreakdown =
-      '/v1/hr-service/analytics/request-for-coverage/trend-breakdown';
+      '/v1/hr-service/request-for-coverage/request-for-coverage-request/analytics/trend-breakdown';
 
   /// ===================== APPROVAL ANALYTICS APIs =====================
 
@@ -1186,11 +1186,11 @@ class ApiEndPoint {
 
   /// Approval status breakdown
   static const String requestForCoverageApprovalStatusBreakdown =
-      '/v1/hr-service/analytics/request-for-coverage-approvals/status-breakdown';
+      '/v1/hr-service/request-for-coverage/request-for-coverage-request/analytics/approvals/status-breakdown';
 
   /// Approval Trend breakdown
   static const String requestForCoverageApprovalTrendBreakdown =
-      '/v1/hr-service/analytics/request-for-coverage/trend-breakdown';
+      '/v1/hr-service/request-for-coverage/request-for-coverage-request/analytics/approvals/trend-breakdown';
 
   /// ===================== REQUEST FOR TRAINING ROOM BOOKING APIs =====================
 

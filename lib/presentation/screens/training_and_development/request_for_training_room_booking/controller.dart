@@ -57,6 +57,9 @@ class _ViewState {
   final RequestDetailModel requestDataById;
 
   final int tabIndex;
+  final String myRequestsStatusFilter;
+  final String actionItemsStatusFilter;
+  final List<String> attendeeNames;
 
   final StatusBreakdownModel approvalStatusBreakdown;
   final TrendBreakdownModel approvalTrendData;
@@ -115,6 +118,9 @@ class _ViewState {
     required this.trendData,
     required this.requestDataById,
     required this.tabIndex,
+    required this.myRequestsStatusFilter,
+    required this.actionItemsStatusFilter,
+    required this.attendeeNames,
     required this.approvalStatusBreakdown,
     required this.approvalTrendData,
     required this.requestForTrainingRoomBookingRequestData,
@@ -152,6 +158,9 @@ class _ViewState {
         trendData: TrendBreakdownModel(),
         requestDataById: RequestDetailModel(),
         tabIndex: 0,
+        myRequestsStatusFilter: '',
+        actionItemsStatusFilter: '',
+        attendeeNames: [],
         approvalStatusBreakdown: StatusBreakdownModel(),
         approvalTrendData: TrendBreakdownModel(),
         requestForTrainingRoomBookingRequestData: [],
@@ -194,6 +203,9 @@ class _ViewState {
     StatusBreakdownModel? approvalStatusBreakdown,
     TrendBreakdownModel? approvalTrendData,
     int? tabIndex,
+    String? myRequestsStatusFilter,
+    String? actionItemsStatusFilter,
+    List<String>? attendeeNames,
     List<TrainingandDevelopmentRequestModel>?
     requestForTrainingRoomBookingRequestData,
     List<TrainingandDevelopmentRequestModel>?
@@ -237,6 +249,11 @@ class _ViewState {
       trendData: trendData ?? this.trendData,
       requestDataById: requestDataById ?? this.requestDataById,
       tabIndex: tabIndex ?? this.tabIndex,
+      myRequestsStatusFilter:
+          myRequestsStatusFilter ?? this.myRequestsStatusFilter,
+      actionItemsStatusFilter:
+          actionItemsStatusFilter ?? this.actionItemsStatusFilter,
+      attendeeNames: attendeeNames ?? this.attendeeNames,
       approvalStatusBreakdown:
           approvalStatusBreakdown ?? this.approvalStatusBreakdown,
       approvalTrendData: approvalTrendData ?? this.approvalTrendData,
@@ -271,6 +288,13 @@ class _ViewState {
 }
 
 class _VSController extends StateNotifier<_ViewState> {
+  static const requestListStatusFilters = [
+    '',
+    'Approved',
+    'Pending',
+    'Rejected',
+  ];
+
   final Service service;
   final SubService subService;
 
@@ -282,51 +306,395 @@ class _VSController extends StateNotifier<_ViewState> {
   late TextEditingController titleController;
   late TextEditingController searchController;
 
+  VoidCallback? onMyRequestsListRefresh;
+  VoidCallback? onActionItemsListRefresh;
+
+  void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
+  void refreshActionItemsList() => onActionItemsListRefresh?.call();
+
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
+  void refreshActiveRequestList() {
+    if (state.tabIndex == 0) {
+      refreshMyRequestsList();
+    } else {
+      refreshActionItemsList();
+    }
+  }
+
+  String get currentStatusFilter => state.tabIndex == 0
+      ? state.myRequestsStatusFilter
+      : state.actionItemsStatusFilter;
+
+  String requestListStatusFilterLabel(String status, DashboardL10n l10n) {
+    if (status.isEmpty) {
+      return l10n.isArabic ? 'الكل' : 'All';
+    }
+    return l10n.statusLabel(status);
+  }
+
+  void onRequestStatusFilterChanged(String status) {
+    if (state.tabIndex == 0) {
+      state = state.copyWith(myRequestsStatusFilter: status);
+      refreshMyRequestsList();
+    } else {
+      state = state.copyWith(actionItemsStatusFilter: status);
+      refreshActionItemsList();
+    }
+  }
+
+  int get currentYear => DateTime.now().year;
+
+  List<String> get filterLabelList =>
+      List.generate(6, (index) => (currentYear - index).toString());
+
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.kpiData.data?.toJson(),
+        titleForKey: titleForKey,
+      );
+
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) =>
+      StatSummaryHelper.buildStatList(
+        state.approvalKpiData.data?.toJson(),
+        titleForKey: titleForKey,
+      );
+
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
+
+  void onStatusFilterChanged(String? value) {
+    if (state.tabIndex == 0) {
+      fetchStatusBreakdown(value ?? '');
+    } else {
+      fetchApprovalStatusBreakdown(value ?? '');
+    }
+  }
+
+  void onTrendFilterChanged(String? value) {
+    if (value == null) return;
+
+    if (state.tabIndex == 0) {
+      fetchTrendBreakDown(value);
+    } else {
+      fetchApprovalTrendBreakDown(value);
+    }
+  }
+
+  List<int> get trendCounts {
+    final data = state.trendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<int> get approvalTrendCounts {
+    final data = state.approvalTrendData.data?.trendData;
+    if (data == null || data.isEmpty) {
+      return List.filled(12, 0);
+    }
+
+    return data.map((e) => e.count ?? 0).toList();
+  }
+
+  List<ChartData> get statusBreakdownList {
+    return state.statusBreakdown.data?.breakdown ?? [];
+  }
+
+  List<ChartData> get approvalStatusBreakdownList {
+    return state.approvalStatusBreakdown.data?.breakdown ?? [];
+  }
+
   void initState() {
     chatController = TextEditingController();
     titleController = TextEditingController();
     searchController = TextEditingController();
-    // fetchDepartmentName();
     fetchKpi();
     fetchApprovalKpi();
-    // fetchUsers();
-    fetchRequests();
-    fetchActionItems();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchDepartments();
   }
 
-  int _searchVersion = 0;
-
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (state.tabIndex == 0) {
-        await fetchRequests(isRefresh: true, searchText: value);
-      } else {
-        await fetchActionItems(isRefresh: true, searchText: value);
-      }
-
-      if (currentVersion != _searchVersion) return; // ignore old response
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
+      refreshActiveRequestList();
     });
   }
+
+  Future<List<TrainingandDevelopmentRequestModel>> loadMyRequestsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+
+    try {
+      return await requestForTrainingRoomBookingInstance.getRequests(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<TrainingandDevelopmentRequestModel>> loadActionItemsPage(
+    int pageKey, {
+    String searchText = '',
+    String status = '',
+  }) async {
+    if (!mounted) return [];
+
+    try {
+      return await requestForTrainingRoomBookingInstance.getActionItems(
+        offset: ListPagination.offsetForPage(pageKey),
+        limit: ListPagination.pageSize,
+        searchText: searchText,
+        status: status,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+    } catch (e) {
+      if (mounted) {
+        Fluttertoast.showToast(msg: e.toString());
+      }
+      rethrow;
+    }
+  }
+
+  void clearAttendeeNames() {
+    state = state.copyWith(attendeeNames: []);
+  }
+
+  void addAttendee() {
+    state = state.copyWith(attendeeNames: [...state.attendeeNames, '']);
+  }
+
+  void removeLastAttendee() {
+    if (state.attendeeNames.isEmpty) return;
+    final updated = List<String>.from(state.attendeeNames)..removeLast();
+    state = state.copyWith(attendeeNames: updated);
+  }
+
+  void updateAttendee(int index, String value) {
+    final updated = [...state.attendeeNames];
+    updated[index] = value;
+    state = state.copyWith(attendeeNames: updated);
+  }
+
+  void removeAttendee(int index) {
+    final updated = [...state.attendeeNames];
+    updated.removeAt(index);
+    state = state.copyWith(attendeeNames: updated);
+  }
+
+  List<String> _buildNameOfParticipants() {
+    return state.attendeeNames
+        .map((name) => name.trim())
+        .where((name) => name.isNotEmpty)
+        .toList();
+  }
+
+  static const _trainingRoomOptions = [
+    DropdownOption(
+      value: 'Training Rooms (A1, A2)',
+      label: 'Training Rooms (A1, A2)',
+    ),
+    DropdownOption(
+      value: 'Training Rooms (B1, B2)',
+      label: 'Training Rooms (B1, B2)',
+    ),
+    DropdownOption(
+      value: 'Training Rooms (C1, C2)',
+      label: 'Training Rooms (C1, C2)',
+    ),
+    DropdownOption(
+      value: 'Training Rooms (D1, D2)',
+      label: 'Training Rooms (D1, D2)',
+    ),
+    DropdownOption(
+      value: 'Lecture Hall',
+      label: 'Lecture Hall',
+    ),
+    DropdownOption(
+      value: 'Laboratory',
+      label: 'Laboratory',
+    ),
+  ];
+
+  List<DynamicField> buildTrainingRoomBookingForm(DashboardL10n l10n) => [
+    DynamicField(
+      name: 'numberOfAttendees',
+      label: 'Number of Attendees',
+      type: FieldType.text,
+      required: true,
+      placeholder: 'Enter',
+    ),
+    DynamicField(
+      name: 'attendee_names',
+      label: '',
+      type: FieldType.custom,
+      builder: (context, ref) {
+        final attendeeCount =
+            int.tryParse(
+              ref.watch(
+                    dynamicFormProvider.select(
+                      (s) => s.values['numberOfAttendees']?.toString() ?? '0',
+                    ),
+                  ) ??
+                  '0',
+            ) ??
+            0;
+
+        return AttendeeNamesWidget(
+          attendeeCount: attendeeCount,
+          service: service,
+          subService: subService,
+        );
+      },
+    ),
+    DynamicField(
+      name: 'purposeOfTraining',
+      label: 'Purpose of Booking Training Classroom',
+      type: FieldType.textarea,
+      required: true,
+      placeholder: 'Write Here...',
+    ),
+    DynamicField(
+      name: 'startDate',
+      label: 'Start Date',
+      type: FieldType.date,
+      required: true,
+    ),
+    DynamicField(
+      name: 'endDate',
+      label: 'End Date',
+      type: FieldType.date,
+      required: true,
+      firstDateWhen: (values) {
+        final start = values['startDate']?.toString();
+        if (start == null || start.isEmpty) return null;
+        return DateTime.tryParse(start);
+      },
+      validator: (value, values) {
+        final start = values['startDate']?.toString();
+        final end = value?.toString();
+        if (start == null || end == null || start.isEmpty || end.isEmpty) {
+          return null;
+        }
+        final startDate = DateTime.tryParse(start);
+        final endDate = DateTime.tryParse(end);
+        if (startDate != null &&
+            endDate != null &&
+            endDate.isBefore(startDate)) {
+          return l10n.isArabic
+              ? 'يجب أن يكون تاريخ الانتهاء بعد تاريخ البداية'
+              : 'End date must be on or after start date';
+        }
+        return null;
+      },
+    ),
+    DynamicField(
+      name: 'startTime',
+      label: 'Start Time',
+      type: FieldType.time,
+      required: true,
+    ),
+    DynamicField(
+      name: 'endTime',
+      label: 'End Time',
+      type: FieldType.time,
+      required: true,
+    ),
+    DynamicField(
+      name: 'trainingHallId',
+      label: 'Select Classroom / Training Hall',
+      type: FieldType.select,
+      required: true,
+      placeholder: 'Select Classroom / Training Hall',
+      options: _trainingRoomOptions,
+    ),
+    DynamicField(
+      name: 'networkSupportRequired',
+      label: 'Network Support Required',
+      type: FieldType.radio,
+      required: false,
+      initialValue: 'No',
+      options: const ['Yes', 'No'],
+    ),
+    DynamicField(
+      name: 'mealsRequired',
+      label: 'Meals Required',
+      type: FieldType.radio,
+      required: false,
+      initialValue: 'No',
+      options: const ['Yes', 'No'],
+    ),
+    DynamicField(
+      name: 'remarks',
+      label: 'Remarks (Optional)',
+      type: FieldType.textarea,
+      required: false,
+      placeholder: 'Write Here...',
+    ),
+    DynamicField(
+      name: 'attachments',
+      label: 'Attachments',
+      type: FieldType.file,
+      required: false,
+      maxFileSizeInMB: 2,
+      allowedExtensions: const ['doc', 'docx', 'pdf', 'png', 'jpeg', 'jpg'],
+    ),
+  ];
 
   Map<String, String> buildRequestCardData(
     TrainingandDevelopmentRequestModel item,
   ) {
-    final approvers = resolveApproverDisplayList(item.base?.approvalDetails);
+    final approvers = resolveApproverDisplayList(
+      item.base?.approvalDetails ?? [],
+    );
+    final attendeeNames = item.nameOfParticipants
+        ?.where((n) => n.trim().isNotEmpty)
+        .join(', ');
 
     return {
-      'Request Id': item.base?.id?.toString() ?? '-',
-      'status': item.status ?? '-',
-      // 'Purpose of Training': item.purposeOfTraining ?? '-',
-      // 'Event Date': item.dateOfEvent ?? '-',
-      // 'Number of Attendees': item.numberOfAttendees?.toString() ?? '-',
+      'Request Id': _itemRequestId(item),
+      'status': _itemStatus(item),
+      'Request By': item.base?.createdByUser?.employeeName ?? '-',
+      'Date': formatDate(
+        item.base?.createdAt?.toIso8601String() ??
+            item.createdAt?.toIso8601String(),
+      ),
+      'Purpose of Training': item.purposeOfTraining ?? '-',
+      'Start Date': formatDate(item.dateOfEvent),
+      'End Date': formatDate(item.endDateOfEvent),
+      'Number of Attendees': item.numberOfAttendees?.toString() ?? '-',
+      if ((attendeeNames ?? '').isNotEmpty)
+        'Name of Attendees': attendeeNames!,
       if (approvers.length == 2) ...{
         'Department': approvers[0],
         'Section': approvers[1],
@@ -335,7 +703,159 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
-  Future<void> openRequestDetails(int id, {bool fromActionItems = false}) async {
+  String _itemRequestId(TrainingandDevelopmentRequestModel item) {
+    return item.base?.id?.toString() ?? item.id?.toString() ?? '-';
+  }
+
+  String _itemStatus(TrainingandDevelopmentRequestModel item) {
+    return item.base?.status ?? item.status ?? '-';
+  }
+
+  RequestModel? get _detailRequest => state.requestDetails.request;
+
+  RequestDetailData get _detail => state.requestDetails;
+
+  String _detailField(
+    String? Function(RequestModel r) fromRequest,
+    String? fromDetail,
+  ) {
+    final request = _detailRequest;
+    if (request != null) {
+      final value = fromRequest(request);
+      if (value != null && value.trim().isNotEmpty) return value.trim();
+    }
+    final detailValue = fromDetail?.trim();
+    if (detailValue != null && detailValue.isNotEmpty) return detailValue;
+    return 'N/A';
+  }
+
+  Map<String, String> buildRequestInformationData() {
+    final detail = _detail;
+    final request = _detailRequest;
+
+    return {
+      'Service Type': _detailField((r) => r.service?.name, detail.service?.name ?? ''),
+      'Sub Service Type': _detailField(
+        (r) => r.subService?.subServiceName,
+        detail.subService?.subServiceName ?? '',
+      ),
+      'Purpose of Training': _detailField(
+        (r) => r.purposeOfTraining,
+        detail.purposeOfTraining ?? '',
+      ),
+      'Date of Event': _detailField((r) => r.dateOfEvent, detail.dateOfEvent ?? ''),
+      'End Date of Event': _detailField(
+        (r) => r.endDateOfEvent,
+        detail.endDateOfEvent ?? '',
+      ),
+      'Select Classroom / Training Hall': _detailField(
+        (r) => r.roomType,
+        detail.roomType ?? '',
+      ),
+      'Timing of Event': () {
+        final start = _detailField((r) => r.startTime, detail.startTime ?? '');
+        final end = _detailField((r) => r.endTime, detail.endTime ?? '');
+        if (start == 'N/A' || end == 'N/A') return 'N/A';
+        return '$start - $end';
+      }(),
+      'Network Support Required': _detailField(
+        (r) => r.networkSupportRequired == true ? 'Yes' : 'No',
+        detail.networkSupportRequired == true ? 'Yes' : 'No',
+      ),
+      'Meals Required': _detailField(
+        (r) => r.mealsRequired == true ? 'Yes' : 'No',
+        detail.mealsRequired == true ? 'Yes' : 'No',
+      ),
+      'Number of Attendees': _detailField(
+        (r) => r.numberOfAttendees?.toString(),
+        detail.numberOfAttendees?.toString() ?? '',
+      ),
+      'Name of Attendees': () {
+        final names =
+            request?.nameOfParticipants ?? detail.nameOfParticipants ?? [];
+        if (names.isEmpty) return 'N/A';
+        return names.join(', ');
+      }(),
+      'Remarks': _detailField((r) => r.remarks, detail.remarks ?? ''),
+    };
+  }
+
+  Map<String, String> buildStatusInformation() {
+    final detail = _detail;
+    final request = _detailRequest;
+    final approvals = detail.approvalDetails;
+    final nextApprover = resolveApproverMap(approvals);
+
+    return {
+      'Approval Status': _detailField((r) => r.status, detail.status ?? ''),
+      'Requested Date': formatDate(
+        request?.createdAt ?? detail.createdAt,
+      ),
+      'Last Updated': formatDate(
+        request?.updatedAt ?? detail.updatedAt,
+      ),
+      if (nextApprover.containsKey('department'))
+        'Department': nextApprover['department']!,
+      if (nextApprover.containsKey('section'))
+        'Section': nextApprover['section']!,
+      if (nextApprover.containsKey('name'))
+        'Approver Name': nextApprover['name']!,
+      if (nextApprover.containsKey('email'))
+        'Approver Email': nextApprover['email']!,
+    };
+  }
+
+  Map<String, String> buildTechnicalInformation() {
+    final detail = _detail;
+    final request = _detailRequest;
+
+    return {
+      'Extension Number': _detailField(
+        (r) => r.createdByUser?.extensionNumber?.toString(),
+        detail.createdByUser?.extensionNumber?.toString() ??
+            detail.extensionNumber ??
+            '',
+      ),
+    };
+  }
+
+  Map<String, String> resolveApproverMap(List<ApprovalDetailModel>? approvals) {
+    final map = <String, String>{};
+    final next = getNextApprovalDetails(approvals ?? []);
+    if (next == null) return map;
+
+    final name = next.approverUser?.employeeName;
+    if (name != null && name.isNotEmpty) {
+      map['name'] = name;
+    }
+
+    final email = next.approverUser?.email;
+    if (email != null && email.isNotEmpty) {
+      map['email'] = email;
+    }
+
+    final department = next.department?.departmentName;
+    if (department != null && department.isNotEmpty) {
+      map['department'] = department;
+    }
+
+    final section = next.section?.sectionName;
+    if (section != null && section.isNotEmpty) {
+      map['section'] = section;
+    }
+
+    final role = next.approverRole?.name;
+    if (role != null && role.isNotEmpty) {
+      map['role'] = role;
+    }
+
+    return map;
+  }
+
+  Future<void> openRequestDetails(
+    int id, {
+    bool fromActionItems = false,
+  }) async {
     updateRequestTab(0);
 
     await KAppX.router.push(
@@ -357,6 +877,11 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
     updateTabIndex(0);
   }
 
@@ -364,16 +889,15 @@ class _VSController extends StateNotifier<_ViewState> {
     await Future.wait([
       fetchKpi(),
       fetchApprovalKpi(),
-      fetchStatusBreakdown('monthly'),
+      fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
-      fetchApprovalStatusBreakdown('monthly'),
+      fetchApprovalStatusBreakdown('weekly'),
       fetchApprovalTrendBreakDown(DateTime.now().year.toString()),
     ]);
-    await fetchRequests(isRefresh: true);
-    await fetchActionItems(isRefresh: true);
+    refreshRequestLists();
   }
 
-  void openNewRequestForm(BuildContext context) {
+  void openNewRequestForm() {
     KAppX.router.push(
       RequestforTrainingRoomBookingRequestRoute(
         serviceId: service.id ?? 0,
@@ -382,124 +906,14 @@ class _VSController extends StateNotifier<_ViewState> {
         subService: subService,
       ),
     );
-    FocusScope.of(context).unfocus();
   }
 
   final requestForTrainingRoomBookingInstance =
       RequestForTrainingRoomBookingRepository();
   final securityAccessInstance = SecurityAccessRepoistory();
-  List<DynamicField> get trainingRoomBookingForm => [
-    /// -------- PURPOSE OF TRAINING --------
-    DynamicField(
-      name: 'purposeOfTraining',
-      label: 'Purpose of Training',
-      type: FieldType.textarea,
-      required: true,
-      placeholder: 'Write Here...',
-    ),
-
-    /// -------- DATE OF EVENT --------
-    DynamicField(
-      name: 'eventDate',
-      label: 'Date of Event',
-      type: FieldType.date,
-      required: true,
-    ),
-
-    /// -------- START TIME --------
-    DynamicField(
-      name: 'startTime',
-      label: 'Start Time',
-      type: FieldType.time,
-      required: true,
-    ),
-
-    /// -------- END TIME --------
-    DynamicField(
-      name: 'endTime',
-      label: 'End Time',
-      type: FieldType.time,
-      required: true,
-    ),
-
-    /// -------- CLASSROOM / TRAINING HALL --------
-    DynamicField(
-      name: 'trainingHallId',
-      label: 'Select Classroom / Training Hall',
-      type: FieldType.select,
-      required: true,
-      placeholder: 'Select Classroom / Training Hall',
-      options: const [
-        // Replace with API-driven options later
-        DropdownOption(
-          value: 'Classroom 1',
-          label: 'Classroom 1 (Capacity: 40 Persons)',
-        ),
-        DropdownOption(
-          value: 'Classroom 2',
-          label: 'Classroom 2 (Capacity: 40 Persons)',
-        ),
-        DropdownOption(
-          value: 'Classroom 3',
-          label: 'Classroom 3 (Capacity: 40 Persons)',
-        ),
-        DropdownOption(
-          value: 'Classroom 4',
-          label: 'Classroom 4 (Capacity: 40 Persons)',
-        ),
-        DropdownOption(
-          value: 'Training Centre Hall',
-          label: 'Training Centre Hall (Capacity: 100 Persons)',
-        ),
-      ],
-    ),
-
-    /// -------- NETWORK SUPPORT REQUIRED --------
-    DynamicField(
-      name: 'networkSupportRequired',
-      label: 'Network Support Required',
-      type: FieldType.radio,
-      required: false,
-      options: const ['Yes', 'No'],
-    ),
-
-    /// -------- MEALS REQUIRED --------
-    DynamicField(
-      name: 'mealsRequired',
-      label: 'Meals Required',
-      type: FieldType.radio,
-      required: false,
-      options: const ['Yes', 'No'],
-    ),
-
-    /// -------- NUMBER OF ATTENDEES --------
-    DynamicField(
-      name: 'numberOfAttendees',
-      label: 'Number of Attendees',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter',
-    ),
-
-    /// -------- REMARKS --------
-    DynamicField(
-      name: 'remarks',
-      label: 'Remarks',
-      type: FieldType.textarea,
-      required: false,
-      placeholder: 'Write Here...',
-    ),
-
-    /// -------- ATTACHMENTS --------
-    DynamicField(
-      name: 'attachments',
-      label: 'Attachments',
-      type: FieldType.file,
-      required: false,
-    ),
-  ];
 
   Future<void> fetchRequestDetailsById(int id) async {
+    state = state.copyWith(isLoading: true, requestDetailTab: 0);
     try {
       final requests = await requestForTrainingRoomBookingInstance
           .getRequestsById(
@@ -508,14 +922,17 @@ class _VSController extends StateNotifier<_ViewState> {
             subServiceId: subService.id ?? 0,
           );
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests);
+        state = state.copyWith(requestDetails: requests, isLoading: false);
         fetchChatById(id);
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      // optionally handle other errors
+      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
   }
@@ -883,9 +1300,9 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchActionItems();
       fetchRequests();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1293,48 +1710,34 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // Build attachments list
       final List<Map<String, dynamic>> attachments =
-          (values['attachment'] as List<FileUploadItem>? ?? [])
+          (values['attachments'] as List<FileUploadItem>? ?? [])
               .map((file) => file.toJson())
               .toList();
 
+      final startTime = values['startTime']?.toString() ?? '';
+      final endTime = values['endTime']?.toString() ?? '';
+
       /// -------- FINAL PAYLOAD (TRAINING ROOM BOOKING) --------
       final payload = {
-        // ================= USER / REQUEST INFO =================
-        "req_user_department_id": userData?.departmentId ?? 0,
-        "req_user_section_id": userData?.sectionId ?? 0,
-        "req_user_position_id": userInfo?.data?.position?.id ?? 0,
-
-        // ================= SERVICE INFO =================
-        "service_id": serviceId,
-        "sub_service_id": subServiceId,
-
-        // ================= TRAINING DETAILS =================
-        "purpose_of_training": values['purposeOfTraining'],
-        "date_of_event": values['eventDate'], // yyyy-MM-dd
-
-        "start_time": values['startTime'], // HH:mm:ss
-        "end_time": values['endTime'], // HH:mm:ss
-        // Derived / helper field (API expects this)
-        "timing_of_event": "${values['startTime']} - ${values['endTime']}",
-
-        // ================= ROOM DETAILS =================
-        "room_type": values['trainingHallId'],
-        // or values['trainingHallName'] if backend expects label
-
-        // ================= REQUIREMENTS =================
-        "network_support_required": values['networkSupportRequired'] == 'Yes',
-
-        "meals_required": values['mealsRequired'] == 'Yes',
-
-        // ================= ATTENDEES =================
-        "number_of_attendees":
+        'req_user_department_id': (userData?.departmentId ?? 0).toString(),
+        'req_user_section_id': (userData?.sectionId ?? 0).toString(),
+        'req_user_position_id': userInfo?.data?.position?.id ?? 0,
+        'service_id': serviceId,
+        'sub_service_id': subServiceId,
+        'purpose_of_training': values['purposeOfTraining'],
+        'date_of_event': values['startDate'],
+        'end_date_of_event': values['endDate'],
+        'start_time': startTime,
+        'end_time': endTime,
+        'timing_of_event': '$startTime - $endTime',
+        'room_type': values['trainingHallId'],
+        'network_support_required': values['networkSupportRequired'] == 'Yes',
+        'meals_required': values['mealsRequired'] == 'Yes',
+        'number_of_attendees':
             int.tryParse(values['numberOfAttendees']?.toString() ?? '0') ?? 0,
-
-        // ================= OPTIONAL =================
-        "remarks": values['remarks'] ?? "",
-
-        // ================= ATTACHMENTS =================
-        "attachments": attachments,
+        'name_of_participants': _buildNameOfParticipants(),
+        'remarks': values['remarks'] ?? '',
+        'attachments': attachments,
       };
 
       debugPrint("✅ Final Payload: $payload");
@@ -1347,13 +1750,12 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // Refresh dashboards
       fetchKpi();
-      // fetchStatusBreakdown('monthly');
+      // fetchStatusBreakdown('weekly');
       // fetchTrendBreakDown(DateTime.now().year.toString());
-      // fetchApprovalStatusBreakdown('monthly');
+      // fetchApprovalStatusBreakdown('weekly');
       // fetchApprovalTrendBreakDown(DateTime.now().year.toString());
       fetchApprovalKpi();
-      fetchRequests();
-      fetchActionItems();
+      refreshRequestLists();
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
     } finally {

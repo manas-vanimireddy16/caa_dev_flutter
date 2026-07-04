@@ -22,6 +22,28 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 
+List<dynamic> _extractPaginatedList(dynamic responseData) {
+  if (responseData is! Map) return const [];
+
+  final data = responseData['data'];
+
+  if (data is List &&
+      data.isNotEmpty &&
+      data.first is List) {
+    return data.first as List<dynamic>;
+  }
+
+  if (data is List) {
+    return data;
+  }
+
+  if (data is Map && data.containsKey('rows')) {
+    return data['rows'] as List<dynamic>? ?? const [];
+  }
+
+  return const [];
+}
+
 class RequestForTrainingRoomBookingRepositoryImple
     implements RequestForTrainingRoomBookingRepository {
   @override
@@ -461,12 +483,13 @@ class RequestForTrainingRoomBookingRepositoryImple
 
         if (response.statusCode == 200) {
           final data = response.data as Map<String, dynamic>;
-          final List<dynamic> list = data['data'];
+          final list = _extractPaginatedList(data);
 
           return list
+              .whereType<Map>()
               .map(
                 (e) => TrainingandDevelopmentRequestModel.fromJson(
-                  e as Map<String, dynamic>,
+                  Map<String, dynamic>.from(e),
                 ),
               )
               .toList();
@@ -521,19 +544,16 @@ class RequestForTrainingRoomBookingRepositoryImple
 
         if (response.statusCode == 200 && response.data != null) {
           final data = Map<String, dynamic>.from(response.data);
+          final list = _extractPaginatedList(data);
 
-          final List<dynamic> list = data['data'] ?? [];
-
-          /// Parse each Action Item
-          final actionItems = list
+          return list
+              .whereType<Map>()
               .map(
                 (item) => TrainingandDevelopmentRequestModel.fromJson(
-                  item as Map<String, dynamic>,
+                  Map<String, dynamic>.from(item),
                 ),
               )
               .toList();
-
-          return actionItems;
         } else {
           final errorMessage =
               response.data?['message'] ?? 'Unexpected error occurred';
@@ -724,7 +744,9 @@ class RequestForTrainingRoomBookingRepositoryImple
         final response = await client.get(url, queryParameters: queryParams);
 
         if (response.statusCode == 200) {
-          final Map<String, dynamic> json = response.data;
+          final Map<String, dynamic> json = response.data is Map
+              ? Map<String, dynamic>.from(response.data as Map)
+              : <String, dynamic>{};
 
           /// Convert JSON → Model
           final result = RequestDetailModel.fromJson(json);

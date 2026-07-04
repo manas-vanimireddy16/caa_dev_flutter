@@ -261,18 +261,24 @@ class RequestDetailData {
   final String? audience;
   final String? rejectionReason;
   final String? documentType;
+  final String? eventFromDate;
+  final String? eventToDate;
+  final String? eventName;
+  final String? tags;
 
   // ─────────────────────────────
   // TRAINING ROOM BOOKING FIELDS
   // ─────────────────────────────
   final String? purposeOfTraining;
   final String? dateOfEvent;
+  final String? endDateOfEvent;
   final String? startTime;
   final String? endTime;
   final String? roomType;
   final int? numberOfAttendees;
   final bool? networkSupportRequired;
   final bool? mealsRequired;
+  final List<String>? nameOfParticipants;
 
   /// ─────────────────────────────
   /// TRAINING DETAILS (MISSING FIELDS ADDED)
@@ -561,14 +567,20 @@ class RequestDetailData {
     this.audience,
     this.rejectionReason,
     this.documentType,
+    this.eventFromDate,
+    this.eventToDate,
+    this.eventName,
+    this.tags,
     this.purposeOfTraining,
     this.dateOfEvent,
+    this.endDateOfEvent,
     this.startTime,
     this.endTime,
     this.roomType,
     this.numberOfAttendees,
     this.networkSupportRequired,
     this.mealsRequired,
+    this.nameOfParticipants,
     this.courseName,
     this.noOfParticipants,
     this.courseCost,
@@ -682,9 +694,9 @@ class RequestDetailData {
   factory RequestDetailData.fromJson(
     Map<String, dynamic> json,
   ) => RequestDetailData(
-    request: json["request"] == null
-        ? null
-        : RequestModel.fromJson(json["request"]),
+    request: json["request"] != null
+        ? RequestModel.fromJson(json["request"])
+        : RequestModel.fromJson(json),
     risk: json['risks'] != null
         ? CyberSecurityRiskModel.fromJson(json['risks'] as Map<String, dynamic>)
         : null,
@@ -939,14 +951,22 @@ class RequestDetailData {
     audience: json['audience'],
     rejectionReason: json['rejection_reason'],
     documentType: json['document_event'],
+    eventFromDate: json['event_from_date'],
+    eventToDate: json['event_to_date'],
+    eventName: json['event_name'],
+    tags: json['tags']?.toString(),
     purposeOfTraining: json['purpose_of_training'],
     dateOfEvent: json['date_of_event'],
+    endDateOfEvent: json['end_date_of_event'],
     startTime: json['start_time'],
     endTime: json['end_time'],
     roomType: json['room_type'],
     numberOfAttendees: json['number_of_attendees'],
     networkSupportRequired: json['network_support_required'],
     mealsRequired: json['meals_required'],
+    nameOfParticipants: (json['name_of_participants'] as List?)
+        ?.map((e) => e.toString())
+        .toList(),
     courseName: json['course_name'],
     noOfParticipants: json['no_of_participants'],
     courseCost: json['course_cost'],
@@ -1294,18 +1314,24 @@ class RequestModel {
   final String? audience;
   final String? rejectionReason;
   final String? documentType;
+  final String? eventFromDate;
+  final String? eventToDate;
+  final String? eventName;
+  final String? tags;
 
   // ─────────────────────────────
   // TRAINING ROOM BOOKING FIELDS
   // ─────────────────────────────
   final String? purposeOfTraining;
   final String? dateOfEvent;
+  final String? endDateOfEvent;
   final String? startTime;
   final String? endTime;
   final String? roomType;
   final int? numberOfAttendees;
   final bool? networkSupportRequired;
   final bool? mealsRequired;
+  final List<String>? nameOfParticipants;
 
   /// ─────────────────────────────
   /// TRAINING DETAILS (MISSING FIELDS ADDED)
@@ -1739,14 +1765,20 @@ class RequestModel {
     this.audience,
     this.rejectionReason,
     this.documentType,
+    this.eventFromDate,
+    this.eventToDate,
+    this.eventName,
+    this.tags,
     this.purposeOfTraining,
     this.dateOfEvent,
+    this.endDateOfEvent,
     this.startTime,
     this.endTime,
     this.roomType,
     this.numberOfAttendees,
     this.networkSupportRequired,
     this.mealsRequired,
+    this.nameOfParticipants,
     this.courseName,
     this.noOfParticipants,
     this.courseCost,
@@ -2173,14 +2205,22 @@ class RequestModel {
       audience: json['audience'],
       rejectionReason: json['rejection_reason'],
       documentType: json['document_event'],
+      eventFromDate: json['event_from_date'],
+      eventToDate: json['event_to_date'],
+      eventName: json['event_name'],
+      tags: json['tags']?.toString(),
       purposeOfTraining: json['purpose_of_training'],
       dateOfEvent: json['date_of_event'],
+      endDateOfEvent: json['end_date_of_event'],
       startTime: json['start_time'],
       endTime: json['end_time'],
       roomType: json['room_type'],
       numberOfAttendees: json['number_of_attendees'],
       networkSupportRequired: json['network_support_required'],
       mealsRequired: json['meals_required'],
+      nameOfParticipants: (json['name_of_participants'] as List?)
+          ?.map((e) => e.toString())
+          .toList(),
       courseName: json['course_name'],
       noOfParticipants: json['no_of_participants'],
       courseCost: json['course_cost'],
