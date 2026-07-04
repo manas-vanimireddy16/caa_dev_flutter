@@ -304,7 +304,7 @@ class RequestForCoverageRepositoryImple
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.reportSecurityThreatApprovalStatusBreakdown,
+          ApiEndPoint.requestForCoverageApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -387,7 +387,7 @@ class RequestForCoverageRepositoryImple
         };
         queryParams.removeWhere((key, value) => value == null);
         final response = await client.get(
-          ApiEndPoint.requestForCoverageTrendBreakdown,
+          ApiEndPoint.requestForCoverageStatusBreakdown,
           queryParameters: queryParams,
         );
 
