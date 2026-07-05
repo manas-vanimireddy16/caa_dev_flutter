@@ -19,6 +19,7 @@ class RequestCard extends StatelessWidget {
   final String Function(String key)? fieldLabelBuilder;
   final String Function(String status)? statusLabelBuilder;
   final String Function(String id)? requestIdLabelBuilder;
+  final bool mapInProgressToPending;
 
   const RequestCard({
     super.key,
@@ -30,6 +31,7 @@ class RequestCard extends StatelessWidget {
     this.statusLabelBuilder,
     this.requestIdLabelBuilder,
     this.isShowClosed = false,
+    this.mapInProgressToPending = true,
   });
 
   String _resolveStatus(dynamic status) {
@@ -76,6 +78,16 @@ class RequestCard extends StatelessWidget {
     return null;
   }
 
+  bool _isInProgressStatus(String status) {
+    final normalized =
+        status.toLowerCase().replaceAll('_', ' ').replaceAll(' ', '');
+    return normalized == 'inprogress';
+  }
+
+  String _inProgressDisplayLabel() {
+    return statusLabelBuilder?.call('In Progress') ?? 'In Progress';
+  }
+
   String _statusLabel() {
     final status = _resolveStatus(_statusRawValue());
 
@@ -83,9 +95,11 @@ class RequestCard extends StatelessWidget {
       return 'Closed';
     }
 
-    // Show Pending when status is In Progress
-    if (status.toLowerCase().replaceAll('_', ' ') == 'in progress') {
-      return 'Pending';
+    if (_isInProgressStatus(status)) {
+      if (mapInProgressToPending) {
+        return statusLabelBuilder?.call('Pending') ?? 'Pending';
+      }
+      return _inProgressDisplayLabel();
     }
 
     return statusLabelBuilder?.call(status) ?? status;
@@ -169,9 +183,8 @@ class RequestCard extends StatelessWidget {
   Widget _buildFooter() {
     final status = _resolveStatus(_statusRawValue());
 
-    final chipStatus =
-        status.toLowerCase().replaceAll('_', ' ') == 'in progress'
-        ? 'Pending'
+    final chipStatus = _isInProgressStatus(status)
+        ? (mapInProgressToPending ? 'Pending' : 'in progress')
         : status;
 
     return Row(

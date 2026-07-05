@@ -60,6 +60,7 @@ import 'package:code_setup/presentation/common_widgets/request_list_search_style
 import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
 import 'package:code_setup/utils/helper/list_pagination.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
@@ -139,8 +140,9 @@ class _AppealAgainstAdministrativeDecisionsScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: const EdgeInsets.all(16),
         children: [
           /// KPI
@@ -155,10 +157,15 @@ class _AppealAgainstAdministrativeDecisionsScreenState
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
             title: l10n.requestsStatusBreakdown,
+            filterLabel: l10n.periodFilterLabels[0],
+            filterLabelList: l10n.periodFilterLabels,
             centerMetricLabel: l10n.totalRequests,
             legendHeading: l10n.breakdown,
             statusLabelBuilder: l10n.statusLabel,
-            onChanged: controller.onStatusFilterChanged,
+            preserveFilterLabelOnChange: true,
+            onChanged: (value) => controller.onStatusFilterChanged(
+              value != null ? l10n.periodFilterValue(value) : null,
+            ),
             breakdown: state.statusBreakdown.data,
           ),
           16.toVerticalSizedBox,

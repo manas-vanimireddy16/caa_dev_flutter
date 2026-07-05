@@ -45,10 +45,18 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
+import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
+import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
+import 'package:code_setup/utils/helper/list_pagination.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 part 'widgets/request_for_assign_a_task_to_employee.dart';
 part 'controller.dart';
@@ -76,12 +84,8 @@ class AssignaTasktoEmployeeScreen extends ConsumerStatefulWidget {
 }
 
 class _AssignaTasktoEmployeeScreenScreenState
-    extends ConsumerState<AssignaTasktoEmployeeScreen>
-    with SingleTickerProviderStateMixin {
-  late TextEditingController searchController;
+    extends ConsumerState<AssignaTasktoEmployeeScreen> {
   late FocusNode _focusNode;
-  late TabController _tabController;
-
   late _VSControllerParams _providerArgs;
   late PageController _pageController;
 
@@ -90,38 +94,17 @@ class _AssignaTasktoEmployeeScreenScreenState
     super.initState();
     _pageController = PageController();
 
-    /// ✅ Pass full objects (Service & SubService)
     _providerArgs = _VSControllerParams(
       service: widget.service,
       subService: widget.subService,
     );
 
-    /// Search controller
-    searchController = TextEditingController(
-      text: ref.read(searchQueryProvider),
-    );
-
     _focusNode = FocusNode();
-
-    searchController.addListener(() {
-      setState(() {}); // rebuild suffixIcon
-    });
-
-    /// Tabs
-    _tabController = TabController(length: 2, vsync: this);
-
-    _tabController.addListener(() {
-      ref
-          .read(_vsProvider(_providerArgs).notifier)
-          .updateTabIndex(_tabController.index);
-    });
   }
 
   @override
   void dispose() {
-    searchController.dispose();
     _focusNode.dispose();
-    _tabController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -138,16 +121,16 @@ class _AssignaTasktoEmployeeScreenScreenState
     // }
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       // appBar: KAppBar(title: const Text('Report Security Threat ')),
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
           // KPI Cards
           StatSummaryRow(
             stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -166,7 +149,7 @@ class _AssignaTasktoEmployeeScreenScreenState
             ),
             breakdown: state.statusBreakdown.data,
           ),
-
+          16.toVerticalSizedBox,
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
@@ -180,7 +163,7 @@ class _AssignaTasktoEmployeeScreenScreenState
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

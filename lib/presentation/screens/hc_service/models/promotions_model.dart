@@ -35,6 +35,13 @@ class PromotionsModel {
   final String? proposedJobTitle;
   final String? proposedSalaryGrade;
 
+  /// Annual Increment Details
+  final int? allowanceYear;
+  final String? effectiveDate;
+  final String? annualPeriodicAllowance;
+  final String? incrementPercentage;
+  final String? newBasicSalary;
+
   const PromotionsModel({
     required this.base,
     this.employeeName,
@@ -45,6 +52,11 @@ class PromotionsModel {
     this.proposedBasicSalary,
     this.proposedJobTitle,
     this.proposedSalaryGrade,
+    this.allowanceYear,
+    this.effectiveDate,
+    this.annualPeriodicAllowance,
+    this.incrementPercentage,
+    this.newBasicSalary,
   });
 
   factory PromotionsModel.fromJson(Map<String, dynamic>? json) {
@@ -65,6 +77,12 @@ class PromotionsModel {
       proposedBasicSalary: json['proposed_basic_salary'] as String?,
       proposedJobTitle: json['proposed_job_title'] as String?,
       proposedSalaryGrade: json['proposed_salary_grade'] as String?,
+
+      allowanceYear: json['allowance_year'] as int?,
+      effectiveDate: json['effective_date'] as String?,
+      annualPeriodicAllowance: json['annual_periodic_allowance']?.toString(),
+      incrementPercentage: json['increment_percentage']?.toString(),
+      newBasicSalary: json['new_basic_salary']?.toString(),
     );
   }
 }

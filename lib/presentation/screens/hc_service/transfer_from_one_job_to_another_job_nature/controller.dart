@@ -339,6 +339,11 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
   void refreshActionItemsList() => onActionItemsListRefresh?.call();
 
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
   void refreshActiveRequestList() {
     if (state.tabIndex == 0) {
       refreshMyRequestsList();
@@ -354,22 +359,19 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchKpi();
     fetchApprovalKpi();
     fetchUsers();
-    fetchLocations();
-    fetchStatusBreakdown('monthly');
+    fetchLocations();
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchpositionsList();
   }
 
-  int _searchVersion = 0;
-
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (currentVersion != _searchVersion) return;
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
       refreshActiveRequestList();
     });
   }
@@ -502,16 +504,35 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceId: subService.id ?? 0,
       ),
     );
+
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    }
+
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshActiveRequestList();
   }
 
   void openNewRequestForm() {
@@ -720,10 +741,11 @@ class _VSController extends StateNotifier<_ViewState> {
           );
 
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests);
-
-        fetchChatById(id);
-        fetchAttachmentsById(id);
+        state = state.copyWith(
+          requestDetails: requests,
+          chatById: requests.chatMessages ?? [],
+          attachmentsById: requests.attachments ?? [],
+        );
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
 
         /// ✅ CHECK ACTION TYPE HERE
@@ -756,35 +778,33 @@ class _VSController extends StateNotifier<_ViewState> {
     } catch (e) {}
   }
 
-  Future<void> fetchChatById(int id) async {
-    try {
-      final requests = await transferFromOneJobtoAnotherJobNatureInstance
-          .getchatById(id);
-      if (requests != null) {
-        state = state.copyWith(chatById: requests);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {
-      // optionally handle other errors
-      debugPrint(e.toString());
-    }
-  }
+  // Future<void> fetchChatById(int id) async {
+  //   try {
+  //     final requests = await transferFromOneJobtoAnotherJobNatureInstance
+  //         .getchatById(id);
+  //     if (requests != null) {
+  //       state = state.copyWith(chatById: requests);
+  //     }
+  //   } on ApiException catch (apiError) {
+  //     Fluttertoast.showToast(msg: apiError.message);
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //   }
+  // }
 
-  Future<void> fetchAttachmentsById(int id) async {
-    try {
-      final attachments = await transferFromOneJobtoAnotherJobNatureInstance
-          .getAttachmentsById(id);
-      if (attachments != null) {
-        state = state.copyWith(attachmentsById: attachments);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {
-      // optionally handle other errors
-      debugPrint(e.toString());
-    }
-  }
+  // Future<void> fetchAttachmentsById(int id) async {
+  //   try {
+  //     final attachments = await transferFromOneJobtoAnotherJobNatureInstance
+  //         .getAttachmentsById(id);
+  //     if (attachments != null) {
+  //       state = state.copyWith(attachmentsById: attachments);
+  //     }
+  //   } on ApiException catch (apiError) {
+  //     Fluttertoast.showToast(msg: apiError.message);
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //   }
+  // }
 
   Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
     if (attachmentId == 0) {
@@ -800,13 +820,7 @@ class _VSController extends StateNotifier<_ViewState> {
         requestId: effectiveRequestId,
       );
 
-      final updatedAttachments = state.attachmentsById
-          .where((attachment) => attachment.id != attachmentId)
-          .toList();
-      state = state.copyWith(attachmentsById: updatedAttachments);
-
       if (effectiveRequestId != null && effectiveRequestId != 0) {
-        await fetchAttachmentsById(effectiveRequestId);
         await fetchRequestDetailsById(effectiveRequestId);
       }
     } catch (e, st) {
@@ -931,7 +945,6 @@ class _VSController extends StateNotifier<_ViewState> {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {}
   }
-
 
   Future<List<JobTransferRequestModel>> loadMyRequestsPage(
     int pageKey, {
@@ -1105,13 +1118,13 @@ class _VSController extends StateNotifier<_ViewState> {
     required int approverId,
     required int requestId,
   }) {
-    final showDecionNumber = lastApprover(
-      state.requestDetails.approvalDetails ?? [],
-    );
+    // final showDecionNumber = lastApprover(
+    //   state.requestDetails.approvalDetails ?? [],
+    // );
     KAppX.extendedRouter.dialog.showKDialog(
       builder: (_) => ApprovalCommentDialog(
         type: type,
-        showDecisionNumber: showDecionNumber,
+        // showDecisionNumber: showDecionNumber,
         onSubmit: (comment, decisionNo) async {
           final status = type == ApprovalDialogType.approve
               ? ApprovalStatus.approved
@@ -1216,8 +1229,7 @@ class _VSController extends StateNotifier<_ViewState> {
           requestId,
         );
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
+      await fetchRequestDetailsById(requestId);
 
       /// 3️⃣ Clear UI state
       // chatController.clear();
@@ -1249,12 +1261,11 @@ class _VSController extends StateNotifier<_ViewState> {
       await transferFromOneJobtoAnotherJobNatureInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchActionItems();
-      fetchRequests();
+      refreshRequestLists();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1293,10 +1304,9 @@ class _VSController extends StateNotifier<_ViewState> {
       // 3️⃣ Send request
       await transferFromOneJobtoAnotherJobNatureInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
+      // KAppX.router.pop();
       KAppX.router.pop();
-      KAppX.router.pop();
-      await fetchActionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1319,8 +1329,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await transferFromOneJobtoAnotherJobNatureInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchActionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1652,19 +1661,22 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateTabIndex(int index) {
-    _myRequestsStatusFilter = '';
-    _actionItemsStatusFilter = '';
+    if (index == 0) {
+      _myRequestsStatusFilter = '';
+    } else {
+      _actionItemsStatusFilter = '';
+    }
     state = state.copyWith(tabIndex: index);
     if (index == 0) {
       refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
-      fetchTrendBreakDown('2026');
+      fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
       refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
-      fetchApprovalTrendBreakDown('2026');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }
 
@@ -1807,13 +1819,12 @@ class _VSController extends StateNotifier<_ViewState> {
         Future.delayed(Duration(seconds: 2));
 
         fetchKpi();
-        fetchStatusBreakdown('monthly');
+        fetchStatusBreakdown('weekly');
         fetchTrendBreakDown(DateTime.now().year.toString());
-        fetchApprovalStatusBreakdown('monthly');
+        fetchApprovalStatusBreakdown('weekly');
         fetchApprovalTrendBreakDown(DateTime.now().year.toString());
         fetchApprovalKpi();
-        fetchRequests();
-        fetchActionItems();
+        refreshRequestLists();
       }
       // Refresh dashboards
     } catch (e, st) {

@@ -509,13 +509,9 @@ class AnnualIncrementRepositoryImple implements AnnualIncrementRepository {
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {
-          'offset': offset.toString(),
-          'limit': limit.toString(),
-          'order_by': 'created_at',
-          'sort_order': 'DESC',
-          'service_id': serviceId,
-          'sub_service_id': subServiceId,
+        final queryParams = <String, dynamic>{
+          'offset': offset,
+          'limit': limit,
         };
 
         if (status.isNotEmpty) {
@@ -757,8 +753,10 @@ class AnnualIncrementRepositoryImple implements AnnualIncrementRepository {
         final url = ApiEndPoint.annualIncrementRequestById(id);
         final response = await client.get(url, queryParameters: queryParams);
 
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> json = response.data;
+        if (response.statusCode == 200 && response.data != null) {
+          final Map<String, dynamic> json = Map<String, dynamic>.from(
+            response.data as Map,
+          );
 
           /// Convert JSON → Model
           final result = RequestDetailModel.fromJson(json);
@@ -771,7 +769,10 @@ class AnnualIncrementRepositoryImple implements AnnualIncrementRepository {
       } else {
         return null;
       }
-    } catch (e) {
+    } on ApiException {
+      rethrow;
+    } catch (e, st) {
+      log('Failed to fetch $_serviceLabel request details: $e', stackTrace: st);
       throw ApiException('Failed to fetch $_serviceLabel data');
     }
   }

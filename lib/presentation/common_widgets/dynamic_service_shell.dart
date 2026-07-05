@@ -35,7 +35,88 @@ class DynamicServiceShell extends ConsumerStatefulWidget {
 }
 
 class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
-  bool _hasAppliedInitialSelection = false;
+  bool _hasScheduledInitialSelection = false;
+  bool _initialSelectionApplied = false;
+  int? _pendingInitialIndex;
+  final Set<int> _visitedTabIndices = <int>{0};
+
+  int _resolveInitialTabIndex(List<SubServiceDestination> destinations) {
+    final selectedCode =
+        (ref.read(selectedServiceProvider).subService.code ?? '').trim();
+    if (selectedCode.isEmpty) return 0;
+
+    final selectedIndex = destinations.indexWhere(
+      (destination) =>
+          (destination.subService.code ?? '').trim() == selectedCode,
+    );
+    if (selectedIndex < 0) return 0;
+
+    return selectedIndex + 1;
+  }
+
+  void _seedInitialTabVisit(List<SubServiceDestination> destinations) {
+    if (_pendingInitialIndex != null) return;
+
+    final initialIndex = _resolveInitialTabIndex(destinations);
+    _pendingInitialIndex = initialIndex;
+
+    if (widget.lazyLoadDashboard && initialIndex > 0) {
+      _visitedTabIndices
+        ..clear()
+        ..add(initialIndex);
+      return;
+    }
+
+    _visitedTabIndices.add(initialIndex);
+  }
+
+  void _scheduleInitialTabSelection(TabsRouter tabsRouter, int initialIndex) {
+    if (_hasScheduledInitialSelection) return;
+    _hasScheduledInitialSelection = true;
+
+    if (tabsRouter.activeIndex == initialIndex) {
+      _initialSelectionApplied = true;
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (tabsRouter.activeIndex != initialIndex) {
+        tabsRouter.setActiveIndex(initialIndex);
+      }
+      if (mounted) {
+        setState(() {
+          _initialSelectionApplied = true;
+        });
+      }
+    });
+  }
+
+  void _activateTab(TabsRouter tabsRouter, int index) {
+    final wasVisited = _visitedTabIndices.contains(index);
+    _visitedTabIndices.add(index);
+
+    if (!wasVisited && mounted) {
+      setState(() {});
+    }
+
+    if (tabsRouter.activeIndex != index) {
+      tabsRouter.setActiveIndex(index);
+    }
+  }
+
+  Widget _buildLazyTabBody(List<Widget> children, int activeIndex) {
+    return IndexedStack(
+      index: activeIndex,
+      sizing: StackFit.expand,
+      children: List.generate(children.length, (index) {
+        if (!_visitedTabIndices.contains(index)) {
+          return const SizedBox.shrink();
+        }
+        return children[index];
+      }),
+    );
+  }
 
   void _dismissKeyboard(BuildContext context) {
     FocusManager.instance.primaryFocus?.unfocus();
@@ -73,33 +154,26 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
       );
     }
 
+    _seedInitialTabVisit(destinations);
+    final initialIndex = _pendingInitialIndex ?? 0;
+
     return AutoTabsRouter.builder(
       routes: routes,
+      onRouterReady: (tabsRouter) {
+        _scheduleInitialTabSelection(tabsRouter, initialIndex);
+      },
       builder: (tabsContext, children, tabsRouter) {
-        if (!_hasAppliedInitialSelection) {
-          _hasAppliedInitialSelection = true;
-          final selected = ref.read(selectedServiceProvider);
-          final selectedCode = (selected.subService.code ?? '').trim();
-          final selectedIndex = destinations.indexWhere(
-            (destination) =>
-                (destination.subService.code ?? '').trim() == selectedCode,
-          );
-
-          if (selectedIndex >= 0) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted) return;
-              tabsRouter.setActiveIndex(selectedIndex + 1);
-            });
-          }
-        }
-
         final activeIndex = tabsRouter.activeIndex;
-        final activeTitle = activeIndex == 0
+        final bodyIndex = !_initialSelectionApplied && initialIndex > 0
+            ? initialIndex
+            : activeIndex;
+        final titleIndex = bodyIndex;
+        final activeTitle = titleIndex == 0
             ? l10n.dashboard
             : l10n.subServiceDisplayName(
                 englishName:
-                    destinations[activeIndex - 1].subService.subServiceName,
-                arabicName: destinations[activeIndex - 1]
+                    destinations[titleIndex - 1].subService.subServiceName,
+                arabicName: destinations[titleIndex - 1]
                     .subService
                     .arabicsubServiceName,
               );
@@ -190,7 +264,7 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
                             isSelected: activeIndex == 0,
                             currentTheme: theme,
                             onTap: () {
-                              tabsRouter.setActiveIndex(0);
+                              _activateTab(tabsRouter, 0);
                               _closeDrawer(context);
                             },
                           );
@@ -226,7 +300,7 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
                               service: widget.service,
                               subService: subService,
                             );
-                            tabsRouter.setActiveIndex(index);
+                            _activateTab(tabsRouter, index);
                             _closeDrawer(context);
                           },
                         );
@@ -237,13 +311,7 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
               ),
             ),
           ),
-          body: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            child: KeyedSubtree(
-              key: ValueKey(activeIndex),
-              child: children[activeIndex],
-            ),
-          ),
+          body: _buildLazyTabBody(children, bodyIndex),
         );
       },
     );

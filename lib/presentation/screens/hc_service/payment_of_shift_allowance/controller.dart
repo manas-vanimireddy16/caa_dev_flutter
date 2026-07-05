@@ -288,6 +288,11 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
   void refreshActionItemsList() => onActionItemsListRefresh?.call();
 
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
   void refreshActiveRequestList() {
     if (state.tabIndex == 0) {
       refreshMyRequestsList();
@@ -304,18 +309,17 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalStatusBreakdown('weekly');
+    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
 
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
-  int _searchVersion = 0;
-
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (currentVersion != _searchVersion) return;
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
       refreshActiveRequestList();
     });
   }
@@ -517,16 +521,34 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    }
+
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshActiveRequestList();
   }
 
   void openNewRequestForm() {
@@ -555,11 +577,12 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests, isLoading: false);
-        // fetchAssignEmployeesList();
-
-        fetchChatById(id);
-        fetchAttachmentsById(id);
+        state = state.copyWith(
+          requestDetails: requests,
+          isLoading: false,
+          chatById: (requests.chatMessages ?? []).reversed.toList(),
+          attachmentsById: requests.attachments ?? [],
+        );
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
 
         /// ✅ CHECK ACTION TYPE HERE
@@ -568,7 +591,6 @@ class _VSController extends StateNotifier<_ViewState> {
           requests.approvalDetails ?? [],
         );
         if (actionType == ActionButtonsType.assignReject) {
-          // fetchAssignEmployeesList();
           debugPrint('this user can only approve');
         }
       }
@@ -580,34 +602,32 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchChatById(int id) async {
-    try {
-      final requests = await shiftAllowanceInstance.getchatById(id);
-      if (requests != null) {
-        final chats = requests.reversed.toList();
-        state = state.copyWith(chatById: chats);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {
-      // optionally handle other errors
-      debugPrint(e.toString());
-    }
-  }
+  // Future<void> fetchChatById(int id) async {
+  //   try {
+  //     final requests = await shiftAllowanceInstance.getchatById(id);
+  //     if (requests != null) {
+  //       final chats = requests.reversed.toList();
+  //       state = state.copyWith(chatById: chats);
+  //     }
+  //   } on ApiException catch (apiError) {
+  //     Fluttertoast.showToast(msg: apiError.message);
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //   }
+  // }
 
-  Future<void> fetchAttachmentsById(int id) async {
-    try {
-      final attachments = await shiftAllowanceInstance.getAttachmentsById(id);
-      if (attachments != null) {
-        state = state.copyWith(attachmentsById: attachments);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {
-      // optionally handle other errors
-      debugPrint(e.toString());
-    }
-  }
+  // Future<void> fetchAttachmentsById(int id) async {
+  //   try {
+  //     final attachments = await shiftAllowanceInstance.getAttachmentsById(id);
+  //     if (attachments != null) {
+  //       state = state.copyWith(attachmentsById: attachments);
+  //     }
+  //   } on ApiException catch (apiError) {
+  //     Fluttertoast.showToast(msg: apiError.message);
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //   }
+  // }
 
   Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
     if (attachmentId == 0) {
@@ -623,13 +643,7 @@ class _VSController extends StateNotifier<_ViewState> {
         requestId: effectiveRequestId,
       );
 
-      final updatedAttachments = state.attachmentsById
-          .where((attachment) => attachment.id != attachmentId)
-          .toList();
-      state = state.copyWith(attachmentsById: updatedAttachments);
-
       if (effectiveRequestId != null && effectiveRequestId != 0) {
-        await fetchAttachmentsById(effectiveRequestId);
         await fetchRequestDetailsById(effectiveRequestId);
       }
     } catch (e, st) {
@@ -1103,9 +1117,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await shiftAllowanceInstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchRequestDetailsById(requestId);
-      fetchAttachmentsById(requestId);
+      await fetchRequestDetailsById(requestId);
 
       /// 3️⃣ Clear UI state
       // chatController.clear();
@@ -1137,8 +1149,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await shiftAllowanceInstance.onAssignRejectClose(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchactionItems();
-      fetchRequests();
+      refreshRequestLists();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
@@ -1647,8 +1658,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await shiftAllowanceInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1927,8 +1937,11 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateTabIndex(int index) {
-    _myRequestsStatusFilter = '';
-    _actionItemsStatusFilter = '';
+    if (index == 0) {
+      _myRequestsStatusFilter = '';
+    } else {
+      _actionItemsStatusFilter = '';
+    }
     state = state.copyWith(tabIndex: index);
     if (index == 0) {
       refreshMyRequestsList();
@@ -2075,8 +2088,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests(isRefresh: true);
-    fetchactionItems();
+    refreshRequestLists();
   }
 
   @override

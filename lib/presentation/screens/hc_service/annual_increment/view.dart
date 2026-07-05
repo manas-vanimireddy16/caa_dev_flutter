@@ -11,6 +11,7 @@ import 'package:code_setup/presentation/common_widgets/request_details/chat.dart
 import 'package:code_setup/presentation/common_widgets/request_details/common_attachments.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/common_request_details.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/common_workflow.dart';
 import 'package:code_setup/presentation/common_widgets/dialog_config.dart';
@@ -43,7 +44,6 @@ import 'package:code_setup/presentation/screens/hc_service/models/grade_list_mod
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/promotions_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/user_model.dart';
-import 'package:code_setup/presentation/screens/logistics/widgets/profileCard.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
@@ -58,6 +58,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
+import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -123,14 +126,15 @@ class _AnnualIncrementScreenState extends ConsumerState<AnnualIncrementScreen> {
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(16),
         children: [
           StatSummaryRow(
             stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
           RequestStatusBreakdownCard(
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
@@ -147,6 +151,7 @@ class _AnnualIncrementScreenState extends ConsumerState<AnnualIncrementScreen> {
             ),
             breakdown: state.statusBreakdown.data,
           ),
+          16.toVerticalSizedBox,
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
@@ -154,12 +159,13 @@ class _AnnualIncrementScreenState extends ConsumerState<AnnualIncrementScreen> {
             monthLabels: state.months,
             title: l10n.requestTrendBreakdown,
             metric: l10n.totalRequests,
+            selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

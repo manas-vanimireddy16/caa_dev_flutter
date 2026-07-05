@@ -69,6 +69,10 @@ import 'package:file_picker/file_picker.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
+import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:flutter/services.dart';
 // import 'package:flutter/rendering.dart' hide Border;
 // import 'package:flutter/services.dart';
@@ -77,9 +81,8 @@ import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+import 'package:code_setup/presentation/common_widgets/administrative_decision/administrative_decision_data.dart';
+import 'package:code_setup/presentation/common_widgets/administrative_decision/administrative_decision_pdf_service.dart';
 import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
 // part 'widgets/request_vehicle_new_request.dart';
@@ -148,19 +151,22 @@ class _ServiceTransferScreenState extends ConsumerState<ServiceTransferScreen> {
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(16),
         children: [
           /// KPI
           StatSummaryRow(
             stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
-            data: controller.currentStatusBreakdownList,
+            data: state.tabIndex == 0
+                ? controller.statusBreakdownList
+                : controller.approvalStatusBreakdownList,
             title: l10n.requestsStatusBreakdown,
             filterLabel: l10n.periodFilterLabels[0],
             filterLabelList: l10n.periodFilterLabels,
@@ -173,7 +179,7 @@ class _ServiceTransferScreenState extends ConsumerState<ServiceTransferScreen> {
             ),
             breakdown: controller.currentStatusBreakdownData,
           ),
-
+          16.toVerticalSizedBox,
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
@@ -187,7 +193,7 @@ class _ServiceTransferScreenState extends ConsumerState<ServiceTransferScreen> {
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

@@ -66,7 +66,7 @@ abstract final class AdministrativeDecisionPdfService {
       AdministrativeDecisionDocumentType.temporaryAssignment =>
         'Temporary_Assignment_Decision',
       AdministrativeDecisionDocumentType.serviceTransfer =>
-        'Service_Transfer_Decision',
+        'Service_Transfer',
       AdministrativeDecisionDocumentType.shiftAllowance =>
         'Shift_Allowance_Decision',
     };
@@ -96,10 +96,11 @@ abstract final class AdministrativeDecisionPdfService {
           decisionNumber,
     );
     final fromEntity = _safe(
-      request.fromEntity ??
-          request.currentEntity ??
-          nested?.fromEntity,
+      request.fromEntity ?? request.currentEntity ?? nested?.fromEntity,
     );
+    final currentEntity = _safe(request.currentEntity ?? fromEntity);
+    final directorate = _safe(request.directorateName);
+    final section = _safe(request.reqSection?.sectionName);
     final currentJobPosition = _safe(
       request.currentJobPosition ?? nested?.currentJobPosition,
     );
@@ -125,7 +126,7 @@ abstract final class AdministrativeDecisionPdfService {
         AdministrativeDecisionArticle(
           title: 'المادة الأولى:',
           body:
-              'يُكلف الفاضل/$employeeName رقمه ($employeeNumber) الشاغل لوظيفة "$fromEntity" إضافة إلى عمله الأصلي القيام بأعمال "$jobPosition" خلال الفترة من $startDate إلى $endDate',
+              'يُكلف الفاضل/$employeeName رقمه ($employeeNumber) الشاغل لوظيفة "$currentJobPosition" إضافة إلى عمله الأصلي القيام بأعمال "$assignedJobPosition" خلال الفترة من $startDate إلى $endDate',
         ),
         const AdministrativeDecisionArticle(
           title: 'المادة الثانية:',
@@ -162,11 +163,11 @@ abstract final class AdministrativeDecisionPdfService {
         AdministrativeDecisionArticle(
           title: 'المادة الأولى:',
           body:
-              'ينقل الفاضل/$employeeName رقمه ($employeeNumber) من "$fromEntity" إلى الجهة المنقول إليها اعتباراً من $startDate',
+              'ينقل الفاضل/$employeeName رقمه ($employeeNumber) الشاغل لوظيفة "$currentJobPosition" من "$currentEntity" إلى "$assignedJobPosition" بمديرية "$directorate" بقسم "$section"',
         ),
         const AdministrativeDecisionArticle(
           title: 'المادة الثانية:',
-          body: 'يلغى كل ما يخالف هذا القرار ، وعلى جهات الاختصاص تنفيذه.',
+          body: 'على جهات الاختصاص تنفيذ هذا القرار اعتبارا من تاريخ صدوره.',
         ),
       ],
       AdministrativeDecisionDocumentType.shiftAllowance => [
@@ -190,7 +191,8 @@ abstract final class AdministrativeDecisionPdfService {
       documentTitle: title,
       articles: articles,
       issuedDate: issuedDate,
-      approverNote: type == AdministrativeDecisionDocumentType.secondment
+      approverNote: type == AdministrativeDecisionDocumentType.secondment ||
+              type == AdministrativeDecisionDocumentType.serviceTransfer
           ? null
           : 'الموافق: NA',
     );

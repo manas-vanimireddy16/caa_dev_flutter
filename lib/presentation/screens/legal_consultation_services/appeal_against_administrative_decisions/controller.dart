@@ -517,7 +517,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> refreshAfterReturn() async {
     await Future.wait([
       fetchKpi(),
-      fetchStatusBreakdown('weekly'),
+      fetchStatusBreakdown('monthly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
     refreshActiveRequestList();
@@ -1589,13 +1589,13 @@ class _VSController extends StateNotifier<_ViewState> {
     if (index == 0) {
       refreshMyRequestsList();
       fetchKpi();
-      fetchStatusBreakdown('weekly');
-      fetchTrendBreakDown('2026');
+      fetchStatusBreakdown('monthly');
+      fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
       refreshActionItemsList();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('weekly');
-      fetchApprovalTrendBreakDown('2026');
+      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }
 

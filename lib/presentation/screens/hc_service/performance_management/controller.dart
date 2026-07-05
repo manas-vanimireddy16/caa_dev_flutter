@@ -359,6 +359,11 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
   void refreshActionItemsList() => onActionItemsListRefresh?.call();
 
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
   void refreshActiveRequestList() {
     if (state.tabIndex == 0) {
       refreshMyRequestsList();
@@ -372,6 +377,7 @@ class _VSController extends StateNotifier<_ViewState> {
     titleController = TextEditingController();
     searchController = TextEditingController();
     fetchKpi();
+    fetchApprovalKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchbyCycleGoals(cycle: 'Jan-Jun');
@@ -560,16 +566,34 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    }
+
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshActiveRequestList();
   }
 
   void openNewRequestForm() {
@@ -1687,19 +1711,23 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateTabIndex(int index) {
-    _myRequestsStatusFilter = '';
-    _actionItemsStatusFilter = '';
+    if (index == 0) {
+      _myRequestsStatusFilter = '';
+    } else {
+      _actionItemsStatusFilter = '';
+    }
     state = state.copyWith(tabIndex: index);
+
     if (index == 0) {
       refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
-      fetchTrendBreakDown('2026');
+      fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
       refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
-      fetchApprovalTrendBreakDown('2026');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }
 

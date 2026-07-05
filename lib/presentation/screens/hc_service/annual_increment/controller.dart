@@ -347,6 +347,11 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
   void refreshActionItemsList() => onActionItemsListRefresh?.call();
 
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
   void refreshActiveRequestList() {
     if (state.tabIndex == 0) {
       refreshMyRequestsList();
@@ -362,10 +367,10 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchKpi();
     fetchApprovalKpi();
     fetchUsers();
-    fetchLocations();
-    fetchStatusBreakdown('monthly');
+    fetchLocations();
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchpositionsList();
   }
@@ -466,26 +471,22 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, String> buildRequestCardData(PromotionsModel item) {
     final approverMap = resolveApproverMap(item.base.approvalDetails);
 
+    final effectiveDate = item.effectiveDate?.contains('T') == true
+        ? item.effectiveDate!.split('T').first
+        : item.effectiveDate;
+
     return {
       'Request Id': item.base.id?.toString() ?? '-',
       'status': item.base.status ?? '-',
       'Request By': item.base.createdByUser?.employeeName ?? '-',
-
-      /// ================= EMPLOYEE INFO =================
       'Employee ID': item.employeeId ?? '-',
       'Employee Name': item.employeeName ?? '-',
-
-      /// ================= CURRENT DETAILS =================
-      'Current Job Title': item.currentJobTitle ?? '-',
-      'Current Salary Grade': item.currentSalaryGrade ?? '-',
+      'Allowance Year': item.allowanceYear?.toString() ?? '-',
+      'Effective Date': effectiveDate ?? '-',
+      'Annual Periodic Allowance': item.annualPeriodicAllowance ?? '-',
       'Current Basic Salary': item.currentBasicSalary ?? '-',
-
-      /// ================= PROPOSED DETAILS =================
-      'Proposed Job Title': item.proposedJobTitle ?? '-',
-      'Proposed Salary Grade': item.proposedSalaryGrade ?? '-',
-      'Proposed Basic Salary': item.proposedBasicSalary ?? '-',
-
-      /// 👇 APPROVER (SINGLE LINE)
+      'Increment Percentage': item.incrementPercentage ?? '-',
+      'New Basic Salary': item.newBasicSalary ?? '-',
       if (approverMap.containsKey('role')) ...{
         'Approver': approverMap['role'] ?? '-',
       } else if (approverMap.containsKey('department')) ...{
@@ -494,31 +495,43 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
-  Map<String, String> buildRequestInformationData() {
-    final request = state.requestDetails;
-    return {
-      /// ───── RIGHT COLUMN ─────
-      "Service Type": request?.service?.name ?? 'N/A',
+  RequestModel? get _detailRequest => state.requestDetails.request;
 
-      /// ───── LEFT COLUMN ─────
-      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      "Position to be Filled": request?.positionToBeFilled ?? 'N/A',
-      "Grade": request?.grade ?? 'N/A',
-      "Role / Title of Resource": request?.roleTitle ?? 'N/A',
-      "Education Requirements": request?.educationRequirements ?? 'N/A',
-      "Required Skills / Expertise": request?.requiredSkills ?? 'N/A',
-      "Number of Years of Experience": request?.yearsOfExperience ?? 'N/A',
-      "Job Description": request?.jobDescription ?? 'N/A',
+  String _formatDetailDate(String? value) {
+    if (value == null || value.isEmpty) return 'N/A';
+    return value.contains('T') ? value.split('T').first : value;
+  }
+
+  Map<String, String> buildRequestInformationData() {
+    final request = _detailRequest;
+    final details = state.requestDetails;
+    return {
+      'Employee Name': request?.employeeName ?? details.employeeName ?? 'N/A',
+      'Employee ID': request?.employeeId ?? details.employeeId ?? 'N/A',
+      'Allowance Year': request?.year?.toString() ?? 'N/A',
+      'Effective Date': _formatDetailDate(request?.effectiveFromDate),
+      'Annual Periodic Allowance': request?.allowanceValue ?? 'N/A',
+      'Current Basic Salary': request?.currentBasicSalary ?? 'N/A',
+      'Increment Percentage': request?.allowancePercentage ?? 'N/A',
+      'New Basic Salary': request?.proposedBasicSalary ?? 'N/A',
+      'Service Type': request?.service?.name ?? details.service?.name ?? 'N/A',
+      'Sub Service Type':
+          request?.subService?.subServiceName ??
+          details.subService?.subServiceName ??
+          'N/A',
     };
   }
 
   Map<String, String> buildStatusInformation() {
-    final request = state.requestDetails;
-    final approvals = request.approvalDetails;
+    final request = _detailRequest;
+    final details = state.requestDetails;
+    final approvals = details.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
     return {
-      "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
+      "Approval Status": request?.status ?? details.status ?? 'N/A',
+      "Requested Date": _formatDetailDate(
+        request?.createdAt ?? details.createdAt,
+      ),
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))
@@ -534,10 +547,13 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildTechnicalInformation() {
-    final request = state.requestDetails;
+    final request = _detailRequest;
+    final details = state.requestDetails;
     return {
       'Extension Number':
-          request?.createdByUser?.extensionNumber.toString() ?? '0',
+          request?.createdByUser?.extensionNumber?.toString() ??
+          details.createdByUser?.extensionNumber?.toString() ??
+          '0',
     };
   }
 
@@ -569,16 +585,44 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    } else {
+      MyRequestsTabPageSyncRegistry.syncToTab(
+        serviceId: service.id,
+        subServiceId: subService.id,
+        index: 0,
+      );
+      refreshMyRequestsList();
+    }
+
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
+      fetchApprovalKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
+      fetchApprovalStatusBreakdown('weekly'),
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshActiveRequestList();
   }
 
   void openNewRequestForm() {
@@ -692,23 +736,23 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests, isLoading: false);
+        state = state.copyWith(requestDetails: requests);
 
         fetchChatById(id);
         fetchAttachmentsById(id);
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
 
-        /// ✅ CHECK ACTION TYPE HERE
-        final actionType = getActionButtonsType(
-          requests,
-          requests.approvalDetails ?? [],
-        );
+        getActionButtonsType(requests, requests.approvalDetails ?? []);
+      } else {
+        Fluttertoast.showToast(msg: 'Failed to load request details');
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
+      Fluttertoast.showToast(msg: 'Failed to load request details');
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -917,7 +961,6 @@ class _VSController extends StateNotifier<_ViewState> {
       state = state.copyWith(isLoading: false);
     }
   }
-
 
   Future<List<PromotionsModel>> loadMyRequestsPage(
     int pageKey, {
@@ -1225,12 +1268,11 @@ class _VSController extends StateNotifier<_ViewState> {
       await annualIncrementInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchActionItems();
-      fetchRequests();
+      refreshRequestLists();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1271,10 +1313,9 @@ class _VSController extends StateNotifier<_ViewState> {
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
-      await fetchActionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1297,8 +1338,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await annualIncrementInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchActionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1626,19 +1666,22 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateTabIndex(int index) {
-    _myRequestsStatusFilter = '';
-    _actionItemsStatusFilter = '';
+    if (index == 0) {
+      _myRequestsStatusFilter = '';
+    } else {
+      _actionItemsStatusFilter = '';
+    }
     state = state.copyWith(tabIndex: index);
     if (index == 0) {
       refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
-      fetchTrendBreakDown('2026');
+      fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
       refreshActionItemsList();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
-      fetchApprovalTrendBreakDown('2026');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }
 
@@ -1710,27 +1753,14 @@ class _VSController extends StateNotifier<_ViewState> {
               .toList();
       debugPrint("✅ Attachments: $attachments");
 
-      /// -------- FINAL PAYLOAD (PAYMENT OF SHIFT ALLOWANCE) --------
       final payload = {
-        // ================= SERVICE INFO =================
-        "service_id": serviceId,
-        "sub_service_id": subServiceId,
-
-        // ================= PROMOTION DETAILS =================
-        "employee_id": values['employee_id'],
-        "employee_name": values['employeeName'],
-
-        "current_job_title": values['current_job_title'],
-        "proposed_job_title": values['proposed_job_title'],
-
-        "current_salary_grade": values['current_salary_grade'],
-        "proposed_salary_grade": values['proposed_salary_grade'],
-
-        "current_basic_salary": values['current_basic_salary'],
-        "proposed_basic_salary": values['proposed_basic_salary'],
-
-        // ================= ATTACHMENTS =================
-        "attachments": attachments,
+        'service_id': serviceId,
+        'sub_service_id': subServiceId,
+        'employee_id': values['employee_id'],
+        'employee_name': values['employee_name'],
+        'annual_periodic_allowance': values['annual_periodic_allowance'],
+        'effective_date': values['date'],
+        'attachments': attachments,
       };
 
       debugPrint("✅ Final Payload: $payload");
@@ -1745,13 +1775,12 @@ class _VSController extends StateNotifier<_ViewState> {
         Future.delayed(Duration(seconds: 3));
 
         fetchKpi();
-        fetchStatusBreakdown('monthly');
+        fetchStatusBreakdown('weekly');
         fetchTrendBreakDown(DateTime.now().year.toString());
-        fetchApprovalStatusBreakdown('monthly');
+        fetchApprovalStatusBreakdown('weekly');
         fetchApprovalTrendBreakDown(DateTime.now().year.toString());
         fetchApprovalKpi();
-        fetchRequests();
-        fetchActionItems();
+        refreshRequestLists();
       }
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');

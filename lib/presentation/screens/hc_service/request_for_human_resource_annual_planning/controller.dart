@@ -394,6 +394,12 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
   void refreshActionItemsList() => onActionItemsListRefresh?.call();
 
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+    fetchApprovalKpi();
+  }
+
   void refreshActiveRequestList() {
     if (state.tabIndex == 0) {
       refreshMyRequestsList();
@@ -407,19 +413,19 @@ class _VSController extends StateNotifier<_ViewState> {
     titleController = TextEditingController();
     searchController = TextEditingController();
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchApprovalKpi();
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalStatusBreakdown('weekly');
+    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
-  int _searchVersion = 0;
-
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
-    final int currentVersion = ++_searchVersion;
 
-    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
-      if (currentVersion != _searchVersion) return;
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
       refreshActiveRequestList();
     });
   }
@@ -501,9 +507,9 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request By': item.base.createdByUser?.employeeName ?? '-',
       // 'Cycle Period': item.cyclePeriod ?? '-',
       'Request Submission Date': item.base.createdAt.toString(),
-      'Extension Number': item.extensionNumber ?? '-',
-      'Tasks Related to Projects': item.tasks?.first.toString() ?? '-',
-      'Quarter': item.quater ?? '-',
+      // 'Extension Number': item.extensionNumber ?? '-',
+      // 'Tasks Related to Projects': item.tasks?.first.toString() ?? '-',
+      // 'Quarter': item.quater ?? '-',
       // 'Year': item.year?.toString() ?? '-',
 
       /// ================= EMPLOYEE INFO =================
@@ -602,16 +608,34 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    }
+
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshActiveRequestList();
   }
 
   void openNewRequestForm() {
@@ -786,7 +810,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     if (sheet.maxRows <= 1) return "Excel empty";
 
-    final freqList = ['Daily', 'Weekly', 'Monthly', 'Quarterly'];
+    final freqList = ['Daily', 'Weekly', 'weekly', 'Quarterly'];
     final durList = ['Minutes', 'Hours', 'Quarter'];
 
     final newList = [...state.hrTasks];
@@ -857,10 +881,12 @@ class _VSController extends StateNotifier<_ViewState> {
           );
 
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests, isLoading: false);
-
-        fetchChatById(id);
-        fetchAttachmentsById(id);
+        state = state.copyWith(
+          requestDetails: requests,
+          isLoading: false,
+          chatById: requests.chatMessages ?? [],
+          attachmentsById: requests.attachments ?? [],
+        );
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
 
         /// ✅ CHECK ACTION TYPE HERE
@@ -889,36 +915,34 @@ class _VSController extends StateNotifier<_ViewState> {
     } catch (e) {}
   }
 
-  Future<void> fetchChatById(int id) async {
-    try {
-      final requests = await humanResourceAnnualPlanningInstance.getchatById(
-        id,
-      );
-      if (requests != null) {
-        state = state.copyWith(chatById: requests);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {
-      // optionally handle other errors
-      debugPrint(e.toString());
-    }
-  }
+  // Future<void> fetchChatById(int id) async {
+  //   try {
+  //     final requests = await humanResourceAnnualPlanningInstance.getchatById(
+  //       id,
+  //     );
+  //     if (requests != null) {
+  //       state = state.copyWith(chatById: requests);
+  //     }
+  //   } on ApiException catch (apiError) {
+  //     Fluttertoast.showToast(msg: apiError.message);
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //   }
+  // }
 
-  Future<void> fetchAttachmentsById(int id) async {
-    try {
-      final attachments = await humanResourceAnnualPlanningInstance
-          .getAttachmentsById(id);
-      if (attachments != null) {
-        state = state.copyWith(attachmentsById: attachments);
-      }
-    } on ApiException catch (apiError) {
-      Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {
-      // optionally handle other errors
-      debugPrint(e.toString());
-    }
-  }
+  // Future<void> fetchAttachmentsById(int id) async {
+  //   try {
+  //     final attachments = await humanResourceAnnualPlanningInstance
+  //         .getAttachmentsById(id);
+  //     if (attachments != null) {
+  //       state = state.copyWith(attachmentsById: attachments);
+  //     }
+  //   } on ApiException catch (apiError) {
+  //     Fluttertoast.showToast(msg: apiError.message);
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //   }
+  // }
 
   Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
     if (attachmentId == 0) {
@@ -934,13 +958,7 @@ class _VSController extends StateNotifier<_ViewState> {
         requestId: effectiveRequestId,
       );
 
-      final updatedAttachments = state.attachmentsById
-          .where((attachment) => attachment.id != attachmentId)
-          .toList();
-      state = state.copyWith(attachmentsById: updatedAttachments);
-
       if (effectiveRequestId != null && effectiveRequestId != 0) {
-        await fetchAttachmentsById(effectiveRequestId);
         await fetchRequestDetailsById(effectiveRequestId);
       }
     } catch (e, st) {
@@ -1088,7 +1106,6 @@ class _VSController extends StateNotifier<_ViewState> {
       state = state.copyWith(isLoading: false);
     }
   }
-
 
   Future<List<HumanResourceAnnualPlanningModel>> loadMyRequestsPage(
     int pageKey, {
@@ -1392,8 +1409,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await humanResourceAnnualPlanningInstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
+      await fetchRequestDetailsById(requestId);
 
       /// 3️⃣ Clear UI state
       // chatController.clear();
@@ -1425,12 +1441,11 @@ class _VSController extends StateNotifier<_ViewState> {
       await humanResourceAnnualPlanningInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchactionItems();
-      fetchRequests();
+      refreshRequestLists();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
@@ -1471,10 +1486,9 @@ class _VSController extends StateNotifier<_ViewState> {
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1497,8 +1511,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await humanResourceAnnualPlanningInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchactionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1826,19 +1839,22 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateTabIndex(int index) {
-    _myRequestsStatusFilter = '';
-    _actionItemsStatusFilter = '';
+    if (index == 0) {
+      _myRequestsStatusFilter = '';
+    } else {
+      _actionItemsStatusFilter = '';
+    }
     state = state.copyWith(tabIndex: index);
     if (index == 0) {
       refreshMyRequestsList();
       fetchKpi();
       fetchStatusBreakdown('weekly');
-      fetchTrendBreakDown('2026');
+      fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
       refreshActionItemsList();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
-      fetchApprovalTrendBreakDown('2026');
+      fetchApprovalStatusBreakdown('weekly');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }
 
@@ -1965,13 +1981,12 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void _refreshDashboard() {
     fetchKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
-    fetchRequests();
-    fetchactionItems();
+    refreshRequestLists();
   }
 
   @override

@@ -289,6 +289,11 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  void _setState(_ViewState newState) {
+    if (!mounted) return;
+    state = newState;
+  }
+
   void initState() {
     chatController = TextEditingController();
     titleController = TextEditingController();
@@ -519,7 +524,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> fetchApprovalTrendBreakDown(String period) async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return;
+    _setState(state.copyWith(isLoading: true));
 
     try {
       final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
@@ -530,19 +536,23 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceIds: subServiceIds,
       );
 
+      if (!mounted) return;
       if (data != null) {
-        state = state.copyWith(approvalTrendData: data, isLoading: false);
+        _setState(state.copyWith(approvalTrendData: data, isLoading: false));
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
-      state = state.copyWith(isLoading: false);
+      _setState(state.copyWith(isLoading: false));
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      if (!mounted) return;
+      _setState(state.copyWith(isLoading: false));
     }
   }
 
   Future<void> fetchApprovalStatusBreakdown(String period) async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return;
+    _setState(state.copyWith(isLoading: true));
 
     try {
       final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
@@ -554,23 +564,29 @@ class _VSController extends StateNotifier<_ViewState> {
             subServiceIds: subServiceIds,
           );
 
+      if (!mounted) return;
       if (statusBreakdown != null) {
-        state = state.copyWith(
-          approvalStatusBreakdown: statusBreakdown,
-          isLoading: false,
+        _setState(
+          state.copyWith(
+            approvalStatusBreakdown: statusBreakdown,
+            isLoading: false,
+          ),
         );
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
-      state = state.copyWith(isLoading: false);
+      _setState(state.copyWith(isLoading: false));
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      if (!mounted) return;
+      _setState(state.copyWith(isLoading: false));
       debugPrint(e.toString());
     }
   }
 
   Future<void> fetchStatusBreakdown(String period) async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return;
+    _setState(state.copyWith(isLoading: true));
 
     try {
       final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
@@ -581,23 +597,29 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceIds: subServiceIds,
       );
 
+      if (!mounted) return;
       if (statusBreakdown != null) {
-        state = state.copyWith(
-          statusBreakdown: statusBreakdown,
-          isLoading: false,
+        _setState(
+          state.copyWith(
+            statusBreakdown: statusBreakdown,
+            isLoading: false,
+          ),
         );
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
-      state = state.copyWith(isLoading: false);
+      _setState(state.copyWith(isLoading: false));
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      if (!mounted) return;
+      _setState(state.copyWith(isLoading: false));
       debugPrint(e.toString());
     }
   }
 
   Future<void> fetchTrendBreakDown(String period) async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return;
+    _setState(state.copyWith(isLoading: true));
 
     try {
       final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
@@ -608,19 +630,23 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceIds: subServiceIds,
       );
 
+      if (!mounted) return;
       if (data != null) {
-        state = state.copyWith(trendData: data, isLoading: false);
+        _setState(state.copyWith(trendData: data, isLoading: false));
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
-      state = state.copyWith(isLoading: false);
+      _setState(state.copyWith(isLoading: false));
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      if (!mounted) return;
+      _setState(state.copyWith(isLoading: false));
     }
   }
 
   Future<void> fetchKpi() async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return;
+    _setState(state.copyWith(isLoading: true));
 
     try {
       final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
@@ -630,19 +656,23 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceIds: subServiceIds,
       );
 
+      if (!mounted) return;
       if (kpis != null) {
-        state = state.copyWith(kpiData: kpis, isLoading: false);
+        _setState(state.copyWith(kpiData: kpis, isLoading: false));
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
-      state = state.copyWith(isLoading: false);
+      _setState(state.copyWith(isLoading: false));
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      if (!mounted) return;
+      _setState(state.copyWith(isLoading: false));
     }
   }
 
   Future<void> fetchApprovalKpi() async {
-    state = state.copyWith(isLoading: true);
+    if (!mounted) return;
+    _setState(state.copyWith(isLoading: true));
 
     try {
       final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
@@ -652,14 +682,17 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceIds: subServiceIds,
       );
 
+      if (!mounted) return;
       if (kpis != null) {
-        state = state.copyWith(approvalKpiData: kpis, isLoading: false);
+        _setState(state.copyWith(approvalKpiData: kpis, isLoading: false));
       }
     } on ApiException catch (apiError) {
+      if (!mounted) return;
       Fluttertoast.showToast(msg: apiError.message);
-      state = state.copyWith(isLoading: false);
+      _setState(state.copyWith(isLoading: false));
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      if (!mounted) return;
+      _setState(state.copyWith(isLoading: false));
     }
   }
 
@@ -711,7 +744,8 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isRequestLoading: true);
+    if (!mounted) return;
+    _setState(state.copyWith(isRequestLoading: true));
 
     try {
       final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
@@ -725,14 +759,16 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceIds: subServiceIds,
       );
 
-      state = state.copyWith(
-        requestData: requests,
-        // serviceIds: serviceIds,
-        // subServiceIds: subServiceIds,
-        isRequestLoading: false,
+      if (!mounted) return;
+      _setState(
+        state.copyWith(
+          requestData: requests,
+          isRequestLoading: false,
+        ),
       );
     } catch (e) {
-      state = state.copyWith(isRequestLoading: false);
+      if (!mounted) return;
+      _setState(state.copyWith(isRequestLoading: false));
       Fluttertoast.showToast(msg: e.toString());
     }
   }
@@ -742,11 +778,12 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
-    state = state.copyWith(isActionItemLoading: true);
+    if (!mounted) return;
+    _setState(state.copyWith(isActionItemLoading: true));
 
     try {
       if (isRefresh || status.isNotEmpty) {
-        state = state.copyWith(actionItems: []);
+        _setState(state.copyWith(actionItems: []));
       }
 
       final (serviceIds, subServiceIds) = getServiceAndSubServiceIds();
@@ -760,14 +797,16 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceIds: subServiceIds,
       );
 
-      state = state.copyWith(
-        actionItems: items,
-        // serviceIds: serviceIds,
-        // subServiceIds: subServiceIds,
-        isActionItemLoading: false,
+      if (!mounted) return;
+      _setState(
+        state.copyWith(
+          actionItems: items,
+          isActionItemLoading: false,
+        ),
       );
     } catch (e) {
-      state = state.copyWith(isActionItemLoading: false);
+      if (!mounted) return;
+      _setState(state.copyWith(isActionItemLoading: false));
       Fluttertoast.showToast(msg: e.toString());
     }
   }

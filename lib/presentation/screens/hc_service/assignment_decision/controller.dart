@@ -1185,7 +1185,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // }
       await _refreshDashboard();
       if (isRequestApproved()) {
-        await generateTemporaryAssignmentPdf();
+        await generateAssignmentDecisionPdf();
       }
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
@@ -1200,7 +1200,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return true;
   }
 
-  Future<void> generateTemporaryAssignmentPdf() async {
+  Future<void> generateAssignmentDecisionPdf() async {
     final request = state.requestDetails;
     final data = AdministrativeDecisionPdfService.dataFromRequestDetails(
       type: AdministrativeDecisionDocumentType.assignment,

@@ -1,4 +1,4 @@
-part of 'view.dart';
+﻿part of 'view.dart';
 
 final selectedrequesteventTabProvider = StateProvider<int>((ref) => 0);
 
@@ -240,7 +240,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   String requestListStatusFilterLabel(String status, DashboardL10n l10n) {
     if (status.isEmpty) {
-      return l10n.isArabic ? 'الكل' : 'All';
+      return l10n.isArabic ? 'Ø§Ù„ÙƒÙ„' : 'All';
     }
     return l10n.statusLabel(status);
   }
@@ -280,6 +280,11 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshMyRequestsList() => onMyRequestsListRefresh?.call();
   void refreshActionItemsList() => onActionItemsListRefresh?.call();
 
+  void refreshRequestLists() {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+  }
+
   void refreshActiveRequestList() {
     if (state.tabIndex == 0) {
       refreshMyRequestsList();
@@ -296,7 +301,8 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    // fetchbyCycleGoals(cycle: 'Jan-Jun');
+    fetchApprovalStatusBreakdown('weekly');
+    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
   }
 
   int _searchVersion = 0;
@@ -468,7 +474,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ================= EMPLOYEE INFO =================
 
-      /// 👇 APPROVER (SINGLE LINE)
+      /// ðŸ‘‡ APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
         'Approver': approverMap['role'] ?? '-',
       } else if (approverMap.containsKey('department')) ...{
@@ -480,10 +486,10 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails;
     return {
-      /// ───── RIGHT COLUMN ─────
+      /// â”€â”€â”€â”€â”€ RIGHT COLUMN â”€â”€â”€â”€â”€
       "Service Type": request?.service?.name ?? 'N/A',
 
-      /// ───── LEFT COLUMN ─────
+      /// â”€â”€â”€â”€â”€ LEFT COLUMN â”€â”€â”€â”€â”€
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
       "Assigned Employee Name": request?.assignedEmployeeName ?? 'N/A',
       "Current Job Position": request?.currentJobPosition ?? 'N/A',
@@ -574,16 +580,44 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    } else {
+      MyRequestsTabPageSyncRegistry.syncToTab(
+        serviceId: service.id,
+        subServiceId: subService.id,
+        index: 0,
+      );
+      refreshMyRequestsList();
+    }
+
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
-      fetchRequests(),
       fetchKpi(),
+      fetchApprovalKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
+      fetchApprovalStatusBreakdown('weekly'),
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString()),
     ]);
+    refreshActiveRequestList();
   }
 
   void openNewRequestForm() {
@@ -615,7 +649,7 @@ class _VSController extends StateNotifier<_ViewState> {
         // fetchAttachmentsById(id);
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
 
-        /// ✅ CHECK ACTION TYPE HERE
+        /// âœ… CHECK ACTION TYPE HERE
         final actionType = getActionButtonsType(
           requests,
           requests.approvalDetails ?? [],
@@ -967,7 +1001,7 @@ class _VSController extends StateNotifier<_ViewState> {
             requestId,
             comment.trim(), // always safe
             status.apiValue,
-            decisionNo, // ✅ backend-safe string
+            decisionNo, // âœ… backend-safe string
           );
         },
       ),
@@ -994,7 +1028,7 @@ class _VSController extends StateNotifier<_ViewState> {
       String? fileType;
       String? fileSize;
 
-      /// 1️⃣ Upload attachment if exists
+      /// 1ï¸âƒ£ Upload attachment if exists
       if (hasAttachment) {
         final localFile = state.attachments.first;
 
@@ -1018,7 +1052,7 @@ class _VSController extends StateNotifier<_ViewState> {
       }
 
       /// ------------------------------------------------------------
-      /// CASE 1️⃣ : ONLY ATTACHMENT (NO MESSAGE)
+      /// CASE 1ï¸âƒ£ : ONLY ATTACHMENT (NO MESSAGE)
       /// ------------------------------------------------------------
       if (!hasMessage && hasAttachment) {
         final payload = {
@@ -1031,13 +1065,13 @@ class _VSController extends StateNotifier<_ViewState> {
           "file_size": fileSize,
         };
 
-        debugPrint('📎 Attachment-only payload: $payload');
+        debugPrint('ðŸ“Ž Attachment-only payload: $payload');
 
         await serviceTransferInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
-      /// CASE 2️⃣ : CHAT (with OR without attachment)
+      /// CASE 2ï¸âƒ£ : CHAT (with OR without attachment)
       /// ------------------------------------------------------------
       if (hasMessage) {
         final payload = {
@@ -1052,7 +1086,7 @@ class _VSController extends StateNotifier<_ViewState> {
           "file_size": hasAttachment ? fileSize : null,
         };
 
-        debugPrint('💬 Chat payload: $payload');
+        debugPrint('ðŸ’¬ Chat payload: $payload');
 
         await serviceTransferInstance.sendChat(payload, requestId);
       }
@@ -1060,11 +1094,11 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchRequestDetailsById(requestId);
       fetchAttachmentsById(requestId);
 
-      /// 3️⃣ Clear UI state
+      /// 3ï¸âƒ£ Clear UI state
       // chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
-      debugPrint('❌ Failed to send chat: $e');
+      debugPrint('âŒ Failed to send chat: $e');
       debugPrintStack(stackTrace: st);
       rethrow;
     }
@@ -1074,9 +1108,9 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1️⃣ Upload files
+      // 1ï¸âƒ£ Upload files
 
-      // 2️⃣ Build payload
+      // 2ï¸âƒ£ Build payload
       final payload = {
         "request_id": requestId,
         "status": "Completed",
@@ -1084,9 +1118,9 @@ class _VSController extends StateNotifier<_ViewState> {
         "approval_id": approverId,
       };
 
-      debugPrint("✅ Final Payload: $payload");
+      debugPrint("âœ… Final Payload: $payload");
 
-      // 3️⃣ Send request
+      // 3ï¸âƒ£ Send request
       // await serviceTransferInstance.onAssignRejectClose(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
@@ -1099,7 +1133,7 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
-      debugPrint('❌ Error submitting request: $e');
+      debugPrint('âŒ Error submitting request: $e');
     } finally {
       state = state.copyWith(isLoading: false);
     }
@@ -1116,9 +1150,9 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1️⃣ Upload files
+      // 1ï¸âƒ£ Upload files
 
-      // 2️⃣ Build payload
+      // 2ï¸âƒ£ Build payload
       final payload = {
         "request_id": requestId,
         "status": status,
@@ -1129,9 +1163,9 @@ class _VSController extends StateNotifier<_ViewState> {
         payload['decision_number'] = decisionNo;
       }
 
-      debugPrint("✅ Final Payload: $payload");
+      debugPrint("âœ… Final Payload: $payload");
 
-      // 3️⃣ Send request
+      // 3ï¸âƒ£ Send request
       await serviceTransferInstance.onApprove(payload);
       // await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
@@ -1140,13 +1174,13 @@ class _VSController extends StateNotifier<_ViewState> {
       // }
       await fetchRequestDetailsById(requestId);
       if (isRequestApproved()) {
-        await generateTemporaryAssignmentPdf();
+        await generateServiceTransferPdf();
       }
       fetchApprovalKpi();
 
       await _refreshDashboard();
     } catch (e) {
-      debugPrint('❌ Error submitting request: $e');
+      debugPrint('âŒ Error submitting request: $e');
     } finally {
       state = state.copyWith(isLoading: false);
     }
@@ -1158,322 +1192,18 @@ class _VSController extends StateNotifier<_ViewState> {
     return true;
   }
 
-  Future<void> generateTemporaryAssignmentPdf() async {
-    try {
-      final request = state.requestDetails;
-      final pdf = pw.Document();
-      final logos = await Future.wait([
-        _loadPdfImage('assets/images/pdfimage1.png'),
-        _loadPdfImage('assets/images/pdfimage.png'),
-        _loadPdfImage('assets/images/caa_logo.png'),
-      ]);
-
-      final decisionNumber = _safePdfValue(request.decisionNumber);
-      final employeeName = _safePdfValue(
-        request.assignedEmployeeName ?? request.employeeName,
-      );
-      final fromEntity = _safePdfValue(
-        request.fromEntity ?? request.currentEntity,
-      );
-      final toEntity = _safePdfValue(
-        request.toEntity ?? request.transferredToEntity,
-      );
-      final jobPosition = _safePdfValue(
-        request.assignedJobPosition ?? request.currentJobPosition,
-      );
-      final startDate = _formatPdfDate(request.startDate);
-      final endDate = _formatPdfDate(request.endDate);
-      final issuedDate = _getLastApproverDate();
-      final regularFont = await PdfGoogleFonts.notoNaskhArabicRegular();
-      final boldFont = await PdfGoogleFonts.notoNaskhArabicBold();
-      pdf.addPage(
-        pw.Page(
-          pageFormat: PdfPageFormat.a4,
-          margin: const pw.EdgeInsets.only(
-            top: 20,
-            left: 28,
-            right: 28,
-            bottom: 35,
-          ),
-          build: (context) {
-            final normalStyle = pw.TextStyle(
-              font: regularFont,
-              fontSize: 10.5,
-              height: 1.7,
-              // font: regularFont,
-              color: PdfColors.black,
-            );
-
-            final boldStyle = pw.TextStyle(
-              font: boldFont,
-              fontSize: 11,
-              fontWeight: pw.FontWeight.bold,
-              // font: boldFont,
-            );
-
-            final titleStyle = pw.TextStyle(
-              font: boldFont,
-              fontSize: 17,
-              fontWeight: pw.FontWeight.bold,
-            );
-
-            return pw.Directionality(
-              textDirection: pw.TextDirection.rtl,
-              child: pw.Container(
-                height: PdfPageFormat.a4.availableHeight,
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-                  children: [
-                    /// ================= HEADER =================
-                    pw.Directionality(
-                      textDirection: pw.TextDirection.ltr,
-                      child: pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          _logo(logos[0], width: 88, height: 58),
-
-                          _logo(logos[1], width: 95, height: 58),
-
-                          _logo(logos[2], width: 120, height: 72),
-                        ],
-                      ),
-                    ),
-
-                    pw.SizedBox(height: 14),
-
-                    pw.Container(height: 1.2, color: PdfColors.black),
-
-                    pw.SizedBox(height: 26),
-
-                    /// ================= TITLE =================
-                    pw.Center(
-                      child: pw.Text('قرار إداري رقم', style: titleStyle),
-                    ),
-
-                    pw.SizedBox(height: 24),
-
-                    /// ================= INTRO =================
-                    pw.Padding(
-                      padding: const pw.EdgeInsets.symmetric(horizontal: 12),
-                      child: pw.Text(
-                        'استناداً إلى قانون الخدمة المدنية الصادر بالمرسوم السلطاني رقم (٢٠٠٤/١٢٠)، وإلى نظام هيئة الطيران المدني الصادر بالمرسوم السلطاني رقم (٢٠١٣/٤٣)، وإلى اللائحة التنفيذية لقانون الخدمة المدنية الصادرة بالقرار رقم (٢٠١٠/٩)، وإلى خطاب الرئيس التنفيذي لمطارات عمان رقم ....... بتاريخ ......... وبناءً على ما تقتضيه مصلحة العمل.',
-                        style: normalStyle,
-                        textAlign: pw.TextAlign.center,
-                      ),
-                    ),
-
-                    pw.SizedBox(height: 18),
-
-                    pw.Divider(thickness: 0.6, color: PdfColors.grey400),
-
-                    pw.SizedBox(height: 30),
-
-                    /// ================= TQRR =================
-                    pw.Center(
-                      child: pw.Text(
-                        'تقرر',
-                        style: pw.TextStyle(
-                          font: boldFont,
-                          fontSize: 15,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    pw.SizedBox(height: 35),
-
-                    /// ================= ARTICLES =================
-                    _reactArticle(
-                      title: 'المادة الأولى:',
-                      body:
-                          'إعارة الفاضل/ $employeeName من هيئة الطيران المدني إلى $toEntity لوظيفة $jobPosition وذلك اعتباراً من تاريخ $startDate إلى تاريخ $endDate',
-                      titleStyle: boldStyle,
-                      bodyStyle: normalStyle,
-                    ),
-
-                    pw.SizedBox(height: 26),
-
-                    _reactArticle(
-                      title: 'المادة الثانية:',
-                      body:
-                          'تتحمل هيئة الطيران المدني الراتب والمخصصات المالية المذكور خلال فترة الإعارة مع إيقاف طبيعة عمل وبدل المناوبة.',
-                      titleStyle: boldStyle,
-                      bodyStyle: normalStyle,
-                    ),
-
-                    pw.SizedBox(height: 26),
-
-                    _reactArticle(
-                      title: 'المادة الثالثة:',
-                      body: 'على جهات الاختصاص تنفيذ هذا القرار.',
-                      titleStyle: boldStyle,
-                      bodyStyle: normalStyle,
-                    ),
-
-                    /// THIS IS THE IMPORTANT FIX
-                    /// pushes footer naturally like HTML flex
-                    pw.Spacer(),
-
-                    /// ================= SIGNATURE =================
-                    pw.Align(
-                      alignment: pw.Alignment.centerRight,
-                      child: pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.end,
-                        children: [
-                          pw.Text('صدر في $issuedDate', style: normalStyle),
-
-                          pw.SizedBox(height: 16),
-
-                          pw.Text('الموافق : NA', style: normalStyle),
-
-                          pw.SizedBox(height: 30),
-
-                          pw.Text(
-                            'م. نايف بن علي بن حمد العبري',
-                            style: boldStyle,
-                          ),
-
-                          pw.SizedBox(height: 4),
-
-                          pw.Text(
-                            'رئيس هيئة الطيران المدني',
-                            style: normalStyle,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    pw.SizedBox(height: 38),
-
-                    /// ================= FOOTER =================
-                    pw.Divider(thickness: 0.6, color: PdfColors.grey400),
-
-                    pw.SizedBox(height: 8),
-
-                    pw.Directionality(
-                      textDirection: pw.TextDirection.ltr,
-                      child: pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Column(
-                            crossAxisAlignment: pw.CrossAxisAlignment.start,
-                            children: [
-                              pw.Text(
-                                'صندوق البريد: ١١١ الرمز البريدي: ١١١ - مسقط - سلطنة عمان',
-                                style: pw.TextStyle(
-                                  fontSize: 6.5,
-                                  color: PdfColors.grey700,
-                                ),
-                              ),
-
-                              pw.SizedBox(height: 2),
-
-                              pw.Text(
-                                'Fax: +968 23368884 - www.caa.gov.om - 24354435 968+ / 24354433 968+',
-                                style: pw.TextStyle(
-                                  fontSize: 6.5,
-                                  color: PdfColors.grey700,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          pw.Text(
-                            'P.C.: 111, Muscat - Sultanate of Oman',
-                            style: pw.TextStyle(
-                              fontSize: 6.5,
-                              color: PdfColors.grey700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      );
-      final pdfBytes = await pdf.save();
-      final requestId = request.id?.toString() ?? 'NA';
-      final fileDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-      final fileName =
-          'Temporary_Assignment_Decision_${requestId}_$fileDate.pdf';
-
-      await FilePicker.platform.saveFile(fileName: fileName, bytes: pdfBytes);
-      Fluttertoast.showToast(msg: 'PDF downloaded successfully');
-    } catch (e, st) {
-      debugPrint('Failed to generate temporary assignment PDF: $e');
-      debugPrintStack(stackTrace: st);
-      Fluttertoast.showToast(msg: 'Error generating PDF. Please try again.');
-    }
-  }
-
-  Future<pw.MemoryImage> _loadPdfImage(String assetPath) async {
-    final bytes = await rootBundle.load(assetPath);
-    return pw.MemoryImage(bytes.buffer.asUint8List());
-  }
-
-  pw.Widget _reactArticle({
-    required String title,
-    required String body,
-    required pw.TextStyle titleStyle,
-    required pw.TextStyle bodyStyle,
-  }) {
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.end,
-      children: [
-        pw.Align(
-          alignment: pw.Alignment.centerRight,
-          child: pw.Text(title, style: titleStyle),
-        ),
-
-        pw.SizedBox(height: 12),
-
-        pw.Padding(
-          padding: const pw.EdgeInsets.only(left: 15),
-          child: pw.Text(body, style: bodyStyle, textAlign: pw.TextAlign.right),
-        ),
-      ],
+  Future<void> generateServiceTransferPdf() async {
+    final request = state.requestDetails;
+    final data = AdministrativeDecisionPdfService.dataFromRequestDetails(
+      type: AdministrativeDecisionDocumentType.serviceTransfer,
+      request: request,
+      issuedDate: _getLastApproverDate(),
     );
-  }
-
-  pw.Widget _logo(
-    pw.MemoryImage image, {
-    required double width,
-    required double height,
-  }) {
-    return pw.Image(
-      image,
-      width: width,
-      height: height,
-      fit: pw.BoxFit.contain,
+    await AdministrativeDecisionPdfService.savePdf(
+      data: data,
+      type: AdministrativeDecisionDocumentType.serviceTransfer,
+      requestId: request.id?.toString() ?? 'NA',
     );
-  }
-
-  pw.Widget _article({
-    required String title,
-    required String body,
-    required pw.TextStyle textStyle,
-    required pw.TextStyle boldStyle,
-  }) {
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.end,
-      children: [
-        pw.Text(title, style: boldStyle),
-        pw.SizedBox(height: 8),
-        pw.Text(body, style: textStyle, textAlign: pw.TextAlign.right),
-      ],
-    );
-  }
-
-  String _safePdfValue(Object? value) {
-    if (value == null) return 'N/A';
-    final text = value.toString().trim();
-    return text.isEmpty ? 'N/A' : text;
   }
 
   String _formatPdfDate(String? value) {
@@ -1522,21 +1252,21 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1️⃣ Upload files
+      // 1ï¸âƒ£ Upload files
 
-      // 2️⃣ Build payload
+      // 2ï¸âƒ£ Build payload
       final payload = {"request_id": requestId, "status": "In Progress"};
 
-      debugPrint("✅ Final Payload: $payload");
+      debugPrint("âœ… Final Payload: $payload");
 
-      // 3️⃣ Send request
+      // 3ï¸âƒ£ Send request
       // await serviceTransferInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
       await fetchRequests();
     } catch (e) {
-      debugPrint('❌ Error submitting request: $e');
+      debugPrint('âŒ Error submitting request: $e');
     } finally {
       state = state.copyWith(isLoading: false);
     }
@@ -1560,61 +1290,61 @@ class _VSController extends StateNotifier<_ViewState> {
     debugPrint('User Section ID: ${selectedRole?.sectionId}');
     debugPrint('------------------------------------------------');
 
-    /// 1️⃣ Delegate always allowed
+    /// 1ï¸âƒ£ Delegate always allowed
     if (approval.delegateUserId == userId) {
-      debugPrint('✅ Allowed: User is delegate approver');
+      debugPrint('âœ… Allowed: User is delegate approver');
       return true;
     }
 
-    /// 2️⃣ Approver user rule
+    /// 2ï¸âƒ£ Approver user rule
     if (approval.approverUserId != null && approval.approverUserId != userId) {
       debugPrint(
-        '❌ Denied: Approver User ID mismatch (${approval.approverUserId} != $userId)',
+        'âŒ Denied: Approver User ID mismatch (${approval.approverUserId} != $userId)',
       );
       return false;
     }
 
-    /// 3️⃣ Role must match
+    /// 3ï¸âƒ£ Role must match
     if (approval.approverRoleId != null &&
         approval.approverRoleId != selectedRole?.roleId) {
       debugPrint(
-        '❌ Denied: Role mismatch (${approval.approverRoleId} != ${selectedRole?.roleId})',
+        'âŒ Denied: Role mismatch (${approval.approverRoleId} != ${selectedRole?.roleId})',
       );
       return false;
     }
 
-    /// 4️⃣ Department must match
+    /// 4ï¸âƒ£ Department must match
     if (approval.departmentId != null &&
         approval.departmentId != selectedRole?.departmentId) {
       debugPrint(
-        '❌ Denied: Department mismatch (${approval.departmentId} != ${selectedRole?.departmentId})',
+        'âŒ Denied: Department mismatch (${approval.departmentId} != ${selectedRole?.departmentId})',
       );
       return false;
     }
 
-    /// 5️⃣ Section must match
+    /// 5ï¸âƒ£ Section must match
     if (approval.sectionId != null &&
         approval.sectionId != selectedRole?.sectionId) {
       debugPrint(
-        '❌ Denied: Section mismatch (${approval.sectionId} != ${selectedRole?.sectionId})',
+        'âŒ Denied: Section mismatch (${approval.sectionId} != ${selectedRole?.sectionId})',
       );
       return false;
     }
 
-    debugPrint('✅ Allowed: User can act on this approval level');
+    debugPrint('âœ… Allowed: User can act on this approval level');
 
     return true;
   }
 
   ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
-    // 1️⃣ Prefer IN PROGRESS approval
+    // 1ï¸âƒ£ Prefer IN PROGRESS approval
     for (final a in list) {
       if (a.approvalStatus?.toLowerCase() == 'in progress') {
         return a;
       }
     }
 
-    // 2️⃣ Fallback → highest approved / assigned level
+    // 2ï¸âƒ£ Fallback â†’ highest approved / assigned level
     return getActiveApprovalLevel(list);
   }
 
@@ -1627,12 +1357,12 @@ class _VSController extends StateNotifier<_ViewState> {
       final status = approval.approvalStatus?.toLowerCase();
       final level = approval.level ?? -1;
 
-      // 1️⃣ IN PROGRESS always wins
+      // 1ï¸âƒ£ IN PROGRESS always wins
       if (status == 'in progress') {
         return approval;
       }
 
-      // 2️⃣ ONLY approved / assigned participate in comparison
+      // 2ï¸âƒ£ ONLY approved / assigned participate in comparison
       if (status == 'approved' || status == 'assigned') {
         if (highestLevelCandidate == null ||
             level > (highestLevelCandidate.level ?? -1)) {
@@ -1689,13 +1419,13 @@ class _VSController extends StateNotifier<_ViewState> {
   void updateButtonDisabledFromApprovals(List<ApprovalDetailModel> approvals) {
     final active = getActiveApprovalLevel(approvals);
 
-    // No active approval → disable
+    // No active approval â†’ disable
     if (active == null) {
       state = state.copyWith(isButtonDisabled: true);
       return;
     }
 
-    // If active approval is NOT allowed → disable
+    // If active approval is NOT allowed â†’ disable
     if (active.isAllowed != null && active.isAllowed != true) {
       state = state.copyWith(isButtonDisabled: true);
       return;
@@ -1703,7 +1433,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     final status = active.approvalStatus?.toLowerCase();
 
-    // ✅ Disable ONLY if ACTIVE is approved or assigned
+    // âœ… Disable ONLY if ACTIVE is approved or assigned
     final shouldDisable = status == 'approved' || status == 'assigned';
 
     state = state.copyWith(isButtonDisabled: shouldDisable);
@@ -1732,7 +1462,7 @@ class _VSController extends StateNotifier<_ViewState> {
       return {};
     }
 
-    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    /// 1ï¸âƒ£ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
     final pendingList = approvals
         .where((a) => _isPendingOrInProgress(a.approvalStatus))
         .toList();
@@ -1741,7 +1471,7 @@ class _VSController extends StateNotifier<_ViewState> {
       pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
       final next = pendingList.first;
 
-      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
+      /// ðŸ”¹ RULE 1: approverId EXISTS â†’ NAME + EMAIL
       if (next.approverRoleId != null) {
         final name = next.approverUser?.employeeName;
         final email = next.approverUser?.email;
@@ -1756,7 +1486,7 @@ class _VSController extends StateNotifier<_ViewState> {
         }
       }
 
-      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
+      /// ðŸ”¹ RULE 2: approverId NULL â†’ DEPARTMENT + SECTION
       final department = next.department?.departmentName;
       final section = next.section?.sectionName;
 
@@ -1770,7 +1500,7 @@ class _VSController extends StateNotifier<_ViewState> {
       return {};
     }
 
-    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
+    /// 2ï¸âƒ£ ALL COMPLETED â†’ LAST APPROVER (NAME + EMAIL)
     final completedList = approvals
         .where((a) => _isCompleted(a.approvalStatus))
         .toList();
@@ -1813,8 +1543,11 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateTabIndex(int index) {
-    _myRequestsStatusFilter = '';
-    _actionItemsStatusFilter = '';
+    if (index == 0) {
+      _myRequestsStatusFilter = '';
+    } else {
+      _actionItemsStatusFilter = '';
+    }
     state = state.copyWith(tabIndex: index);
     if (index == 0) {
       refreshMyRequestsList();
@@ -1853,7 +1586,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     final file = result.files.first;
 
-    /// ❌ SIZE CHECK
+    /// âŒ SIZE CHECK
     if (file.size > maxFileSizeInBytes) {
       Fluttertoast.showToast(msg: "File size must be less than 10 MB");
       return;
@@ -1868,7 +1601,7 @@ class _VSController extends StateNotifier<_ViewState> {
       "description": '',
     };
 
-    /// ✅ ONLY ONE ATTACHMENT
+    /// âœ… ONLY ONE ATTACHMENT
     state = state.copyWith(attachments: [attachment]);
   }
 
@@ -1896,17 +1629,17 @@ class _VSController extends StateNotifier<_ViewState> {
     final userInfo = KAppX.globalProvider.read(userInfoProvider);
 
     return {
-      /// ⭐ USER INFO
+      /// â­ USER INFO
       "req_user_department_id": userInfo?.data?.department?.id ?? 0,
 
       "req_user_section_id": userInfo?.data?.section?.id ?? 0,
 
-      /// ⭐ SERVICE INFO
+      /// â­ SERVICE INFO
       "service_id": serviceId,
 
       "sub_service_id": subServiceId,
 
-      /// ⭐ VEHICLE MAINTENANCE DETAILS
+      /// â­ VEHICLE MAINTENANCE DETAILS
       "vehicle_number": values['vehicle_number'] ?? "",
 
       "type_of_maintenance_required": values['maintenance_type'] ?? "",
@@ -1917,7 +1650,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       "issue_description": values['issue_description'] ?? "",
 
-      /// ⭐ ATTACHMENTS
+      /// â­ ATTACHMENTS
       "attachments": _buildAttachments(values),
     };
   }
@@ -1937,7 +1670,7 @@ class _VSController extends StateNotifier<_ViewState> {
         // state.hrTasks,
       );
 
-      debugPrint("✅ Final Payload: $payload");
+      debugPrint("âœ… Final Payload: $payload");
 
       // final response = await serviceTransferInstance
       //     .createTemporaryDecisionRequest(payload);
@@ -1947,7 +1680,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // _refreshDashboard();
       // }
     } catch (e, st) {
-      debugPrint('❌ Error submitting request: $e\n$st');
+      debugPrint('âŒ Error submitting request: $e\n$st');
     } finally {
       state = state.copyWith(isLoading: false);
     }

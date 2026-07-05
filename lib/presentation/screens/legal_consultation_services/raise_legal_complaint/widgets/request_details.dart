@@ -143,7 +143,9 @@ class _RaiseLegalComplaintDetailsScreenState
                         subServiceId: widget.subServiceId,
                       );
                     },
-
+                    onAssign: () async {
+                      controller.showAllocateUserDialog(context);
+                    },
                     onApprove: () async {
                       controller.showApprovalCommentDialog(
                         type: ApprovalDialogType.approve,

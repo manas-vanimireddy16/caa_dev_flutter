@@ -40,6 +40,8 @@ import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_mo
 import 'package:code_setup/presentation/screens/hc_service/models/grade_list_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/hr_task.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_roles_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_user_model.dart';
 import 'package:code_setup/presentation/screens/legal_consultation_services/models/legal_contract_review_model.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
@@ -71,6 +73,7 @@ part 'widgets/request_details_tabs.dart';
 part 'widgets/request_list.dart';
 part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
+part 'widgets/assign_user.dart';
 
 @RoutePage()
 class RaiseLegalComplaintScreen extends ConsumerStatefulWidget {

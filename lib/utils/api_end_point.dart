@@ -1852,7 +1852,7 @@ class ApiEndPoint {
 
   /// Get approval list (For approvers)
   static const String annualIncrementGetActionItems =
-      '/v1/hr-service/annual-increment/approvals';
+      '/v1/hr-service/annual-increment/requests/approval';
 
   /// Get all requests
   static const String annualIncrementGetRequests =
@@ -1863,10 +1863,10 @@ class ApiEndPoint {
 
   /// KPI cards (Approval dashboard)
   static const String annualIncrementApprovalKpiCards =
-      '/v1/hr-service/annual-increment/analytics/approvals/kpi';
+      '/v1/hr-service/annual-increment/analytics/approval-kpi-cards';
 
   static const String annualIncrementKpiCards =
-      '/v1/hr-service/annual-increment/analytics/my-requests/kpi';
+      '/v1/hr-service/annual-increment/analytics/kpi-cards';
 
   /// Status breakdown
   static const String annualIncrementStatusBreakdown =
@@ -1948,7 +1948,7 @@ class ApiEndPoint {
 
   /// Approval KPI cards (If separate dashboard exists)
   static const String skillsEnhancementApprovalKpiCards =
-      '/v1/hr-service/skills-enhancement/analytics/kpi-cards';
+      '/v1/hr-service/skills-enhancement/analytics/approval/kpi-cards';
 
   /// ===================== STATUS BREAKDOWN =====================
 

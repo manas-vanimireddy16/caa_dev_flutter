@@ -69,6 +69,10 @@ import 'package:file_picker/file_picker.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
+import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:flutter/services.dart';
 // import 'package:flutter/rendering.dart' hide Border;
 // import 'package:flutter/services.dart';
@@ -150,17 +154,14 @@ class _PaymentofShiftAllowanceScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
-          /// KPI
           StatSummaryRow(
             stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
-          20.toHorizontalSizedBox,
-
-          /// Status Breakdown
+          16.toVerticalSizedBox,
           RequestStatusBreakdownCard(
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
@@ -177,7 +178,7 @@ class _PaymentofShiftAllowanceScreenState
             ),
             breakdown: state.statusBreakdown.data,
           ),
-
+          16.toVerticalSizedBox,
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
@@ -190,10 +191,7 @@ class _PaymentofShiftAllowanceScreenState
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),
-
-          16.toHorizontalSizedBox,
-
-          /// MAIN CARD
+          16.toVerticalSizedBox,
           TicketRequestsCard(
             providerArgs: _providerArgs,
             focusNode: _focusNode,

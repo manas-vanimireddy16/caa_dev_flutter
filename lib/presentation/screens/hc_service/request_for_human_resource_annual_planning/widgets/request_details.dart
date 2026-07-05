@@ -73,6 +73,7 @@ class _RequestForHumanResourceAnnualPlanningDetailsScreenState
             approvals,
           );
           final approverId = active?.id;
+          final isFromActionItems = widget.from.toLowerCase() == 'action items';
 
           Widget employeeSection() => EmployeeInformationCard(
             l10n: l10n,
@@ -115,7 +116,9 @@ class _RequestForHumanResourceAnnualPlanningDetailsScreenState
                   employeeSection(),
                   CommentsCard(
                     from: widget.from,
-                    showButtons: actionType != ActionButtonsType.none,
+                    showButtons:
+                        isFromActionItems &&
+                        actionType != ActionButtonsType.none,
                     actionType: actionType,
                     entries: chats,
                     controller: controller.chatController,

@@ -495,7 +495,6 @@ class _VSController extends StateNotifier<_ViewState> {
     bool fromActionItems = false,
   }) async {
     updateRequestTab(0);
-    generateSecondmentDecisionPdf();
 
     await KAppX.router.push(
       SecondmentDecisionDetailsRoute(

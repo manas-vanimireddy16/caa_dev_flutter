@@ -59,6 +59,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
+import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
+import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
+import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,6 +77,7 @@ part 'widgets/request_details.dart';
 part 'widgets/request_details_tabs.dart';
 part 'widgets/request_list.dart';
 part 'widgets/request_tab.dart';
+part 'widgets/ticket_requests_card.dart';
 
 @RoutePage()
 class RequiredNewResourceScreen extends ConsumerStatefulWidget {
@@ -93,6 +99,7 @@ class _RequiredNewResourceScreenState
     extends ConsumerState<RequiredNewResourceScreen> {
   late FocusNode _focusNode;
   late _VSControllerParams _providerArgs;
+  late PageController _pageController;
 
   @override
   void initState() {
@@ -104,145 +111,65 @@ class _RequiredNewResourceScreenState
     );
 
     _focusNode = FocusNode();
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
     _focusNode.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentYear = DateTime.now().year;
-    final filterLabelList = List.generate(
-      6,
-      (index) => (currentYear - index).toString(),
-    );
-
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
-    final statsList = StatSummaryHelper.buildStatList(
-      state.kpiData.data?.toJson(),
-    );
-    final statsApproverList = StatSummaryHelper.buildStatList(
-      state.approvalKpiData.data?.toJson(),
-    );
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
-          /// KPI
           StatSummaryRow(
-            stats: state.tabIndex == 0 ? statsList : statsApproverList,
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
-
-          20.toHorizontalSizedBox,
-
-          /// Status Breakdown
+          16.toVerticalSizedBox,
           RequestStatusBreakdownCard(
             data: state.tabIndex == 0
-                ? state.statusBreakdown.data?.breakdown ?? []
-                : state.approvalStatusBreakdown.data?.breakdown ?? [],
+                ? controller.statusBreakdownList
+                : controller.approvalStatusBreakdownList,
+            title: l10n.requestsStatusBreakdown,
+            filterLabel: l10n.periodFilterLabels[0],
+            filterLabelList: l10n.periodFilterLabels,
+            centerMetricLabel: l10n.totalRequests,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
+            preserveFilterLabelOnChange: true,
+            onChanged: (value) => controller.onStatusFilterChanged(
+              value != null ? l10n.periodFilterValue(value) : null,
+            ),
             breakdown: state.statusBreakdown.data,
-            title: "Requests Status Breakdown",
-            onChanged: (value) {
-              state.tabIndex == 0
-                  ? controller.fetchStatusBreakdown(value ?? '')
-                  : controller.fetchApprovalStatusBreakdown(value ?? '');
-            },
           ),
-
-          16.toHorizontalSizedBox,
-
-          /// Trend Breakdown
+          16.toVerticalSizedBox,
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
-                ? state.trendData.data?.trendData
-                          ?.map((e) => e.count ?? 0)
-                          .toList() ??
-                      List.filled(12, 0)
-                : state.approvalTrendData.data?.trendData
-                          ?.map((e) => e.count ?? 0)
-                          .toList() ??
-                      List.filled(12, 0),
+                ? controller.trendCounts
+                : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
-            // selectedYear: currentYear.toString(),
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalRequests,
+            selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
-            filterLabelList: filterLabelList,
-            onChanged: (value) {
-              if (value != null) {
-                state.tabIndex == 0
-                    ? controller.fetchTrendBreakDown(value)
-                    : controller.fetchApprovalTrendBreakDown(value);
-              }
-            },
+            filterLabelList: controller.filterLabelList,
+            onChanged: controller.onTrendFilterChanged,
           ),
-
-          16.toHorizontalSizedBox,
-
-          /// MAIN CARD
-          Card(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  /// Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Ticket Requests",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: controller.openNewRequestForm,
-                        child: const Text('Assign New Task'),
-                      ),
-                    ],
-                  ),
-
-                  12.toHorizontalSizedBox,
-
-                  /// Search
-                  KTextField(
-                    focusNode: _focusNode,
-                    hintText: "Search by ID or Name",
-                    controller: controller.searchController,
-                    onChanged: controller.onSearchChanged,
-                  ),
-
-                  12.toHorizontalSizedBox,
-
-                  /// Tabs Widget
-                  RequestTabs(
-                    selectedIndex: state.tabIndex,
-                    onTabChanged: controller.updateTabIndex,
-                  ),
-
-                  16.toHorizontalSizedBox,
-
-                  /// Single Reusable Page
-                  SizedBox(
-                    height: 400,
-                    child: RequestsPage(
-                      providerArgs: _providerArgs,
-                      isActionItemsTab: state.tabIndex == 1,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          16.toVerticalSizedBox,
+          TicketRequestsCard(
+            providerArgs: _providerArgs,
+            focusNode: _focusNode,
+            pageController: _pageController,
           ),
         ],
       ),

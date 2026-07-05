@@ -1,6 +1,6 @@
 part of '../view.dart';
 
-class TicketRequestsCard extends ConsumerWidget {
+class TicketRequestsCard extends ConsumerStatefulWidget {
   static const _borderColor = Color(0xFFD8D8D8);
   static const _titleColor = Color(0xFF1A1A1A);
   static const _listIconBg = Color(0xFFEDE7F6);
@@ -18,32 +18,71 @@ class TicketRequestsCard extends ConsumerWidget {
     required this.pageController,
   });
 
+  @override
+  ConsumerState<TicketRequestsCard> createState() =>
+      _TicketRequestsCardState();
+}
+
+class _TicketRequestsCardState extends ConsumerState<TicketRequestsCard> {
+  bool _suppressPageChanged = false;
+
   String _screenTitle(DashboardL10n l10n) {
-    final sub = providerArgs.subService;
-    if (l10n.isArabic) {
-      return sub.arabicsubServiceName ??
-          sub.subServiceName ??
-          l10n.ticketRequests;
+    final sub = widget.providerArgs.subService;
+    return l10n.subServiceDisplayName(
+      englishName: sub.subServiceName,
+      arabicName: sub.arabicsubServiceName,
+    );
+  }
+
+  void _syncPageToTab(int index) {
+    void jumpToTabPage() {
+      if (!widget.pageController.hasClients) return;
+      widget.pageController.jumpToPage(index);
     }
-    return sub.subServiceName ?? l10n.ticketRequests;
+
+    _suppressPageChanged = true;
+    jumpToTabPage();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      jumpToTabPage();
+      _suppressPageChanged = false;
+    });
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(_vsProvider(providerArgs));
-    final controller = ref.read(_vsProvider(providerArgs).notifier);
+  void initState() {
+    super.initState();
+    MyRequestsTabPageSyncRegistry.register(
+      serviceId: widget.providerArgs.service.id,
+      subServiceId: widget.providerArgs.subService.id,
+      handler: _syncPageToTab,
+    );
+  }
+
+  @override
+  void dispose() {
+    MyRequestsTabPageSyncRegistry.unregister(
+      serviceId: widget.providerArgs.service.id,
+      subServiceId: widget.providerArgs.subService.id,
+    );
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(_vsProvider(widget.providerArgs));
+    final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
     final l10n = DashboardL10n.of(context);
-    ref.listen(_vsProvider(providerArgs).select((s) => s.tabIndex), (_, next) {
-      if (pageController.hasClients && pageController.page?.round() != next) {
-        pageController.jumpToPage(next);
-      }
+
+    ref.listen(_vsProvider(widget.providerArgs).select((s) => s.tabIndex),
+        (_, next) {
+      _syncPageToTab(next);
     });
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: _borderColor),
+        border: Border.all(color: TicketRequestsCard._borderColor),
       ),
       clipBehavior: Clip.none,
       child: Column(
@@ -59,12 +98,12 @@ class TicketRequestsCard extends ConsumerWidget {
                   height: 36,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: _listIconBg,
+                    color: TicketRequestsCard._listIconBg,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
                     Icons.format_list_bulleted,
-                    color: _listIconColor,
+                    color: TicketRequestsCard._listIconColor,
                     size: 20,
                   ),
                 ),
@@ -85,7 +124,7 @@ class TicketRequestsCard extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 Material(
-                  color: _addButtonColor,
+                  color: TicketRequestsCard._addButtonColor,
                   shape: const CircleBorder(),
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
@@ -133,8 +172,8 @@ class TicketRequestsCard extends ConsumerWidget {
                                       ? FontWeight.w600
                                       : FontWeight.w400,
                                   color: isSelected
-                                      ? _listIconColor
-                                      : _titleColor,
+                                      ? TicketRequestsCard._listIconColor
+                                      : TicketRequestsCard._titleColor,
                                 ),
                               ),
                             ),
@@ -142,7 +181,7 @@ class TicketRequestsCard extends ConsumerWidget {
                               const Icon(
                                 Icons.check,
                                 size: 18,
-                                color: _listIconColor,
+                                color: TicketRequestsCard._listIconColor,
                               ),
                           ],
                         ),
@@ -154,8 +193,8 @@ class TicketRequestsCard extends ConsumerWidget {
                     child: Icon(
                       Icons.more_vert,
                       color: controller.currentStatusFilter.isNotEmpty
-                          ? _listIconColor
-                          : _titleColor,
+                          ? TicketRequestsCard._listIconColor
+                          : TicketRequestsCard._titleColor,
                       size: 22,
                     ),
                   ),
@@ -170,11 +209,11 @@ class TicketRequestsCard extends ConsumerWidget {
               selectedIndex: state.tabIndex,
               actionItemCount: state.approvalKpiData.data?.pending ?? 0,
               onTabChanged: (index) {
-                focusNode.unfocus();
+                widget.focusNode.unfocus();
                 controller.searchController.clear();
                 controller.onSearchChanged('');
                 controller.updateTabIndex(index);
-                pageController.animateToPage(
+                widget.pageController.animateToPage(
                   index,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
@@ -185,7 +224,7 @@ class TicketRequestsCard extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
             child: KTextField(
-              focusNode: focusNode,
+              focusNode: widget.focusNode,
               hintText: l10n.searchByIdOrName,
               controller: controller.searchController,
               onChanged: controller.onSearchChanged,
@@ -206,10 +245,11 @@ class TicketRequestsCard extends ConsumerWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: _listIconBg,
+                    color: TicketRequestsCard._listIconBg,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: _listIconColor.withValues(alpha: 0.25),
+                      color: TicketRequestsCard._listIconColor
+                          .withValues(alpha: 0.25),
                     ),
                   ),
                   child: Row(
@@ -218,7 +258,7 @@ class TicketRequestsCard extends ConsumerWidget {
                       const Icon(
                         Icons.filter_alt_outlined,
                         size: 16,
-                        color: _listIconColor,
+                        color: TicketRequestsCard._listIconColor,
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -229,7 +269,7 @@ class TicketRequestsCard extends ConsumerWidget {
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: _listIconColor,
+                          color: TicketRequestsCard._listIconColor,
                         ),
                       ),
                     ],
@@ -242,21 +282,22 @@ class TicketRequestsCard extends ConsumerWidget {
             child: SizedBox(
               height: 400,
               child: PageView(
-                controller: pageController,
+                controller: widget.pageController,
                 onPageChanged: (index) {
-                  focusNode.unfocus();
+                  if (_suppressPageChanged) return;
+                  widget.focusNode.unfocus();
                   controller.searchController.clear();
                   controller.onSearchChanged('');
                   controller.updateTabIndex(index);
                 },
                 children: [
                   RequestsPage(
-                    providerArgs: providerArgs,
+                    providerArgs: widget.providerArgs,
                     l10n: l10n,
                     isActionItemsTab: false,
                   ),
                   RequestsPage(
-                    providerArgs: providerArgs,
+                    providerArgs: widget.providerArgs,
                     l10n: l10n,
                     isActionItemsTab: true,
                   ),

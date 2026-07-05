@@ -278,8 +278,10 @@ class _VSController extends StateNotifier<_ViewState> {
   void initState() {
     fetchKpi();
     fetchApprovalKpi();
-    fetchStatusBreakdown('weekly');
+    fetchStatusBreakdown('monthly');
     fetchTrendBreakDown(DateTime.now().year.toString());
+    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
   }
 
   void onSearchChanged(String value) {
@@ -295,14 +297,24 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<String> get filterLabelList =>
       List.generate(6, (index) => (currentYear - index).toString());
-  List<StatSummaryData> get requestStatsList =>
-      StatSummaryHelper.buildStatList(state.kpiData.data?.toJson());
+  List<StatSummaryData> requestStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
-  List<StatSummaryData> get approverStatsList =>
-      StatSummaryHelper.buildStatList(state.approvalKpiData.data?.toJson());
+  List<StatSummaryData> approverStatsList(
+    String Function(String key) titleForKey,
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
-  List<StatSummaryData> get currentStats =>
-      state.tabIndex == 0 ? requestStatsList : approverStatsList;
+  List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
+      state.tabIndex == 0
+      ? requestStatsList(titleForKey)
+      : approverStatsList(titleForKey);
   void onStatusFilterChanged(String? value) {
     if (state.tabIndex == 0) {
       fetchStatusBreakdown(value ?? '');
@@ -445,16 +457,34 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    }
+
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
       fetchKpi(),
-      fetchStatusBreakdown('weekly'),
+      fetchStatusBreakdown('monthly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
-    refreshRequestLists();
+    refreshActiveRequestList();
   }
 
   void openNewRequestForm() {
@@ -1363,13 +1393,13 @@ class _VSController extends StateNotifier<_ViewState> {
     if (index == 0) {
       refreshMyRequestsList();
       fetchKpi();
-      fetchStatusBreakdown('weekly');
-      fetchTrendBreakDown('2026');
+      fetchStatusBreakdown('monthly');
+      fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
       refreshActionItemsList();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('weekly');
-      fetchApprovalTrendBreakDown('2026');
+      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }
 

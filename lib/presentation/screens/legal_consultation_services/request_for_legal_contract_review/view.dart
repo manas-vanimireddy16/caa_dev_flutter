@@ -58,12 +58,14 @@ import 'package:code_setup/presentation/common_widgets/request_list_search_style
 import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
 import 'package:code_setup/utils/helper/list_pagination.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
 // import 'package:flutter/rendering.dart' hide Border;
 // import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -140,41 +142,48 @@ class _RequestForLegalContractReviewScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(_vsProvider(_providerArgs));
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
+    final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.all(16),
         children: [
-          /// KPI
-          StatSummaryRow(stats: controller.currentStats),
-          20.toHorizontalSizedBox,
-
-          /// Status Breakdown
+          StatSummaryRow(
+            stats: controller.currentStats((key) => l10n.statTitle(key)),
+          ),
+          16.toVerticalSizedBox,
           RequestStatusBreakdownCard(
             data: state.tabIndex == 0
                 ? controller.statusBreakdownList
                 : controller.approvalStatusBreakdownList,
-            title: "Requests Status Breakdown",
-            onChanged: controller.onStatusFilterChanged,
+            title: l10n.requestsStatusBreakdown,
+            filterLabel: l10n.periodFilterLabels[0],
+            filterLabelList: l10n.periodFilterLabels,
+            centerMetricLabel: l10n.totalRequests,
+            legendHeading: l10n.breakdown,
+            statusLabelBuilder: l10n.statusLabel,
+            preserveFilterLabelOnChange: true,
+            onChanged: (value) => controller.onStatusFilterChanged(
+              value != null ? l10n.periodFilterValue(value) : null,
+            ),
             breakdown: state.statusBreakdown.data,
           ),
-
+          16.toVerticalSizedBox,
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
                 : controller.approvalTrendCounts,
             monthLabels: state.months,
-            metric: "Total Tickets",
+            title: l10n.requestTrendBreakdown,
+            metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
             barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),
-
-          16.toHorizontalSizedBox,
-
-          /// MAIN CARD
+          16.toVerticalSizedBox,
           TicketRequestsCard(
             providerArgs: _providerArgs,
             focusNode: _focusNode,

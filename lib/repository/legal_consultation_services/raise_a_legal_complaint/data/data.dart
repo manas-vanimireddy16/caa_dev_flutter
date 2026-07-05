@@ -6,6 +6,8 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_roles_model.dart';
+import 'package:code_setup/presentation/screens/it_services/models/muscat_user_model.dart';
 import 'package:code_setup/presentation/screens/legal_consultation_services/models/legal_contract_review_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/repository/legal_consultation_services/raise_a_legal_complaint/domain/domain.dart';
@@ -799,12 +801,9 @@ class RaiseALegalComplaintRepositoryImple
 
     try {
       if (client != null) {
-        final queryParams = {
-          'offset': 1,
-          'limit': 10000,
-          'department_id': userDepartmentId,
-        };
-        final url = ApiEndPoint.sections;
+        final queryParams = {'offset': 1, 'limit': 10000};
+        final departmentId = int.tryParse(userDepartmentId ?? '');
+        final url = ApiEndPoint.muscatSection(departmentId ?? 0);
 
         final response = await client.get(url, queryParameters: queryParams);
 
@@ -820,7 +819,103 @@ class RaiseALegalComplaintRepositoryImple
         return [];
       }
     } catch (e) {
-      throw Exception('Error in getActionItems: $e');
+      throw Exception('Error in getSections: $e');
+    }
+  }
+
+  @override
+  Future<RolesResponseModel?> getRoles({
+    required int departmentId,
+    required int sectionId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'department_id': departmentId.toString(),
+          'section_id': sectionId.toString(),
+        };
+
+        final url = ApiEndPoint.userRolesMuscat;
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return RolesResponseModel.fromJson(data);
+        } else {
+          throw Exception('Failed to fetch roles: ${response.statusCode}');
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception('Error fetching roles: $e');
+    }
+  }
+
+  @override
+  Future<UsersResponseModel?> getUsersList({
+    required int departmentId,
+    required int sectionId,
+    required int roleId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final queryParams = {
+          'department_id': departmentId.toString(),
+          'section_id': sectionId.toString(),
+          'role_id': roleId.toString(),
+        };
+
+        final url = ApiEndPoint.usersInfoMuscat;
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+          return UsersResponseModel.fromJson(data);
+        } else {
+          throw Exception('Failed to fetch users: ${response.statusCode}');
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception('Error fetching users: $e');
+    }
+  }
+
+  @override
+  Future<void> onAssign(Map<String, dynamic> payload) async {
+    final client = await KAppX.network.secureClient();
+    const String url = ApiEndPoint.legalComplaintApprove;
+
+    try {
+      if (client != null) {
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            '${response.data['message']}',
+          );
+          debugPrint('Request assigned successfully');
+        } else {
+          debugPrint('Failed to assign request: ${response.statusCode}');
+          ShowFlutterToast().showFlutterToastFailure(
+            '${response.statusMessage}',
+          );
+        }
+      } else {
+        debugPrint('Client is null - cannot assign request');
+      }
+    } on DioException catch (e) {
+      debugPrint('Dio error: ${e.response?.data ?? e.message}');
+      throw e;
+    } catch (e) {
+      debugPrint('Unexpected error: $e');
+      throw e;
     }
   }
 }

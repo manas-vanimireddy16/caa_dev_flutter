@@ -52,14 +52,18 @@ class _AnnualIncrementDetailsScreenState
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));
 
-          if (state.requestDetails == null || state.isLoading) {
+          if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final request = state.requestDetails;
+          final detail = state.requestDetails.request;
+          final requestId = detail?.id ?? state.requestDetails.id;
+          if (requestId == null) {
+            return Center(child: Text(l10n.noDataFound));
+          }
+
           final createdByUser =
-              request?.createdByUser ?? state.requestDetails.createdByUser;
-          final requestId = request?.id;
+              detail?.createdByUser ?? state.requestDetails.createdByUser;
           final attachments = state.attachmentsById;
           final chats = state.chatById;
           final approvals = state.requestDetails.approvalDetails ?? [];
@@ -72,11 +76,12 @@ class _AnnualIncrementDetailsScreenState
             approvals,
           );
           final approverId = active?.id;
+          final isFromActionItems = widget.from.toLowerCase() == 'action items';
 
           Widget employeeSection() => EmployeeInformationCard(
             l10n: l10n,
-            requestId: requestId?.toString(),
-            status: request?.status,
+            requestId: requestId.toString(),
+            status: detail?.status ?? state.requestDetails.status,
             assignedTo: controller.buildAssignedToLabel(approvals),
             user: createdByUser,
             labelBuilder: l10n.requestDetailsLabel,
@@ -113,7 +118,9 @@ class _AnnualIncrementDetailsScreenState
                   employeeSection(),
                   CommentsCard(
                     from: widget.from,
-                    showButtons: actionType != ActionButtonsType.none,
+                    showButtons:
+                        isFromActionItems &&
+                        actionType != ActionButtonsType.none,
                     actionType: actionType,
                     entries: chats,
                     controller: controller.chatController,

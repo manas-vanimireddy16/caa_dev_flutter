@@ -102,7 +102,7 @@ class _AssignaTasktoEmployeeDetailsScreenState
                 EmployeeInformationCard(
                   l10n: l10n,
                   requestId: requestId?.toString(),
-                  status: request?.status,
+                  status: controller.formatDisplayStatus(request?.status),
                   // assignedTo: controller.buildAssignedToLabel(approvals),
                   user: request?.createdByUser,
                   labelBuilder: l10n.requestDetailsLabel,

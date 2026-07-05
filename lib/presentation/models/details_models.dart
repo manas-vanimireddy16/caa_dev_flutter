@@ -896,13 +896,13 @@ class RequestDetailData {
     taskTitle: json["task_title"],
     taskDescription: json["task_description"] ?? json["description"],
     completionDate: json["completion_date"],
-    employeesDetails: json['employees_details'] != null
+    employeesDetails: json['employees_details'] is List
         ? (json['employees_details'] as List)
               .map((e) => EmployeeDutyMission.fromJson(e))
               .toList()
         : null,
 
-    airTicketDetails: json['air_ticket_details'] != null
+    airTicketDetails: json['air_ticket_details'] is List
         ? (json['air_ticket_details'] as List)
               .map((e) => AirTicketDetail.fromJson(e))
               .toList()
@@ -932,7 +932,8 @@ class RequestDetailData {
     distance: json['distance'],
 
     ifSponsored: json['if_sponsored'],
-    allowancePercentage: json['allowance_percentage'],
+    allowancePercentage: json['allowance_percentage']?.toString() ??
+        json['increment_percentage']?.toString(),
     airTicketRequired: json['air_ticket_required'],
     vehicleRequired: json['vehicle_required'],
     remarks: json['remarks'],
@@ -984,7 +985,7 @@ class RequestDetailData {
     courseEndDate: json['course_end_date'],
 
     positionToBeTransferred: json['position_to_be_transferred'],
-    effectiveFromDate: json['effective_from_date'],
+    effectiveFromDate: json['effective_from_date'] ?? json['effective_date'],
     decisionNumber: json['decision_number'],
     employeeName: json['employee_name'],
     jobTitle: json['job_title'],
@@ -1021,7 +1022,8 @@ class RequestDetailData {
     currentJobTitle: json['current_job_title'] as String?,
     currentSalaryGrade: json['current_salary_grade'] as String?,
 
-    proposedBasicSalary: json['proposed_basic_salary'] as String?,
+    proposedBasicSalary: (json['proposed_basic_salary'] ?? json['new_basic_salary'])
+        ?.toString(),
     proposedJobTitle: json['proposed_job_title'] as String?,
     proposedSalaryGrade: json['proposed_salary_grade'] as String?,
     certificationTitle: json['certification_title'] as String?,
@@ -1033,7 +1035,7 @@ class RequestDetailData {
     cycleYear: json['cycle_year'] as int?,
     extensionNumber: json['extension_number'] as String?,
     quater: json['quater'] as String?,
-    year: json['year'] as int?,
+    year: (json['year'] ?? json['allowance_year']) as int?,
     tasks: (json['tasks'] as List?)
         ?.map((e) => TaskModel.fromJson(e as Map<String, dynamic>?))
         .toList(),
@@ -2084,7 +2086,8 @@ class RequestModel {
       expirationDate: json["expiration_date"],
       attachmentUrl: json["attachment_url"],
       isDeleted: json["is_deleted"],
-      allowanceValue: json['allowance_value'] as String?,
+      allowanceValue: json['allowance_value']?.toString() ??
+          json['annual_periodic_allowance']?.toString(),
 
       assignedToUserId: json["assigned_to_user_id"],
       assignedAt: json["assigned_at"],
@@ -2150,13 +2153,13 @@ class RequestModel {
       taskTitle: json["task_title"],
       taskDescription: json["task_description"] ?? json["description"],
       completionDate: json["completion_date"],
-      employeesDetails: json['employees_details'] != null
+      employeesDetails: json['employees_details'] is List
           ? (json['employees_details'] as List)
                 .map((e) => EmployeeDutyMission.fromJson(e))
                 .toList()
           : null,
 
-      airTicketDetails: json['air_ticket_details'] != null
+      airTicketDetails: json['air_ticket_details'] is List
           ? (json['air_ticket_details'] as List)
                 .map((e) => AirTicketDetail.fromJson(e))
                 .toList()
@@ -2186,7 +2189,8 @@ class RequestModel {
       distance: json['distance'],
 
       ifSponsored: json['if_sponsored'],
-      allowancePercentage: json['allowance_percentage'],
+      allowancePercentage: json['allowance_percentage']?.toString() ??
+          json['increment_percentage']?.toString(),
       airTicketRequired: json['air_ticket_required'],
       vehicleRequired: json['vehicle_required'],
       remarks: json['remarks'],
@@ -2248,7 +2252,8 @@ class RequestModel {
       driverName: json['driver_name'],
 
       positionToBeTransferred: json['position_to_be_transferred'],
-      effectiveFromDate: json['effective_from_date'],
+      effectiveFromDate:
+          json['effective_from_date'] ?? json['effective_date'],
       decisionNumber: json['decision_number'],
       employeeName: json['employee_name'],
       jobTitle: json['job_title'],
@@ -2282,7 +2287,9 @@ class RequestModel {
       currentJobTitle: json['current_job_title'] as String?,
       currentSalaryGrade: json['current_salary_grade'] as String?,
 
-      proposedBasicSalary: json['proposed_basic_salary'] as String?,
+      proposedBasicSalary: (json['proposed_basic_salary'] ??
+              json['new_basic_salary'])
+          ?.toString(),
       proposedJobTitle: json['proposed_job_title'] as String?,
       proposedSalaryGrade: json['proposed_salary_grade'] as String?,
       certificationTitle: json['certification_title'] as String?,
@@ -2294,7 +2301,7 @@ class RequestModel {
       cycleYear: json['cycle_year'] as int?,
       extensionNumber: json['extension_number'] as String?,
       quater: json['quater'] as String?,
-      year: json['year'] as int?,
+      year: (json['year'] ?? json['allowance_year']) as int?,
       tasks: (json['tasks'] as List?)
           ?.map((e) => TaskModel.fromJson(e as Map<String, dynamic>?))
           .toList(),

@@ -65,6 +65,11 @@ class _ViewState {
   final List<EmployeeList> usersList;
   final DepartmentModel? selectedDepartment;
   final SectionModel? selectedSection;
+  final UsersResponseModel? usersData;
+  final RolesResponseModel? rolesData;
+  final int? selectedSectionId;
+  final int? selectedRoleId;
+  final int? selectedUserId;
 
   final List<String> months = [
     'January',
@@ -113,6 +118,11 @@ class _ViewState {
     required this.usersList,
     this.selectedDepartment,
     this.selectedSection,
+    required this.usersData,
+    required this.rolesData,
+    required this.selectedSectionId,
+    required this.selectedRoleId,
+    required this.selectedUserId,
   });
 
   _ViewState.init()
@@ -145,6 +155,11 @@ class _ViewState {
         usersList: [],
         selectedDepartment: null,
         selectedSection: null,
+        usersData: null,
+        rolesData: null,
+        selectedSectionId: null,
+        selectedRoleId: null,
+        selectedUserId: null,
       );
 
   _ViewState copyWith({
@@ -186,7 +201,6 @@ class _ViewState {
     List<ChatMessageModel>? chatById,
     List<Position>? positionsList,
     String? selectedPositionName,
-    int? selectedUserId,
     List<EmployeeList>? usersList,
     String? selectedUserName,
     EmployeeList? selectedUser,
@@ -215,6 +229,11 @@ class _ViewState {
     List<SectionModel>? complainantSections,
     DepartmentModel? selectedDepartment,
     SectionModel? selectedSection,
+    UsersResponseModel? usersData,
+    RolesResponseModel? rolesData,
+    int? selectedSectionId,
+    int? selectedRoleId,
+    int? selectedUserId,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -248,6 +267,11 @@ class _ViewState {
       usersList: usersList ?? this.usersList,
       selectedDepartment: selectedDepartment ?? this.selectedDepartment,
       selectedSection: selectedSection ?? this.selectedSection,
+      usersData: usersData ?? this.usersData,
+      rolesData: rolesData ?? this.rolesData,
+      selectedSectionId: selectedSectionId ?? this.selectedSectionId,
+      selectedRoleId: selectedRoleId ?? this.selectedRoleId,
+      selectedUserId: selectedUserId ?? this.selectedUserId,
     );
   }
 }
@@ -345,19 +369,17 @@ class _VSController extends StateNotifier<_ViewState> {
       List.generate(6, (index) => (currentYear - index).toString());
   List<StatSummaryData> requestStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.kpiData.data?.toJson(),
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> approverStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.approvalKpiData.data?.toJson(),
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
       state.tabIndex == 0
@@ -550,7 +572,7 @@ class _VSController extends StateNotifier<_ViewState> {
   List<DynamicField> buildLegalComplaintStepOneFields(DashboardL10n l10n) => [
     DynamicField(
       name: 'request_date',
-      label: l10n.requestDate,
+      label: l10n.incidentDate,
       type: FieldType.date,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
@@ -559,7 +581,7 @@ class _VSController extends StateNotifier<_ViewState> {
     ),
     DynamicField(
       name: 'title',
-      label: l10n.titleLabel,
+      label: l10n.titleOfComplaint,
       type: FieldType.text,
       placeholder: l10n.enter,
       required: true,
@@ -673,7 +695,10 @@ class _VSController extends StateNotifier<_ViewState> {
               .fetchComplainantSections(departmentId);
           final sectionId = selectedUser.section?.id;
           if (sectionId != null) {
-            formNotifier.updateValue('complainant_section', sectionId.toString());
+            formNotifier.updateValue(
+              'complainant_section',
+              sectionId.toString(),
+            );
           }
         }
       },
@@ -718,10 +743,9 @@ class _VSController extends StateNotifier<_ViewState> {
             .toList();
       },
       onChanged: (value, ref) async {
-        ref.read(dynamicFormProvider.notifier).updateValue(
-          'complainant_section',
-          '',
-        );
+        ref
+            .read(dynamicFormProvider.notifier)
+            .updateValue('complainant_section', '');
         final departmentId = int.tryParse(value.toString()) ?? 0;
         if (departmentId > 0) {
           await ref
@@ -788,8 +812,8 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
           'complained_employee_salary_grade': selectedUser.grade.toString(),
           'complained_employee_directorate': selectedUser.directorate,
-          'complained_employee_department':
-              selectedUser.department?.id?.toString(),
+          'complained_employee_department': selectedUser.department?.id
+              ?.toString(),
           'complained_employee_section': '',
         });
 
@@ -848,10 +872,9 @@ class _VSController extends StateNotifier<_ViewState> {
             .toList();
       },
       onChanged: (value, ref) async {
-        ref.read(dynamicFormProvider.notifier).updateValue(
-          'complained_employee_section',
-          '',
-        );
+        ref
+            .read(dynamicFormProvider.notifier)
+            .updateValue('complained_employee_section', '');
         final departmentId = int.tryParse(value.toString()) ?? 0;
         if (departmentId > 0) {
           await ref
@@ -1007,6 +1030,193 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  Future<void> onSectionChanged({
+    required int sectionId,
+    required int departmentId,
+  }) async {
+    state = state.copyWith(
+      selectedSectionId: sectionId,
+      selectedRoleId: null,
+      selectedUserId: null,
+      rolesData: null,
+      usersData: null,
+    );
+    await fetchRoles(sectionId: sectionId, departmentId: departmentId);
+  }
+
+  void clearSelectedSection() {
+    state = state.copyWith(
+      sections: [],
+      selectedSectionId: null,
+      rolesData: null,
+      usersData: null,
+    );
+  }
+
+  Future<void> fetchRoles({
+    required int sectionId,
+    required int departmentId,
+  }) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final roles = await raiseLegalComplaintInstance.getRoles(
+        departmentId: departmentId,
+        sectionId: sectionId,
+      );
+      state = state.copyWith(rolesData: roles, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  Future<void> fetchAssignUsers({
+    required int sectionId,
+    required int roleId,
+    required int departmentId,
+  }) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final users = await raiseLegalComplaintInstance.getUsersList(
+        roleId: roleId,
+        departmentId: departmentId,
+        sectionId: sectionId,
+      );
+      state = state.copyWith(usersData: users, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  Future<void> onAssign(
+    int roleId,
+    int sectionId,
+    int userId,
+    int departmentId,
+  ) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      final userData = KAppX.globalProvider.read(userInfoProvider);
+      final active = getActiveApprovalLevel(
+        state.requestDetails.approvalDetails ?? [],
+      );
+      final approvalId = active?.id ?? 0;
+      final requestId =
+          state.requestDetails.request?.id ?? state.requestDetails.id;
+
+      final payload = {
+        'request_id': requestId,
+        'approval_id': approvalId,
+        'status': 'Approved',
+        'comment': '',
+        'reassign_approver_user_id': userId,
+        'reassign_delegate_user_id': null,
+        'reassign_department_id': userData?.data?.department?.id,
+        'reassign_section_id': sectionId,
+        'reassign_approver_role_id': roleId,
+        'routing_branch': 'REASSIGN',
+        'routingBranch': 'REASSIGN',
+      };
+
+      await raiseLegalComplaintInstance.onAssign(payload);
+      KAppX.router.pop();
+      fetchApprovalKpi();
+      if (requestId != null) {
+        await fetchRequestDetailsById(requestId);
+      }
+    } catch (e) {
+      debugPrint('Error assigning request: $e');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> resetAllocateDialog() async {
+    state = state.copyWith(
+      rolesData: null,
+      sections: [],
+      usersData: null,
+      selectedSectionId: null,
+      selectedRoleId: null,
+      selectedUserId: null,
+    );
+  }
+
+  Future<void> showAllocateUserDialog(BuildContext context) async {
+    await resetAllocateDialog();
+
+    KAppX.extendedRouter.dialog.showKDialog(
+      barrierDismissible: false,
+      builder: (_) {
+        return Dialog(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
+          child: Container(
+            width: 650,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
+                  child: Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'Allocate User',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(30),
+                        onTap: () => KAppX.router.pop(),
+                        child: const Padding(
+                          padding: EdgeInsets.all(6),
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      top: 20,
+                      bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+                    ),
+                    child: AssignUser(
+                      service: service,
+                      subService: subService,
+                      onSuccess: () {},
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> fetchRequestDetailsById(int id) async {
     state = state.copyWith(isLoading: true);
     try {
@@ -1018,8 +1228,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
       if (requests != null) {
         state = state.copyWith(requestDetails: requests, isLoading: false);
-        // fetchAssignEmployeesList();
 
+        fetchDepartments();
         fetchChatById(id);
         fetchAttachmentsById(id);
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
@@ -1478,8 +1688,9 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1️⃣ Upload files
-
+      final level = getActiveApprovalLevel(
+        state.requestDetails.approvalDetails ?? [],
+      );
       // 2️⃣ Build payload
       final payload = {
         "request_id": requestId,
@@ -1487,8 +1698,8 @@ class _VSController extends StateNotifier<_ViewState> {
         "comment": comment,
         "approval_id": approverId,
       };
-      if (decisionNo != null) {
-        payload['decision_number'] = decisionNo;
+      if (level?.level == 3) {
+        payload['routing_branch'] = "DIRECT";
       }
 
       debugPrint("✅ Final Payload: $payload");
@@ -1666,6 +1877,10 @@ class _VSController extends StateNotifier<_ViewState> {
     final int approvalLevel = level.level ?? 0;
     final bool ishasReplace = level.isReplace ?? false;
 
+    if (level.level == 3) {
+      return ActionButtonsType.assignApproveReject;
+    }
+
     if (isManager == true) {
       debugPrint('this user can only approve');
       return ActionButtonsType.assignReject;
@@ -1813,12 +2028,12 @@ class _VSController extends StateNotifier<_ViewState> {
     if (index == 0) {
       fetchRequests();
       fetchKpi();
-      fetchStatusBreakdown('weekly');
+      fetchStatusBreakdown('monthly');
       fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
       fetchactionItems();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('weekly');
+      fetchApprovalStatusBreakdown('monthly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }

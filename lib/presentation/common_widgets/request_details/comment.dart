@@ -979,7 +979,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
           _buildSimpleCommentInput(l10n),
 
         // Collapsed State Box ONLY
-        if (widget.showButtons && !isCommentMode)
+        if (isShowButtons)
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(12.toAutoScaledWidth),
