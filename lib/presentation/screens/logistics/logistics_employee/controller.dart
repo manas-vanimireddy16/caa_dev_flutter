@@ -1655,6 +1655,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state.requestDetails.request?.id ?? 0,
       );
       await Future.delayed(Duration(seconds: 3));
+      fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
       KAppX.router.pop();
       // if (decisionNo != null) {
       // }

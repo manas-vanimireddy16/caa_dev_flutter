@@ -16,23 +16,37 @@ class RequestsPage extends ConsumerStatefulWidget {
   ConsumerState<RequestsPage> createState() => _RequestsPageState();
 }
 
-class _RequestsPageState extends ConsumerState<RequestsPage> {
+class _RequestsPageState extends ConsumerState<RequestsPage>
+    with AutomaticKeepAliveClientMixin {
   PagingController<int, SalalahRequestModel>? _myRequestsController;
   PagingController<int, ApprovalData>? _actionItemsController;
+  VoidCallback? _disposeCleanup;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void dispose() {
+    _disposeCleanup?.call();
     _myRequestsController?.dispose();
     _actionItemsController?.dispose();
     super.dispose();
+  }
+
+  void _refreshList() {
+    if (!mounted) return;
+    if (widget.isActionItemsTab) {
+      _actionItemsController?.refresh();
+    } else {
+      _myRequestsController?.refresh();
+    }
   }
 
   void _ensureController(_VSController controller) {
     if (widget.isActionItemsTab) {
       if (_actionItemsController != null) return;
       _actionItemsController = PagingController<int, ApprovalData>(
-        getNextPageKey: (state) =>
-            ItHelpdeskListPagination.nextPageKey(state),
+        getNextPageKey: (state) => ItHelpdeskListPagination.nextPageKey(state),
         fetchPage: (pageKey) => controller.loadActionItemsPage(
           pageKey,
           searchText: controller.searchController.text.trim(),
@@ -41,15 +55,14 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               .actionItemsStatusFilter,
         ),
       );
-      controller.onActionItemsListRefresh =
-          () => _actionItemsController?.refresh();
+      controller.onActionItemsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onActionItemsListRefresh = null;
       return;
     }
 
     if (_myRequestsController != null) return;
     _myRequestsController = PagingController<int, SalalahRequestModel>(
-      getNextPageKey: (state) =>
-          ItHelpdeskListPagination.nextPageKey(state),
+      getNextPageKey: (state) => ItHelpdeskListPagination.nextPageKey(state),
       fetchPage: (pageKey) => controller.loadMyRequestsPage(
         pageKey,
         searchText: controller.searchController.text.trim(),
@@ -57,11 +70,13 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
             ref.read(_vsProvider(widget.providerArgs)).myRequestsStatusFilter,
       ),
     );
-    controller.onMyRequestsListRefresh = () => _myRequestsController?.refresh();
+    controller.onMyRequestsListRefresh = _refreshList;
+    _disposeCleanup = () => controller.onMyRequestsListRefresh = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
     _ensureController(controller);
 
@@ -71,13 +86,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
             ? s.actionItemsStatusFilter
             : s.myRequestsStatusFilter,
       ),
-      (_, __) {
-        if (widget.isActionItemsTab) {
-          _actionItemsController?.refresh();
-        } else {
-          _myRequestsController?.refresh();
-        }
-      },
+      (_, __) => _refreshList(),
     );
 
     if (widget.isActionItemsTab) {
@@ -94,7 +103,6 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
                 item.request?.id ?? 0,
                 fromActionItems: true,
               );
-              controller.updateTabIndex(0);
             },
           );
         },
@@ -114,7 +122,6 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               item.base?.id ?? 0,
               fromActionItems: false,
             );
-            controller.updateTabIndex(0);
           },
         );
       },

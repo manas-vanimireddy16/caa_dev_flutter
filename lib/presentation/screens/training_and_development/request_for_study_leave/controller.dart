@@ -293,8 +293,8 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-
-    // fetchbyCycleGoals(cycle: 'Jan-Jun');
+    fetchApprovalStatusBreakdown('weekly');
+    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
   }
 
   void onSearchChanged(String value) {
@@ -312,19 +312,17 @@ class _VSController extends StateNotifier<_ViewState> {
       List.generate(6, (index) => (currentYear - index).toString());
   List<StatSummaryData> requestStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.kpiData.data?.toJson(),
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> approverStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.approvalKpiData.data?.toJson(),
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
       state.tabIndex == 0
@@ -493,6 +491,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
     if (fromActionItems) {
       returnToMyRequestsTab();
+    } else {
+      MyRequestsTabPageSyncRegistry.syncToTab(
+        serviceId: service.id,
+        subServiceId: subService.id,
+        index: 0,
+      );
+      refreshMyRequestsList();
     }
 
     await refreshAfterReturn();
@@ -515,10 +520,13 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> refreshAfterReturn() async {
     await Future.wait([
       fetchKpi(),
+      fetchApprovalKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
+      fetchApprovalStatusBreakdown('weekly'),
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString()),
     ]);
-    refreshRequestLists();
+    refreshActiveRequestList();
   }
 
   void openNewRequestForm() {
@@ -679,28 +687,23 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests, isLoading: false);
-        // fetchAssignEmployeesList();
+        state = state.copyWith(requestDetails: requests);
 
         fetchChatById(id);
         fetchAttachmentsById(id);
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
 
-        /// ✅ CHECK ACTION TYPE HERE
-        final actionType = getActionButtonsType(
-          requests,
-          requests.approvalDetails ?? [],
-        );
-        if (actionType == ActionButtonsType.assignReject) {
-          // fetchAssignEmployeesList();
-          debugPrint('this user can only approve');
-        }
+        getActionButtonsType(requests, requests.approvalDetails ?? []);
+      } else {
+        Fluttertoast.showToast(msg: 'Failed to load request details');
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
+      Fluttertoast.showToast(msg: 'Failed to load request details');
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -1117,6 +1120,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await studyLeaveInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
+      returnToMyRequestsTab();
       refreshRequestLists();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
@@ -1160,12 +1164,15 @@ class _VSController extends StateNotifier<_ViewState> {
       // 3️⃣ Send request
       await studyLeaveInstance.onApprove(payload);
 
-      // KAppX.router.pop();
-      // if (decisionNo != null) {
       KAppX.router.pop();
-      // }
-      // await Future.delayed(Duration(seconds: 3));
+      returnToMyRequestsTab();
       refreshRequestLists();
+      fetchApprovalKpi();
+      fetchApprovalStatusBreakdown('weekly');
+      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+      fetchStatusBreakdown('weekly');
+      fetchTrendBreakDown(DateTime.now().year.toString());
+      fetchKpi();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1625,6 +1632,7 @@ class _VSController extends StateNotifier<_ViewState> {
           .requestForStudyLeaveCreateRequest(payload);
 
       if (response['status'] == 'success') {
+        Future.delayed(Duration(seconds: 2));
         _refreshDashboard();
       }
     } catch (e, st) {

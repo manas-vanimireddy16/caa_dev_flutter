@@ -561,13 +561,9 @@ class RequestForStudyLeaveRepositoryImple
     try {
       final client = await KAppX.network.secureClient();
       if (client != null) {
-        final queryParams = {
-          'offset': offset.toString(),
-          'limit': limit.toString(),
-          'order_by': 'created_at',
-          'sort_order': 'DESC',
-          'service_id': serviceId,
-          'sub_service_id': subServiceId,
+        final queryParams = <String, dynamic>{
+          'offset': offset,
+          'limit': limit,
         };
 
         if (status.isNotEmpty) {
@@ -782,8 +778,10 @@ class RequestForStudyLeaveRepositoryImple
         final url = ApiEndPoint.studyLeaveById(id);
         final response = await client.get(url, queryParameters: queryParams);
 
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> json = response.data;
+        if (response.statusCode == 200 && response.data != null) {
+          final Map<String, dynamic> json = Map<String, dynamic>.from(
+            response.data as Map,
+          );
 
           /// Convert JSON → Model
           final result = RequestDetailModel.fromJson(json);
@@ -791,13 +789,16 @@ class RequestForStudyLeaveRepositoryImple
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw Exception('Failed: ${response.statusCode}');
+          throw ApiException('Failed to fetch study leave data: ${response.statusCode}');
         }
       } else {
         return null;
       }
-    } catch (e) {
-      throw Exception("Error fetching request details: $e");
+    } on ApiException {
+      rethrow;
+    } catch (e, st) {
+      log('Failed to fetch study leave request details: $e', stackTrace: st);
+      throw ApiException('Failed to fetch study leave data');
     }
   }
 }

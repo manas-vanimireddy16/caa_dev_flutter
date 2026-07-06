@@ -500,7 +500,33 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    if (fromActionItems) {
+      returnToMyRequestsTab();
+    } else {
+      MyRequestsTabPageSyncRegistry.syncToTab(
+        serviceId: service.id,
+        subServiceId: subService.id,
+        index: 1,
+      );
+      refreshMyRequestsList();
+    }
+
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    const myRequestsTabIndex = 1;
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: myRequestsTabIndex,
+    );
+    updateTabIndex(myRequestsTabIndex);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: myRequestsTabIndex,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
@@ -1840,6 +1866,10 @@ Violation of this policy may result in:
     final int approvalLevel = level.level ?? 0;
     final bool ishasReplace = level.isReplace ?? false;
 
+    if (level.level == 3) {
+      return ActionButtonsType.assignCloseReject;
+    }
+
     if (level.level == 4 || level.level == 1) {
       return ActionButtonsType.approveReject;
     } else if (level.level == 5 || level.level == 2) {
@@ -2110,7 +2140,7 @@ Violation of this policy may result in:
           : values['end_date'],
 
       /// ACCESS TYPE
-      "access_type": values["access_type"].toString().toUpperCase(),
+      "access_type": values["request_time_period"].toString().toUpperCase(),
 
       /// DEVICE TYPE
       "device_type": List<String>.from(values['device_type'] ?? []),

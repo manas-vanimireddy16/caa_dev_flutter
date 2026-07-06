@@ -130,11 +130,6 @@ class _RequestForStudyLeaveScreenState
 
     _focusNode = FocusNode();
     _pageController = PageController();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      ref.read(_vsProvider(_providerArgs).notifier).initState();
-    });
   }
 
   @override
@@ -153,6 +148,7 @@ class _RequestForStudyLeaveScreenState
     return KScaffold(
       backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: const EdgeInsets.all(16),
         children: [
           /// KPI
@@ -176,7 +172,9 @@ class _RequestForStudyLeaveScreenState
             onChanged: (value) => controller.onStatusFilterChanged(
               value != null ? l10n.periodFilterValue(value) : null,
             ),
-            breakdown: state.statusBreakdown.data,
+            breakdown: state.tabIndex == 0
+                ? state.statusBreakdown.data
+                : state.approvalStatusBreakdown.data,
           ),
 
           16.toVerticalSizedBox,

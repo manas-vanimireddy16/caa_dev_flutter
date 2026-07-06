@@ -20,18 +20,14 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
     with AutomaticKeepAliveClientMixin {
   PagingController<int, RequestStudyLeaveModel>? _pagingController;
   bool _controllerInitialized = false;
+  VoidCallback? _disposeCleanup;
 
   @override
   bool get wantKeepAlive => true;
 
   @override
   void dispose() {
-    final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
-    if (widget.isActionItemsTab) {
-      controller.onActionItemsListRefresh = null;
-    } else {
-      controller.onMyRequestsListRefresh = null;
-    }
+    _disposeCleanup?.call();
     _pagingController?.dispose();
     super.dispose();
   }
@@ -51,24 +47,22 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
         fetchPage: (pageKey) => controller.loadActionItemsPage(
           pageKey,
           searchText: controller.searchController.text.trim(),
-          status: ref
-              .read(_vsProvider(widget.providerArgs))
-              .actionItemsStatusFilter,
+          status: controller.currentStatusFilter,
         ),
       );
       controller.onActionItemsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onActionItemsListRefresh = null;
     } else {
       _pagingController = PagingController<int, RequestStudyLeaveModel>(
         getNextPageKey: (state) => ListPagination.nextPageKey(state),
         fetchPage: (pageKey) => controller.loadMyRequestsPage(
           pageKey,
           searchText: controller.searchController.text.trim(),
-          status: ref
-              .read(_vsProvider(widget.providerArgs))
-              .myRequestsStatusFilter,
+          status: controller.currentStatusFilter,
         ),
       );
       controller.onMyRequestsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onMyRequestsListRefresh = null;
     }
   }
 
@@ -78,15 +72,6 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
     final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
     _ensureController(controller);
 
-    ref.listen(
-      _vsProvider(widget.providerArgs).select(
-        (s) => widget.isActionItemsTab
-            ? s.actionItemsStatusFilter
-            : s.myRequestsStatusFilter,
-      ),
-      (_, __) => _refreshList(),
-    );
-
     return PaginatedListSection<RequestStudyLeaveModel>(
       pagingController: _pagingController!,
       emptyMessage: widget.l10n.noDataFound,
@@ -95,6 +80,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
           data: controller.buildRequestCardData(item),
           fieldLabelBuilder: widget.l10n.fieldLabel,
           requestIdLabelBuilder: widget.l10n.requestIdLabel,
+          statusLabelBuilder: widget.l10n.statusLabel,
           onTap: () async {
             await controller.openRequestDetails(
               item.base?.id ?? 0,
