@@ -1168,7 +1168,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await followupReportInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 2));
       KAppX.router.pop();
-      // KAppX.router.pop();
+      KAppX.router.pop();
       returnToMyRequestsTab();
       await fetchApprovalKpi();
     } catch (e) {
@@ -1625,6 +1625,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (response['status'] == 'success') {
+        await Future.delayed(Duration(seconds: 2));
         _refreshDashboard();
       }
     } catch (e, st) {
@@ -1636,7 +1637,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> _refreshDashboard() async {
     state = state.copyWith(isRequestLoading: true);
-    await Future.delayed(Duration(seconds: 2));
+
     fetchKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
