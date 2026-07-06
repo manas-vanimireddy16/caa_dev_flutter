@@ -1168,7 +1168,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await followupReportInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 2));
       KAppX.router.pop();
-      KAppX.router.pop();
+      // KAppX.router.pop();
       returnToMyRequestsTab();
       await fetchApprovalKpi();
     } catch (e) {
