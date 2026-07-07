@@ -9,6 +9,68 @@ import 'package:code_setup/presentation/screens/hc_service/models/human_resource
 import 'package:code_setup/presentation/screens/information_security_services/models/cyber_security_risk_management_model.dart';
 import 'package:code_setup/utils/mappers/approval_detail_mapper.dart';
 
+DepartmentModel? parseDepartmentFromJson(Map<String, dynamic> json) {
+  if (json['user_department'] is Map) {
+    return DepartmentModel.fromJson(json['user_department']);
+  }
+  if (json['department'] is Map) {
+    return DepartmentModel.fromJson(json['department']);
+  }
+  if (json['department'] is int && (json['department'] as int) > 0) {
+    return DepartmentModel(id: json['department']);
+  }
+
+  final name = json['department_name']?.toString().trim();
+  if (name != null && name.isNotEmpty) {
+    return DepartmentModel(
+      id: json['department_id'] is int
+          ? json['department_id'] as int?
+          : int.tryParse('${json['department_id'] ?? ''}'),
+      departmentName: name,
+      departmentNameInArabic:
+          json['department_arabic_name']?.toString() ??
+          json['arabic_department_name']?.toString(),
+    );
+  }
+
+  if (json['department_id'] is int && (json['department_id'] as int) > 0) {
+    return DepartmentModel(id: json['department_id']);
+  }
+
+  return null;
+}
+
+SectionModel? parseSectionFromJson(Map<String, dynamic> json) {
+  if (json['user_section'] is Map) {
+    return SectionModel.fromJson(json['user_section']);
+  }
+  if (json['section'] is Map) {
+    return SectionModel.fromJson(json['section']);
+  }
+  if (json['section'] is int && (json['section'] as int) > 0) {
+    return SectionModel(id: json['section']);
+  }
+
+  final name = json['section_name']?.toString().trim();
+  if (name != null && name.isNotEmpty) {
+    return SectionModel(
+      id: json['section_id'] is int
+          ? json['section_id'] as int?
+          : int.tryParse('${json['section_id'] ?? ''}'),
+      sectionName: name,
+      sectionNameInArabic:
+          json['section_arabic_name']?.toString() ??
+          json['arabic_section_name']?.toString(),
+    );
+  }
+
+  if (json['section_id'] is int && (json['section_id'] as int) > 0) {
+    return SectionModel(id: json['section_id']);
+  }
+
+  return null;
+}
+
 RequestDetailModel welcomeFromJson(String str) =>
     RequestDetailModel.fromJson(json.decode(str));
 
@@ -932,7 +994,8 @@ class RequestDetailData {
     distance: json['distance'],
 
     ifSponsored: json['if_sponsored'],
-    allowancePercentage: json['allowance_percentage']?.toString() ??
+    allowancePercentage:
+        json['allowance_percentage']?.toString() ??
         json['increment_percentage']?.toString(),
     airTicketRequired: json['air_ticket_required'],
     vehicleRequired: json['vehicle_required'],
@@ -1022,8 +1085,8 @@ class RequestDetailData {
     currentJobTitle: json['current_job_title'] as String?,
     currentSalaryGrade: json['current_salary_grade'] as String?,
 
-    proposedBasicSalary: (json['proposed_basic_salary'] ?? json['new_basic_salary'])
-        ?.toString(),
+    proposedBasicSalary:
+        (json['proposed_basic_salary'] ?? json['new_basic_salary'])?.toString(),
     proposedJobTitle: json['proposed_job_title'] as String?,
     proposedSalaryGrade: json['proposed_salary_grade'] as String?,
     certificationTitle: json['certification_title'] as String?,
@@ -2086,7 +2149,8 @@ class RequestModel {
       expirationDate: json["expiration_date"],
       attachmentUrl: json["attachment_url"],
       isDeleted: json["is_deleted"],
-      allowanceValue: json['allowance_value']?.toString() ??
+      allowanceValue:
+          json['allowance_value']?.toString() ??
           json['annual_periodic_allowance']?.toString(),
 
       assignedToUserId: json["assigned_to_user_id"],
@@ -2189,7 +2253,8 @@ class RequestModel {
       distance: json['distance'],
 
       ifSponsored: json['if_sponsored'],
-      allowancePercentage: json['allowance_percentage']?.toString() ??
+      allowancePercentage:
+          json['allowance_percentage']?.toString() ??
           json['increment_percentage']?.toString(),
       airTicketRequired: json['air_ticket_required'],
       vehicleRequired: json['vehicle_required'],
@@ -2252,8 +2317,7 @@ class RequestModel {
       driverName: json['driver_name'],
 
       positionToBeTransferred: json['position_to_be_transferred'],
-      effectiveFromDate:
-          json['effective_from_date'] ?? json['effective_date'],
+      effectiveFromDate: json['effective_from_date'] ?? json['effective_date'],
       decisionNumber: json['decision_number'],
       employeeName: json['employee_name'],
       jobTitle: json['job_title'],
@@ -2287,9 +2351,9 @@ class RequestModel {
       currentJobTitle: json['current_job_title'] as String?,
       currentSalaryGrade: json['current_salary_grade'] as String?,
 
-      proposedBasicSalary: (json['proposed_basic_salary'] ??
-              json['new_basic_salary'])
-          ?.toString(),
+      proposedBasicSalary:
+          (json['proposed_basic_salary'] ?? json['new_basic_salary'])
+              ?.toString(),
       proposedJobTitle: json['proposed_job_title'] as String?,
       proposedSalaryGrade: json['proposed_salary_grade'] as String?,
       certificationTitle: json['certification_title'] as String?,
@@ -2630,6 +2694,15 @@ class UserModel {
   final String? manpowerId;
   final String? mobile;
   final String? officeNumber;
+  final String? currentBasicSalary;
+  final String? previousBasicSalary;
+
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+
+  final bool? isAdmin;
 
   /// FIXED — department can be ID or object AND API also gives user_department
   final DepartmentModel? department;
@@ -2706,6 +2779,13 @@ class UserModel {
     this.children2Name,
     this.address,
     this.religion,
+    this.currentBasicSalary,
+    this.previousBasicSalary,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+    this.isAdmin,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -2733,25 +2813,13 @@ class UserModel {
       officeNumber: json['office_number'],
 
       /// FIX 1 — department
-      department: json['user_department'] != null
-          ? DepartmentModel.fromJson(json['user_department'])
-          : (json['department'] is int
-                ? DepartmentModel(id: json['department'])
-                : json['department'] is Map
-                ? DepartmentModel.fromJson(json['department'])
-                : null),
+      department: parseDepartmentFromJson(json),
 
       category: json['category'],
       directorate: json['directorate'],
 
       /// FIX 2 — section
-      section: json['user_section'] != null
-          ? SectionModel.fromJson(json['user_section'])
-          : (json['section'] is int
-                ? SectionModel(id: json['section'])
-                : json['section'] is Map
-                ? SectionModel.fromJson(json['section'])
-                : null),
+      section: parseSectionFromJson(json),
 
       /// FIX 3 — position
       position: json['user_position'] != null
@@ -2779,6 +2847,15 @@ class UserModel {
       children2Name: json['children2_name'],
       address: json['address'],
       religion: json['religion'],
+      currentBasicSalary: json['current_basic_salary'] as String?,
+      previousBasicSalary: json['previous_basic_salary'] as String?,
+
+      createdBy: json['created_by'] as int?,
+      createdAt: json['created_at'] as String?,
+      updatedBy: json['updated_by'] as int?,
+      updatedAt: json['updated_at'] as String?,
+
+      isAdmin: json['is_admin'] as bool?,
     );
   }
 
@@ -3075,15 +3152,24 @@ class ServiceTypeModel {
 class ServiceModel {
   final int? id;
   final String? name;
+  final String? arabicName;
   final String? description;
   final String? code;
   final String? logoUrl;
 
-  ServiceModel({this.id, this.name, this.description, this.code, this.logoUrl});
+  ServiceModel({
+    this.id,
+    this.name,
+    this.arabicName,
+    this.description,
+    this.code,
+    this.logoUrl,
+  });
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) => ServiceModel(
     id: json['id'],
     name: json['name'],
+    arabicName: json['arabic_name'] as String?,
     description: json['description'],
     code: json['code'],
     logoUrl: json['logo_url'],
@@ -3092,10 +3178,17 @@ class ServiceModel {
   Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
+    'arabic_name': arabicName,
     'description': description,
     'code': code,
     'logo_url': logoUrl,
   };
+
+  String displayName({required bool isArabic}) => localizedDisplayName(
+    isArabic: isArabic,
+    english: name,
+    arabic: arabicName,
+  );
 }
 
 class SubServiceModel {
@@ -3149,6 +3242,8 @@ class WorkflowDetailModel {
   final String? content;
   final String? status;
   final int? order;
+  final String? contentAr;
+  final String? statusAr;
 
   // -------- OLD IDs --------
   final int? userId;
@@ -3193,6 +3288,8 @@ class WorkflowDetailModel {
     this.content,
     this.status,
     this.order,
+    this.contentAr,
+    this.statusAr,
     this.userId,
     this.roleId,
     this.departmentId,
@@ -3229,7 +3326,8 @@ class WorkflowDetailModel {
       content: json['content'] as String?,
       status: json['status'] as String?,
       order: json['order'] as int?,
-
+      contentAr: json['content_ar'] as String?,
+      statusAr: json['status_ar'] as String?,
       // -------- OLD IDs --------
       userId: json['user_id'] as int?,
       roleId: json['role_id'] as int?,
@@ -3267,13 +3365,9 @@ class WorkflowDetailModel {
 
       role: json['role'] != null ? RoleModel.fromJson(json['role']) : null,
 
-      department: json['department'] != null
-          ? DepartmentModel.fromJson(json['department'])
-          : null,
+      department: parseDepartmentFromJson(json),
 
-      section: json['section'] != null
-          ? SectionModel.fromJson(json['section'])
-          : null,
+      section: parseSectionFromJson(json),
     );
   }
 
@@ -3329,6 +3423,7 @@ class RoleModel {
   final bool? isDeleted;
   final int? id;
   final String? name;
+  final String? arabicName;
   final int? createdBy;
   final String? createdAt;
   final int? updatedBy;
@@ -3338,6 +3433,7 @@ class RoleModel {
     this.isDeleted,
     this.id,
     this.name,
+    this.arabicName,
     this.createdBy,
     this.createdAt,
     this.updatedBy,
@@ -3349,6 +3445,8 @@ class RoleModel {
       isDeleted: json['is_deleted'] as bool?,
       id: json['id'] as int?,
       name: json['name'] as String?,
+      arabicName: json['arabic_name'] as String?,
+
       createdBy: json['created_by'] as int?,
       createdAt: json['created_at'] as String?,
       updatedBy: json['updated_by'] as int?,
@@ -3360,6 +3458,7 @@ class RoleModel {
     'is_deleted': isDeleted,
     'id': id,
     'name': name,
+    'arabic_name': arabicName,
     'created_by': createdBy,
     'created_at': createdAt,
     'updated_by': updatedBy,
@@ -3838,6 +3937,8 @@ class ChatMessageModel {
   final String? message;
   final String? messageType;
   final String? status;
+  final String? messageAr;
+  final String? statusAr;
 
   final bool? isInternal;
   final bool? isDeleted; // ✅ added
@@ -3871,6 +3972,8 @@ class ChatMessageModel {
     this.createdAt,
     this.updatedBy,
     this.updatedAt,
+    this.messageAr,
+    this.statusAr,
     this.user,
     // this.request,
     // this.service,
@@ -3885,6 +3988,8 @@ class ChatMessageModel {
       serviceId: json['service_id'],
       subServiceId: json['sub_service_id'],
       userId: json['user_id'],
+      messageAr: json['message_ar'] as String?,
+      statusAr: json['status_ar'] as String?,
       roleId: json['role_id'],
       message: json['message'],
       messageType: json['messageType'],

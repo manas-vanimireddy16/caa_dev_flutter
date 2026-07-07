@@ -899,13 +899,21 @@ class LegalConsultationandReviewofAdministrativeDecisionsRepositoryImple
           );
           debugPrint('✅ Request sent successfully');
         } else {
-          debugPrint('⚠️ Failed to send request: ${response.statusCode}');
+          final message =
+              response.data is Map
+                  ? response.data['message']?.toString()
+                  : null;
+          debugPrint('⚠️ Failed to send assign request: ${response.statusCode}');
           ShowFlutterToast().showFlutterToastFailure(
-            '${response.statusMessage}',
+            message ?? '${response.statusMessage}',
+          );
+          throw ApiException(
+            message ?? 'Failed to assign request (${response.statusCode})',
           );
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
+        throw ApiException('Client is null — cannot send assign request');
       }
     } on DioException catch (e) {
       debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');

@@ -650,8 +650,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
   String formatDisplayStatus(String? status) {
     if (status == null || status.trim().isEmpty) return 'N/A';
-    final normalized =
-        status.toLowerCase().replaceAll('_', ' ').replaceAll(' ', '');
+    final normalized = status
+        .toLowerCase()
+        .replaceAll('_', ' ')
+        .replaceAll(' ', '');
     if (normalized == 'inprogress') return 'In Progress';
     return status[0].toUpperCase() + status.substring(1);
   }
@@ -853,18 +855,12 @@ class _VSController extends StateNotifier<_ViewState> {
       optionsBuilder: (ref) {
         final formL10n = DashboardL10n.of(ref.context);
         return [
-          DropdownOption(
-            value: 'High',
-            label: formL10n.priorityOption('High'),
-          ),
+          DropdownOption(value: 'High', label: formL10n.priorityOption('High')),
           DropdownOption(
             value: 'Medium',
             label: formL10n.priorityOption('Medium'),
           ),
-          DropdownOption(
-            value: 'Low',
-            label: formL10n.priorityOption('Low'),
-          ),
+          DropdownOption(value: 'Low', label: formL10n.priorityOption('Low')),
         ];
       },
       placeholder: l10n.select,
@@ -1418,7 +1414,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final user = KAppX.globalProvider.read(userInfoProvider);
 
-    final int userId = int.parse(user!.data!.id!);
+    final int userId = int.parse(user?.data?.id ?? "0");
 
     /// 1️⃣ Delegate always allowed
     if (approval.delegateUserId == userId) return true;

@@ -1579,7 +1579,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> _refreshDashboard() async {
-    await Future.delayed(Duration(milliseconds: 2000));
+    await Future.delayed(Duration(milliseconds: 2300));
     fetchKpi();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());

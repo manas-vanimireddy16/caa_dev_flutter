@@ -44,18 +44,18 @@ class KNetworkingBoxImpl
   Future<DioNetworkingClient?> secureClient({
     DioNetworkingOptions? options,
     bool loggingEnabled = true,
-    bool includeRoleCookies = true,
+    bool includeRoleCookies = false,
   }) async {
     DioNetworkingClient? client;
 
     final user = await KAuthCred().getProfileData();
-    final role = await KAuthCred().getSelectedRole();
-    final userInfo = await KAuthCred().getUserInfoData();
+    // final role = await KAuthCred().getSelectedRole();
+    // final userInfo = await KAuthCred().getUserInfoData();
 
     final authToken = user?.accessToken ?? '';
-    final userId =
-        user?.userId?.toString() ?? userInfo?.data?.id?.toString() ?? '';
-    final roleName = role?.roleName ?? '';
+    // final userId =
+    //     user?.userId?.toString() ?? userInfo?.data?.id?.toString() ?? '';
+    // final roleName = role?.roleName ?? '';
 
     if (authToken.isEmpty) {
       log('[secureClient] Client could not be created');
@@ -66,14 +66,15 @@ class KNetworkingBoxImpl
       ...?options?.headers,
     };
 
-    if (includeRoleCookies) {
-      final cookieParts = <String>[
-        if (userId.isNotEmpty) 'userId=$userId',
-        'authToken=$authToken',
-        if (roleName.isNotEmpty) 'roleName=${Uri.encodeComponent(roleName)}',
-      ];
-      mergedHeaders['Cookie'] = cookieParts.join('; ');
-    }
+    // Role cookies disabled — auth uses the `jwt` header only.
+    // if (includeRoleCookies) {
+    //   final cookieParts = <String>[
+    //     if (userId.isNotEmpty) 'userId=$userId',
+    //     'authToken=$authToken',
+    //     if (roleName.isNotEmpty) 'roleName=${Uri.encodeComponent(roleName)}',
+    //   ];
+    //   mergedHeaders['Cookie'] = cookieParts.join('; ');
+    // }
 
     client = await _networkingBoxService.client(
       options: DioNetworkingOptions(

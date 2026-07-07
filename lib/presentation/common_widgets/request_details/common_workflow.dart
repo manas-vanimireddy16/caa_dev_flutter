@@ -296,6 +296,8 @@ import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/assets/icons.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/helper/localized_display_name.dart';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -318,9 +320,11 @@ enum WorkflowStepStatus {
 /// ---------------------------------------------------------------------------
 class WorkflowStepView {
   final String title;
-  final String? department;
+  final String? workflowType;
   final String? actor;
   final String? empId;
+  final String? department;
+  final String? section;
   final String? role;
   final String? rawDate;
   final WorkflowStepStatus status;
@@ -329,9 +333,11 @@ class WorkflowStepView {
   const WorkflowStepView({
     required this.title,
     required this.status,
-    this.department,
+    this.workflowType,
     this.actor,
     this.empId,
+    this.department,
+    this.section,
     this.role,
     this.rawDate,
     this.isFirst = false,
@@ -371,14 +377,78 @@ class RequestWorkflowTimeline extends StatelessWidget {
 
   // ------------------ FORMAT DATE ------------------
   String formatDateTime(String? dt) {
-    if (dt == null || dt.isEmpty) return "-";
+    if (dt == null || dt.isEmpty) return '-';
     try {
       final local = DateTime.parse(dt).toUtc().toLocal();
-      return DateFormat("dd MMM yyyy, hh:mm a").format(local);
+      return DateFormat('MMM dd, yyyy | hh:mm a').format(local);
     } catch (_) {
-      return "-";
+      return '-';
     }
   }
+
+  String _orDash(String? value) {
+    final trimmed = value?.trim();
+    if (trimmed == null || trimmed.isEmpty) return '-';
+    return trimmed;
+  }
+
+  String _localizedText({
+    required bool isArabic,
+    String? english,
+    String? arabic,
+    String fallback = '-',
+  }) {
+    final value = localizedDisplayName(
+      isArabic: isArabic,
+      english: english,
+      arabic: arabic,
+    );
+    return value.isEmpty ? fallback : value;
+  }
+
+  String _stepTitle(WorkflowDetailModel wf, bool isArabic) {
+    final title = _localizedText(
+      isArabic: isArabic,
+      english: wf.content,
+      arabic: wf.contentAr,
+      fallback: '',
+    );
+    if (title.isNotEmpty) return title;
+
+    final statusTitle = _localizedText(
+      isArabic: isArabic,
+      english: wf.status,
+      arabic: wf.statusAr,
+      fallback: '',
+    );
+    return statusTitle.isNotEmpty ? statusTitle : 'Workflow Step';
+  }
+
+  String _workflowTypeLabel(bool isArabic) {
+    final service = details.service;
+    if (service != null) {
+      final label = service.displayName(isArabic: isArabic);
+      if (label.isNotEmpty) return label;
+    }
+    return _localizedText(
+      isArabic: isArabic,
+      english: details.subService?.subServiceName,
+      arabic: null,
+      fallback: '',
+    );
+  }
+
+  String _employeeName(UserModel? user, bool isArabic) => _localizedText(
+    isArabic: isArabic,
+    english: user?.employeeName,
+    arabic: user?.employeeArabicName,
+  );
+
+  String _roleName(RoleModel? role, bool isArabic) => _localizedText(
+    isArabic: isArabic,
+    english: role?.name,
+    arabic: role?.arabicName,
+  );
 
   // ------------------ FIND APPROVAL ------------------
   ApprovalDetailModel? _findApprovalByUserId(int? userId) {
@@ -392,6 +462,156 @@ class RequestWorkflowTimeline extends StatelessWidget {
     return null;
   }
 
+  ApprovalDetailModel? _findApprovalForWorkflow(
+    WorkflowDetailModel wf,
+    int index,
+  ) {
+    final approvals = details.approvalDetails ?? [];
+    final userIds = <int>{
+      ?wf.approverUserId,
+      ?wf.approvedBy,
+      ?wf.approvedByUser?.id,
+      ?wf.user?.id,
+      ?wf.userId,
+    };
+
+    for (final approval in approvals) {
+      if (userIds.contains(approval.approverUserId) ||
+          userIds.contains(approval.approvedBy)) {
+        return approval;
+      }
+    }
+
+    if (index > 0 && index - 1 < approvals.length) {
+      return approvals[index - 1];
+    }
+
+    return null;
+  }
+
+  ({DepartmentModel? department, SectionModel? section})
+  _resolveDepartmentAndSection({
+    required WorkflowDetailModel wf,
+    required UserModel? user,
+    required int index,
+  }) {
+    DepartmentModel? department;
+    SectionModel? section;
+
+    void useDepartment(DepartmentModel? value) {
+      if (department != null || value == null) return;
+      department = value;
+    }
+
+    void useSection(SectionModel? value) {
+      if (section != null || value == null) return;
+      section = value;
+    }
+
+    useDepartment(user?.department);
+    useSection(user?.section);
+    useDepartment(wf.department);
+    useSection(wf.section);
+
+    final approval = _findApprovalForWorkflow(wf, index);
+    if (approval != null) {
+      useDepartment(approval.department);
+      useSection(approval.section);
+    }
+
+    if (index == 0) {
+      final creator = details.request?.createdByUser;
+      useDepartment(creator?.department);
+      useSection(creator?.section);
+    }
+
+    if (department == null &&
+        wf.departmentId != null &&
+        wf.departmentId! > 0) {
+      department = _findDepartmentById(wf.departmentId);
+    }
+    if (section == null && wf.sectionId != null && wf.sectionId! > 0) {
+      section = _findSectionById(wf.sectionId);
+    }
+
+    if (department != null &&
+        department!.displayName(isArabic: false).trim().isEmpty &&
+        department!.id != null) {
+      department = _findDepartmentById(department!.id);
+    }
+    if (section != null &&
+        section!.displayName(isArabic: false).trim().isEmpty &&
+        section!.id != null) {
+      section = _findSectionById(section!.id);
+    }
+
+    return (department: department, section: section);
+  }
+
+  DepartmentModel? _findDepartmentById(int? id) {
+    if (id == null || id <= 0) return null;
+
+    DepartmentModel? pick(DepartmentModel? model) {
+      if (model?.id != id) return null;
+      if (model!.displayName(isArabic: false).trim().isEmpty) return null;
+      return model;
+    }
+
+    final creator = details.request?.createdByUser?.department;
+    final fromCreator = pick(creator);
+    if (fromCreator != null) return fromCreator;
+
+    for (final wf in details.workflowDetails ?? []) {
+      for (final candidate in [
+        wf.department,
+        wf.approvedByUser?.department,
+        wf.user?.department,
+      ]) {
+        final match = pick(candidate);
+        if (match != null) return match;
+      }
+    }
+
+    for (final approval in details.approvalDetails ?? []) {
+      final match = pick(approval.department);
+      if (match != null) return match;
+    }
+
+    return DepartmentModel(id: id);
+  }
+
+  SectionModel? _findSectionById(int? id) {
+    if (id == null || id <= 0) return null;
+
+    SectionModel? pick(SectionModel? model) {
+      if (model?.id != id) return null;
+      if (model!.displayName(isArabic: false).trim().isEmpty) return null;
+      return model;
+    }
+
+    final creator = details.request?.createdByUser?.section;
+    final fromCreator = pick(creator);
+    if (fromCreator != null) return fromCreator;
+
+    for (final wf in details.workflowDetails ?? []) {
+      for (final candidate in [
+        wf.section,
+        wf.approvedByUser?.section,
+        wf.user?.section,
+      ]) {
+        final match = pick(candidate);
+        if (match != null) return match;
+      }
+    }
+
+    for (final approval in details.approvalDetails ?? []) {
+      final match = pick(approval.section);
+      if (match != null) return match;
+    }
+
+    return SectionModel(id: id);
+  }
+
   // ------------------ NORMALIZE MODELS ------------------
   UserModel? _mapApproverUserToUser(ApproverUserModel? u) {
     if (u == null) return null;
@@ -400,11 +620,9 @@ class RequestWorkflowTimeline extends StatelessWidget {
       id: u.id,
       employeeId: u.employeeId,
       employeeName: u.employeeName,
+      employeeArabicName: u.employeeArabicName,
       email: u.email,
       mobile: u.mobile,
-      // departmentId: u.department,
-      // sectionId: u.section,
-      // positionId: u.position,
     );
   }
 
@@ -456,25 +674,34 @@ class RequestWorkflowTimeline extends StatelessWidget {
   }
 
   // ------------------ GENERATE STEPS ------------------
-  List<WorkflowStepView> generateWorkflowSteps() {
+  List<WorkflowStepView> generateWorkflowSteps({required bool isArabic}) {
     final workflows = _sortWorkflows(details.workflowDetails ?? []);
+    final workflowType = _workflowTypeLabel(isArabic);
     final List<WorkflowStepView> steps = [];
 
     for (int i = 0; i < workflows.length; i++) {
       final wf = workflows[i];
       final resolved = _resolveActorAndRole(wf);
+      final user =
+          resolved.user ??
+          (i == 0 ? details.request?.createdByUser : null) ??
+          wf.user;
+      final role = resolved.role ?? wf.role;
+      final org = _resolveDepartmentAndSection(
+        wf: wf,
+        user: user,
+        index: i,
+      );
 
       steps.add(
         WorkflowStepView(
-          title: wf.content ?? "Workflow Step",
-          department: i == 0
-              ? details.request?.createdByUser?.department?.departmentName
-              : resolved.role?.name,
-          actor: resolved.user?.employeeName,
-          empId: i == 0
-              ? resolved.user?.employeeId
-              : resolved.user?.id.toString(),
-          role: resolved.role?.name,
+          title: _stepTitle(wf, isArabic),
+          workflowType: i == 0 && workflowType.isNotEmpty ? workflowType : null,
+          actor: _employeeName(user, isArabic),
+          empId: _orDash(user?.employeeId ?? user?.id?.toString()),
+          department: _orDash(org.department?.displayName(isArabic: isArabic)),
+          section: _orDash(org.section?.displayName(isArabic: isArabic)),
+          role: _orDash(_roleName(role, isArabic)),
           rawDate: wf.updatedAt ?? wf.createdAt,
           status: mapStatus(wf.status),
           isFirst: i == 0,
@@ -487,7 +714,10 @@ class RequestWorkflowTimeline extends StatelessWidget {
   // ------------------ BUILD UI ------------------
   @override
   Widget build(BuildContext context) {
-    final steps = generateWorkflowSteps();
+    final labels = l10n ?? DashboardL10n.of(context);
+    final isArabic = labels.isArabic;
+    final steps = generateWorkflowSteps(isArabic: isArabic);
+    final textDirection = isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr;
 
     return Card(
       color: Colors.white,
@@ -502,7 +732,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              l10n?.requestWorkflowSectionTitle ?? 'Request Workflow',
+              labels.requestWorkflowSectionTitle,
               style: AppTextStyles.requestDetailsSectionHeading(),
             ),
             const Divider(height: 24),
@@ -511,18 +741,14 @@ class RequestWorkflowTimeline extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: steps.length,
               itemBuilder: (context, index) {
-                final s = steps[index];
+                final step = steps[index];
                 return _buildStep(
-                  l10n: l10n,
+                  labels: labels,
+                  textDirection: textDirection,
                   index: index,
                   total: steps.length,
-                  status: s.status,
-                  title: s.title,
-                  actor: s.actor ?? "-",
-                  empId: s.empId ?? "-",
-                  role: s.role ?? "",
-                  department: s.department ?? "",
-                  date: formatDateTime(s.rawDate),
+                  step: step,
+                  date: formatDateTime(step.rawDate),
                 );
               },
             ),
@@ -534,74 +760,82 @@ class RequestWorkflowTimeline extends StatelessWidget {
 
   // ------------------ STEP UI ------------------
   Widget _buildStep({
-    DashboardL10n? l10n,
+    required DashboardL10n labels,
+    required ui.TextDirection textDirection,
     required int index,
     required int total,
-    required WorkflowStepStatus status,
-    required String title,
+    required WorkflowStepView step,
     required String date,
-    required String actor,
-    required String empId,
-    required String role,
-    required String department,
   }) {
     final showLine = index < total - 1;
-    final showActor = actor != "-" && actor.isNotEmpty;
-    final showDetails = status == WorkflowStepStatus.approved;
-    final actionLabel = l10n?.workflowActionTakenBy ?? 'Action taken by';
-    String employeeLineFor(String id) =>
-        l10n?.workflowEmployeeIdLine(id) ?? 'Employee ID: $id';
+    final showDetails = step.status != WorkflowStepStatus.inactive || step.isFirst;
 
     return IntrinsicHeight(
       child: Row(
+        textDirection: textDirection,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              _statusIndicator(status, index == 0),
-              if (showLine)
-                Expanded(
-                  child: Container(width: 3, color: const Color(0xFFDFDFDF)),
-                ),
-            ],
+          _buildTimelineRail(
+            status: step.status,
+            isFirst: step.isFirst,
+            showLine: showLine,
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 22),
+              padding: const EdgeInsets.only(bottom: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTextStyles.requestDetailsFieldHeading()),
+                  Text(
+                    step.title,
+                    style: AppTextStyles.requestDetailsSectionHeading().copyWith(
+                      fontSize: 15,
+                    ),
+                  ),
+                  if (step.workflowType != null &&
+                      step.workflowType!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    _WorkflowTypeChip(label: step.workflowType!),
+                  ],
                   if (showDetails) ...[
-                    if (department.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Chip(
-                          label: Text(
-                            department,
-                            style: AppTextStyles.requestDetailsFieldContent(),
-                          ),
-                        ),
+                    const SizedBox(height: 12),
+                    _WorkflowDetailRow(
+                      label: '${labels.workflowActionTakenBy}:',
+                      value: step.actor ?? '-',
+                      textDirection: textDirection,
+                    ),
+                    const SizedBox(height: 8),
+                    _WorkflowDetailRow(
+                      label: '${labels.employeeId}:',
+                      value: step.empId ?? '-',
+                      textDirection: textDirection,
+                    ),
+                    const SizedBox(height: 8),
+                    _WorkflowDetailRow(
+                      label: '${labels.workflowDepartmentName}:',
+                      value: step.department ?? '-',
+                      textDirection: textDirection,
+                    ),
+                    const SizedBox(height: 8),
+                    _WorkflowDetailRow(
+                      label: '${labels.workflowSectionName}:',
+                      value: step.section ?? '-',
+                      textDirection: textDirection,
+                    ),
+                    const SizedBox(height: 8),
+                    _WorkflowDetailRow(
+                      label: '${labels.workflowRoleName}:',
+                      value: step.role ?? '-',
+                      textDirection: textDirection,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      date,
+                      style: AppTextStyles.requestDetailsFieldHeading().copyWith(
+                        color: const Color(0xFF9E9E9E),
                       ),
-                    if (showActor) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        '$actionLabel:',
-                        style: AppTextStyles.requestDetailsFieldHeading(),
-                      ),
-                      Text(
-                        actor,
-                        style: AppTextStyles.requestDetailsFieldContent(),
-                      ),
-                    ],
-                    if (empId.isNotEmpty && empId != "-")
-                      Text(
-                        employeeLineFor(empId),
-                        style: AppTextStyles.requestDetailsFieldContent(),
-                      ),
-                    const SizedBox(height: 4),
-                    Text(date, style: AppTextStyles.requestDetailsFieldContent()),
+                    ),
                   ],
                 ],
               ),
@@ -612,14 +846,34 @@ class RequestWorkflowTimeline extends StatelessWidget {
     );
   }
 
+  Widget _buildTimelineRail({
+    required WorkflowStepStatus status,
+    required bool isFirst,
+    required bool showLine,
+  }) {
+    return Column(
+      children: [
+        _statusIndicator(status, isFirst),
+        if (showLine)
+          Expanded(
+            child: Container(width: 2, color: const Color(0xFFDFDFDF)),
+          ),
+      ],
+    );
+  }
+
   // ------------------ STATUS ICON ------------------
   Widget _statusIndicator(WorkflowStepStatus status, bool isFirst) {
     String icon = KIcons.workflowPending;
     Color color = const Color(0xFFC77700);
 
-    if (isFirst || status == WorkflowStepStatus.approved) {
+    if (isFirst) {
       icon = KIcons.workflowCompleted;
       color = const Color(0xFF26285F);
+    } else if (status == WorkflowStepStatus.approved ||
+        status == WorkflowStepStatus.submitted) {
+      icon = KIcons.workflowCompleted;
+      color = const Color(0xFF31B480);
     }
 
     return Container(
@@ -627,6 +881,67 @@ class RequestWorkflowTimeline extends StatelessWidget {
       height: 40,
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
       child: Center(child: KImageProvider(width: 22, height: 22, image: icon)),
+    );
+  }
+}
+
+class _WorkflowTypeChip extends StatelessWidget {
+  final String label;
+
+  const _WorkflowTypeChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+      ),
+      child: Text(
+        label,
+        style: AppTextStyles.requestDetailsFieldContent().copyWith(
+          color: const Color(0xFF676767),
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+}
+
+class _WorkflowDetailRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final ui.TextDirection textDirection;
+
+  const _WorkflowDetailRow({
+    required this.label,
+    required this.value,
+    required this.textDirection,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      textDirection: textDirection,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 150,
+          child: Text(
+            label,
+            style: AppTextStyles.requestDetailsFieldHeading(),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            value,
+            style: AppTextStyles.requestDetailsFieldContent(),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -80,10 +80,7 @@ class AppRouter extends RootStackRouter {
       ],
     ),
 
-    AutoRoute(
-      page: ChatbotRoute.page,
-      path: RouteNames.chatbot,
-    ),
+    AutoRoute(page: ChatbotRoute.page, path: RouteNames.chatbot),
 
     /// --- HOTEL RESERVATION ---
     AutoRoute(
@@ -628,6 +625,23 @@ class AppRouter extends RootStackRouter {
       path: RouteNames.mediaCoverageNewRequest,
     ),
 
+    AutoRoute(
+      page: HallServicesHomeRoute.page,
+      path: RouteNames.hallServicesHomeScreen,
+      children: [
+        AutoRoute(page: HallServicesDashboardRoute.page, initial: true),
+        ..._dynamicSubServiceRoutes,
+      ],
+    ),
+    AutoRoute(
+      page: RequestToBookCAAHallsDetailsRoute.page,
+      path: RouteNames.requestToBookCAAHallsDetails,
+    ),
+    AutoRoute(
+      page: RequestToBookCAAHallsNewRequestRoute.page,
+      path: RouteNames.requestToBookCAAHallsNewRequest,
+    ),
+
     /// --- TRAINING AND DEVELOPMENT ---
     AutoRoute(
       page: TrainingandDevelopmentHomeRoute.page,
@@ -664,14 +678,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: RequestForStudyLeaveDetailsRoute.page,
       path: RouteNames.requestForStudyLeaveDetails,
-    ),
-    AutoRoute(
-      page: RequestToBookCAAHallsDetailsRoute.page,
-      path: RouteNames.requestToBookCAAHallsDetails,
-    ),
-    AutoRoute(
-      page: RequestToBookCAAHallsNewRequestRoute.page,
-      path: RouteNames.requestToBookCAAHallsNewRequest,
     ),
 
     /// --- Assignment Decision ---

@@ -48,6 +48,8 @@ class SubServiceRouteResolver {
         return const LegalConsultationServicesHomeRoute();
       case 'CAAS02':
         return const TrainingandDevelopmentHomeRoute();
+      case 'HSS':
+        return const HallServicesHomeRoute();
       case 'CAAS09':
         return const MediaCoverageHomeRoute();
       case 'CAAS012':
@@ -84,9 +86,12 @@ class SubServiceRouteResolver {
       return const LegalConsultationServicesHomeRoute();
     }
     if (subServiceCodes.any(
-      {'CAA015', 'CAA016', 'CAA018', 'CAA019', 'CAA049', 'CAA050'}.contains,
+      {'CAA015', 'CAA016', 'CAA018', 'CAA019', 'CAA049'}.contains,
     )) {
       return const TrainingandDevelopmentHomeRoute();
+    }
+    if (subServiceCodes.contains('CAA050')) {
+      return const HallServicesHomeRoute();
     }
     if (subServiceCodes.contains('CAA020')) {
       return const MediaCoverageHomeRoute();

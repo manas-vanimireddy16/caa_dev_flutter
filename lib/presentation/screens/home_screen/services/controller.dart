@@ -376,6 +376,9 @@ class _VSController extends StateNotifier<_ViewState> {
         case 'CAAS02':
           KAppX.router.push(const TrainingandDevelopmentHomeRoute());
           return;
+        case 'HSS':
+          KAppX.router.push(const HallServicesHomeRoute());
+          return;
         case 'CAAS08':
           KAppX.router.push(const HRServiceHomeRoute());
           return;
@@ -432,6 +435,9 @@ class _VSController extends StateNotifier<_ViewState> {
         break;
       case 'CAAS02':
         KAppX.router.push(const TrainingandDevelopmentHomeRoute());
+        break;
+      case 'HSS':
+        KAppX.router.push(const HallServicesHomeRoute());
         break;
       case 'CAAS08':
         KAppX.router.push(const HRServiceHomeRoute());

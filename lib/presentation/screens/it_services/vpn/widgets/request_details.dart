@@ -51,7 +51,9 @@ class _VPNRequestDetailsTabScreenState
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
+      appBar: KAppBar(
+        title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle),
+      ),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(
@@ -137,6 +139,13 @@ class _VPNRequestDetailsTabScreenState
                       await controller.sendChatMessage(
                         serviceId: widget.serviceId,
                         subServiceId: widget.subServiceId,
+                      );
+                    },
+                    onApprove: () async {
+                      controller.showApprovalCommentDialog(
+                        type: ApprovalDialogType.approve,
+                        approverId: approverId ?? 0,
+                        requestId: requestId ?? 0,
                       );
                     },
 

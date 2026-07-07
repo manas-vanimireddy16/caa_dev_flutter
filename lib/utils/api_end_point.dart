@@ -1732,7 +1732,7 @@ class ApiEndPoint {
 
   /// Assign Required New Resource request
   static const String requiredNewResourceAssign =
-      '/v1/hr-service/new_resource/assign';
+      '/v1/hr-service/new-resource/request/assign';
 
   /// Approve Required New Resource request
   static const String requiredNewResourceApprove =
@@ -1763,7 +1763,7 @@ class ApiEndPoint {
       '/v1/hr-service/new-resource/request/$attachmentId/attachments';
 
   static const String requiredNewResourceAssignEmployees =
-      '/v1/hr-service/new_resource/employees';
+      '/v1/hr-service/new-resource/employees';
 
   static const String requiredNewResourceGradeList =
       '/v1/user-service/financial-grade/list';

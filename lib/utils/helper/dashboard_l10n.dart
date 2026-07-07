@@ -114,7 +114,14 @@ class DashboardL10n {
       _t('Request Workflow', 'سير عمل الطلب');
 
   String get workflowActionTakenBy =>
-      _t('Action taken by', 'تم الإجراء بواسطة');
+      _t('Action Taken By', 'الإجراء المؤدي بواسطة');
+
+  String get workflowDepartmentName =>
+      _t('Department Name', 'اسم الدائرة');
+
+  String get workflowSectionName => _t('Section Name', 'اسم القسم');
+
+  String get workflowRoleName => _t('Role Name', 'اسم الدور');
 
   String workflowEmployeeIdLine(String id) =>
       _t('Employee ID: $id', 'رقم الموظف: $id');
@@ -1255,6 +1262,14 @@ class DashboardL10n {
 
   String get sections => _t('Sections', 'الأقسام');
 
+  String get sectionName => _t('Section Name', 'اسم القسم');
+
+  String get departmentName => _t('Department Name', 'اسم الدائرة');
+
+  String get departments => _t('Departments', 'الدوائر');
+
+  String get departmentsList => _t('Departments List', 'قائمة الدوائر');
+
   String get serviceType => _t('Service Type', 'نوع الخدمة');
 
   String get selectServiceType => _t('Select Service Type', 'اختر نوع الخدمة');
@@ -2140,6 +2155,14 @@ class DashboardL10n {
 
   String get selectRole => _t('Select Role', 'اختر الدور');
 
+  String get allocateUserTitle => _t('Allocate User', 'تعيين مستخدم');
+
+  String get selectUser => _t('Select User', 'اختر المستخدم');
+
+  String get userLabel => _t('User', 'المستخدم');
+
+  String get cancelButton => _t('Cancel', 'إلغاء');
+
   String get logout => _t('Logout', 'تسجيل الخروج');
 
   String get languageLabel => _t('Language', 'اللغة');
@@ -2740,7 +2763,23 @@ class DashboardL10n {
         return _t('User Info', 'معلومات المستخدم');
 
       case 'section_name':
-        return _t('Section Name', 'اسم القسم');
+        return sectionName;
+
+      case 'department_name':
+        return departmentName;
+
+      case 'departments':
+        return departments;
+
+      case 'departments_list':
+      case 'department_list':
+        return departmentsList;
+
+      case 'employee_id':
+        return employeeId;
+
+      case 'action_taken_by':
+        return workflowActionTakenBy;
 
       case 'requested_date':
         return _t('Requested Date', 'تاريخ الطلب');

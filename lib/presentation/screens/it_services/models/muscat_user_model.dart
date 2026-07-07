@@ -98,4 +98,12 @@ class Users {
       'mobile': mobile,
     };
   }
+
+  String displayName({required bool isArabic}) {
+    if (isArabic) {
+      final trimmed = employeeArabicName?.trim();
+      if (trimmed != null && trimmed.isNotEmpty) return trimmed;
+    }
+    return employeeName?.trim() ?? '';
+  }
 }

@@ -8,8 +8,6 @@ import 'package:code_setup/presentation/common_widgets/request_card.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
-import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
-import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
 import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core/providers/service_tree_provider.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
@@ -40,15 +38,12 @@ import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/dashboard_request_details_navigator.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
-import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
-import 'package:code_setup/utils/helper/list_pagination.dart';
-import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
 part 'controller.dart';
@@ -57,12 +52,12 @@ part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
 
 @RoutePage()
-class TrainingAndDevelopmentDashboardScreen extends ConsumerStatefulWidget {
+class HallServicesDashboardScreen extends ConsumerStatefulWidget {
   final Service? service;
   final SubService? subService;
   final List<SubService> subServices;
 
-  const TrainingAndDevelopmentDashboardScreen({
+  const HallServicesDashboardScreen({
     super.key,
     this.service,
     this.subService,
@@ -70,12 +65,12 @@ class TrainingAndDevelopmentDashboardScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<TrainingAndDevelopmentDashboardScreen> createState() =>
-      _TrainingAndDevelopmentDashboardScreenState();
+  ConsumerState<HallServicesDashboardScreen> createState() =>
+      _HallServicesDashboardScreenState();
 }
 
-class _TrainingAndDevelopmentDashboardScreenState
-    extends ConsumerState<TrainingAndDevelopmentDashboardScreen> {
+class _HallServicesDashboardScreenState
+    extends ConsumerState<HallServicesDashboardScreen> {
   late FocusNode _focusNode;
   late _VSControllerParams _providerArgs;
   late PageController _pageController;
@@ -91,14 +86,8 @@ class _TrainingAndDevelopmentDashboardScreenState
         ref
             .read(serviceTreeProvider)
             .serviceByCodeOrSubServiceCodes(
-              serviceCode: 'CAAS02',
-              subServiceCodes: const [
-                'CAA015',
-                'CAA016',
-                'CAA018',
-                'CAA019',
-                'CAA049',
-              ],
+              serviceCode: 'HSS',
+              subServiceCodes: const ['CAA050'],
             ) ??
         selected.service;
 
@@ -114,11 +103,6 @@ class _TrainingAndDevelopmentDashboardScreenState
 
     _focusNode = FocusNode();
     _pageController = PageController();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      ref.read(_vsProvider(_providerArgs).notifier).ensureInitialized();
-    });
   }
 
   @override

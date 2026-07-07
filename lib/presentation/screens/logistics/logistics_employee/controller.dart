@@ -1936,7 +1936,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final user = KAppX.globalProvider.read(userInfoProvider);
 
-    final int userId = int.parse(user!.data!.id!);
+    final int userId = int.parse(user?.data?.id?.toString() ?? '0');
 
     debugPrint('---------------- APPROVAL CHECK ----------------');
     debugPrint('Logged User ID: $userId');

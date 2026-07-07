@@ -71,7 +71,7 @@ class _LegalConsultationandReviewofAdministrativeDecisionsDetailsScreenState
           //     ? null
           //     : state.requestDetails;
           final request = state.requestDetails;
-          final requestId = request?.id;
+          final requestId = request.request?.id ?? request.id;
           final List<AttachmentModel> attachments = state.attachmentsById;
           final chats = state.chatById;
           final List<ApprovalDetailModel> approvals =

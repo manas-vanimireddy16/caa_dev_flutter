@@ -10,6 +10,7 @@ import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/helper.dart';
+import 'package:code_setup/utils/helper/localized_display_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -93,12 +94,45 @@ class CommentEntry extends StatelessWidget {
 
   const CommentEntry({super.key, required this.data, this.l10n});
 
+  String _localizedMessage(DashboardL10n labels) {
+    final message = localizedDisplayName(
+      isArabic: labels.isArabic,
+      english: data.message,
+      arabic: data.messageAr,
+    );
+    return message.isEmpty ? '-' : message;
+  }
+
+  String _localizedStatus(DashboardL10n labels) {
+    final status = localizedDisplayName(
+      isArabic: labels.isArabic,
+      english: data.status,
+      arabic: data.statusAr,
+    );
+    if (status.isNotEmpty) return status;
+    final raw = data.status?.trim();
+    if (raw != null && raw.isNotEmpty) {
+      return labels.statusLabel(raw);
+    }
+    return '-';
+  }
+
+  String _localizedRole(DashboardL10n labels) {
+    final role = localizedDisplayName(
+      isArabic: labels.isArabic,
+      english: data.role?.name,
+      arabic: data.role?.arabicName,
+    );
+    return role.isEmpty ? (labels.isArabic ? 'موظف' : 'Employee') : role;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final labels = l10n ?? DashboardL10n.of(context);
     final String dateTime = formatDate(data.createdAt);
-    final String action = data.message ?? '-';
-    final String role = data.role?.name ?? 'Employee';
-    final String status = data.status ?? '-';
+    final String action = _localizedMessage(labels);
+    final String role = _localizedRole(labels);
+    final String status = _localizedStatus(labels);
 
     return Container(
       padding: EdgeInsets.all(12.toAutoScaledWidth),
@@ -115,7 +149,7 @@ class CommentEntry extends StatelessWidget {
             children: [
               Expanded(
                 child: _labelValue(
-                  l10n?.routingTileDateTime ?? 'Date & Time',
+                  labels.routingTileDateTime,
                   dateTime,
                   maxLines: 1,
                 ),
@@ -123,7 +157,7 @@ class CommentEntry extends StatelessWidget {
               SizedBox(width: 8.toAutoScaledWidth),
               Expanded(
                 child: _labelValue(
-                  l10n?.routingTileRole ?? 'Role / Authority',
+                  labels.routingTileRole,
                   role,
                   maxLines: 1,
                 ),
@@ -132,12 +166,12 @@ class CommentEntry extends StatelessWidget {
           ),
           SizedBox(height: 16.toAutoScaledHeight),
           _labelValue(
-            l10n?.routingTileAction ?? 'Comments & Actions',
+            labels.routingTileAction,
             action,
             maxLines: 2,
           ),
           SizedBox(height: 16.toAutoScaledHeight),
-          _labelValue(l10n?.routingTileStatus ?? 'Status', status, maxLines: 1),
+          _labelValue(labels.routingTileStatus, status, maxLines: 1),
         ],
       ),
     );

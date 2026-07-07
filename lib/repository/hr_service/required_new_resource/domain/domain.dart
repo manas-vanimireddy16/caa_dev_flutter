@@ -89,7 +89,6 @@ abstract class RequiredNewResourceRepository {
   Future<List<EmployeeSummary>> getEmployeeList({
     required int departmentId,
     required int sectionId,
-    required String roleId,
   });
   Future<List<Grade>> getGradeList();
 }

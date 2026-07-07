@@ -7,31 +7,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @RoutePage()
-class TrainingandDevelopmentHomeScreen extends ConsumerWidget {
-  const TrainingandDevelopmentHomeScreen({super.key});
+class HallServicesHomeScreen extends ConsumerWidget {
+  const HallServicesHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const serviceCode = 'CAAS02';
+    const serviceCode = 'HSS';
     final service =
         ref
             .watch(serviceTreeProvider)
             .serviceByCodeOrSubServiceCodes(
               serviceCode: serviceCode,
-              subServiceCodes: const [
-                'CAA015',
-                'CAA016',
-                'CAA018',
-                'CAA019',
-                'CAA049',
-              ],
+              subServiceCodes: const ['CAA050'],
             ) ??
-        Service(code: serviceCode, name: 'Training Services');
+        Service(code: serviceCode, name: 'Hall Services');
 
     return DynamicServiceShell(
-      lazyLoadDashboard: true,
       service: service,
-      dashboardRoute: TrainingAndDevelopmentDashboardRoute(
+      dashboardRoute: HallServicesDashboardRoute(
         service: service,
         subService: SubService(),
         subServices: service.subservices ?? [],

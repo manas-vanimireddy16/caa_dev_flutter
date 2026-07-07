@@ -77,17 +77,17 @@ class _AssignUserState extends ConsumerState<AssignUser> {
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
 
     final state = ref.watch(_vsProvider(_providerArgs));
-
-    final userInfo = KAppX.globalProvider.read(userInfoProvider);
-
-    final departmentName = userInfo?.data?.department?.departmentName ?? '';
+    final l10n = DashboardL10n.of(context);
+    final isArabic = l10n.isArabic;
 
     final roles = state.rolesData?.data?.roles ?? [];
 
     final users = state.usersData?.data?.users ?? [];
 
-    return SingleChildScrollView(
-      child: Column(
+    return Directionality(
+      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+      child: SingleChildScrollView(
+        child: Column(
         children: [
           Wrap(
             spacing: 16,
@@ -105,7 +105,7 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                   isExpanded: true,
 
                   decoration: InputDecoration(
-                    labelText: "Department",
+                    labelText: l10n.department,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -119,7 +119,7 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                     return DropdownMenuItem<int>(
                       value: e.id,
                       child: Text(
-                        e.departmentName ?? '',
+                        e.displayName(isArabic: isArabic),
                         overflow: TextOverflow.ellipsis,
                       ),
                     );
@@ -154,7 +154,7 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                   isExpanded: true,
 
                   decoration: InputDecoration(
-                    labelText: "Sections",
+                    labelText: l10n.sections,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -168,7 +168,7 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                     return DropdownMenuItem<int>(
                       value: e.id,
                       child: Text(
-                        e.sectionName ?? '',
+                        e.displayName(isArabic: isArabic),
                         overflow: TextOverflow.ellipsis,
                       ),
                     );
@@ -199,7 +199,7 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                   isExpanded: true,
 
                   decoration: InputDecoration(
-                    labelText: "Role",
+                    labelText: l10n.profileRoleLabel,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -209,13 +209,13 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                     ),
                   ),
 
-                  hint: const Text("Select Role"),
+                  hint: Text(l10n.selectRole),
 
                   items: roles.map((RoleItem e) {
                     return DropdownMenuItem<int>(
                       value: e.roleId,
                       child: Text(
-                        e.roleName ?? '',
+                        e.displayName(isArabic: isArabic),
                         overflow: TextOverflow.ellipsis,
                       ),
                     );
@@ -250,7 +250,7 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                   isExpanded: true,
 
                   decoration: InputDecoration(
-                    labelText: "User",
+                    labelText: l10n.userLabel,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -260,13 +260,13 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                     ),
                   ),
 
-                  hint: const Text("Select User"),
+                  hint: Text(l10n.selectUser),
 
                   items: users.map((e) {
                     return DropdownMenuItem<int>(
                       value: e.userId,
                       child: Text(
-                        e.employeeName ?? '',
+                        e.displayName(isArabic: isArabic),
                         overflow: TextOverflow.ellipsis,
                       ),
                     );
@@ -296,7 +296,7 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                   KAppX.router.pop();
                 },
 
-                child: const Text("Cancel"),
+                child: Text(l10n.cancelButton),
               ),
 
               const SizedBox(width: 12),
@@ -305,30 +305,20 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                 onPressed: selectedUserId == null
                     ? null
                     : () async {
-                        controller.onAssign(
+                        await controller.onAssign(
                           selectedRoleId ?? 0,
                           state.selectedSectionId ?? 0,
                           selectedUserId ?? 0,
                           selectedDepartmentId ?? 0,
                         );
-                        print('SectionId: ${state.selectedSectionId}');
-
-                        print('RoleId: $selectedRoleId');
-
-                        print('UserId: $selectedUserId');
-
-                        /// CALL SUBMIT API HERE
-
-                        widget.onSuccess();
-
-                        KAppX.router.pop();
                       },
 
-                child: const Text("Submit"),
+                child: Text(l10n.dynamicFormSubmit),
               ),
             ],
           ),
         ],
+      ),
       ),
     );
   }

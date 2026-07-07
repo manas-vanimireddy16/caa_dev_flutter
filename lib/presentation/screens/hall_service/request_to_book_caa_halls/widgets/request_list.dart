@@ -16,14 +16,25 @@ class RequestsPage extends ConsumerStatefulWidget {
   ConsumerState<RequestsPage> createState() => _RequestsPageState();
 }
 
-class _RequestsPageState extends ConsumerState<RequestsPage> {
+class _RequestsPageState extends ConsumerState<RequestsPage>
+    with AutomaticKeepAliveClientMixin {
   PagingController<int, BookCaaHallRequestModel>? _pagingController;
   bool _controllerInitialized = false;
+  VoidCallback? _disposeCleanup;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void dispose() {
+    _disposeCleanup?.call();
     _pagingController?.dispose();
     super.dispose();
+  }
+
+  void _refreshList() {
+    if (!mounted) return;
+    _pagingController?.refresh();
   }
 
   void _ensureController(_VSController controller) {
@@ -41,7 +52,8 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               .actionItemsStatusFilter,
         ),
       );
-      controller.onActionItemsListRefresh = () => _pagingController?.refresh();
+      controller.onActionItemsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onActionItemsListRefresh = null;
     } else {
       _pagingController = PagingController<int, BookCaaHallRequestModel>(
         getNextPageKey: (state) => ListPagination.nextPageKey(state),
@@ -53,12 +65,14 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               .myRequestsStatusFilter,
         ),
       );
-      controller.onMyRequestsListRefresh = () => _pagingController?.refresh();
+      controller.onMyRequestsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onMyRequestsListRefresh = null;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
     _ensureController(controller);
 
@@ -68,7 +82,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
             ? s.actionItemsStatusFilter
             : s.myRequestsStatusFilter,
       ),
-      (_, __) => _pagingController?.refresh(),
+      (_, __) => _refreshList(),
     );
 
     return PaginatedListSection<BookCaaHallRequestModel>(

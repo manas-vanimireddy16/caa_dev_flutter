@@ -350,4 +350,6 @@ class RouteNames {
       '/requestForExtensionDetails';
   static const String maintenanceOfExternalServiceNewRequest =
       '/maintenanceOfExternalServiceNewRequest';
+  // hall Services
+  static const String hallServicesHomeScreen = '/hallServicesHomeScreen';
 }

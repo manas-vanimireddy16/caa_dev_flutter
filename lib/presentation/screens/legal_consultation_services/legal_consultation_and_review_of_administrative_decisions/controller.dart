@@ -299,6 +299,7 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshRequestLists() {
     refreshMyRequestsList();
     refreshActionItemsList();
+    fetchApprovalKpi();
   }
 
   void refreshActiveRequestList() {
@@ -312,9 +313,9 @@ class _VSController extends StateNotifier<_ViewState> {
   void initState() {
     fetchKpi();
     fetchApprovalKpi();
-    fetchStatusBreakdown('monthly');
+    fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('monthly');
+    fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
   }
 
@@ -534,7 +535,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> refreshAfterReturn() async {
     await Future.wait([
       fetchKpi(),
-      fetchStatusBreakdown('monthly'),
+      fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
     refreshActiveRequestList();
@@ -928,46 +929,59 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1️⃣ Upload files
-
-      final userData = KAppX.globalProvider.read(userInfoProvider);
       final active = getActiveApprovalLevel(
         state.requestDetails.approvalDetails ?? [],
       );
-      final approvalId = active?.id ?? 0;
+      final approvalId = active?.id;
+      final requestId =
+          state.requestDetails.request?.id ?? state.requestDetails.id;
 
-      // 2️⃣ Build payload
-      final payload = {
-        "request_id": state.requestDetails?.id,
-        "approval_id": approvalId,
-        "status": "Approved",
-        "comment": "",
+      if (requestId == null ||
+          requestId == 0 ||
+          approvalId == null ||
+          approvalId == 0) {
+        Fluttertoast.showToast(
+          msg: 'Unable to resolve request/approval for assign action',
+        );
+        return;
+      }
 
-        /// REASSIGN
-        "reassign_approver_user_id": userId,
-        "reassign_delegate_user_id": null,
+      if (roleId == 0 || sectionId == 0 || userId == 0 || departmentId == 0) {
+        Fluttertoast.showToast(
+          msg: 'Please select department, section, role, and user',
+        );
+        return;
+      }
 
-        "reassign_department_id": userData?.data?.department?.id,
-        "reassign_section_id": sectionId,
-        "reassign_approver_role_id": roleId,
-
-        "routing_branch": "REASSIGN",
-        "routingBranch": "REASSIGN",
+      final payload = <String, dynamic>{
+        'request_id': requestId,
+        'approval_id': approvalId,
+        'status': 'Approved',
+        'comment': '',
+        'reassign_approver_user_id': userId,
+        'reassign_delegate_user_id': null,
+        'reassign_department_id': departmentId,
+        'reassign_section_id': sectionId,
+        'reassign_approver_role_id': roleId,
+        'routing_branch': 'REASSIGN',
+        'routingBranch': 'REASSIGN',
       };
 
-      debugPrint("✅ Final Payload: $payload");
+      debugPrint('✅ Final Assign Payload: $payload');
 
-      // 3️⃣ Send request
       await legalConsultationandReviewoInstance.onAssign(payload);
+      if (!mounted) return;
       KAppX.router.pop();
-      fetchApprovalKpi();
-      // await refreshRequestLists();
-      // await refreshRequestLists();
-      fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
+      // fetchApprovalKpi();
+      // refreshRequestLists();
+      // await fetchRequestDetailsById(requestId);
     } catch (e) {
-      debugPrint('❌ Error submitting request: $e');
+      debugPrint('❌ Error submitting assign request: $e');
+      Fluttertoast.showToast(msg: 'Failed to assign request');
     } finally {
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 
@@ -1108,7 +1122,7 @@ class _VSController extends StateNotifier<_ViewState> {
                     children: [
                       Expanded(
                         child: Text(
-                          "Allocate User",
+                          l10n.allocateUserTitle,
 
                           style: const TextStyle(
                             fontSize: 20,
@@ -1328,11 +1342,14 @@ class _VSController extends StateNotifier<_ViewState> {
   ) async {
     try {
       state = state.copyWith(isLoading: true);
-      final level = getActiveApprovalLevel(
-        state.requestDetails.approvalDetails ?? [],
-      );
 
-      // 1️⃣ Upload files
+      ApprovalDetailModel? approvalForAction;
+      for (final approval in state.requestDetails.approvalDetails ?? []) {
+        if (approval.id == approverId) {
+          approvalForAction = approval;
+          break;
+        }
+      }
 
       // 2️⃣ Build payload
       final payload = {
@@ -1341,7 +1358,7 @@ class _VSController extends StateNotifier<_ViewState> {
         "comment": comment,
         "approval_id": approverId,
       };
-      if (level?.level == 2) {
+      if (approvalForAction?.level == 2) {
         payload['routing_branch'] = "DIRECT";
       }
       if (decisionNo != null) {
@@ -1394,7 +1411,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final user = KAppX.globalProvider.read(userInfoProvider);
 
-    final int userId = int.parse(user!.data!.id!);
+    final int userId = int.parse(user?.data?.id ?? "0");
 
     debugPrint('---------------- APPROVAL CHECK ----------------');
     debugPrint('Logged User ID: $userId');
@@ -1472,15 +1489,15 @@ class _VSController extends StateNotifier<_ViewState> {
     for (final approval in list) {
       if (!canUserActOnLevel(approval: approval)) continue;
 
-      final status = approval.approvalStatus?.toLowerCase();
+      final status = approval.approvalStatus?.toLowerCase().trim() ?? '';
       final level = approval.level ?? -1;
 
-      // 1️⃣ IN PROGRESS always wins
+      // Only one in-progress level at a time — return it immediately
       if (status == 'in progress') {
         return approval;
       }
 
-      // 2️⃣ ONLY approved / assigned participate in comparison
+      // Approved / assigned fallback
       if (status == 'approved' || status == 'assigned') {
         if (highestLevelCandidate == null ||
             level > (highestLevelCandidate.level ?? -1)) {
@@ -1561,7 +1578,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   bool _isPendingOrInProgress(String? status) {
-    final s = status?.toLowerCase();
+    final s = status?.toLowerCase().trim();
     return s == 'in progress';
   }
 
@@ -1583,7 +1600,7 @@ class _VSController extends StateNotifier<_ViewState> {
       return {};
     }
 
-    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    /// 1️⃣ IN-PROGRESS (only one at a time)
     final pendingList = approvals
         .where((a) => _isPendingOrInProgress(a.approvalStatus))
         .toList();
@@ -1673,12 +1690,12 @@ class _VSController extends StateNotifier<_ViewState> {
     if (index == 0) {
       refreshMyRequestsList();
       fetchKpi();
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
       refreshActionItemsList();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }

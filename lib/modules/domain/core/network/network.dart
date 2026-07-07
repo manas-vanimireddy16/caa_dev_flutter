@@ -12,7 +12,7 @@ abstract class KNetworkingBox<C, O> {
   Future<C?> secureClient({
     O? options,
     bool loggingEnabled = true,
-    bool includeRoleCookies = true,
+    bool includeRoleCookies = false,
   });
 
   Future<C?> unsecureClient({O? options, bool loggingEnabled = true});

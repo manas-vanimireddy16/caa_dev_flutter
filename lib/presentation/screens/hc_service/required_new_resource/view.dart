@@ -78,6 +78,7 @@ part 'widgets/request_details_tabs.dart';
 part 'widgets/request_list.dart';
 part 'widgets/request_tab.dart';
 part 'widgets/ticket_requests_card.dart';
+part 'widgets/assign_user_dialog.dart';
 
 @RoutePage()
 class RequiredNewResourceScreen extends ConsumerStatefulWidget {

@@ -696,25 +696,29 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAssignEmployeesList() async {
     try {
-      final id = findRoleId();
       final user = KAppX.globalProvider.read(rolesProvider);
       final employeeList = await requiredNewResourceInstance.getEmployeeList(
         departmentId: user?.departmentId ?? 0,
-
         sectionId: user?.sectionId ?? 0,
-        roleId: id.toString(),
       );
 
-      if (employeeList != null) {
-        final selectionItems = _mapToSelectionItems(employeeList);
-        state = state.copyWith(
-          employeeList: employeeList,
-          selectionItems: selectionItems,
-        );
-      }
+      state = state.copyWith(employeeList: employeeList);
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {}
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  String employeeJoinedLabel(EmployeeSummary employee) {
+    final name = employee.employeeName?.trim() ?? '';
+    final email = employee.email?.trim() ?? '';
+
+    if (name.isNotEmpty && email.isNotEmpty) {
+      return '$name ($email)';
+    }
+
+    return name.isNotEmpty ? name : email;
   }
 
   Future<void> fetchRolesList() async {
@@ -765,8 +769,7 @@ class _VSController extends StateNotifier<_ViewState> {
         );
 
         if (actionType == ActionButtonsType.assignReject) {
-          fetchRolesList();
-          // fetch
+          fetchAssignEmployeesList();
         }
       }
     } on ApiException catch (apiError) {
@@ -1352,50 +1355,32 @@ class _VSController extends StateNotifier<_ViewState> {
     required int approverId,
   }) {
     KAppX.extendedRouter.dialog.showKDialog(
-      builder: (_) => SelectionDialog(
-        config: SelectionDialogConfig(
-          title: "Assign to Engineer",
-          items: state.selectionItems,
-          isLoading: state.selectionItems.isEmpty,
-          onItemSelected: (item) async {
-            await assignEngineer(
-              engineerUserId: item.id,
-              approverId: approverId,
-            );
-
-            KAppX.router.pop(); // close dialog
-            KAppX.router.pop(); // close details
-          },
-        ),
+      backgroundColor: Colors.white,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      builder: (_) => AssignUserDialog(
+        approverId: approverId,
+        service: service,
+        subService: subService,
       ),
     );
   }
 
-  Future<void> assignEngineer({
+  Future<bool> assignEngineer({
     required int engineerUserId,
     required int approverId,
-
-    String comment = "Assigning engineer",
   }) async {
     try {
-      final client = await KAppX.network.secureClient();
-      if (client == null) return;
-      final userInfo = KAppX.globalProvider.read(rolesProvider);
       final payload = {
         "request_id": state.requestDetails.request?.id,
         "approval_id": approverId,
         "assigned_to_user_id": engineerUserId,
-        "comment": "assigning",
       };
-      {}
-      print(payload);
 
       await requiredNewResourceInstance.onAssignEmployee(payload);
-
-      // Refresh details after assigning
-      // await fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
+      return true;
     } catch (e) {
-      print("Error assigning engineer: $e");
+      debugPrint("Error assigning user: $e");
+      return false;
     }
   }
 
@@ -1532,6 +1517,9 @@ class _VSController extends StateNotifier<_ViewState> {
     final int approvalLevel = level.level ?? 0;
     final bool ishasReplace = level.isReplace ?? false;
 
+    if (isManager == true) {
+      return ActionButtonsType.assignReject;
+    }
     if (level != null) {
       debugPrint('this user can approve and reject');
       return ActionButtonsType.approveReject;

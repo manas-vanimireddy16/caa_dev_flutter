@@ -16,6 +16,7 @@ abstract final class MobileServiceScope {
     'CAAS014',
     'CAAS015',
     'CAAS016',
+    'HSS',
   };
 
   static const approvedSubServiceCodes = <String>{

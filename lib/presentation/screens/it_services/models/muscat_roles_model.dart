@@ -50,14 +50,33 @@ class RolesData {
 class RoleItem {
   final int? roleId;
   final String? roleName;
+  final String? roleNameAr;
 
-  RoleItem({this.roleId, this.roleName});
+  RoleItem({this.roleId, this.roleName, this.roleNameAr});
 
   factory RoleItem.fromJson(Map<String, dynamic> json) {
-    return RoleItem(roleId: json['role_id'], roleName: json['role_name']);
+    return RoleItem(
+      roleId: json['role_id'],
+      roleName: json['role_name'],
+      roleNameAr:
+          json['role_arabic_name'] as String? ??
+          json['arabic_name'] as String?,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    return {'role_id': roleId, 'role_name': roleName};
+    return {
+      'role_id': roleId,
+      'role_name': roleName,
+      'role_arabic_name': roleNameAr,
+    };
+  }
+
+  String displayName({required bool isArabic}) {
+    if (isArabic) {
+      final trimmed = roleNameAr?.trim();
+      if (trimmed != null && trimmed.isNotEmpty) return trimmed;
+    }
+    return roleName?.trim() ?? '';
   }
 }

@@ -826,18 +826,16 @@ class RequiredNewResourceRepositoryImple
   Future<List<EmployeeSummary>> getEmployeeList({
     required int departmentId,
     required int sectionId,
-    required String roleId,
   }) async {
     final client = await KAppX.network.secureClient();
 
     try {
       if (client != null) {
         final queryParameter = {
-          'role_id': roleId,
           'section_id': sectionId,
           'department_id': departmentId,
         };
-        final url = ApiEndPoint.paymentofCashAllowanceForLeaveAssignEmployees;
+        final url = ApiEndPoint.requiredNewResourceAssignEmployees;
         final response = await client.get(url, queryParameters: queryParameter);
 
         if (response.statusCode == 200) {
