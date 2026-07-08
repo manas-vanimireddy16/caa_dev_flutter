@@ -765,10 +765,17 @@ class _VSController extends StateNotifier<_ViewState> {
 
     return {
       'Request Id': item.base?.id?.toString() ?? '-',
+      'Request Type': item.base?.service?.name ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       'Date': formatDate(item.base?.createdAt.toString() ?? ''),
       'Vehicle Location': item?.vehicleRequiredLocation ?? '-',
+      'No of Passengers':
+          item?.passengers
+              ?.map((e) => e.passengerName ?? '')
+              .where((e) => e.isNotEmpty)
+              .join(', ') ??
+          '-',
 
       /// ================= EMPLOYEE INFO =================
 
@@ -963,7 +970,14 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.transportPurpose,
       type: FieldType.text,
       required: true,
-      placeholder: l10n.transportPurposePlaceholder,
+      placeholder: l10n.writeHereMinMax,
+      validator: (value, values) => validateTextLength(
+        value,
+        min: 5,
+        max: 250,
+        minMessage: l10n.securityThreatTicketNameHint,
+        maxMessage: l10n.cannotExceed250Characters,
+      ),
     ),
     DynamicField(
       name: 'request_type',
@@ -1003,7 +1017,14 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.transportDestinationCity,
       type: FieldType.text,
       required: true,
-      placeholder: l10n.transportEnterDestination,
+      placeholder: l10n.logisticsDescription3250,
+      validator: (value, values) => validateTextLength(
+        value,
+        min: 3,
+        max: 250,
+        minMessage: l10n.mustBeAtLeast3Characters,
+        maxMessage: l10n.cannotExceed250Characters,
+      ),
     ),
     DynamicField(
       name: 'vehicle_required_location',
@@ -1042,6 +1063,13 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: true,
       placeholder: l10n.transportSpecialInstructionsPlaceholder,
+      validator: (value, values) => validateTextLength(
+        value,
+        min: 5,
+        max: 250,
+        minMessage: l10n.securityThreatTicketNameHint,
+        maxMessage: l10n.cannotExceed250Characters,
+      ),
     ),
     DynamicField(
       name: 'travel_itinerary',
@@ -1678,6 +1706,7 @@ class _VSController extends StateNotifier<_ViewState> {
         state.requestDetails.request?.id ?? 0,
       );
       await Future.delayed(Duration(seconds: 1));
+      fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
       KAppX.router.pop();
       // if (decisionNo != null) {
       // }

@@ -260,6 +260,54 @@ class KAuthCred {
     }
   }
 
+  /// Reloads persisted session into Riverpod after hot restart.
+  Future<void> hydrateProvidersFromStorage() async {
+    await Future.wait([
+      getProfileData(),
+      getUserInfoData(),
+      getSelectedRole(),
+    ]);
+  }
+
+  /// Resolves the logged-in user id from memory or persistent storage.
+  Future<int?> resolveUserId() async {
+    final cachedUser = KAppX.globalProvider.read(userProvider);
+    final cachedId = cachedUser?.userId;
+    if (cachedId != null && cachedId > 0) return cachedId;
+
+    final profile = await getProfileData();
+    final profileId = profile?.userId;
+    if (profileId != null && profileId > 0) return profileId;
+
+    final userInfo = await getUserInfoData();
+    final infoId = int.tryParse(userInfo?.data?.id ?? '');
+    if (infoId != null && infoId > 0) return infoId;
+
+    final token = profile?.accessToken ?? cachedUser?.accessToken ?? '';
+    if (token.isNotEmpty) {
+      return _userIdFromJwt(token);
+    }
+
+    return null;
+  }
+
+  int? _userIdFromJwt(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length < 2) return null;
+
+      final normalized = base64Url.normalize(parts[1]);
+      final payload = jsonDecode(
+        utf8.decode(base64Url.decode(normalized)),
+      ) as Map<String, dynamic>;
+
+      final id = payload['userId'];
+      if (id is int) return id;
+      if (id is String) return int.tryParse(id);
+    } catch (_) {}
+    return null;
+  }
+
   Future<void> clearSession() async {
     await deleteProfileData();
     await deleteUserInfoData();

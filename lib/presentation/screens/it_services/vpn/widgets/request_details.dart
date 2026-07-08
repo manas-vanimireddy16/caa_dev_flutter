@@ -50,7 +50,7 @@ class _VPNRequestDetailsTabScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       appBar: KAppBar(
         title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle),
       ),

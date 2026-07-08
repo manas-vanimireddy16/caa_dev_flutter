@@ -455,7 +455,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       // / ================= EMPLOYEE INFO =================
       'Problem': item.problem ?? '-',
-      'Created By': item.base?.createdByUser?.employeeName ?? '-',
+      // 'Created By': item.base?.createdByUser?.employeeName ?? '-',
       'Service Type': item.serviceType?.name ?? '-',
 
       /// ================= CURRENT DETAILS =================
@@ -463,7 +463,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// 👇 APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
-        'Approver': approverMap['role'] ?? '-',
+        'Assigned To': approverMap['role'] ?? '-',
       } else if (approverMap.containsKey('department')) ...{
         'Approver': _buildDepartmentSection(approverMap),
       },

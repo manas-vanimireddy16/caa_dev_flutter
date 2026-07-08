@@ -338,14 +338,16 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  void userSession() {
-    KAuthCred().getProfileData().then((userInfo) {
-      if (userInfo?.accessToken != null) {
-        KAppX.router.replace(HomeRoute());
-      } else {
-        KAppX.router.replace(MicrosoftLoginRoute());
-      }
-    });
+  Future<void> userSession() async {
+    final auth = KAuthCred();
+    await auth.hydrateProvidersFromStorage();
+    final profile = KAppX.globalProvider.read(userProvider);
+
+    if (profile?.accessToken != null) {
+      KAppX.router.replace(HomeRoute());
+    } else {
+      KAppX.router.replace(MicrosoftLoginRoute());
+    }
   }
 
   @override

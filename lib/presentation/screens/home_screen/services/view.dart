@@ -74,10 +74,18 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
     if (!mounted) return;
 
     final controller = ref.read(servicesProvider.notifier);
-    final user = KAppX.globalProvider.read(userProvider);
+    final auth = KAuthCred();
+    await auth.hydrateProvidersFromStorage();
+    final userId = await auth.resolveUserId();
+    if (userId == null || userId <= 0) {
+      debugPrint(
+        'fetchUserRoles skipped: user session not available after restart',
+      );
+      return;
+    }
 
     await Future.wait([
-      controller.fetchUserRoles(user?.userId ?? 0),
+      controller.fetchUserRoles(userId),
       controller.fetchBookmarks(),
     ]);
   }
@@ -116,10 +124,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
       body: RefreshIndicator(
         onRefresh: () async {
           _hasLoadedData = false;
-          await Future.wait([
-            controller.fetchUserRoles(user?.userId ?? 0),
-            controller.fetchBookmarks(),
-          ]);
+          await _refreshServicesData();
           _hasLoadedData = true;
         },
         child: Builder(

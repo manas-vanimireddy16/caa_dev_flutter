@@ -830,12 +830,12 @@ class _VSController extends StateNotifier<_ViewState> {
     return {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
-      'Request By': item.base?.createdByUser?.employeeName ?? '-',
+      'Airport Name': item.location ?? '-',
       'User Name': item.base?.createdByUser?.employeeName ?? '-',
       'Date': formatDate(item.base?.createdAt.toString() ?? 'N/A'),
       'Request Type': item.base?.service?.name ?? 'N/A',
       'Nationality': item.nationality ?? 'N/A',
-      // 'Vehicle Number': item.vehicleNumber ?? 'N/A',
+      'Full Name': item.nameFullFamilyName ?? 'N/A',
       // 'Maintenance Type': item.typeOfMaintenanceRequired ?? 'N/A',
       // 'Request Submission Date': formatDate(
       //   item.base?.createdAt.toString() ?? 'N/A',
@@ -873,7 +873,10 @@ class _VSController extends StateNotifier<_ViewState> {
       'Phone Number': request?.phoneNumber ?? 'N/A',
       'Type of Permit': request?.typeOfPermit ?? 'N/A',
       'Permission to Required Areas':
-          request?.permissionToRequiredAreas?.join(', ') ?? 'N/A',
+          request?.permissionToRequiredAreas
+              ?.map((e) => '${e.permit ?? ''}-${e.text ?? ''}')
+              .join(', ') ??
+          'N/A',
       'Occupation/Staff': request?.occupationStaff ?? 'N/A',
       'Additional Services': request?.additionalServices?.join(', ') ?? 'N/A',
     };

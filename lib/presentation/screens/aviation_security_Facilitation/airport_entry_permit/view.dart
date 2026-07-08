@@ -156,7 +156,7 @@ class _AirportEntryPermitScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

@@ -382,7 +382,11 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
-      'Request Submission Date': item.base?.createdAt.toString() ?? '-',
+      'Request Submission Date':
+          formatDate(item.base?.createdAt.toString()) ?? '-',
+      'Location of Where Item Was Lost': item?.locationWhereItemWasLost ?? '-',
+      'Date and Time of Loss': formatDate(item?.dateTimeOfLoss) ?? '-',
+      'Item Description': item?.itemDescription ?? '-',
       // 'Type of Project': item.titleOfProject ?? 'NA',
 
       /// 👇 APPROVER (SINGLE LINE)
@@ -402,16 +406,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
+      "Request Type": request?.service?.name ?? 'N/A',
       // 'Request Submission Date':
       //     formatDate(request?.createdAt.toString()) ?? '-',
-      'Purpose of Event': request?.purposeOfEvent ?? 'NA',
-      'Hall Name': request?.typeOfHall ?? 'NA',
-      'Expected Number of Attendees':
-          request?.noOfAttendees?.toString() ?? 'N/A',
-      'Start Date': request?.startDate ?? 'N/A',
-      'End Date': request?.endDate ?? 'N/A',
-      'Start Time': request?.startTime ?? 'N/A',
-      'End Time': request?.endTime ?? 'N/A',
+      'Location of Where Item Was Lost':
+          request?.locationWhereItemWasLost ?? '-',
+      'Date and Time of Loss': formatDate(request?.dateTimeOfLoss) ?? '-',
+      'Item Description': request?.itemDescription ?? '-',
     };
   }
 
@@ -506,6 +507,7 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.date,
       required: true,
       placeholder: l10n.selectDate,
+      lastDate: DateTime.now(),
 
       validator: (value, values) {
         if (value == null || value.toString().isEmpty) {
@@ -545,7 +547,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return l10n.locationWhereItemWasLostRequired;
+          return l10n.pleaseEnterLocationWhereItemWasLost;
         }
 
         return null;
@@ -564,7 +566,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return l10n.itemDescriptionRequired;
+          return l10n.pleaseEnterItemDescription;
         }
 
         return null;
@@ -594,8 +596,8 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'attachments',
       label: l10n.attachmentsTabLabel,
       type: FieldType.file,
-      required: true,
 
+      // required: true,
       validator: (value, values) {
         if (value == null) {
           return l10n.attachmentRequired;

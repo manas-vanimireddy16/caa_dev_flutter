@@ -404,6 +404,10 @@ class _VSController extends StateNotifier<_ViewState> {
       'Budget Code': request?.budgetCode ?? 'N/A',
       'Estimated Cost': request?.estimatedCost ?? 'N/A',
       'Request Type': request?.requestType ?? 'N/A',
+      'Requesting Entity or Relevant Department':
+          request?.requestingEntity ?? 'N/A',
+      'Implementation Period': request?.implementationPeriod ?? 'N/A',
+      'Description': request?.description ?? 'N/A',
     };
   }
 

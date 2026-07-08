@@ -50,8 +50,10 @@ class _AccessCardRequestDetailsTabScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
-      appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
+      backgroundColor: AppColors.homeSurfaceColor,
+      appBar: KAppBar(
+        title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle),
+      ),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(
@@ -89,7 +91,8 @@ class _AccessCardRequestDetailsTabScreenState
             l10n: l10n,
             requestId: requestId?.toString(),
             status: request?.status,
-            assignedTo: approverMap['name'] ??
+            assignedTo:
+                approverMap['name'] ??
                 approverMap['role'] ??
                 approverMap['department'],
             user: createdByUser,

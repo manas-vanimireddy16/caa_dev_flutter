@@ -988,6 +988,13 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       required: true,
       placeholder: l10n.writeHere,
+      validator: (value, values) => validateTextLength(
+        value,
+        min: 10,
+        max: 255,
+        minMessage: l10n.mustBeAtLeast10CharactersLong,
+        maxMessage: l10n.cannotExceed255Characters,
+      ),
     ),
 
     /// ATTACH FILE

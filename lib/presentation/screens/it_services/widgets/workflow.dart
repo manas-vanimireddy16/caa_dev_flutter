@@ -291,9 +291,14 @@
 //   }
 // }
 
+import 'dart:ui' as ui;
+
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/models/details_models.dart';
 import 'package:code_setup/utils/assets/icons.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/helper/localized_display_name.dart';
+import 'package:code_setup/utils/helper/workflow_step_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -316,23 +321,29 @@ enum WorkflowStepStatus {
 /// ---------------------------------------------------------------------------
 class WorkflowStepView {
   final String title;
+  final String? workflowType;
   final String? department;
+  final String? section;
   final String? actor;
   final String? empId;
   final String? role;
   final String? rawDate;
   final WorkflowStepStatus status;
   final bool isFirst;
+  final bool showDetails;
 
   const WorkflowStepView({
     required this.title,
     required this.status,
+    this.workflowType,
     this.department,
+    this.section,
     this.actor,
     this.empId,
     this.role,
     this.rawDate,
     this.isFirst = false,
+    this.showDetails = true,
   });
 }
 
@@ -341,8 +352,13 @@ class WorkflowStepView {
 /// ---------------------------------------------------------------------------
 class ITServicesRequestWorkflowTimeline extends StatelessWidget {
   final RequestDetailData details;
+  final DashboardL10n? l10n;
 
-  const ITServicesRequestWorkflowTimeline({super.key, required this.details});
+  const ITServicesRequestWorkflowTimeline({
+    super.key,
+    required this.details,
+    this.l10n,
+  });
 
   // ------------------ MAP STATUS ------------------
   WorkflowStepStatus mapStatus(String? s) {
@@ -361,19 +377,100 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
         return WorkflowStepStatus.validating;
       case "sent":
         return WorkflowStepStatus.sent;
+      case "assigned":
+        return WorkflowStepStatus.assigned;
       default:
         return WorkflowStepStatus.inactive;
     }
   }
 
+  bool _shouldShowStepDetails(WorkflowStepStatus status, WorkflowDetailModel wf) {
+    if (isNotificationWorkflowStep(
+      content: wf.content,
+      contentAr: wf.contentAr,
+      status: wf.status,
+      statusAr: wf.statusAr,
+    )) {
+      return false;
+    }
+
+    return status == WorkflowStepStatus.approved ||
+        status == WorkflowStepStatus.submitted ||
+        status == WorkflowStepStatus.assigned;
+  }
+
+  String _orDash(String? value) {
+    final trimmed = value?.trim();
+    if (trimmed == null || trimmed.isEmpty) return '';
+    return trimmed;
+  }
+
+  String _localizedText({
+    required bool isArabic,
+    String? english,
+    String? arabic,
+    String fallback = '-',
+  }) {
+    final value = localizedDisplayName(
+      isArabic: isArabic,
+      english: english,
+      arabic: arabic,
+    );
+    return value.isEmpty ? fallback : value;
+  }
+
+  String _stepTitle(WorkflowDetailModel wf, bool isArabic) {
+    final title = _localizedText(
+      isArabic: isArabic,
+      english: wf.content,
+      arabic: wf.contentAr,
+      fallback: '',
+    );
+    if (title.isNotEmpty) return title;
+
+    final statusTitle = _localizedText(
+      isArabic: isArabic,
+      english: wf.status,
+      arabic: wf.statusAr,
+      fallback: '',
+    );
+    return statusTitle.isNotEmpty ? statusTitle : 'Workflow Step';
+  }
+
+  String _workflowTypeLabel(bool isArabic) {
+    final service = details.service;
+    if (service != null) {
+      final label = service.displayName(isArabic: isArabic);
+      if (label.isNotEmpty) return label;
+    }
+    return _localizedText(
+      isArabic: isArabic,
+      english: details.subService?.subServiceName,
+      arabic: null,
+      fallback: '',
+    );
+  }
+
+  String _employeeName(UserModel? user, bool isArabic) => _localizedText(
+    isArabic: isArabic,
+    english: user?.employeeName,
+    arabic: user?.employeeArabicName,
+  );
+
+  String _roleName(RoleModel? role, bool isArabic) => _localizedText(
+    isArabic: isArabic,
+    english: role?.name,
+    arabic: role?.arabicName,
+  );
+
   // ------------------ FORMAT DATE ------------------
   String formatDateTime(String? dt) {
-    if (dt == null || dt.isEmpty) return "-";
+    if (dt == null || dt.isEmpty) return '-';
     try {
       final local = DateTime.parse(dt).toUtc().toLocal();
-      return DateFormat("dd MMM yyyy, hh:mm a").format(local);
+      return DateFormat('MMM dd, yyyy | hh:mm a').format(local);
     } catch (_) {
-      return "-";
+      return '-';
     }
   }
 
@@ -397,11 +494,9 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
       id: u.id,
       employeeId: u.employeeId,
       employeeName: u.employeeName,
+      employeeArabicName: u.employeeArabicName,
       email: u.email,
       mobile: u.mobile,
-      // departmentId: u.department,
-      // sectionId: u.section,
-      // positionId: u.position,
     );
   }
 
@@ -453,28 +548,37 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
   }
 
   // ------------------ GENERATE STEPS ------------------
-  List<WorkflowStepView> generateWorkflowStepsForITServices() {
+  List<WorkflowStepView> generateWorkflowStepsForITServices({
+    required bool isArabic,
+  }) {
     final workflows = _sortWorkflows(details.workflowDetails ?? []);
+    final serviceLabel = _workflowTypeLabel(isArabic);
     final List<WorkflowStepView> steps = [];
 
     for (int i = 0; i < workflows.length; i++) {
       final wf = workflows[i];
-
-      final user = wf.user;
-      final role = wf.role;
+      final resolved = _resolveActorAndRole(wf);
+      final user =
+          resolved.user ??
+          wf.user ??
+          (i == 0 ? details.request?.createdByUser : null);
+      final role = resolved.role ?? wf.role;
+      final department = wf.department ?? user?.department;
+      final section = wf.section ?? user?.section;
 
       steps.add(
         WorkflowStepView(
-          title: _formatTitle(wf.content),
-          department: i == 0
-              ? details.request?.createdByUser?.department?.departmentName
-              : role?.name,
-          actor: user?.employeeName,
-          empId: user?.employeeId ?? user?.id?.toString(),
-          role: role?.name,
+          title: _stepTitle(wf, isArabic),
+          workflowType: i == 0 && serviceLabel.isNotEmpty ? serviceLabel : null,
+          actor: _orDash(_employeeName(user, isArabic)),
+          empId: _orDash(user?.employeeId ?? user?.id?.toString()),
+          role: _orDash(_roleName(role, isArabic)),
+          department: _orDash(department?.displayName(isArabic: isArabic)),
+          section: _orDash(section?.displayName(isArabic: isArabic)),
           rawDate: wf.updatedAt ?? wf.createdAt,
           status: mapStatus(wf.status),
           isFirst: i == 0,
+          showDetails: _shouldShowStepDetails(mapStatus(wf.status), wf),
         ),
       );
     }
@@ -485,7 +589,11 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
   // ------------------ BUILD UI ------------------
   @override
   Widget build(BuildContext context) {
-    final steps = generateWorkflowStepsForITServices();
+    final labels = l10n ?? DashboardL10n.of(context);
+    final isArabic = labels.isArabic;
+    final steps = generateWorkflowStepsForITServices(isArabic: isArabic);
+    final textDirection =
+        isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr;
 
     return Card(
       color: Colors.white,
@@ -499,9 +607,9 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Request Workflow",
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+            Text(
+              labels.requestWorkflowSectionTitle,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
             ),
             const Divider(height: 24),
             ListView.builder(
@@ -513,14 +621,11 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
                 final s = steps[index];
 
                 return _buildStep(
+                  labels: labels,
+                  textDirection: textDirection,
                   index: index,
                   total: steps.length,
-                  status: s.status,
-                  title: s.title,
-                  actor: s.actor ?? "-",
-                  empId: s.empId ?? "-",
-                  role: s.role ?? "",
-                  department: s.department ?? "",
+                  step: s,
                   date: formatDateTime(s.rawDate),
                 );
               },
@@ -531,146 +636,98 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
     );
   }
 
-  // ------------------ STEP UI ------------------
-  // ------------------ STEP UI ------------------
   Widget _buildStep({
+    required DashboardL10n labels,
+    required ui.TextDirection textDirection,
     required int index,
     required int total,
-    required WorkflowStepStatus status,
-    required String title,
+    required WorkflowStepView step,
     required String date,
-    required String actor,
-    required String empId,
-    required String role,
-    required String department,
   }) {
     final showLine = index < total - 1;
-
-    final showActor = actor != "-" && actor.isNotEmpty;
-
-    final showDetails =
-        index == 0 ||
-        status == WorkflowStepStatus.approved ||
-        status == WorkflowStepStatus.submitted;
+    final showDetails = step.showDetails;
 
     return IntrinsicHeight(
       child: Row(
+        textDirection: textDirection,
         crossAxisAlignment: CrossAxisAlignment.start,
-
         children: [
-          /// =====================================================
-          /// LEFT TIMELINE
-          /// =====================================================
           Column(
             children: [
-              _statusIndicator(status, index == 0),
-
+              _statusIndicator(step.status, step.isFirst),
               if (showLine)
                 Expanded(
                   child: Container(width: 2, color: const Color(0xFFE0E0E0)),
                 ),
             ],
           ),
-
           const SizedBox(width: 12),
-
-          /// =====================================================
-          /// RIGHT CONTENT
-          /// =====================================================
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 18),
-
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-
                 children: [
-                  /// =====================================================
-                  /// TITLE
-                  /// =====================================================
-                  SizedBox(
-                    width: double.infinity,
-
-                    child: Text(
-                      title,
-
-                      softWrap: true,
-
-                      overflow: TextOverflow.visible,
-
-                      maxLines: 4,
-
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        height: 1.3,
-                      ),
+                  Text(
+                    step.title,
+                    softWrap: true,
+                    overflow: TextOverflow.visible,
+                    maxLines: 4,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      height: 1.3,
                     ),
                   ),
-
                   if (showDetails) ...[
-                    const SizedBox(height: 8),
-
-                    /// =====================================================
-                    /// DEPARTMENT TAG
-                    /// =====================================================
-                    if (department.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF5F1F5),
-
-                          borderRadius: BorderRadius.circular(8),
-
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-
-                        child: Text(
-                          department,
-
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-
-                    if (showActor) ...[
+                    if (step.workflowType != null &&
+                        step.workflowType!.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      _WorkflowTypeChip(label: step.workflowType!),
+                    ],
+                    if ((step.actor ?? '').isNotEmpty) ...[
                       const SizedBox(height: 10),
-
-                      const Text(
-                        "Action Taken By:",
-
-                        style: TextStyle(
+                      Text(
+                        '${labels.workflowActionTakenBy}:',
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-
                       const SizedBox(height: 2),
-
-                      Text(actor, style: const TextStyle(fontSize: 12)),
+                      Text(step.actor!, style: const TextStyle(fontSize: 12)),
                     ],
-
-                    if (empId.isNotEmpty && empId != "-") ...[
+                    if ((step.empId ?? '').isNotEmpty) ...[
                       const SizedBox(height: 2),
-
                       Text(
-                        "Employee ID: $empId",
-
+                        '${labels.employeeId}: ${step.empId}',
                         style: const TextStyle(fontSize: 12),
                       ),
                     ],
-
+                    if ((step.department ?? '').isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        '${labels.workflowDepartmentName}: ${step.department}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
+                    if ((step.section ?? '').isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        '${labels.workflowSectionName}: ${step.section}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
+                    if ((step.role ?? '').isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        '${labels.workflowRoleName}: ${step.role}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
                     const SizedBox(height: 6),
-
                     Text(
                       date,
-
                       style: const TextStyle(
                         fontSize: 11,
                         color: Colors.black54,
@@ -694,8 +751,10 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
 
     if (isFirst || status == WorkflowStepStatus.approved) {
       icon = KIcons.workflowCompleted;
-
       color = const Color(0xFF26285F);
+    } else if (status == WorkflowStepStatus.assigned) {
+      icon = KIcons.workflowCompleted;
+      color = const Color(0xFF31B480);
     }
 
     const double size = 24;
@@ -715,16 +774,28 @@ class ITServicesRequestWorkflowTimeline extends StatelessWidget {
   }
 }
 
-String _formatTitle(String? content) {
-  if (content == null) return "Workflow Step";
+class _WorkflowTypeChip extends StatelessWidget {
+  final String label;
 
-  final text = content.toLowerCase();
+  const _WorkflowTypeChip({required this.label});
 
-  if (text.contains("submitted")) return "Request Submitted";
-  if (text.contains("assignment")) return "Request Assigned";
-  if (text.contains("progress")) return "Request Processed";
-  if (text.contains("approval")) return "Awaiting Approval";
-  // if (text.contains("notification")) return "Notification Sent";
-
-  return content;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          color: Color(0xFF676767),
+        ),
+      ),
+    );
+  }
 }

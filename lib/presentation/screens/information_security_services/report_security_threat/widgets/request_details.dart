@@ -50,8 +50,10 @@ class _SecurityThreatRequestDetailsTabScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
-      appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
+      backgroundColor: AppColors.homeSurfaceColor,
+      appBar: KAppBar(
+        title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle),
+      ),
 
       /// IMPORTANT — This fixes your issue.
       body: Consumer(

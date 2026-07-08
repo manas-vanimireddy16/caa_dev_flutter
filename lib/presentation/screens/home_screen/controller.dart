@@ -25,15 +25,11 @@ class _VSController extends StateNotifier<_ViewState> {
   _VSController() : super(_ViewState.init());
 
   void initState() {
-    printUserData();
-
-    // Check if a user session already exists on app start
-    // userSession();
+    _hydrateSession();
   }
 
-  Future<void> printUserData() async {
-    final userData = await KAuthCred().getProfileData();
-    log(userData!.toJson().toString());
+  Future<void> _hydrateSession() async {
+    await KAuthCred().hydrateProvidersFromStorage();
   }
 
   int get currentTabIndex {

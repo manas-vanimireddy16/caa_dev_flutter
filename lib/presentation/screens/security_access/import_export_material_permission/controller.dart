@@ -337,7 +337,8 @@ class _VSController extends StateNotifier<_ViewState> {
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       'Request Submission Date': item.base?.createdAt.toString() ?? '-',
-      // 'Type of Project': item.titleOfProject ?? 'NA',
+      'Purpose of Import/Export': item?.purpose ?? 'NA',
+      'Mode Of Transport': item.transportMode ?? 'NA',
 
       /// 👇 APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
@@ -362,6 +363,9 @@ class _VSController extends StateNotifier<_ViewState> {
       'Description': request?.description ?? 'NA',
       'Company Name': request?.companyName ?? 'NA',
       'Request Type': request?.requestType ?? '-',
+      'Mode of Transport': request?.transportMode ?? 'NA',
+      'Is the material hazardous or sensitive?':
+          request?.hazardousDetails ?? 'NA',
     };
   }
 
@@ -467,10 +471,25 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.radio,
       required: true,
       options: [
-        DropdownOption(value: 'Import', label: l10n.import),
-        DropdownOption(value: 'Export', label: l10n.export),
-        DropdownOption(value: 'Both', label: l10n.importAndExportBoth),
+        DropdownOption(
+          value: 'import',
+          label: l10n.importExportTypeOption('import'),
+        ),
+        DropdownOption(
+          value: 'export',
+          label: l10n.importExportTypeOption('export'),
+        ),
+        DropdownOption(
+          value: 'Both',
+          label: l10n.importExportTypeOption('both'),
+        ),
       ],
+      validator: (value, values) {
+        if (value == null || value.toString().trim().isEmpty) {
+          return l10n.pleaseSelectTypeOfRequest;
+        }
+        return null;
+      },
     ),
 
     /// ================= REQUESTED DATE OF MATERIAL MOVEMENT =================
@@ -481,6 +500,12 @@ class _VSController extends StateNotifier<_ViewState> {
       firstDate: DateTime.now(),
       required: true,
       placeholder: l10n.selectMaterialMovementDate,
+      validator: (value, values) {
+        if (value == null || value.toString().trim().isEmpty) {
+          return l10n.pleaseSelectMaterialMovementDate;
+        }
+        return null;
+      },
     ),
 
     /// ================= HAZARDOUS / SENSITIVE MATERIAL =================
@@ -494,7 +519,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return l10n.hazardousMaterialRequired;
+          return l10n.pleaseEnterHazardousOrSensitiveMaterial;
         }
 
         return null;
@@ -512,7 +537,7 @@ class _VSController extends StateNotifier<_ViewState> {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return l10n.purposeOfImportExportRequired;
+          return l10n.pleaseEnterPurposeOfImportExport;
         }
 
         return null;
@@ -528,6 +553,10 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: l10n.enterDescriptionOfMaterial,
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
+
+        if (text.isEmpty) {
+          return l10n.pleaseEnterDescriptionOfMaterial;
+        }
 
         if (text.length < 5) {
           return l10n.materialDescriptionMinFiveChars;
@@ -546,8 +575,9 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: l10n.enterModeOfTransport,
 
       validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return l10n.modeOfTransportRequired;
+        final text = value?.toString().trim() ?? '';
+        if (text.isEmpty) {
+          return l10n.pleaseEnterModeOfTransport;
         }
 
         return null;
@@ -572,6 +602,10 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: l10n.enterDescription,
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
+
+        if (text.isEmpty) {
+          return l10n.pleaseEnterDescription;
+        }
 
         if (text.length < 5) {
           return l10n.descriptionMinFiveChars;

@@ -443,7 +443,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final nextApprover = resolveApproverMap(approvals);
     return {
       "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt ?? 'N/A'),
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))
@@ -683,6 +683,28 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: l10n.enterEmail,
     ),
 
+    /// ================= ID NUMBER NOTE =================
+    DynamicField(
+      name: 'id_number_note',
+      label: '',
+      type: FieldType.custom,
+      builder: (context, ref) {
+        final noteL10n = DashboardL10n.of(context);
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 4),
+          child: Text(
+            noteL10n.accessCardIdNumberNote,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFF1565C0),
+              fontWeight: FontWeight.w500,
+              height: 1.4,
+            ),
+          ),
+        );
+      },
+    ),
+
     /// ================= ID NUMBER =================
     DynamicField(
       name: 'id_number',
@@ -691,8 +713,8 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       placeholder: l10n.enterCivilIdPassportNumber,
       validator: (value, values) {
-        final phone = value?.toString().trim() ?? '';
-        if (phone.isEmpty) return '${l10n.idNumber} is required';
+        final id = value?.toString().trim() ?? '';
+        if (id.isEmpty) return '${l10n.idNumber} is required';
         return null;
       },
     ),

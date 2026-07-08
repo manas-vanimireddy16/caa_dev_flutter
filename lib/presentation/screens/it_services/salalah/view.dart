@@ -41,6 +41,7 @@ import 'package:code_setup/presentation/screens/it_services/widgets/workflow.dar
 import 'package:code_setup/repository/it_services/salalah/domain/dashboard.dart'
     show DashboardRepository;
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/dashboard_metric_labels.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
@@ -151,7 +152,7 @@ class _SalalahDashboardState extends ConsumerState<SalalahDashboard>
     );
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
         padding: EdgeInsets.only(
           left: 16.toAutoScaledWidth,

@@ -52,6 +52,7 @@ import 'package:code_setup/presentation/screens/task_management/models/employee_
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/assests_affair/residental_unit_rental/domain/domain.dart';
 import 'package:code_setup/repository/it_services/vpn/domain/domain.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/dashboard_metric_labels.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
@@ -145,7 +146,7 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
     );
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

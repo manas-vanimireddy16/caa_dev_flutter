@@ -322,7 +322,6 @@ class _VSController extends StateNotifier<_ViewState> {
     String Function(String key) titleForKey,
   ) => StatSummaryHelper.buildStatList(
     state.kpiData.data?.toJson(),
-    isSecurityThreat: true,
     titleForKey: titleForKey,
   );
 
@@ -330,7 +329,6 @@ class _VSController extends StateNotifier<_ViewState> {
     String Function(String key) titleForKey,
   ) => StatSummaryHelper.buildStatList(
     state.approvalKpiData.data?.toJson(),
-    isSecurityThreat: true,
     titleForKey: titleForKey,
   );
 
@@ -386,12 +384,12 @@ class _VSController extends StateNotifier<_ViewState> {
     final approverMap = resolveApproverMap(item.base?.approvalDetails ?? []);
 
     return {
-      'Request Id': item.id?.toString() ?? '-',
-      'status': item.status ?? '-',
-      'Request Type': item.base?.subService?.subServiceName ?? '-',
-      'Request For': item.requestFor ?? '-',
-      'Start Date': formatDate(item.startDate ?? '-'),
-      'End Date': formatDate(item.endDate ?? '-'),
+      'Request Id': item.id?.toString() ?? 'N/A',
+      'status': item.status ?? 'N/A',
+      'Request Type': item.base?.subService?.subServiceName ?? 'N/A',
+      'Request For': item.requestFor ?? 'N/A',
+      'Start Date': formatDate(item.startDate ?? 'N/A'),
+      'End Date': formatDate(item.endDate ?? 'N/A'),
 
       // 'Vehicle Number': item.vehicleNumber ?? 'N/A',
       // 'Maintenance Type': item.typeOfMaintenanceRequired ?? 'N/A',
@@ -403,7 +401,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// 👇 APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
-        'Approver': approverMap['role'] ?? '-',
+        'Assigned To': approverMap['role'] ?? '-',
       } else if (approverMap.containsKey('department')) ...{
         'Approver': _buildDepartmentSection(approverMap),
       },
@@ -763,7 +761,23 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.date,
       required: true,
       placeholder: l10n.select,
+      firstDate: DateTime.now(),
       disabledWhen: (values) => values['request_time_period'] == 'Permanent',
+      onChanged: (value, ref) {
+        final endValue = ref
+            .read(dynamicFormProvider)
+            .values['end_date']
+            ?.toString();
+        if (endValue == null || endValue.isEmpty) return;
+
+        final startDate = DateTime.tryParse(value?.toString() ?? '');
+        final endDate = DateTime.tryParse(endValue);
+        if (startDate != null &&
+            endDate != null &&
+            endDate.isBefore(startDate)) {
+          ref.read(dynamicFormProvider.notifier).updateValue('end_date', '');
+        }
+      },
     ),
 
     /// ================= END DATE =================
@@ -773,7 +787,14 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.date,
       required: false,
       placeholder: l10n.select,
-
+      firstDateWhen: (values) {
+        final start = values['start_date']?.toString();
+        if (start != null && start.isNotEmpty) {
+          final parsed = DateTime.tryParse(start);
+          if (parsed != null) return parsed;
+        }
+        return DateTime.now();
+      },
       disabledWhen: (values) => values['request_time_period'] == 'Permanent',
     ),
 

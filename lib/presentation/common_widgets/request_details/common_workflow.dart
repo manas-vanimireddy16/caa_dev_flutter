@@ -297,6 +297,7 @@ import 'package:code_setup/utils/assets/icons.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/localized_display_name.dart';
+import 'package:code_setup/utils/helper/workflow_step_helpers.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -329,6 +330,7 @@ class WorkflowStepView {
   final String? rawDate;
   final WorkflowStepStatus status;
   final bool isFirst;
+  final bool showDetails;
 
   const WorkflowStepView({
     required this.title,
@@ -341,6 +343,7 @@ class WorkflowStepView {
     this.role,
     this.rawDate,
     this.isFirst = false,
+    this.showDetails = true,
   });
 }
 
@@ -370,9 +373,26 @@ class RequestWorkflowTimeline extends StatelessWidget {
         return WorkflowStepStatus.validating;
       case "sent":
         return WorkflowStepStatus.sent;
+      case "assigned":
+        return WorkflowStepStatus.assigned;
       default:
         return WorkflowStepStatus.inactive;
     }
+  }
+
+  bool _shouldShowStepDetails(WorkflowStepStatus status, WorkflowDetailModel wf) {
+    if (isNotificationWorkflowStep(
+      content: wf.content,
+      contentAr: wf.contentAr,
+      status: wf.status,
+      statusAr: wf.statusAr,
+    )) {
+      return false;
+    }
+
+    return status == WorkflowStepStatus.approved ||
+        status == WorkflowStepStatus.submitted ||
+        status == WorkflowStepStatus.assigned;
   }
 
   // ------------------ FORMAT DATE ------------------
@@ -705,6 +725,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
           rawDate: wf.updatedAt ?? wf.createdAt,
           status: mapStatus(wf.status),
           isFirst: i == 0,
+          showDetails: _shouldShowStepDetails(mapStatus(wf.status), wf),
         ),
       );
     }
@@ -768,7 +789,7 @@ class RequestWorkflowTimeline extends StatelessWidget {
     required String date,
   }) {
     final showLine = index < total - 1;
-    final showDetails = step.status != WorkflowStepStatus.inactive || step.isFirst;
+    final showDetails = step.showDetails;
 
     return IntrinsicHeight(
       child: Row(

@@ -8,9 +8,10 @@ class StatSummaryHelper {
 
   static List<StatSummaryData> buildStatList(
     Map<String, dynamic>? map, {
-    bool isSecurityThreat = false,
+    /// Hide the approved KPI card (e.g. Report Security Threat uses closed).
+    bool excludeApprovedKpi = false,
 
-    /// NEW FLAG
+    /// Map approved count to closed and hide the original closed card.
     bool isShowApprovalAsClose = false,
 
     String Function(String key)? titleForKey,
@@ -22,6 +23,10 @@ class StatSummaryHelper {
           if (entry.value == null) return false;
 
           if (ignoredKeys.contains(entry.key)) return false;
+
+          if (excludeApprovedKpi && entry.key == 'approved') {
+            return false;
+          }
 
           /// Hide original closed card
           /// because approved becomes closed

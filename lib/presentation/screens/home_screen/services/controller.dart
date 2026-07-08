@@ -126,6 +126,10 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> fetchUserRoles(int id) async {
+    if (id <= 0) {
+      debugPrint('fetchUserRoles skipped: invalid user id ($id)');
+      return;
+    }
     if (!mounted) return;
     state = state.copyWith(isLoading: true);
 

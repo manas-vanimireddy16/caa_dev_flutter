@@ -441,13 +441,28 @@ class DashboardL10n {
       _t('Purpose of Import/Export', 'الغرض من الاستيراد/التصدير');
 
   String get requestedDateOfMaterialMovement =>
-      _t('Requested Date of Material Movement', 'التاريخ المطلوب لنقل المواد');
+      _t('Requested Date of Material Movement', 'تاريخ نقل المواد المطلوب');
 
-  String get export => _t('Export', 'تصدير');
+  String get export => _t('Export', 'إخراج');
 
-  String get import => _t('Import', 'استيراد');
+  String get import => _t('import', 'إدخال');
 
-  String get importAndExportBoth => _t('Both', 'كلاهما');
+  String get importAndExportBoth => _t('both', 'إدخال وإخراج');
+
+  String importExportTypeOption(String value) {
+    switch (value.toLowerCase()) {
+      case 'import':
+        return import;
+      case 'export':
+        return export;
+      case 'both':
+        return importAndExportBoth;
+      default:
+        return value;
+    }
+  }
+
+  String get expiredLabel => _t('Expired', 'منتهي الصلاحية');
 
   String get vehicleNumber => _t('Vehicle Number', 'رقم المركبة');
 
@@ -886,6 +901,9 @@ class DashboardL10n {
   String get pleaseEnterDescriptionOfMaterial =>
       _t('Please Enter the description of material', 'يرجى إدخال وصف المادة');
 
+  String get pleaseEnterDescription =>
+      _t('Please Enter the Description', 'يرجى إدخال الوصف');
+
   String get enterModeOfTransport =>
       _t('Enter the mode of transport', 'أدخل وسيلة النقل');
 
@@ -949,6 +967,51 @@ class DashboardL10n {
   String get descriptionMinFiveChars => _t(
     'Description must be at least 5 characters',
     'يجب أن يكون الوصف 5 أحرف على الأقل',
+  );
+
+  String get mustBeAtLeast3Characters => _t(
+    'Must be at least 3 characters',
+    'يجب ألا يقل عن 3 أحرف',
+  );
+
+  String get mustBeAtLeast10CharactersLong => _t(
+    'Description must be at least 10 characters long',
+    'يجب أن يكون الوصف 10 أحرف على الأقل',
+  );
+
+  String get cannotExceed250Characters => _t(
+    'Cannot exceed 250 characters',
+    'لا يجوز أن يتجاوز 250 حرفًا',
+  );
+
+  String get cannotExceed255Characters => _t(
+    'Cannot exceed 255 characters',
+    'لا يجوز أن يتجاوز 255 حرفًا',
+  );
+
+  String get logisticsDescription3250 => _t(
+    'Write here (min 3, max 250 characters)',
+    'اكتب هنا (3 أحرف كحد أدنى و250 حرفًا كحد أقصى)',
+  );
+
+  String get approvalCommentOptional5250 => _t(
+    'Add your comments (optional, min 5, max 250 if provided)',
+    'أضف تعليقاتك (اختياري، 5–250 حرفًا إن وُجد نص)',
+  );
+
+  String get otherVehicleRequiredForLabel => _t(
+    'Other Vehicle Required For',
+    'الغرض الآخر للمركبة',
+  );
+
+  String get otherVehicleRequiredForMinLength => _t(
+    'Other Vehicle Required For must be at least 5 characters',
+    'يجب أن يكون حقل الغرض الآخر للمركبة 5 أحرف على الأقل',
+  );
+
+  String get otherVehicleRequiredForMaxLength => _t(
+    'Other Vehicle Required For cannot exceed 250 characters',
+    'لا يجوز أن يتجاوز حقل الغرض الآخر للمركبة 250 حرفًا',
   );
 
   String get materialDescriptionMinFiveChars => _t(
@@ -1575,6 +1638,11 @@ class DashboardL10n {
   String get category => _t('Category', 'الفئة');
 
   String get idNumber => _t('ID Number', 'رقم الهوية');
+
+  String get accessCardIdNumberNote => _t(
+    'Note:- ID Number (For Omanis and Residents) | Passport Number (For Foreigners outside the country)',
+    'ملاحظة:- رقم الهوية (للعمانيين والمقيمين) | رقم جواز السفر (للأجانب خارج الدولة)',
+  );
 
   String get enterPassportNumber =>
       _t('Enter Passport Number', 'أدخل رقم جواز السفر');
@@ -2549,7 +2617,7 @@ class DashboardL10n {
       case 'rejected':
         return _t('Rejected', 'مرفوض');
       case 'expired':
-        return _t('Expired', 'منتهي');
+        return expiredLabel;
       case 'open':
         return _t('Open', 'مفتوح');
       case 'completed':

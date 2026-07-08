@@ -856,18 +856,25 @@ class _ApproverInfoCard extends StatelessWidget {
                   const SizedBox(height: 6),
                 ],
                 if (email.isNotEmpty) ...[
-                  KImageProvider(
-                    image: AppIcons.mailEmployeeCard,
-                    width: iconSize,
-                    height: iconSize,
-                    tintColor: const Color(0xFF818184),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    email,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.requestDetailsFieldContent(),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      KImageProvider(
+                        image: AppIcons.mailEmployeeCard,
+                        width: iconSize,
+                        height: iconSize,
+                        tintColor: const Color(0xFF818184),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          email,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.requestDetailsFieldContent(),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ],

@@ -31,6 +31,7 @@ class ForeignEmployeeVehicleRequestModel {
 
   final String? specialInstructions;
   final String? status;
+  final List<PassengerModel>? passengers;
 
   const ForeignEmployeeVehicleRequestModel({
     this.base,
@@ -54,6 +55,7 @@ class ForeignEmployeeVehicleRequestModel {
     this.driverName,
     this.specialInstructions,
     this.status,
+    this.passengers,
   });
 
   /// ================= FROM JSON =================
@@ -98,8 +100,52 @@ class ForeignEmployeeVehicleRequestModel {
       driverName: json['driver_name'],
 
       specialInstructions: json['special_instructions'],
-
+      passengers: (json['passengers'] as List?)
+          ?.map((e) => PassengerModel.fromJson(e))
+          .toList(),
       status: json['status'],
+    );
+  }
+}
+
+class PassengerModel {
+  final List<String>? jsonIgnore;
+  final bool? isDeleted;
+  final int? id;
+  final int? foreignVehicleRequestId;
+  final String? passengerName;
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
+
+  const PassengerModel({
+    this.jsonIgnore,
+    this.isDeleted,
+    this.id,
+    this.foreignVehicleRequestId,
+    this.passengerName,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
+  });
+
+  factory PassengerModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return const PassengerModel();
+    }
+
+    return PassengerModel(
+      jsonIgnore: (json['jsonIgnore'] as List?)?.cast<String>(),
+      isDeleted: json['is_deleted'],
+      id: json['id'],
+      foreignVehicleRequestId: json['foreign_vehicle_request_id'],
+      passengerName: json['passenger_name'],
+      createdBy: json['created_by'],
+      createdAt: json['created_at'],
+      updatedBy: json['updated_by'],
+      updatedAt: json['updated_at'],
     );
   }
 }

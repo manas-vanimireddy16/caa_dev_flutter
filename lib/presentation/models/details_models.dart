@@ -1384,6 +1384,11 @@ class RequestModel {
   final String? eventName;
   final String? tags;
 
+  final String? dateTimeOfLoss;
+  final String? locationWhereItemWasLost;
+
+  final String? itemDescription;
+
   // ─────────────────────────────
   // TRAINING ROOM BOOKING FIELDS
   // ─────────────────────────────
@@ -1581,6 +1586,12 @@ class RequestModel {
 
   final bool? haveYouEverReceivedAuthority;
   final String? scholarship;
+
+  final String? materialMovementDate;
+  final String? hazardousDetails;
+  final String? purpose;
+  final String? materialDescription;
+  final String? transportMode;
 
   ///Security Threat
 
@@ -1815,6 +1826,9 @@ class RequestModel {
     this.employeesDetails,
     this.airTicketDetails,
     this.allowanceValue,
+    this.dateTimeOfLoss,
+    this.locationWhereItemWasLost,
+    this.itemDescription,
 
     this.eventLocation,
     this.eventDetails,
@@ -1904,6 +1918,11 @@ class RequestModel {
     this.timeOfArrival,
     this.startDateOfStay,
     this.referenceNumber,
+    this.materialMovementDate,
+    this.hazardousDetails,
+    this.purpose,
+    this.materialDescription,
+    this.transportMode,
     this.otherPurposeSpecification,
     this.officialPurposeOfTravel,
     this.numberOfEmployeesTravelling,
@@ -2155,6 +2174,11 @@ class RequestModel {
 
       assignedToUserId: json["assigned_to_user_id"],
       assignedAt: json["assigned_at"],
+      materialMovementDate: json['material_movement_date'],
+      hazardousDetails: json['hazardous_details'],
+      purpose: json['purpose'],
+      materialDescription: json['material_description'],
+      transportMode: json['transport_mode'],
       reviewerUserId: json["reviewer_user_id"],
 
       assignedEmployeeName: json["assigned_employee_name"],
@@ -2230,6 +2254,11 @@ class RequestModel {
           : null,
       tripType: json['trip_type'],
       chooseType: json['choose_type'],
+      dateTimeOfLoss: json['date_time_of_loss'],
+
+      locationWhereItemWasLost: json['location_where_item_was_lost'],
+
+      itemDescription: json['item_description'],
 
       missionSponsoredBy: json['mission_sponsored_by'],
       missionPurpose: json['mission_purpose'],

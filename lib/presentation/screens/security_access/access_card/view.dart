@@ -53,6 +53,7 @@ import 'package:code_setup/repository/security_access/domain/domain.dart';
 import 'package:code_setup/repository/tender_services/request_tender_service/domain/domain.dart';
 import 'package:code_setup/repository/training_and_development/request_for_cancellation/domain/domain.dart';
 import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/list_pagination.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
@@ -141,15 +142,15 @@ class _AccessCardRequestScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         children: [
           /// KPI
           StatSummaryRow(
             stats: controller.currentStats((key) => l10n.statTitle(key)),
           ),
-          20.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// Status Breakdown
           RequestStatusBreakdownCard(
@@ -168,7 +169,7 @@ class _AccessCardRequestScreenState
             ),
             breakdown: state.statusBreakdown.data,
           ),
-
+          16.toVerticalSizedBox,
           RequestTrendBreakdownCard(
             monthlyData: state.tabIndex == 0
                 ? controller.trendCounts
@@ -182,7 +183,7 @@ class _AccessCardRequestScreenState
             onChanged: controller.onTrendFilterChanged,
           ),
 
-          16.toHorizontalSizedBox,
+          16.toVerticalSizedBox,
 
           /// MAIN CARD
           TicketRequestsCard(

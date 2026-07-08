@@ -761,6 +761,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
+      'Request Type': item?.base?.service?.name ?? '-',
       'Request Name': item.title ?? 'N/A',
       'Category': item.category ?? 'N/A',
       'Date': formatDate(item.base?.createdAt.toString() ?? ''),
@@ -970,6 +971,24 @@ class _VSController extends StateNotifier<_ViewState> {
       ],
     ),
     DynamicField(
+      name: 'other_vehicle_required_for',
+      label: l10n.otherVehicleRequiredForLabel,
+      type: FieldType.text,
+      required: false,
+      requiredWhen: (values) => values['vehicle_required_for'] == 'others',
+      visibleWhen: (values) => values['vehicle_required_for'] == 'others',
+      placeholder: l10n.writeHereMinMax,
+      validator: (value, values) {
+        if (values['vehicle_required_for'] != 'others') return null;
+
+        final text = value?.toString().trim() ?? '';
+        if (text.isEmpty) return null;
+        if (text.length < 5) return l10n.otherVehicleRequiredForMinLength;
+        if (text.length > 250) return l10n.otherVehicleRequiredForMaxLength;
+        return null;
+      },
+    ),
+    DynamicField(
       name: 'vehicle_required_location',
       label: l10n.vehicleRequiredLocation,
       type: FieldType.select,
@@ -991,11 +1010,14 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.requestTitleLogistics,
       type: FieldType.text,
       required: true,
-      placeholder: l10n.enterRequestTitle,
-      validator: (value, values) {
-        final word = value.toString().trim();
-        if (word.length < 5) return 'Must be at least 5 characters';
-      },
+      placeholder: l10n.enterRequestTitleLogistics,
+      validator: (value, values) => validateTextLength(
+        value,
+        min: 5,
+        max: 250,
+        minMessage: l10n.securityThreatTicketNameHint,
+        maxMessage: l10n.cannotExceed250Characters,
+      ),
     ),
     DynamicField(
       name: 'type_of_request',
@@ -1116,7 +1138,14 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.requestDetailsLabel('Description'),
       type: FieldType.text,
       required: false,
-      placeholder: l10n.writeHereAr,
+      placeholder: l10n.approvalCommentOptional5250,
+      validator: (value, values) => validateOptionalTextLength(
+        value,
+        min: 5,
+        max: 250,
+        minMessage: l10n.securityThreatTicketNameHint,
+        maxMessage: l10n.cannotExceed250Characters,
+      ),
     ),
     DynamicField(
       name: 'attachments',

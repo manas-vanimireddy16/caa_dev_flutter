@@ -14,9 +14,20 @@ class SettingsController extends StateNotifier<SettingsState> {
   void initState() {
     initializeMsal();
     _loadSavedLanguage();
-    final user = KAppX.globalProvider.read(userInfoProvider);
-    final int id = int.tryParse(user?.data?.id ?? '') ?? 0;
-    fetchUserRoles(id); // //(1017);(id); //(40);(id); //
+    _bootstrapUserRoles();
+  }
+
+  Future<void> _bootstrapUserRoles() async {
+    final auth = KAuthCred();
+    await auth.hydrateProvidersFromStorage();
+    final userId = await auth.resolveUserId();
+    if (userId == null || userId <= 0) {
+      debugPrint(
+        'fetchUserRoles skipped: user session not available after restart',
+      );
+      return;
+    }
+    await fetchUserRoles(userId);
   }
 
   void _loadSavedLanguage() {
@@ -252,6 +263,10 @@ class SettingsController extends StateNotifier<SettingsState> {
   }
 
   Future<void> fetchUserRoles(int id) async {
+    if (id <= 0) {
+      debugPrint('fetchUserRoles skipped: invalid user id ($id)');
+      return;
+    }
     if (!mounted) return;
     state = state.copyWith(isLoading: true);
 

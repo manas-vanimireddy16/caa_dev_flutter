@@ -972,6 +972,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await legalConsultationandReviewoInstance.onAssign(payload);
       if (!mounted) return;
       KAppX.router.pop();
+      KAppX.router.pop();
       // fetchApprovalKpi();
       // refreshRequestLists();
       // await fetchRequestDetailsById(requestId);

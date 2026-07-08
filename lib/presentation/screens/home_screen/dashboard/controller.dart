@@ -105,16 +105,18 @@ class _VSController extends StateNotifier<_ViewState> {
   // late TextEditingController fromDateController;
 
   Future<void> initState() async {
-    final savedRole = await KAuthCred().getSelectedRole();
+    final auth = KAuthCred();
+    await auth.hydrateProvidersFromStorage();
+
+    final savedRole = await auth.getSelectedRole();
     if (savedRole != null) {
       await Future.wait([fetchRequests(), fetchActionItems()]);
       return;
     }
 
-    final userInfo = KAppX.globalProvider.read(userInfoProvider);
-    final user = KAppX.globalProvider.read(userProvider);
-    final id = int.tryParse(userInfo?.data?.id ?? '') ?? user?.userId ?? 0;
-    await fetchUserRoles(id);
+    final userId = await auth.resolveUserId();
+    if (userId == null || userId <= 0) return;
+    await fetchUserRoles(userId);
   }
 
   final dashboardInstance = DashboardRepository();
@@ -141,7 +143,6 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(isLoading: true);
     final announcements = await dashboardInstance.getModels();
     final anns = announcements;
-
     state = state.copyWith(isLoading: false, announcements: anns);
   }
 
@@ -180,6 +181,10 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> fetchUserRoles(int id) async {
+    if (id <= 0) {
+      debugPrint('fetchUserRoles skipped: invalid user id ($id)');
+      return;
+    }
     if (!mounted) return;
     state = state.copyWith(isLoading: true);
 
