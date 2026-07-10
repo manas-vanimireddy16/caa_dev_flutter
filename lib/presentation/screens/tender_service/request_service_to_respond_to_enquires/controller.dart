@@ -582,8 +582,8 @@ class _VSController extends StateNotifier<_ViewState> {
           return 'Phone Number must be at least 8 characters';
         }
 
-        if (phone.length != 8) {
-          return 'Phone Number must be exactly 8 characters';
+        if (phone.length < 8 || phone.length > 10) {
+          return l10n.phoneMustBe8To10Digits;
         }
 
         return null;

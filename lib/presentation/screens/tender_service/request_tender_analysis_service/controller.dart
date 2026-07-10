@@ -374,8 +374,8 @@ class _VSController extends StateNotifier<_ViewState> {
       'Request Id': item.base?.id?.toString() ?? '-',
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
-      'Request Submission Date': item.base?.createdAt.toString() ?? '-',
-      'Type of Project': item.titleOfProject ?? 'NA',
+      'Date': item.base?.createdAt.toString() ?? '-',
+      'Title of Project': item.titleOfProject ?? 'NA',
       'Project Code/Budget Code': item.projectCodeBudgetCode ?? 'NA',
 
       /// 👇 APPROVER (SINGLE LINE)
@@ -501,12 +501,8 @@ class _VSController extends StateNotifier<_ViewState> {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return 'Title of project is required';
+          return l10n.titleOfProjectRequired;
         }
-
-        // if (phone.length != 8) {
-        //   return 'Phone Number must be exactly 8 characters';
-        // }
 
         return null;
       },
@@ -523,12 +519,8 @@ class _VSController extends StateNotifier<_ViewState> {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return 'Project code/budget code is required';
+          return l10n.projectCodeBudgetCodeRequired;
         }
-
-        // if (phone.length != 8) {
-        //   return 'Phone Number must be exactly 8 characters';
-        // }
 
         return null;
       },
@@ -543,13 +535,9 @@ class _VSController extends StateNotifier<_ViewState> {
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
-        if (text.isEmpty) {
-          return 'Description must be at least 10 characters';
+        if (text.length < 10 || text.length > 100) {
+          return l10n.descriptionMustBeBetween10And100Characters;
         }
-
-        // if (phone.length != 8) {
-        //   return 'Phone Number must be exactly 8 characters';
-        // }
 
         return null;
       },
@@ -578,11 +566,11 @@ class _VSController extends StateNotifier<_ViewState> {
         final phone = value?.toString().trim() ?? '';
 
         if (phone.isEmpty) {
-          return 'Phone Number must be at least 8 characters';
+          return l10n.phoneNumberRequired;
         }
 
         if (phone.length != 8) {
-          return 'Phone Number must be exactly 8 characters';
+          return l10n.phoneMustBeExactly8Digits;
         }
 
         return null;
@@ -595,6 +583,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.attachment,
       type: FieldType.file,
       required: true,
+      maxFileSizeInMB: 2,
     ),
   ];
 

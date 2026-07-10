@@ -65,7 +65,7 @@ abstract final class AppTextStyles {
   static TextStyle requestDetailsFieldHeading({double? fontSize}) {
     return cairo(
       fontSize: fontSize ?? 12,
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.w500,
       color: AppColors.grey50,
       height: 16 / 12,
     );
@@ -75,7 +75,7 @@ abstract final class AppTextStyles {
   static TextStyle requestDetailsFieldContent({double? fontSize}) {
     return cairo(
       fontSize: fontSize ?? 12,
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.w600,
       color: AppColors.darkPrimaryTextColor,
       height: 1.66,
     );

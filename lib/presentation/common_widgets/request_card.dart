@@ -1,4 +1,5 @@
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+import 'package:code_setup/presentation/common_widgets/request_card_workflow_action.dart';
 import 'package:code_setup/presentation/common_widgets/status_widget.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class RequestCard extends StatelessWidget {
   final bool isShowClosed;
   final VoidCallback? onTap;
   final VoidCallback? onSelfAssign;
+  final VoidCallback? onWorkflowTap;
   final String Function(String key)? fieldLabelBuilder;
   final String Function(String status)? statusLabelBuilder;
   final String Function(String id)? requestIdLabelBuilder;
@@ -27,6 +29,7 @@ class RequestCard extends StatelessWidget {
     required this.data,
     this.onTap,
     this.onSelfAssign,
+    this.onWorkflowTap,
     this.fieldLabelBuilder,
     this.statusLabelBuilder,
     this.requestIdLabelBuilder,
@@ -197,6 +200,8 @@ class RequestCard extends StatelessWidget {
           )
         else
           const SizedBox.shrink(),
+        if (onWorkflowTap != null)
+          RequestCardWorkflowAction(onTap: onWorkflowTap!),
       ],
     );
   }
@@ -214,20 +219,20 @@ class RequestCard extends StatelessWidget {
           side: const BorderSide(color: _borderColor, width: 1),
         ),
         clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: EdgeInsets.all(_cardPadding.toAutoScaledWidth),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildDynamicGrid(entries),
-                if (entries.isNotEmpty || _hasStatusKey())
-                  SizedBox(height: _cardGap.toAutoScaledHeight),
-                _buildFooter(),
-              ],
-            ),
+        child: Padding(
+          padding: EdgeInsets.all(_cardPadding.toAutoScaledWidth),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              InkWell(
+                onTap: onTap,
+                child: _buildDynamicGrid(entries),
+              ),
+              if (entries.isNotEmpty || _hasStatusKey())
+                SizedBox(height: _cardGap.toAutoScaledHeight),
+              _buildFooter(),
+            ],
           ),
         ),
       ),

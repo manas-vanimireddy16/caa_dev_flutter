@@ -62,8 +62,12 @@ class _LegalConsultationandReviewofAdministrativeDecisionsDetailsScreenState
       body: Consumer(
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));
+          final requestId =
+              state.requestDetails.request?.id ?? state.requestDetails.id;
+          final isInitialLoad =
+              state.isDetailsLoading && (requestId == null || requestId == 0);
 
-          if (state.requestDetails == null || state.isLoading) {
+          if (isInitialLoad) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -71,7 +75,6 @@ class _LegalConsultationandReviewofAdministrativeDecisionsDetailsScreenState
           //     ? null
           //     : state.requestDetails;
           final request = state.requestDetails;
-          final requestId = request.request?.id ?? request.id;
           final List<AttachmentModel> attachments = state.attachmentsById;
           final chats = state.chatById;
           final List<ApprovalDetailModel> approvals =

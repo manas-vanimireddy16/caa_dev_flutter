@@ -128,9 +128,9 @@ class _LegalConsultationandReviewofAdministrativeDecisionsScreenState
 
   @override
   void dispose() {
+    _pageController.dispose();
     _focusNode.dispose();
     super.dispose();
-    _pageController.dispose();
   }
 
   @override

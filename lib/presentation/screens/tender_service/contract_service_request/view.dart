@@ -54,6 +54,7 @@ import 'package:code_setup/repository/tender_services/request_tender_analysis_se
 import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
 import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/list_pagination.dart';
@@ -141,7 +142,7 @@ class _ContractServiceRequestScreenState
     final l10n = DashboardL10n.of(context);
 
     return KScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.homeSurfaceColor,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

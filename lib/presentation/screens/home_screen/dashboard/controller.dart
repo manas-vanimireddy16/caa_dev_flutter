@@ -194,9 +194,6 @@ class _VSController extends StateNotifier<_ViewState> {
 
       await selectOrStoreRole(userRoles);
       await Future.wait([fetchRequests(), fetchActionItems()]);
-
-      // state = state.copyWith(userRoles: userRoles);
-      // await loadSavedRole(userRoles);
       if (!mounted) return;
 
       state = state.copyWith(isLoading: false);

@@ -61,6 +61,8 @@ import 'package:code_setup/presentation/common_widgets/paginated_list_section.da
 import 'package:code_setup/utils/helper/list_pagination.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/presentation/screens/it_services/vpn/widgets/vpn_dashboard_labels.dart';
+import 'package:code_setup/utils/helper/request_details_tab_index.dart';
+import 'package:code_setup/utils/helper/pending_request_detail_tab_registry.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';

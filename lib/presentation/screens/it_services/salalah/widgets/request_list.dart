@@ -104,6 +104,13 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
                 fromActionItems: true,
               );
             },
+            onWorkflowTap: () async {
+              await controller.openRequestDetails(
+                item.request?.id ?? 0,
+                fromActionItems: true,
+                initialTabIndex: RequestDetailsTabIndex.workflow,
+              );
+            },
           );
         },
       );
@@ -121,6 +128,13 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
             await controller.openRequestDetails(
               item.base?.id ?? 0,
               fromActionItems: false,
+            );
+          },
+          onWorkflowTap: () async {
+            await controller.openRequestDetails(
+              item.base?.id ?? 0,
+              fromActionItems: false,
+              initialTabIndex: RequestDetailsTabIndex.workflow,
             );
           },
         );

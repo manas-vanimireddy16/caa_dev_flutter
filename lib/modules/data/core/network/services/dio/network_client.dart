@@ -25,6 +25,9 @@ class DioNetworkingClient extends DioForNative {
              // if (timezone != null) ...{'Timezone': timezone},
            },
            validateStatus: (_) => true,
+           connectTimeout: const Duration(seconds: 30),
+           receiveTimeout: const Duration(seconds: 30),
+           sendTimeout: const Duration(seconds: 30),
          ),
        ) {
     log('Headers : ${_box.defaultOptions.headers!}');
@@ -45,6 +48,9 @@ class DioNetworkingClient extends DioForNative {
              },
            },
            validateStatus: (_) => true,
+           connectTimeout: const Duration(seconds: 30),
+           receiveTimeout: const Duration(seconds: 30),
+           sendTimeout: const Duration(seconds: 30),
          ),
        );
 }

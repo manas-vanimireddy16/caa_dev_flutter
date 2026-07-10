@@ -49,6 +49,8 @@ import 'package:code_setup/utils/helper/helper.dart';
 import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
 import 'package:code_setup/utils/helper/it_helpdesk_list_pagination.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/request_details_tab_index.dart';
+import 'package:code_setup/utils/helper/pending_request_detail_tab_registry.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';

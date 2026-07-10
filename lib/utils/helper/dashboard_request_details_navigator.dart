@@ -1,7 +1,11 @@
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/utils/helper/pending_request_detail_tab_registry.dart';
+import 'package:code_setup/utils/helper/request_details_tab_index.dart';
 import 'package:flutter/foundation.dart';
+
+const _itServiceSubServiceCodes = {'CAA003', 'CAA004', 'CAA005', 'CAA059'};
 
 Future<void> navigateToDashboardRequestDetails({
   required String subServiceCode,
@@ -9,14 +13,25 @@ Future<void> navigateToDashboardRequestDetails({
   Service? service,
   SubService? subService,
   bool fromActionItems = false,
+  int initialTabIndex = RequestDetailsTabIndex.requestDetails,
 }) async {
   final resolvedService = service ?? Service();
   final resolvedSubService = subService ?? SubService();
   final from = fromActionItems ? 'action items' : '';
   final serviceId = resolvedService.id ?? 0;
   final subServiceId = resolvedSubService.id ?? 0;
+  final normalizedCode = subServiceCode.trim();
 
-  switch (subServiceCode.trim()) {
+  if (_itServiceSubServiceCodes.contains(normalizedCode) &&
+      initialTabIndex != RequestDetailsTabIndex.requestDetails) {
+    PendingRequestDetailTabRegistry.set(
+      serviceId: serviceId,
+      subServiceId: subServiceId,
+      tabIndex: initialTabIndex,
+    );
+  }
+
+  switch (normalizedCode) {
     /// IT Services
     case 'CAA004':
       await KAppX.router.push(

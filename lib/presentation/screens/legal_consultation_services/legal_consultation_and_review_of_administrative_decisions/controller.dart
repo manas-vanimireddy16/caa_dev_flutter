@@ -1,5 +1,7 @@
 part of 'view.dart';
 
+const Object _copyWithUnset = Object();
+
 final selectedrequesteventTabProvider = StateProvider<int>((ref) => 0);
 
 // Stores search text
@@ -21,14 +23,23 @@ class _VSControllerParams extends Equatable {
 
 final _vsProvider = StateNotifierProvider.autoDispose
     .family<_VSController, _ViewState, _VSControllerParams>((ref, params) {
-      return _VSController(
+      final controller = _VSController(
         service: params.service,
         subService: params.subService,
       );
+      ref.onDispose(() {
+        debugPrint('_VSController disposed');
+        controller.disposeResources();
+      });
+      return controller;
     });
 
 class _ViewState {
   final bool isLoading;
+  final bool isDetailsLoading;
+  final bool isActionSubmitting;
+  final bool isDashboardLoading;
+  final bool isAssignDataLoading;
   final bool isActionItemLoading;
   final bool isRequestLoading;
 
@@ -87,6 +98,10 @@ class _ViewState {
 
   _ViewState({
     required this.isLoading,
+    required this.isDetailsLoading,
+    required this.isActionSubmitting,
+    required this.isDashboardLoading,
+    required this.isAssignDataLoading,
     required this.isRequestLoading,
     required this.isActionItemLoading,
     required this.selectedFileUrl,
@@ -122,6 +137,10 @@ class _ViewState {
   _ViewState.init()
     : this(
         isLoading: false,
+        isDetailsLoading: false,
+        isActionSubmitting: false,
+        isDashboardLoading: false,
+        isAssignDataLoading: false,
         isActionItemLoading: false,
         isRequestLoading: false,
         selectedFileUrl: [],
@@ -157,6 +176,10 @@ class _ViewState {
 
   _ViewState copyWith({
     bool? isLoading,
+    bool? isDetailsLoading,
+    bool? isActionSubmitting,
+    bool? isDashboardLoading,
+    bool? isAssignDataLoading,
     bool? isRequestLoading,
     bool? isActionItemLoading,
     int? threatType,
@@ -221,14 +244,18 @@ class _ViewState {
     List<SectionModel>? sections,
     String? myRequestsStatusFilter,
     String? actionItemsStatusFilter,
-    final UsersResponseModel? usersData,
-    final RolesResponseModel? rolesData,
-    final int? selectedSectionId,
-    final int? selectedRoleId,
-    final int? selectedUserId,
+    Object? usersData = _copyWithUnset,
+    Object? rolesData = _copyWithUnset,
+    Object? selectedSectionId = _copyWithUnset,
+    Object? selectedRoleId = _copyWithUnset,
+    Object? selectedUserId = _copyWithUnset,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
+      isDetailsLoading: isDetailsLoading ?? this.isDetailsLoading,
+      isActionSubmitting: isActionSubmitting ?? this.isActionSubmitting,
+      isDashboardLoading: isDashboardLoading ?? this.isDashboardLoading,
+      isAssignDataLoading: isAssignDataLoading ?? this.isAssignDataLoading,
       isActionItemLoading: isActionItemLoading ?? this.isActionItemLoading,
       isRequestLoading: isRequestLoading ?? this.isRequestLoading,
       selectedFileUrl: selectedFileUrl ?? this.selectedFileUrl,
@@ -251,11 +278,21 @@ class _ViewState {
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
       chatById: chatById ?? this.chatById,
       attachmentsById: attachmentsById ?? this.attachmentsById,
-      usersData: usersData ?? this.usersData,
-      rolesData: rolesData ?? this.rolesData,
-      selectedSectionId: selectedSectionId ?? this.selectedSectionId,
-      selectedRoleId: selectedRoleId ?? this.selectedRoleId,
-      selectedUserId: selectedUserId ?? this.selectedUserId,
+      usersData: identical(usersData, _copyWithUnset)
+          ? this.usersData
+          : usersData as UsersResponseModel?,
+      rolesData: identical(rolesData, _copyWithUnset)
+          ? this.rolesData
+          : rolesData as RolesResponseModel?,
+      selectedSectionId: identical(selectedSectionId, _copyWithUnset)
+          ? this.selectedSectionId
+          : selectedSectionId as int?,
+      selectedRoleId: identical(selectedRoleId, _copyWithUnset)
+          ? this.selectedRoleId
+          : selectedRoleId as int?,
+      selectedUserId: identical(selectedUserId, _copyWithUnset)
+          ? this.selectedUserId
+          : selectedUserId as int?,
       sections: sections ?? this.sections,
       departments: departments ?? this.departments,
       actionItemsStatusFilter:
@@ -285,6 +322,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Timer? _searchDebounce;
+  bool _assignInFlight = false;
 
   late TextEditingController chatController;
   late TextEditingController titleController;
@@ -299,7 +337,54 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshRequestLists() {
     refreshMyRequestsList();
     refreshActionItemsList();
-    fetchApprovalKpi();
+    unawaited(fetchApprovalKpi(suppressDashboardLoading: true));
+  }
+
+  Future<void> refreshRequestListsAsync() async {
+    refreshMyRequestsList();
+    refreshActionItemsList();
+    await fetchApprovalKpi(suppressDashboardLoading: true);
+  }
+
+  void disposeResources() {
+    _searchDebounce?.cancel();
+    chatController.dispose();
+    titleController.dispose();
+    searchController.dispose();
+  }
+
+  @override
+  void dispose() {
+    disposeResources();
+    super.dispose();
+  }
+
+  void initState() {
+    unawaited(_loadInitialDashboard());
+  }
+
+  Future<void> _loadInitialDashboard() async {
+    state = state.copyWith(isDashboardLoading: true);
+    try {
+      await Future.wait([
+        fetchKpi(suppressDashboardLoading: true),
+        fetchApprovalKpi(suppressDashboardLoading: true),
+        fetchStatusBreakdown('weekly', suppressDashboardLoading: true),
+        fetchTrendBreakDown(
+          DateTime.now().year.toString(),
+          suppressDashboardLoading: true,
+        ),
+        fetchApprovalStatusBreakdown('weekly', suppressDashboardLoading: true),
+        fetchApprovalTrendBreakDown(
+          DateTime.now().year.toString(),
+          suppressDashboardLoading: true,
+        ),
+      ]);
+    } finally {
+      if (mounted) {
+        state = state.copyWith(isDashboardLoading: false);
+      }
+    }
   }
 
   void refreshActiveRequestList() {
@@ -308,15 +393,6 @@ class _VSController extends StateNotifier<_ViewState> {
     } else {
       refreshActionItemsList();
     }
-  }
-
-  void initState() {
-    fetchKpi();
-    fetchApprovalKpi();
-    fetchStatusBreakdown('weekly');
-    fetchTrendBreakDown(DateTime.now().year.toString());
-    fetchApprovalStatusBreakdown('weekly');
-    fetchApprovalTrendBreakDown(DateTime.now().year.toString());
   }
 
   void onSearchChanged(String value) {
@@ -597,7 +673,7 @@ class _VSController extends StateNotifier<_ViewState> {
   /// ========================= API CALLS =========================
 
   Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isDetailsLoading: true);
     try {
       final requests = await legalConsultationandReviewoInstance
           .getRequestsById(
@@ -607,28 +683,27 @@ class _VSController extends StateNotifier<_ViewState> {
           );
 
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests, isLoading: false);
-        // fetchAssignEmployeesList();
-
+        state = state.copyWith(requestDetails: requests);
         fetchChatById(id);
         fetchAttachmentsById(id);
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
 
-        /// ✅ CHECK ACTION TYPE HERE
         final actionType = getActionButtonsType(
           requests,
           requests.approvalDetails ?? [],
         );
         if (actionType == ActionButtonsType.assignReject) {
-          // fetchAssignEmployeesList();
           debugPrint('this user can only approve');
         }
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
+    } finally {
+      if (mounted) {
+        state = state.copyWith(isDetailsLoading: false);
+      }
     }
   }
 
@@ -696,8 +771,10 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchKpi() async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchKpi({bool suppressDashboardLoading = false}) async {
+    if (!suppressDashboardLoading) {
+      state = state.copyWith(isDashboardLoading: true);
+    }
     try {
       final kpis = await legalConsultationandReviewoInstance.getKpiData(
         service.id ?? 0,
@@ -705,17 +782,26 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (kpis != null) {
-        state = state.copyWith(kpiData: kpis, isLoading: false);
+        state = state.copyWith(kpiData: kpis);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    } finally {
+      if (!suppressDashboardLoading && mounted) {
+        state = state.copyWith(isDashboardLoading: false);
+      }
     }
   }
 
-  Future<void> fetchApprovalTrendBreakDown(String period) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchApprovalTrendBreakDown(
+    String period, {
+    bool suppressDashboardLoading = false,
+  }) async {
+    if (!suppressDashboardLoading) {
+      state = state.copyWith(isDashboardLoading: true);
+    }
     try {
       final data = await legalConsultationandReviewoInstance
           .getApprovalTrendBreakdownData(
@@ -725,17 +811,26 @@ class _VSController extends StateNotifier<_ViewState> {
           );
 
       if (data != null) {
-        state = state.copyWith(approvalTrendData: data, isLoading: false);
+        state = state.copyWith(approvalTrendData: data);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    } finally {
+      if (!suppressDashboardLoading && mounted) {
+        state = state.copyWith(isDashboardLoading: false);
+      }
     }
   }
 
-  Future<void> fetchApprovalStatusBreakdown(String period) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchApprovalStatusBreakdown(
+    String period, {
+    bool suppressDashboardLoading = false,
+  }) async {
+    if (!suppressDashboardLoading) {
+      state = state.copyWith(isDashboardLoading: true);
+    }
     try {
       final statusBreakdown = await legalConsultationandReviewoInstance
           .getApprovalStatusBreakdownData(
@@ -744,22 +839,26 @@ class _VSController extends StateNotifier<_ViewState> {
             subServiceId: subService.id ?? 0,
           );
       if (statusBreakdown != null) {
-        state = state.copyWith(
-          approvalStatusBreakdown: statusBreakdown,
-          isLoading: false,
-        );
+        state = state.copyWith(approvalStatusBreakdown: statusBreakdown);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      // optionally handle other errors
-      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
+    } finally {
+      if (!suppressDashboardLoading && mounted) {
+        state = state.copyWith(isDashboardLoading: false);
+      }
     }
   }
 
-  Future<void> fetchStatusBreakdown(String period) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchStatusBreakdown(
+    String period, {
+    bool suppressDashboardLoading = false,
+  }) async {
+    if (!suppressDashboardLoading) {
+      state = state.copyWith(isDashboardLoading: true);
+    }
     try {
       final statusBreakdown = await legalConsultationandReviewoInstance
           .getStatusBreakdownData(
@@ -768,22 +867,26 @@ class _VSController extends StateNotifier<_ViewState> {
             subServiceId: subService.id ?? 0,
           );
       if (statusBreakdown != null) {
-        state = state.copyWith(
-          statusBreakdown: statusBreakdown,
-          isLoading: false,
-        );
+        state = state.copyWith(statusBreakdown: statusBreakdown);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      // optionally handle other errors
-      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
+    } finally {
+      if (!suppressDashboardLoading && mounted) {
+        state = state.copyWith(isDashboardLoading: false);
+      }
     }
   }
 
-  Future<void> fetchTrendBreakDown(String period) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchTrendBreakDown(
+    String period, {
+    bool suppressDashboardLoading = false,
+  }) async {
+    if (!suppressDashboardLoading) {
+      state = state.copyWith(isDashboardLoading: true);
+    }
     try {
       final data = await legalConsultationandReviewoInstance
           .getTrendBreakdownData(
@@ -793,17 +896,23 @@ class _VSController extends StateNotifier<_ViewState> {
           );
 
       if (data != null) {
-        state = state.copyWith(trendData: data, isLoading: false);
+        state = state.copyWith(trendData: data);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    } finally {
+      if (!suppressDashboardLoading && mounted) {
+        state = state.copyWith(isDashboardLoading: false);
+      }
     }
   }
 
-  Future<void> fetchApprovalKpi() async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchApprovalKpi({bool suppressDashboardLoading = false}) async {
+    if (!suppressDashboardLoading) {
+      state = state.copyWith(isDashboardLoading: true);
+    }
     try {
       final kpis = await legalConsultationandReviewoInstance.getApprovalKpiData(
         serviceId: service.id ?? 0,
@@ -811,12 +920,16 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (kpis != null) {
-        state = state.copyWith(approvalKpiData: kpis, isLoading: false);
+        state = state.copyWith(approvalKpiData: kpis);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
+      debugPrint(e.toString());
+    } finally {
+      if (!suppressDashboardLoading && mounted) {
+        state = state.copyWith(isDashboardLoading: false);
+      }
     }
   }
 
@@ -898,25 +1011,20 @@ class _VSController extends StateNotifier<_ViewState> {
     required int sectionId,
     required int departmentId,
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isAssignDataLoading: true);
     try {
-      final userInfo = KAppX.globalProvider.read(userInfoProvider);
-      // Clear list only if explicitly refreshing or searching
-      // if (isRefresh || status.isNotEmpty) {
-      //   state = state.copyWith(requestData: [], isLoading: false);
-      // }
-
       final users = await legalConsultationandReviewoInstance.getRoles(
-        // roleId: roleId,
         departmentId: departmentId,
         sectionId: sectionId,
       );
 
-      // No merging needed
-      state = state.copyWith(rolesData: users, isLoading: false);
+      state = state.copyWith(rolesData: users);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: e.toString());
+    } finally {
+      if (mounted) {
+        state = state.copyWith(isAssignDataLoading: false);
+      }
     }
   }
 
@@ -926,8 +1034,11 @@ class _VSController extends StateNotifier<_ViewState> {
     int userId,
     int departmentId,
   ) async {
+    if (_assignInFlight || state.isActionSubmitting) return;
+
+    _assignInFlight = true;
     try {
-      state = state.copyWith(isLoading: true);
+      state = state.copyWith(isActionSubmitting: true);
 
       final active = getActiveApprovalLevel(
         state.requestDetails.approvalDetails ?? [],
@@ -971,17 +1082,17 @@ class _VSController extends StateNotifier<_ViewState> {
 
       await legalConsultationandReviewoInstance.onAssign(payload);
       if (!mounted) return;
+      await Future.delayed(const Duration(seconds: 1));
       KAppX.router.pop();
       KAppX.router.pop();
-      // fetchApprovalKpi();
-      // refreshRequestLists();
-      // await fetchRequestDetailsById(requestId);
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting assign request: $e');
       Fluttertoast.showToast(msg: 'Failed to assign request');
     } finally {
+      _assignInFlight = false;
       if (mounted) {
-        state = state.copyWith(isLoading: false);
+        state = state.copyWith(isActionSubmitting: false);
       }
     }
   }
@@ -991,25 +1102,21 @@ class _VSController extends StateNotifier<_ViewState> {
     required int roleId,
     required int departmentId,
   }) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isAssignDataLoading: true);
     try {
-      final userInfo = KAppX.globalProvider.read(userInfoProvider);
-      // Clear list only if explicitly refreshing or searching
-      // if (isRefresh || status.isNotEmpty) {
-      //   state = state.copyWith(requestData: [], isLoading: false);
-      // }
-
       final users = await legalConsultationandReviewoInstance.getUsersList(
         roleId: roleId,
         departmentId: departmentId,
         sectionId: sectionId,
       );
 
-      // No merging needed
-      state = state.copyWith(usersData: users, isLoading: false);
+      state = state.copyWith(usersData: users);
     } catch (e) {
-      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: e.toString());
+    } finally {
+      if (mounted) {
+        state = state.copyWith(isAssignDataLoading: false);
+      }
     }
   }
 
@@ -1091,52 +1198,35 @@ class _VSController extends StateNotifier<_ViewState> {
 
     KAppX.extendedRouter.dialog.showKDialog(
       barrierDismissible: false,
+      backgroundColor: Colors.white,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       builder: (_) {
-        return Dialog(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 24,
-          ),
-
-          child: Container(
-            width: 650,
-
+        return SizedBox(
+          width: 650,
+          child: ConstrainedBox(
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.85,
             ),
-
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 /// HEADER
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
-
                   child: Row(
                     children: [
                       Expanded(
                         child: Text(
                           l10n.allocateUserTitle,
-
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
-
                       InkWell(
                         borderRadius: BorderRadius.circular(30),
-
                         onTap: () => KAppX.router.pop(),
-
                         child: const Padding(
                           padding: EdgeInsets.all(6),
                           child: Icon(Icons.close),
@@ -1145,11 +1235,10 @@ class _VSController extends StateNotifier<_ViewState> {
                     ],
                   ),
                 ),
-
                 const Divider(height: 1),
 
                 /// BODY
-                Expanded(
+                Flexible(
                   child: Padding(
                     padding: EdgeInsets.only(
                       left: 24,
@@ -1157,7 +1246,6 @@ class _VSController extends StateNotifier<_ViewState> {
                       top: 20,
                       bottom: MediaQuery.of(context).viewInsets.bottom + 20,
                     ),
-
                     child: AssignUser(
                       service: service,
                       subService: subService,
@@ -1299,40 +1387,7 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> onComplete(int approverId, int requestId) async {
-    try {
-      state = state.copyWith(isLoading: true);
-
-      // 1️⃣ Upload files
-
-      // 2️⃣ Build payload
-      final payload = {
-        "request_id": requestId,
-        "status": "Completed",
-        "comment": '',
-        "approval_id": approverId,
-      };
-
-      debugPrint("✅ Final Payload: $payload");
-
-      // 3️⃣ Send request
-      await legalConsultationandReviewoInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
-      KAppX.router.pop();
-      refreshRequestLists();
-      fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('weekly');
-      fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-      fetchStatusBreakdown('weekly');
-      fetchTrendBreakDown(DateTime.now().year.toString());
-      fetchKpi();
-    } catch (e) {
-      debugPrint('❌ Error submitting request: $e');
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
-    return;
-  }
+  
 
   Future<void> onApprove(
     int approverId,
@@ -1341,8 +1396,10 @@ class _VSController extends StateNotifier<_ViewState> {
     String status,
     String? decisionNo,
   ) async {
+    if (state.isActionSubmitting) return;
+
     try {
-      state = state.copyWith(isLoading: true);
+      state = state.copyWith(isActionSubmitting: true);
 
       ApprovalDetailModel? approvalForAction;
       for (final approval in state.requestDetails.approvalDetails ?? []) {
@@ -1352,7 +1409,6 @@ class _VSController extends StateNotifier<_ViewState> {
         }
       }
 
-      // 2️⃣ Build payload
       final payload = {
         "request_id": requestId,
         "status": status,
@@ -1368,20 +1424,17 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      // 3️⃣ Send request
       await legalConsultationandReviewoInstance.onApprove(payload);
-
+      await Future.delayed(const Duration(seconds: 1));
       KAppX.router.pop();
-      // if (decisionNo != null) {
       // KAppX.router.pop();
-      // }
-      // await Future.delayed(Duration(seconds: 3));
-
       refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        state = state.copyWith(isActionSubmitting: false);
+      }
     }
   }
 
@@ -1473,41 +1526,25 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
-    // 1️⃣ Prefer IN PROGRESS approval
     for (final a in list) {
       if (a.approvalStatus?.toLowerCase() == 'in progress') {
         return a;
       }
     }
-
-    // 2️⃣ Fallback → highest approved / assigned level
-    return getActiveApprovalLevel(list);
+    return null;
   }
 
   ApprovalDetailModel? getActiveApprovalLevel(List<ApprovalDetailModel> list) {
-    ApprovalDetailModel? highestLevelCandidate;
-
     for (final approval in list) {
       if (!canUserActOnLevel(approval: approval)) continue;
 
       final status = approval.approvalStatus?.toLowerCase().trim() ?? '';
-      final level = approval.level ?? -1;
-
-      // Only one in-progress level at a time — return it immediately
       if (status == 'in progress') {
         return approval;
       }
-
-      // Approved / assigned fallback
-      if (status == 'approved' || status == 'assigned') {
-        if (highestLevelCandidate == null ||
-            level > (highestLevelCandidate.level ?? -1)) {
-          highestLevelCandidate = approval;
-        }
-      }
     }
 
-    return highestLevelCandidate;
+    return null;
   }
 
   ActionButtonsType getActionButtonsType(
@@ -1701,11 +1738,7 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  void onRemoveFile(int index) {
-    final urls = List<FileUploadItem>.from(state.selectedFileUrl);
-    urls.removeAt(index);
-    state = state.copyWith(selectedFileUrl: urls);
-  }
+
 
   Future<void> resetAllocateDialog() async {
     state = state.copyWith(
@@ -1843,14 +1876,5 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     refreshRequestLists();
-  }
-
-  @override
-  void dispose() {
-    _searchDebounce?.cancel();
-    chatController.dispose();
-    titleController.dispose();
-    searchController.dispose();
-    super.dispose();
   }
 }

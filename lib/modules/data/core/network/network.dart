@@ -13,6 +13,8 @@ class KNetworkingBoxImpl
   late final KNetworkingBoxService<DioNetworkingClient, DioNetworkingOptions>
   _networkingBoxService;
 
+  final Map<String, DioNetworkingClient> _secureClientCache = {};
+
   KNetworkingBoxImpl() {
     _networkingBoxService = DioNetworkingBox(
       defaultOptions: DioNetworkingOptions(
@@ -25,7 +27,7 @@ class KNetworkingBoxImpl
   @override
   void bootDown() {
     log('[NetworkingBox.bootDown]');
-    // TODO: implement bootDown
+    _secureClientCache.clear();
   }
 
   @override
@@ -62,6 +64,11 @@ class KNetworkingBoxImpl
       return null;
     }
 
+    final cachedClient = _secureClientCache[authToken];
+    if (cachedClient != null) {
+      return cachedClient;
+    }
+
     final mergedHeaders = <String, String>{
       ...?options?.headers,
     };
@@ -84,6 +91,10 @@ class KNetworkingBoxImpl
       accessToken: authToken,
       loggingEnabled: loggingEnabled,
     );
+
+    if (client != null) {
+      _secureClientCache[authToken] = client;
+    }
 
     return client;
   }

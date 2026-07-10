@@ -500,12 +500,8 @@ class _VSController extends StateNotifier<_ViewState> {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return 'Title of project is required';
+          return l10n.titleOfProjectRequired;
         }
-
-        // if (phone.length != 8) {
-        //   return 'Phone Number must be exactly 8 characters';
-        // }
 
         return null;
       },
@@ -523,12 +519,8 @@ class _VSController extends StateNotifier<_ViewState> {
         final text = value?.toString().trim() ?? '';
 
         if (text.isEmpty) {
-          return 'Project code/budget code is required';
+          return l10n.projectCodeBudgetCodeRequired;
         }
-
-        // if (phone.length != 8) {
-        //   return 'Phone Number must be exactly 8 characters';
-        // }
 
         return null;
       },
@@ -545,13 +537,9 @@ class _VSController extends StateNotifier<_ViewState> {
       validator: (value, values) {
         final text = value?.toString().trim() ?? '';
 
-        if (text.isEmpty) {
-          return 'Description must be at least 10 characters';
+        if (text.isEmpty || text.length < 10) {
+          return l10n.descriptionMustBeAtLeast10Characters;
         }
-
-        // if (phone.length != 8) {
-        //   return 'Phone Number must be exactly 8 characters';
-        // }
 
         return null;
       },
@@ -564,6 +552,13 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       placeholder: l10n.enterCompanyName,
       required: true,
+      validator: (value, values) {
+        final text = value?.toString().trim() ?? '';
+        if (text.isEmpty) {
+          return l10n.fieldIsRequired;
+        }
+        return null;
+      },
     ),
 
     /// ================= DATE =================
@@ -588,11 +583,11 @@ class _VSController extends StateNotifier<_ViewState> {
         final phone = value?.toString().trim() ?? '';
 
         if (phone.isEmpty) {
-          return 'Phone number is required';
+          return l10n.phoneNumberRequired;
         }
 
         if (phone.length != 8) {
-          return 'Phone Number must be exactly 8 characters';
+          return l10n.phoneMustBeExactly8Digits;
         }
 
         return null;

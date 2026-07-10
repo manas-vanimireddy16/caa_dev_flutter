@@ -786,6 +786,14 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         ],
       ),
+      DynamicField(
+        name: 'security_threat_form_header',
+        label: '',
+        type: FieldType.custom,
+        builder: (context, ref) {
+          return SecurityThreatFormHeaderSection(controller: this, l10n: l10n);
+        },
+      ),
     ];
   }
 
@@ -1776,6 +1784,112 @@ class _VSController extends StateNotifier<_ViewState> {
     final updated = List<Map<String, dynamic>>.from(state.attachments)
       ..remove(file);
     state = state.copyWith(attachments: updated);
+  }
+
+  String getSecurityThreatSubmittedBy() {
+    final userInfo = KAppX.globalProvider.read(userInfoProvider);
+    return userInfo?.data?.employeeName?.trim() ?? '';
+  }
+
+  String getSecurityThreatUserDepartment() {
+    final userInfo = KAppX.globalProvider.read(userInfoProvider);
+    return userInfo?.data?.department?.departmentName?.trim() ?? '';
+  }
+
+  String _readFormFieldValue(Map<String, dynamic> values, String key) {
+    final raw = values[key];
+    if (raw == null) return '';
+    if (raw is DropdownOption) {
+      return raw.value?.toString().trim() ?? '';
+    }
+    return raw.toString().trim();
+  }
+
+  String _resolveTypeOfThreatLabel(dynamic value) {
+    switch (value?.toString()) {
+      case '1':
+        return 'Malware Threat';
+      case '2':
+        return 'Email Threat';
+      case '3':
+        return 'Identity & Access Threat';
+      case '4':
+        return 'Application & System Threat';
+      case '5':
+        return 'Others';
+      default:
+        return value?.toString() ?? '';
+    }
+  }
+
+  SecurityThreatFormDownloadInput _buildSecurityThreatExcelInput(
+    Map<String, dynamic> values,
+  ) {
+    return SecurityThreatFormDownloadInput.forExcel(
+      submittedBy: getSecurityThreatSubmittedBy(),
+      department: getSecurityThreatUserDepartment(),
+      priority: _readFormFieldValue(values, 'priority'),
+    );
+  }
+
+  SecurityThreatFormDownloadInput _buildSecurityThreatDownloadInput(
+    Map<String, dynamic> values,
+  ) {
+    final source = values['source_of_incident']?.toString() ?? '';
+    final resolvedSource = source == 'Others'
+        ? (values['other_source_of_incident']?.toString() ?? '')
+        : source;
+    final ticketName = values['ticket_name']?.toString() ?? '';
+    final incidentTypes = _buildIncidentDetected(values);
+
+    return SecurityThreatFormDownloadInput(
+      submittedBy: getSecurityThreatSubmittedBy(),
+      department: getSecurityThreatUserDepartment(),
+      contactNumber: _readFormFieldValue(values, 'contact_number'),
+      priority: _readFormFieldValue(values, 'priority'),
+      ticketName: ticketName,
+      sourceOfIncident: resolvedSource,
+      typeOfIncidentDetected: incidentTypes.join(', '),
+      typeOfThreat: _resolveTypeOfThreatLabel(values['type_of_threat']),
+      description: _readFormFieldValue(values, 'description'),
+      title: '',
+    );
+  }
+
+  Future<void> downloadSecurityThreatExcel({
+    Map<String, dynamic>? values,
+  }) async {
+    final input = values != null
+        ? _buildSecurityThreatExcelInput(values)
+        : SecurityThreatFormDownloadInput.forExcel(
+            submittedBy: getSecurityThreatSubmittedBy(),
+            department: getSecurityThreatUserDepartment(),
+          );
+
+    final bytes = SecurityThreatFormDownload.excelBytes(input);
+
+    await FilePicker.platform.saveFile(
+      fileName: SecurityThreatFormDownload.excelFileName(),
+      bytes: Uint8List.fromList(bytes),
+    );
+  }
+
+  Future<void> downloadSecurityThreatCsv({
+    Map<String, dynamic>? values,
+  }) async {
+    final input = values != null
+        ? _buildSecurityThreatDownloadInput(values)
+        : SecurityThreatFormDownloadInput(
+            submittedBy: getSecurityThreatSubmittedBy(),
+            department: getSecurityThreatUserDepartment(),
+          );
+
+    final bytes = SecurityThreatFormDownload.csvBytes(input);
+
+    await FilePicker.platform.saveFile(
+      fileName: SecurityThreatFormDownload.csvFileName(),
+      bytes: Uint8List.fromList(bytes),
+    );
   }
 
   List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {

@@ -107,6 +107,11 @@ class DashboardL10n {
   String get securityThreatPhoneDigitsHint =>
       _t('Min should be 8 digits', 'يرجى إدخال 8 أرقام');
 
+  String get phoneMustBe8To10Digits => _t(
+    'Phone number must be between 8 and 10 digits',
+    'يجب أن يتكون رقم الهاتف من 8 إلى 10 أرقام',
+  );
+
   String get securityThreatTicketNameHint =>
       _t('Must be at least 5 characters', 'يجب ألا يقل عن 5 أحرف');
 
@@ -754,6 +759,32 @@ class DashboardL10n {
 
   String get enterProjectCodeBudgetCode =>
       _t('Enter Project Code/Budget Code', 'أدخل رمز المشروع / رمز الميزانية');
+
+  String get titleOfProjectRequired =>
+      _t('Title of project is required', 'عنوان المشروع مطلوب');
+
+  String get projectCodeBudgetCodeRequired => _t(
+    'Project code / budget code is required',
+    'رمز المشروع / رمز الميزانية مطلوب',
+  );
+
+  String get descriptionMustBeAtLeast10Characters => _t(
+    'Description must be at least 10 characters',
+    'يجب أن يكون الوصف 10 أحرف على الأقل',
+  );
+
+  String get descriptionMustBeBetween10And100Characters => _t(
+    'Description must be between 10 and 100 characters',
+    'يجب أن يكون الوصف بين 10 و 100 حرفًا',
+  );
+
+  String get phoneMustBeExactly8Digits => _t(
+    'Phone number must be exactly 8 digits',
+    'يجب أن يتكون رقم الهاتف من 8 أرقام',
+  );
+
+  String get fieldIsRequired => _t('This field is required', 'هذا الحقل مطلوب');
+
   // Logistics Daily/Emergency
 
   /// HOME SCREEN
@@ -2133,6 +2164,23 @@ class DashboardL10n {
 
   String get securityThreatFormSelectPriority =>
       _t('Select Priority', 'اختر الأولوية');
+
+  String get securityThreatDownloadFormHint => _t(
+    'Download the Security threat form and fill',
+    'قم بتنزيل نموذج التهديد الأمني واملأه',
+  );
+
+  String get securityThreatDownloadThreatFormLabel =>
+      _t('Download Threat Form', 'تنزيل نموذج التهديد');
+
+  String get securityThreatDownloadExcelLabel => _t('Excel', 'إكسل');
+
+  String get securityThreatDownloadCsvLabel => _t('CSV', 'CSV');
+
+  String get securityThreatAttachFormLabel => _t(
+    'Attach Form Downloaded (Optional)',
+    'إرفاق النموذج الذي تم تنزيله (اختياري)',
+  );
 
   String get securityThreatCloseFormActionTitle =>
       _t('Action Text', 'نص الإجراء');

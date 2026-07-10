@@ -651,13 +651,17 @@ class LegalConsultationandReviewofAdministrativeDecisionsRepositoryImple
           );
           debugPrint('✅ Request sent successfully');
         } else {
+          final message =
+              response.data?['message'] ??
+              response.statusMessage ??
+              'Failed to approve request';
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          ShowFlutterToast().showFlutterToastFailure(
-            '${response.statusMessage}',
-          );
+          ShowFlutterToast().showFlutterToastFailure(message);
+          throw ApiException(message);
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
+        throw ApiException('Unable to connect to server');
       }
     } on DioException catch (e) {
       debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');

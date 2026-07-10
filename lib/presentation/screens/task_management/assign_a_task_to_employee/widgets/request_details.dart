@@ -75,16 +75,15 @@ class _AssignaTasktoEmployeeDetailsScreenState
           final List<ApprovalDetailModel> approvals =
               state.requestDetails.approvalDetails ?? [];
           final selectedTab = state.requestDetailTab;
-          final active = controller.getActiveApprovalLevel(
-            state.requestDetails.approvalDetails ?? [],
-          );
+          final matchingApproval = controller.getMatchingApproval(approvals);
           final actionType = controller.getActionButtonsType(
             state.requestDetails,
             approvals,
           );
           final nextApprover = controller.getNextApprovalDetails(approvals);
 
-          final approverId = active?.id;
+          final approverId = matchingApproval?.id;
+          final showActionButtons = actionType != ActionButtonsType.none;
           // controller.onSelectedApprovalId(approverRoleId ?? 0);
           // final canApprove = controller.shouldShowApprovalButtons(approvals);
 
@@ -128,9 +127,9 @@ class _AssignaTasktoEmployeeDetailsScreenState
                   )
                 else if (selectedTab == 1)
                   CommentsCard(
-                    from: widget.from,
-                    showButtons: actionType != ActionButtonsType.none,
-                    actionType: actionType, // ✅ FIX HERE
+                    from: showActionButtons ? 'action items' : widget.from,
+                    showButtons: showActionButtons,
+                    actionType: actionType,
                     entries: chats,
                     controller: controller.chatController,
                     buttonsDisabled: state.isButtonDisabled,

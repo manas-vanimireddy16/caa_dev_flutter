@@ -50,16 +50,14 @@ class _SecurityThreatNewRequestScreenState
           stepTitles: const [''],
           steps: [controller.buildSecurityThreatRequestFields(l10n)],
           onSubmit: (values) async {
-            final success = await controller.submitSecurityThreatRequest(
+            await controller.submitSecurityThreatRequest(
               widget.serviceId,
               widget.subServiceId,
               values,
             );
 
             if (context.mounted) {
-              // Future.delayed(const Duration(seconds: 1), () {
               KAppX.router.pop();
-              // });
             }
           },
         ),

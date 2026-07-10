@@ -156,20 +156,12 @@ class CommentEntry extends StatelessWidget {
               ),
               SizedBox(width: 8.toAutoScaledWidth),
               Expanded(
-                child: _labelValue(
-                  labels.routingTileRole,
-                  role,
-                  maxLines: 1,
-                ),
+                child: _labelValue(labels.routingTileRole, role, maxLines: 1),
               ),
             ],
           ),
           SizedBox(height: 16.toAutoScaledHeight),
-          _labelValue(
-            labels.routingTileAction,
-            action,
-            maxLines: 2,
-          ),
+          _labelValue(labels.routingTileAction, action, maxLines: 2),
           SizedBox(height: 16.toAutoScaledHeight),
           _labelValue(labels.routingTileStatus, status, maxLines: 1),
         ],
@@ -319,13 +311,52 @@ class _AddCommentBoxState extends State<AddCommentBox> {
     );
   }
 
+  // Widget _needMoreInfoTriggerButton(DashboardL10n l10n) {
+  //   return Material(
+  //     color: _CommentsRoutingStyles.needMoreInfoGreen,
+  //     borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+  //     clipBehavior: Clip.antiAlias,
+  //     child: InkWell(
+  //       onTap: () => setState(() => isCommentMode = true),
+  //       child: Padding(
+  //         padding: EdgeInsets.symmetric(
+  //           horizontal: 14.toAutoScaledWidth,
+  //           vertical: 8.toAutoScaledHeight,
+  //         ),
+  //         child: Row(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             Text(
+  //               widget.needMoreInfoLabel ?? l10n.needMoreInfo,
+  //               style: AppTextStyles.cairo(
+  //                 color: Colors.white,
+  //                 fontSize: 13,
+  //                 fontWeight: FontWeight.w600,
+  //               ),
+  //             ),
+  //             SizedBox(width: 6.toAutoScaledWidth),
+  //             Icon(Icons.add, color: Colors.white, size: 16.toAutoScaledWidth),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
   Widget _needMoreInfoTriggerButton(DashboardL10n l10n) {
     return Material(
-      color: _CommentsRoutingStyles.needMoreInfoGreen,
+      color: Colors.white,
       borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+        side: BorderSide(
+          color: _CommentsRoutingStyles.needMoreInfoGreen,
+          width: 1.2,
+        ),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => setState(() => isCommentMode = true),
+        borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: 14.toAutoScaledWidth,
@@ -337,13 +368,17 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               Text(
                 widget.needMoreInfoLabel ?? l10n.needMoreInfo,
                 style: AppTextStyles.cairo(
-                  color: Colors.white,
+                  color: _CommentsRoutingStyles.needMoreInfoGreen,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               SizedBox(width: 6.toAutoScaledWidth),
-              Icon(Icons.add, color: Colors.white, size: 16.toAutoScaledWidth),
+              Icon(
+                Icons.add,
+                color: _CommentsRoutingStyles.needMoreInfoGreen,
+                size: 16.toAutoScaledWidth,
+              ),
             ],
           ),
         ),
@@ -526,7 +561,8 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                             hintText:
                                 widget.commentHint ??
                                 l10n.routingAddCommentHint,
-                            hintStyle: AppTextStyles.requestDetailsFieldHeading(),
+                            hintStyle:
+                                AppTextStyles.requestDetailsFieldHeading(),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
                           ),
@@ -693,7 +729,9 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                 () async {
                   await widget.onApprove?.call();
                 },
-                icon: _whiteActionIcon('assets/icons/check_circle_24dp_white.svg'),
+                icon: _whiteActionIcon(
+                  'assets/icons/check_circle_24dp_white.svg',
+                ),
               ),
             ),
             SizedBox(width: 8.toAutoScaledWidth),
@@ -719,7 +757,9 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                 () async {
                   await widget.onAssign?.call();
                 },
-                icon: _whiteActionIcon('assets/icons/check_circle_24dp_white.svg'),
+                icon: _whiteActionIcon(
+                  'assets/icons/check_circle_24dp_white.svg',
+                ),
               ),
             ),
             SizedBox(width: 8.toAutoScaledWidth),
@@ -741,7 +781,9 @@ class _AddCommentBoxState extends State<AddCommentBox> {
                 () async {
                   await widget.onApprove?.call();
                 },
-                icon: _whiteActionIcon('assets/icons/check_circle_24dp_white.svg'),
+                icon: _whiteActionIcon(
+                  'assets/icons/check_circle_24dp_white.svg',
+                ),
               ),
             ),
           ],

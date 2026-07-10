@@ -1411,117 +1411,101 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   bool canUserActOnLevel({required ApprovalDetailModel approval}) {
+    return getMatchingApproval([approval]) != null;
+  }
+
+  ApprovalDetailModel? getMatchingApproval(List<ApprovalDetailModel> approvals) {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final user = KAppX.globalProvider.read(userInfoProvider);
 
-    final int userId = int.parse(user?.data?.id ?? "0");
+    final currentUserId = int.tryParse(user?.data?.id ?? '') ?? 0;
+    final currentUserDepartmentId = selectedRole?.departmentId;
+    final currentUserSectionId = selectedRole?.sectionId;
 
-    /// 1️⃣ Delegate always allowed
-    if (approval.delegateUserId == userId) return true;
+    for (final approval in approvals) {
+      final approverUserId = approval.approverUserId;
+      final delegateUserId = approval.delegateUserId;
+      final approverRoleId = approval.approverRoleId;
+      final approvalDepartmentId = approval.departmentId;
+      final approvalSectionId = approval.sectionId;
 
-    /// 2️⃣ Approver user rule
-    /// null → open approval
-    /// not null → must match logged-in user
-    if (approval.approverUserId != null && approval.approverUserId != userId) {
-      return false;
+      if (currentUserId != 0) {
+        if ((approverUserId != null && approverUserId == currentUserId) ||
+            (delegateUserId != null && delegateUserId == currentUserId)) {
+          return approval;
+        }
+      }
+
+      if (approverRoleId == null && approverUserId == null) {
+        final departmentMatches =
+            approvalDepartmentId != null &&
+            currentUserDepartmentId != null &&
+            approvalDepartmentId == currentUserDepartmentId;
+        final sectionMatches =
+            approvalSectionId == null ||
+            (currentUserSectionId != null &&
+                approvalSectionId == currentUserSectionId);
+
+        if (departmentMatches && sectionMatches) {
+          return approval;
+        }
+      }
     }
 
-    /// 3️⃣ Role must match (if defined)
-    if (approval.approverRoleId != null &&
-        approval.approverRoleId != selectedRole?.roleId) {
-      return false;
-    }
+    return null;
+  }
 
-    /// 4️⃣ Department must match (if defined)
-    if (approval.departmentId != null &&
-        approval.departmentId != selectedRole?.departmentId) {
-      return false;
-    }
+  bool isCurrentUserApprover(List<ApprovalDetailModel> approvals) =>
+      getMatchingApproval(approvals) != null;
 
-    /// 5️⃣ Section must match (if defined)
-    if (approval.sectionId != null &&
-        approval.sectionId != selectedRole?.sectionId) {
-      return false;
-    }
-
-    return true;
+  String _normalizeRequestStatus(String? status) {
+    return (status ?? '')
+        .toLowerCase()
+        .replaceAll('_', ' ')
+        .replaceAll('inprogress', 'in progress')
+        .trim();
   }
 
   ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
-    // 1️⃣ Prefer IN PROGRESS approval
     for (final a in list) {
       if (a.approvalStatus?.toLowerCase() == 'in progress') {
         return a;
       }
     }
 
-    // 2️⃣ Fallback → highest approved / assigned level
-    return getActiveApprovalLevel(list);
+    return getMatchingApproval(list);
   }
 
   ApprovalDetailModel? getActiveApprovalLevel(List<ApprovalDetailModel> list) {
-    ApprovalDetailModel? highestLevelCandidate;
+    final matching = getMatchingApproval(list);
+    if (matching != null) {
+      return matching;
+    }
 
     for (final approval in list) {
-      if (!canUserActOnLevel(approval: approval)) continue;
-
       final status = approval.approvalStatus?.toLowerCase();
-      final level = approval.level ?? -1;
-
-      // 1️⃣ IN PROGRESS always wins
       if (status == 'in progress') {
         return approval;
       }
-
-      // 2️⃣ ONLY approved / assigned participate in comparison
-      if (status == 'approved' || status == 'assigned') {
-        if (highestLevelCandidate == null ||
-            level > (highestLevelCandidate.level ?? -1)) {
-          highestLevelCandidate = approval;
-        }
-      }
     }
 
-    return highestLevelCandidate;
+    return null;
   }
 
   ActionButtonsType getActionButtonsType(
     RequestDetailData? request,
     List<ApprovalDetailModel> approvals,
   ) {
-    final selectedRole = KAppX.globalProvider.read(rolesProvider);
-    final user = KAppX.globalProvider.read(userInfoProvider);
-    print(user?.data?.section?.id);
-
-    if (selectedRole == null) return ActionButtonsType.none;
-
-    final int userId = int.parse(user?.data?.id ?? "0");
-
-    // Get active approval level
-    final level = getActiveApprovalLevel(approvals);
-
-    if (level == null) return ActionButtonsType.none;
-
-    // Check user permission
-    final canAct = canUserActOnLevel(approval: level);
-
-    if (!canAct) return ActionButtonsType.none;
-
-    if (!state.isButtonDisabled && !canUserActOnLevel(approval: level)) {
+    if (!isCurrentUserApprover(approvals)) {
       return ActionButtonsType.none;
     }
 
-    final bool? isManager = level.isManager;
-    final bool? isPresident = level.isPresident;
-    final int approvalLevel = level.level ?? 0;
-    final bool ishasReplace = level.isReplace ?? false;
+    final status = _normalizeRequestStatus(request?.request?.status);
 
-    if (state.requestDetails.request?.status?.toLowerCase().trim() ==
-        "assigned") {
+    if (status == 'assigned') {
       return ActionButtonsType.inProgress;
     }
-    if (state.requestDetails.request?.status?.toLowerCase().trim() ==
-        "in progress") {
+    if (status == 'in progress') {
       return ActionButtonsType.complete;
     }
 
@@ -1529,24 +1513,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void updateButtonDisabledFromApprovals(List<ApprovalDetailModel> approvals) {
-    final active = getActiveApprovalLevel(approvals);
-
-    // No active approval → disable
-    if (active == null) {
-      state = state.copyWith(isButtonDisabled: true);
-      return;
-    }
-
-    // If active approval is NOT allowed → disable
-    if (active.isAllowed != true) {
-      state = state.copyWith(isButtonDisabled: true);
-      return;
-    }
-
-    final status = state.requestDetails.request?.status?.toLowerCase() ?? '';
-
-    // ✅ Disable ONLY if ACTIVE is approved
-    final shouldDisable = status == 'approved';
+    final status = _normalizeRequestStatus(state.requestDetails.request?.status);
+    final shouldDisable = status == 'approved' || status == 'completed';
 
     state = state.copyWith(isButtonDisabled: shouldDisable);
   }
