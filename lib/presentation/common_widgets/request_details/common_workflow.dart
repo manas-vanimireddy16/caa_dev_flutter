@@ -297,6 +297,7 @@ import 'package:code_setup/utils/assets/icons.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:code_setup/utils/helper/localized_display_name.dart';
+import 'package:code_setup/utils/helper/org_directory_cache.dart';
 import 'package:code_setup/utils/helper/workflow_step_helpers.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -406,9 +407,16 @@ class RequestWorkflowTimeline extends StatelessWidget {
     }
   }
 
-  String _orDash(String? value) {
+  /// Returns null when value is missing so the UI can hide the row.
+  String? _nullableText(String? value) {
     final trimmed = value?.trim();
-    if (trimmed == null || trimmed.isEmpty) return '-';
+    if (trimmed == null ||
+        trimmed.isEmpty ||
+        trimmed == '-' ||
+        trimmed.toLowerCase() == 'null' ||
+        trimmed.toLowerCase() == 'n/a') {
+      return null;
+    }
     return trimmed;
   }
 
@@ -458,24 +466,35 @@ class RequestWorkflowTimeline extends StatelessWidget {
     );
   }
 
-  String _employeeName(UserModel? user, bool isArabic) => _localizedText(
-    isArabic: isArabic,
-    english: user?.employeeName,
-    arabic: user?.employeeArabicName,
-  );
+  String _employeeName(UserModel? user, bool isArabic) {
+    final name = _localizedText(
+      isArabic: isArabic,
+      english: user?.employeeName,
+      arabic: user?.employeeArabicName,
+      fallback: '',
+    );
+    return name;
+  }
 
-  String _roleName(RoleModel? role, bool isArabic) => _localizedText(
-    isArabic: isArabic,
-    english: role?.name,
-    arabic: role?.arabicName,
-  );
+  String _roleName(RoleModel? role, bool isArabic) {
+    final name = _localizedText(
+      isArabic: isArabic,
+      english: role?.name,
+      arabic: role?.arabicName,
+      fallback: '',
+    );
+    return name;
+  }
 
   // ------------------ FIND APPROVAL ------------------
   ApprovalDetailModel? _findApprovalByUserId(int? userId) {
     if (userId == null) return null;
 
     for (final a in details.approvalDetails ?? []) {
-      if (a.approverUserId == userId || a.approvedBy == userId) {
+      if (a.approverUserId == userId ||
+          a.approvedBy == userId ||
+          a.approverUser?.id == userId ||
+          a.approvedByUser?.id == userId) {
         return a;
       }
     }
@@ -491,13 +510,16 @@ class RequestWorkflowTimeline extends StatelessWidget {
       ?wf.approverUserId,
       ?wf.approvedBy,
       ?wf.approvedByUser?.id,
+      ?wf.updatedBy,
       ?wf.user?.id,
       ?wf.userId,
     };
 
     for (final approval in approvals) {
       if (userIds.contains(approval.approverUserId) ||
-          userIds.contains(approval.approvedBy)) {
+          userIds.contains(approval.approvedBy) ||
+          userIds.contains(approval.approverUser?.id) ||
+          userIds.contains(approval.approvedByUser?.id)) {
         return approval;
       }
     }
@@ -597,6 +619,9 @@ class RequestWorkflowTimeline extends StatelessWidget {
       if (match != null) return match;
     }
 
+    final fromCatalog = OrgDirectoryCache.departmentById(id);
+    if (fromCatalog != null) return fromCatalog;
+
     return DepartmentModel(id: id);
   }
 
@@ -629,11 +654,65 @@ class RequestWorkflowTimeline extends StatelessWidget {
       if (match != null) return match;
     }
 
+    final fromCatalog = OrgDirectoryCache.sectionById(id);
+    if (fromCatalog != null) return fromCatalog;
+
     return SectionModel(id: id);
   }
 
+  bool _needsOrgDirectoryLookup() {
+    bool needsName(DepartmentModel? department, SectionModel? section) {
+      final deptNeeds =
+          department?.id != null &&
+          department!.id! > 0 &&
+          department.displayName(isArabic: false).trim().isEmpty;
+      final sectionNeeds =
+          section?.id != null &&
+          section!.id! > 0 &&
+          section.displayName(isArabic: false).trim().isEmpty;
+      return deptNeeds || sectionNeeds;
+    }
+
+    for (final wf in details.workflowDetails ?? []) {
+      if ((wf.departmentId != null && wf.departmentId! > 0) ||
+          (wf.sectionId != null && wf.sectionId! > 0) ||
+          needsName(wf.department, wf.section) ||
+          needsName(
+            wf.approvedByUser?.department,
+            wf.approvedByUser?.section,
+          ) ||
+          needsName(wf.user?.department, wf.user?.section)) {
+        return true;
+      }
+    }
+
+    for (final approval in details.approvalDetails ?? []) {
+      if ((approval.departmentId != null && approval.departmentId! > 0) ||
+          (approval.sectionId != null && approval.sectionId! > 0) ||
+          needsName(approval.department, approval.section)) {
+        return true;
+      }
+    }
+
+    final creator = details.request?.createdByUser;
+    if (needsName(creator?.department, creator?.section)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<void> _ensureOrgDirectoryLoaded() async {
+    if (!_needsOrgDirectoryLookup()) return;
+    await OrgDirectoryCache.ensureLoaded();
+  }
+
   // ------------------ NORMALIZE MODELS ------------------
-  UserModel? _mapApproverUserToUser(ApproverUserModel? u) {
+  UserModel? _mapApproverUserToUser(
+    ApproverUserModel? u, {
+    DepartmentModel? department,
+    SectionModel? section,
+  }) {
     if (u == null) return null;
 
     return UserModel(
@@ -643,6 +722,11 @@ class RequestWorkflowTimeline extends StatelessWidget {
       employeeArabicName: u.employeeArabicName,
       email: u.email,
       mobile: u.mobile,
+      department:
+          department ??
+          (u.department != null ? DepartmentModel(id: u.department) : null),
+      section:
+          section ?? (u.section != null ? SectionModel(id: u.section) : null),
     );
   }
 
@@ -655,28 +739,26 @@ class RequestWorkflowTimeline extends StatelessWidget {
   ({UserModel? user, RoleModel? role}) _resolveActorAndRole(
     WorkflowDetailModel wf,
   ) {
-    // 1️⃣ NEW workflow fields
-    if (wf.approvedByUser != null || wf.approverRole != null) {
-      return (user: wf.approvedByUser, role: wf.approverRole);
-    }
+    RoleModel? role = wf.approverRole ?? wf.role;
+    UserModel? user = wf.approvedByUser ?? wf.user;
 
-    // 2️⃣ OLD workflow fields
-    if (wf.user != null || wf.role != null) {
-      return (user: wf.user, role: wf.role);
-    }
-
-    // 3️⃣ FINAL FALLBACK → approvalDetails
-    final approval = _findApprovalByUserId(wf.approverUserId);
-    if (approval != null) {
-      return (
-        user: _mapApproverUserToUser(
-          approval.approvedByUser ?? approval.approverUser,
-        ),
-        role: _mapApproverRoleToRole(approval.approverRole),
+    // When approved_by / approved_by_user is null, resolve the actor from
+    // approval_details / approver_details using approver_user_id.
+    if (user == null) {
+      final approval = _findApprovalByUserId(
+        wf.approverUserId ?? wf.approvedBy ?? wf.updatedBy ?? wf.userId,
       );
+      if (approval != null) {
+        user = _mapApproverUserToUser(
+          approval.approvedByUser ?? approval.approverUser,
+          department: approval.department,
+          section: approval.section,
+        );
+        role ??= _mapApproverRoleToRole(approval.approverRole);
+      }
     }
 
-    return (user: null, role: null);
+    return (user: user, role: role);
   }
 
   // ------------------ SORT WORKFLOW ------------------
@@ -717,11 +799,15 @@ class RequestWorkflowTimeline extends StatelessWidget {
         WorkflowStepView(
           title: _stepTitle(wf, isArabic),
           workflowType: i == 0 && workflowType.isNotEmpty ? workflowType : null,
-          actor: _employeeName(user, isArabic),
-          empId: _orDash(user?.employeeId ?? user?.id?.toString()),
-          department: _orDash(org.department?.displayName(isArabic: isArabic)),
-          section: _orDash(org.section?.displayName(isArabic: isArabic)),
-          role: _orDash(_roleName(role, isArabic)),
+          actor: _nullableText(_employeeName(user, isArabic)),
+          empId: _nullableText(user?.employeeId ?? user?.id?.toString()),
+          department: _nullableText(
+            org.department?.displayName(isArabic: isArabic),
+          ),
+          section: _nullableText(
+            org.section?.displayName(isArabic: isArabic),
+          ),
+          role: _nullableText(_roleName(role, isArabic)),
           rawDate: wf.updatedAt ?? wf.createdAt,
           status: mapStatus(wf.status),
           isFirst: i == 0,
@@ -737,45 +823,63 @@ class RequestWorkflowTimeline extends StatelessWidget {
   Widget build(BuildContext context) {
     final labels = l10n ?? DashboardL10n.of(context);
     final isArabic = labels.isArabic;
-    final steps = generateWorkflowSteps(isArabic: isArabic);
     final textDirection = isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr;
 
-    return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.all(16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFFE0E0E0)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              labels.requestWorkflowSectionTitle,
-              style: AppTextStyles.requestDetailsSectionHeading(),
+    return FutureBuilder<void>(
+      future: _ensureOrgDirectoryLoaded(),
+      builder: (context, snapshot) {
+        final steps = generateWorkflowSteps(isArabic: isArabic);
+
+        return Card(
+          color: Colors.white,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: Color(0xFFE0E0E0)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  labels.requestWorkflowSectionTitle,
+                  style: AppTextStyles.requestDetailsSectionHeading(),
+                ),
+                const Divider(height: 24),
+                if (snapshot.connectionState == ConnectionState.waiting &&
+                    !OrgDirectoryCache.isLoaded)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Center(
+                      child: SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: steps.length,
+                  itemBuilder: (context, index) {
+                    final step = steps[index];
+                    return _buildStep(
+                      labels: labels,
+                      textDirection: textDirection,
+                      index: index,
+                      total: steps.length,
+                      step: step,
+                      date: formatDateTime(step.rawDate),
+                    );
+                  },
+                ),
+              ],
             ),
-            const Divider(height: 24),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: steps.length,
-              itemBuilder: (context, index) {
-                final step = steps[index];
-                return _buildStep(
-                  labels: labels,
-                  textDirection: textDirection,
-                  index: index,
-                  total: steps.length,
-                  step: step,
-                  date: formatDateTime(step.rawDate),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -820,43 +924,19 @@ class RequestWorkflowTimeline extends StatelessWidget {
                     _WorkflowTypeChip(label: step.workflowType!),
                   ],
                   if (showDetails) ...[
-                    const SizedBox(height: 12),
-                    _WorkflowDetailRow(
-                      label: '${labels.workflowActionTakenBy}:',
-                      value: step.actor ?? '-',
+                    ..._buildOptionalDetailRows(
+                      labels: labels,
                       textDirection: textDirection,
+                      step: step,
                     ),
-                    const SizedBox(height: 8),
-                    _WorkflowDetailRow(
-                      label: '${labels.employeeId}:',
-                      value: step.empId ?? '-',
-                      textDirection: textDirection,
-                    ),
-                    const SizedBox(height: 8),
-                    _WorkflowDetailRow(
-                      label: '${labels.workflowDepartmentName}:',
-                      value: step.department ?? '-',
-                      textDirection: textDirection,
-                    ),
-                    const SizedBox(height: 8),
-                    _WorkflowDetailRow(
-                      label: '${labels.workflowSectionName}:',
-                      value: step.section ?? '-',
-                      textDirection: textDirection,
-                    ),
-                    const SizedBox(height: 8),
-                    _WorkflowDetailRow(
-                      label: '${labels.workflowRoleName}:',
-                      value: step.role ?? '-',
-                      textDirection: textDirection,
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      date,
-                      style: AppTextStyles.requestDetailsFieldHeading().copyWith(
-                        color: const Color(0xFF9E9E9E),
+                    if (_nullableText(date) != null) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        date,
+                        style: AppTextStyles.requestDetailsFieldHeading()
+                            .copyWith(color: const Color(0xFF9E9E9E)),
                       ),
-                    ),
+                    ],
                   ],
                 ],
               ),
@@ -865,6 +945,37 @@ class RequestWorkflowTimeline extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<Widget> _buildOptionalDetailRows({
+    required DashboardL10n labels,
+    required ui.TextDirection textDirection,
+    required WorkflowStepView step,
+  }) {
+    final rows = <({String label, String? value})>[
+      (label: '${labels.workflowActionTakenBy}:', value: step.actor),
+      (label: '${labels.employeeId}:', value: step.empId),
+      (label: '${labels.workflowDepartmentName}:', value: step.department),
+      (label: '${labels.workflowSectionName}:', value: step.section),
+      (label: '${labels.workflowRoleName}:', value: step.role),
+    ];
+
+    final visible = rows
+        .where((row) => _nullableText(row.value) != null)
+        .toList();
+    if (visible.isEmpty) return const [];
+
+    return [
+      const SizedBox(height: 12),
+      for (var i = 0; i < visible.length; i++) ...[
+        if (i > 0) const SizedBox(height: 8),
+        _WorkflowDetailRow(
+          label: visible[i].label,
+          value: visible[i].value!,
+          textDirection: textDirection,
+        ),
+      ],
+    ];
   }
 
   Widget _buildTimelineRail({

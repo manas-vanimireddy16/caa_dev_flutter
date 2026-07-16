@@ -349,7 +349,13 @@ class _VSController extends StateNotifier<_ViewState> {
     return department ?? '-';
   }
 
-  void openRequestDetails(int id, {bool fromActionItems = false}) {
+  void openRequestDetails(
+    int id, {
+    bool fromActionItems = false,
+    int initialTabIndex = RequestDetailsTabIndex.requestDetails,
+  }) {
+    updateRequestTab(initialTabIndex);
+
     KAppX.router.push(
       AnnualTrainingPlanDetailsRoute(
         id: id,

@@ -939,8 +939,9 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> openRequestDetails(
     int id, {
     bool fromActionItems = false,
+    int initialTabIndex = RequestDetailsTabIndex.requestDetails,
   }) async {
-    updateRequestTab(0);
+    updateRequestTab(initialTabIndex);
 
     await KAppX.router.push(
       AirportEntryRequestDetailsTabRoute(

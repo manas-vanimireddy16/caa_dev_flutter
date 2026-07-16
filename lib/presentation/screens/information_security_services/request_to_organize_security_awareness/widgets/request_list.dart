@@ -40,6 +40,14 @@ class RequestsPage extends ConsumerWidget {
             );
             controller.updateTabIndex(0);
           },
+          onWorkflowTap: () async {
+            await controller.openRequestDetails(
+              item.id ?? 0,
+              fromActionItems: isActionItem,
+              initialTabIndex: RequestDetailsTabIndex.workflow,
+            );
+            controller.updateTabIndex(0);
+          },
         );
       },
     );

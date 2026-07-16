@@ -17,6 +17,7 @@ class HotelReservationHomeScreen extends ConsumerWidget {
             .watch(serviceTreeProvider)
             .serviceByCodeOrSubServiceCodes(
               serviceCode: 'CAAS014',
+              subServiceCodes: const ['CAA046'],
               subServiceNames: const ['Request for Hotel Reservation'],
             ) ??
         Service(code: 'CAAS014', name: 'Housing & Accommodation Service');

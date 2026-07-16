@@ -395,7 +395,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'User Name': item.base?.createdByUser?.employeeName ?? '-',
       'Request Type': item.base?.subService?.subServiceName ?? '-',
       'Assigned Employee Name': item.assignedEmployeeName ?? '',
-      'Date': item.createdBy.toString(),
+      'Date': formatDate(item.createdAt.toString()),
       // 'Vehicle Number': item.vehicleNumber ?? 'N/A',
       // 'Maintenance Type': item.typeOfMaintenanceRequired ?? 'N/A',
       // 'Request Submission Date': formatDate(
@@ -433,7 +433,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'End Date': request?.endDate ?? '',
       'Phone Number': request?.phoneNumber ?? '',
       'Allowance Percentage': request?.allowancePercentage ?? '',
-      // 'Salary Payment Source': request.salaryPaymentSource ?? '',
+      'Reason For Request': request?.reasonForRequest?.join(', ') ?? '',
       // 'Vehicle Number': request?.vehicleNumber ?? 'N/A',
       // 'Maintenance Type': request?.typeOfMaintenanceRequired ?? 'N/A',
       // 'Preferred Maintenance Date': formatDate(
@@ -500,8 +500,9 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> openRequestDetails(
     int id, {
     bool fromActionItems = false,
+    int initialTabIndex = RequestDetailsTabIndex.requestDetails,
   }) async {
-    updateRequestTab(0);
+    updateRequestTab(initialTabIndex);
     fetchRolesList();
 
     await KAppX.router.push(

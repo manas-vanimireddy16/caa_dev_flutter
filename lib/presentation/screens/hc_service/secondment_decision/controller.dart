@@ -411,6 +411,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails;
+    final approverMap = resolveApproverMap(request?.approvalDetails ?? []);
+
     return {
       /// ───── RIGHT COLUMN ─────
       "Service Type": request?.service?.name ?? 'N/A',
@@ -418,6 +420,8 @@ class _VSController extends StateNotifier<_ViewState> {
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
       "Assigned Employee Name": request?.assignedEmployeeName ?? 'N/A',
+      "Employee ID": request?.employeeId ?? 'N/A',
+      'Civil ID Card Number': request?.civilIdCardNumber ?? 'N/A',
       "Current Job Position": request?.currentJobPosition ?? 'N/A',
       "Assigned Job Position": request?.assignedJobPosition ?? 'N/A',
       'From entity': request?.fromEntity ?? '',
@@ -426,6 +430,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'End Date': request.endDate ?? '',
       'Phone Number': request.phoneNumber ?? '',
       'Reason for Request': request?.reasonForRequest?.join(',') ?? '',
+      'Approver': _buildDepartmentSection(approverMap),
       // 'Salary Payment Source': request.salaryPaymentSource ?? '',
       // 'Vehicle Number': request?.vehicleNumber ?? 'N/A',
       // 'Maintenance Type': request?.typeOfMaintenanceRequired ?? 'N/A',
@@ -493,8 +498,9 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> openRequestDetails(
     int id, {
     bool fromActionItems = false,
+    int initialTabIndex = RequestDetailsTabIndex.requestDetails,
   }) async {
-    updateRequestTab(0);
+    updateRequestTab(initialTabIndex);
 
     await KAppX.router.push(
       SecondmentDecisionDetailsRoute(

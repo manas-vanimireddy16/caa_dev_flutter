@@ -56,6 +56,11 @@ abstract class PerformanceManagementRepository {
   });
   Future<void> onApprove(Map<String, dynamic> payload);
 
+  Future<void> updateGoalsRating({
+    required int requestId,
+    required List<Map<String, dynamic>> goals,
+  });
+
   Future<String> sendChat(Map<String, dynamic> payload, int id);
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);
   Future<List<ChatMessageModel>> getchatById(int id);

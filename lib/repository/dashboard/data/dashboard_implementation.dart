@@ -246,24 +246,26 @@ class DashboardRepositoryImplementation implements DashboardRepository {
   @override
   Future<List<AnnouncementModel>> getModels() async {
     final client = await KAppX.network.secureClient();
+    if (client == null) return [];
 
     try {
-      if (client != null) {
-        final url = ApiEndPoint.caaDrupal;
-        final response = await client.get(url);
+      final response = await client.get(ApiEndPoint.caaDrupal);
 
-        if (response.statusCode == 200) {
-          final data = response.data as List;
-          return data
-              .map((e) => AnnouncementModel.fromJson(e as Map<String, dynamic>))
-              .toList();
-        } else {
-          throw Exception('Failed with status code: ${response.statusCode}');
-        }
-      } else
-        return [];
-    } catch (e) {
-      throw Exception('Error in getModels: $e');
+      if (response.statusCode == 200 && response.data is List) {
+        return (response.data as List)
+            .map((e) => AnnouncementModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+
+      // Non-200 (e.g. 500) — announcements are optional on dashboard.
+      // Return empty instead of throwing so the home screen still loads.
+      debugPrint(
+        'getModels: unexpected status ${response.statusCode}',
+      );
+      return [];
+    } catch (e, st) {
+      debugPrint('getModels error: $e\n$st');
+      return [];
     }
   }
 

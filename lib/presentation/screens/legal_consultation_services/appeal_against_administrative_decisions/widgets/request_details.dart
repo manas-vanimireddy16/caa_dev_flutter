@@ -40,13 +40,19 @@ class _AppealAgainstAdministrativeDecisionsDetailsScreenState
 
     /// ✅ Fetch ONLY once (after init)
     Future.microtask(() {
-      ref
-          .read(_vsProvider(_providerArgs).notifier)
-          .fetchRequestDetailsById(
-            widget.id,
-            widget.serviceId,
-            widget.subServiceId,
-          );
+      final controller = ref.read(_vsProvider(_providerArgs).notifier);
+      final pendingTab = PendingRequestDetailTabRegistry.consumeIfPresent(
+        serviceId: widget.serviceId,
+        subServiceId: widget.subServiceId,
+      );
+      if (pendingTab != null) {
+        controller.updateRequestTab(pendingTab);
+      }
+      controller.fetchRequestDetailsById(
+        widget.id,
+        widget.serviceId,
+        widget.subServiceId,
+      );
     });
   }
 

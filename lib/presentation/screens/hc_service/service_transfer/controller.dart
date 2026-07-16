@@ -1,4 +1,4 @@
-﻿part of 'view.dart';
+part of 'view.dart';
 
 final selectedrequesteventTabProvider = StateProvider<int>((ref) => 0);
 
@@ -240,7 +240,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   String requestListStatusFilterLabel(String status, DashboardL10n l10n) {
     if (status.isEmpty) {
-      return l10n.isArabic ? 'Ø§Ù„ÙƒÙ„' : 'All';
+      return l10n.isArabic ? 'الكل' : 'All';
     }
     return l10n.statusLabel(status);
   }
@@ -474,7 +474,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ================= EMPLOYEE INFO =================
 
-      /// ðŸ‘‡ APPROVER (SINGLE LINE)
+      /// 👇 APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
         'Approver': approverMap['role'] ?? '-',
       } else if (approverMap.containsKey('department')) ...{
@@ -486,10 +486,10 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails;
     return {
-      /// â”€â”€â”€â”€â”€ RIGHT COLUMN â”€â”€â”€â”€â”€
+      /// ───── RIGHT COLUMN ─────
       "Service Type": request?.service?.name ?? 'N/A',
 
-      /// â”€â”€â”€â”€â”€ LEFT COLUMN â”€â”€â”€â”€â”€
+      /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
       "Assigned Employee Name": request?.assignedEmployeeName ?? 'N/A',
       "Current Job Position": request?.currentJobPosition ?? 'N/A',
@@ -566,8 +566,9 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> openRequestDetails(
     int id, {
     bool fromActionItems = false,
+    int initialTabIndex = RequestDetailsTabIndex.requestDetails,
   }) async {
-    updateRequestTab(0);
+    updateRequestTab(initialTabIndex);
 
     await KAppX.router.push(
       ServiceTransferDetailsRoute(
@@ -649,7 +650,7 @@ class _VSController extends StateNotifier<_ViewState> {
         // fetchAttachmentsById(id);
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
 
-        /// âœ… CHECK ACTION TYPE HERE
+        /// ✅ CHECK ACTION TYPE HERE
         final actionType = getActionButtonsType(
           requests,
           requests.approvalDetails ?? [],
@@ -1001,7 +1002,7 @@ class _VSController extends StateNotifier<_ViewState> {
             requestId,
             comment.trim(), // always safe
             status.apiValue,
-            decisionNo, // âœ… backend-safe string
+            decisionNo, // ✅ backend-safe string
           );
         },
       ),
@@ -1028,7 +1029,7 @@ class _VSController extends StateNotifier<_ViewState> {
       String? fileType;
       String? fileSize;
 
-      /// 1ï¸âƒ£ Upload attachment if exists
+      /// 1️⃣ Upload attachment if exists
       if (hasAttachment) {
         final localFile = state.attachments.first;
 
@@ -1052,7 +1053,7 @@ class _VSController extends StateNotifier<_ViewState> {
       }
 
       /// ------------------------------------------------------------
-      /// CASE 1ï¸âƒ£ : ONLY ATTACHMENT (NO MESSAGE)
+      /// CASE 1️⃣ : ONLY ATTACHMENT (NO MESSAGE)
       /// ------------------------------------------------------------
       if (!hasMessage && hasAttachment) {
         final payload = {
@@ -1065,13 +1066,13 @@ class _VSController extends StateNotifier<_ViewState> {
           "file_size": fileSize,
         };
 
-        debugPrint('ðŸ“Ž Attachment-only payload: $payload');
+        debugPrint('📎 Attachment-only payload: $payload');
 
         await serviceTransferInstance.sendAttachment(payload, requestId);
       }
 
       /// ------------------------------------------------------------
-      /// CASE 2ï¸âƒ£ : CHAT (with OR without attachment)
+      /// CASE 2️⃣ : CHAT (with OR without attachment)
       /// ------------------------------------------------------------
       if (hasMessage) {
         final payload = {
@@ -1086,7 +1087,7 @@ class _VSController extends StateNotifier<_ViewState> {
           "file_size": hasAttachment ? fileSize : null,
         };
 
-        debugPrint('ðŸ’¬ Chat payload: $payload');
+        debugPrint('💬 Chat payload: $payload');
 
         await serviceTransferInstance.sendChat(payload, requestId);
       }
@@ -1094,11 +1095,11 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchRequestDetailsById(requestId);
       fetchAttachmentsById(requestId);
 
-      /// 3ï¸âƒ£ Clear UI state
+      /// 3️⃣ Clear UI state
       // chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
-      debugPrint('âŒ Failed to send chat: $e');
+      debugPrint('❌ Failed to send chat: $e');
       debugPrintStack(stackTrace: st);
       rethrow;
     }
@@ -1108,9 +1109,9 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1ï¸âƒ£ Upload files
+      // 1️⃣ Upload files
 
-      // 2ï¸âƒ£ Build payload
+      // 2️⃣ Build payload
       final payload = {
         "request_id": requestId,
         "status": "Completed",
@@ -1118,9 +1119,9 @@ class _VSController extends StateNotifier<_ViewState> {
         "approval_id": approverId,
       };
 
-      debugPrint("âœ… Final Payload: $payload");
+      debugPrint("✅ Final Payload: $payload");
 
-      // 3ï¸âƒ£ Send request
+      // 3️⃣ Send request
       // await serviceTransferInstance.onAssignRejectClose(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
@@ -1133,7 +1134,7 @@ class _VSController extends StateNotifier<_ViewState> {
       fetchTrendBreakDown(DateTime.now().year.toString());
       fetchKpi();
     } catch (e) {
-      debugPrint('âŒ Error submitting request: $e');
+      debugPrint('❌ Error submitting request: $e');
     } finally {
       state = state.copyWith(isLoading: false);
     }
@@ -1150,9 +1151,9 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1ï¸âƒ£ Upload files
+      // 1️⃣ Upload files
 
-      // 2ï¸âƒ£ Build payload
+      // 2️⃣ Build payload
       final payload = {
         "request_id": requestId,
         "status": status,
@@ -1163,9 +1164,9 @@ class _VSController extends StateNotifier<_ViewState> {
         payload['decision_number'] = decisionNo;
       }
 
-      debugPrint("âœ… Final Payload: $payload");
+      debugPrint("✅ Final Payload: $payload");
 
-      // 3ï¸âƒ£ Send request
+      // 3️⃣ Send request
       await serviceTransferInstance.onApprove(payload);
       // await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
@@ -1180,7 +1181,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       await _refreshDashboard();
     } catch (e) {
-      debugPrint('âŒ Error submitting request: $e');
+      debugPrint('❌ Error submitting request: $e');
     } finally {
       state = state.copyWith(isLoading: false);
     }
@@ -1252,21 +1253,21 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1ï¸âƒ£ Upload files
+      // 1️⃣ Upload files
 
-      // 2ï¸âƒ£ Build payload
+      // 2️⃣ Build payload
       final payload = {"request_id": requestId, "status": "In Progress"};
 
-      debugPrint("âœ… Final Payload: $payload");
+      debugPrint("✅ Final Payload: $payload");
 
-      // 3ï¸âƒ£ Send request
+      // 3️⃣ Send request
       // await serviceTransferInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       await fetchactionItems();
       await fetchRequests();
     } catch (e) {
-      debugPrint('âŒ Error submitting request: $e');
+      debugPrint('❌ Error submitting request: $e');
     } finally {
       state = state.copyWith(isLoading: false);
     }
@@ -1290,61 +1291,61 @@ class _VSController extends StateNotifier<_ViewState> {
     debugPrint('User Section ID: ${selectedRole?.sectionId}');
     debugPrint('------------------------------------------------');
 
-    /// 1ï¸âƒ£ Delegate always allowed
+    /// 1️⃣ Delegate always allowed
     if (approval.delegateUserId == userId) {
-      debugPrint('âœ… Allowed: User is delegate approver');
+      debugPrint('✅ Allowed: User is delegate approver');
       return true;
     }
 
-    /// 2ï¸âƒ£ Approver user rule
+    /// 2️⃣ Approver user rule
     if (approval.approverUserId != null && approval.approverUserId != userId) {
       debugPrint(
-        'âŒ Denied: Approver User ID mismatch (${approval.approverUserId} != $userId)',
+        '❌ Denied: Approver User ID mismatch (${approval.approverUserId} != $userId)',
       );
       return false;
     }
 
-    /// 3ï¸âƒ£ Role must match
+    /// 3️⃣ Role must match
     if (approval.approverRoleId != null &&
         approval.approverRoleId != selectedRole?.roleId) {
       debugPrint(
-        'âŒ Denied: Role mismatch (${approval.approverRoleId} != ${selectedRole?.roleId})',
+        '❌ Denied: Role mismatch (${approval.approverRoleId} != ${selectedRole?.roleId})',
       );
       return false;
     }
 
-    /// 4ï¸âƒ£ Department must match
+    /// 4️⃣ Department must match
     if (approval.departmentId != null &&
         approval.departmentId != selectedRole?.departmentId) {
       debugPrint(
-        'âŒ Denied: Department mismatch (${approval.departmentId} != ${selectedRole?.departmentId})',
+        '❌ Denied: Department mismatch (${approval.departmentId} != ${selectedRole?.departmentId})',
       );
       return false;
     }
 
-    /// 5ï¸âƒ£ Section must match
+    /// 5️⃣ Section must match
     if (approval.sectionId != null &&
         approval.sectionId != selectedRole?.sectionId) {
       debugPrint(
-        'âŒ Denied: Section mismatch (${approval.sectionId} != ${selectedRole?.sectionId})',
+        '❌ Denied: Section mismatch (${approval.sectionId} != ${selectedRole?.sectionId})',
       );
       return false;
     }
 
-    debugPrint('âœ… Allowed: User can act on this approval level');
+    debugPrint('✅ Allowed: User can act on this approval level');
 
     return true;
   }
 
   ApprovalDetailModel? getNextApprovalDetails(List<ApprovalDetailModel> list) {
-    // 1ï¸âƒ£ Prefer IN PROGRESS approval
+    // 1️⃣ Prefer IN PROGRESS approval
     for (final a in list) {
       if (a.approvalStatus?.toLowerCase() == 'in progress') {
         return a;
       }
     }
 
-    // 2ï¸âƒ£ Fallback â†’ highest approved / assigned level
+    // 2️⃣ Fallback → highest approved / assigned level
     return getActiveApprovalLevel(list);
   }
 
@@ -1357,12 +1358,12 @@ class _VSController extends StateNotifier<_ViewState> {
       final status = approval.approvalStatus?.toLowerCase();
       final level = approval.level ?? -1;
 
-      // 1ï¸âƒ£ IN PROGRESS always wins
+      // 1️⃣ IN PROGRESS always wins
       if (status == 'in progress') {
         return approval;
       }
 
-      // 2ï¸âƒ£ ONLY approved / assigned participate in comparison
+      // 2️⃣ ONLY approved / assigned participate in comparison
       if (status == 'approved' || status == 'assigned') {
         if (highestLevelCandidate == null ||
             level > (highestLevelCandidate.level ?? -1)) {
@@ -1419,13 +1420,13 @@ class _VSController extends StateNotifier<_ViewState> {
   void updateButtonDisabledFromApprovals(List<ApprovalDetailModel> approvals) {
     final active = getActiveApprovalLevel(approvals);
 
-    // No active approval â†’ disable
+    // No active approval → disable
     if (active == null) {
       state = state.copyWith(isButtonDisabled: true);
       return;
     }
 
-    // If active approval is NOT allowed â†’ disable
+    // If active approval is NOT allowed → disable
     if (active.isAllowed != null && active.isAllowed != true) {
       state = state.copyWith(isButtonDisabled: true);
       return;
@@ -1433,7 +1434,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     final status = active.approvalStatus?.toLowerCase();
 
-    // âœ… Disable ONLY if ACTIVE is approved or assigned
+    // ✅ Disable ONLY if ACTIVE is approved or assigned
     final shouldDisable = status == 'approved' || status == 'assigned';
 
     state = state.copyWith(isButtonDisabled: shouldDisable);
@@ -1462,7 +1463,7 @@ class _VSController extends StateNotifier<_ViewState> {
       return {};
     }
 
-    /// 1ï¸âƒ£ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
+    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
     final pendingList = approvals
         .where((a) => _isPendingOrInProgress(a.approvalStatus))
         .toList();
@@ -1471,7 +1472,7 @@ class _VSController extends StateNotifier<_ViewState> {
       pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
       final next = pendingList.first;
 
-      /// ðŸ”¹ RULE 1: approverId EXISTS â†’ NAME + EMAIL
+      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
       if (next.approverRoleId != null) {
         final name = next.approverUser?.employeeName;
         final email = next.approverUser?.email;
@@ -1486,7 +1487,7 @@ class _VSController extends StateNotifier<_ViewState> {
         }
       }
 
-      /// ðŸ”¹ RULE 2: approverId NULL â†’ DEPARTMENT + SECTION
+      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
       final department = next.department?.departmentName;
       final section = next.section?.sectionName;
 
@@ -1500,7 +1501,7 @@ class _VSController extends StateNotifier<_ViewState> {
       return {};
     }
 
-    /// 2ï¸âƒ£ ALL COMPLETED â†’ LAST APPROVER (NAME + EMAIL)
+    /// 2️⃣ ALL COMPLETED → LAST APPROVER (NAME + EMAIL)
     final completedList = approvals
         .where((a) => _isCompleted(a.approvalStatus))
         .toList();
@@ -1586,7 +1587,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
     final file = result.files.first;
 
-    /// âŒ SIZE CHECK
+    /// ❌ SIZE CHECK
     if (file.size > maxFileSizeInBytes) {
       Fluttertoast.showToast(msg: "File size must be less than 10 MB");
       return;
@@ -1601,7 +1602,7 @@ class _VSController extends StateNotifier<_ViewState> {
       "description": '',
     };
 
-    /// âœ… ONLY ONE ATTACHMENT
+    /// ✅ ONLY ONE ATTACHMENT
     state = state.copyWith(attachments: [attachment]);
   }
 
@@ -1629,17 +1630,17 @@ class _VSController extends StateNotifier<_ViewState> {
     final userInfo = KAppX.globalProvider.read(userInfoProvider);
 
     return {
-      /// â­ USER INFO
+      /// ⭐ USER INFO
       "req_user_department_id": userInfo?.data?.department?.id ?? 0,
 
       "req_user_section_id": userInfo?.data?.section?.id ?? 0,
 
-      /// â­ SERVICE INFO
+      /// ⭐ SERVICE INFO
       "service_id": serviceId,
 
       "sub_service_id": subServiceId,
 
-      /// â­ VEHICLE MAINTENANCE DETAILS
+      /// ⭐ VEHICLE MAINTENANCE DETAILS
       "vehicle_number": values['vehicle_number'] ?? "",
 
       "type_of_maintenance_required": values['maintenance_type'] ?? "",
@@ -1650,7 +1651,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       "issue_description": values['issue_description'] ?? "",
 
-      /// â­ ATTACHMENTS
+      /// ⭐ ATTACHMENTS
       "attachments": _buildAttachments(values),
     };
   }
@@ -1670,7 +1671,7 @@ class _VSController extends StateNotifier<_ViewState> {
         // state.hrTasks,
       );
 
-      debugPrint("âœ… Final Payload: $payload");
+      debugPrint("✅ Final Payload: $payload");
 
       // final response = await serviceTransferInstance
       //     .createTemporaryDecisionRequest(payload);
@@ -1680,7 +1681,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // _refreshDashboard();
       // }
     } catch (e, st) {
-      debugPrint('âŒ Error submitting request: $e\n$st');
+      debugPrint('❌ Error submitting request: $e\n$st');
     } finally {
       state = state.copyWith(isLoading: false);
     }

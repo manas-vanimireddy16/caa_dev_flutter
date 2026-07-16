@@ -63,6 +63,20 @@ class RequestsPage extends ConsumerWidget {
               fromActionItems: isActionItem,
             );
           },
+          onWorkflowTap: () {
+            controller.navigateToRoute(
+              name: item.subServiceCode ?? subService.code ?? '',
+              requestId:
+                  int.tryParse(item.requestId ?? '') ??
+                  base?.id ??
+                  item.id ??
+                  0,
+              service: service,
+              subService: subService,
+              fromActionItems: isActionItem,
+              initialTabIndex: RequestDetailsTabIndex.workflow,
+            );
+          },
         );
       },
     );

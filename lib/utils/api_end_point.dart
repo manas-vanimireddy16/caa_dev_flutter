@@ -210,6 +210,10 @@ class ApiEndPoint {
 
   /// chatbot
   static const String chatbotAsk = '/v1/chatbot-service/ask';
+  static const String chatbotQuestions =
+      '/v1/chatbot-service/chatbot/questions';
+  static const String chatbotAnswer = '/v1/chatbot-service/chatbot/answer';
+  static const String chatbotAskFaq = '/v1/chatbot-service/chatbot/ask_FAQ';
 
   /// ===================== VPN APIs =====================
 
@@ -2026,6 +2030,9 @@ class ApiEndPoint {
 
   static String performanceManagementRequestById(int requestId) =>
       '/v1/hr-service/performance-management/requests/$requestId';
+
+  static String performanceManagementGoalsRating(int requestId) =>
+      '/v1/hr-service/performance-management/requests/$requestId/goals/rating';
 
   /// ===================== KPI APIs =====================
 

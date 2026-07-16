@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
@@ -48,9 +49,8 @@ class DioNetworkingBox
       );
     }
 
-    if (loggingEnabled) {
-      client.addLoggingIntercept();
-    }
+    client.addCoreInterceptors();
+    if (loggingEnabled) client.addLoggingIntercept();
 
     return client;
   }
@@ -84,19 +84,19 @@ class DioNetworkingBox
             options,
             authorizationToken: accessToken,
           )
-        : DioNetworkingClient(
-            this,
-            authorizationToken: accessToken,
-          );
+        : DioNetworkingClient(this, authorizationToken: accessToken);
 
     return client;
   }
 }
 
 extension DioNetworkingClientX on DioNetworkingClient {
-  void addLoggingIntercept() {
+  void addCoreInterceptors() {
     interceptors.add(DioRetryInterceptor(client: this));
-    interceptors.add(DioNetworkLoggingInterceptor());
     interceptors.add(DioTokenInvalidInterceptor());
+  }
+
+  void addLoggingIntercept() {
+    interceptors.add(DioNetworkLoggingInterceptor());
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
@@ -166,7 +168,7 @@ final dynamicFormProvider =
 class DynamicForm extends ConsumerStatefulWidget {
   final List<List<DynamicField>> steps;
   final List<String> stepTitles;
-  final void Function(Map<String, dynamic>) onSubmit;
+  final FutureOr<void> Function(Map<String, dynamic>) onSubmit;
   final String title;
   final bool Function(Map<String, dynamic> values)? enableSubmitWhen;
 
@@ -196,6 +198,7 @@ class DynamicForm extends ConsumerStatefulWidget {
 class _DynamicFormState extends ConsumerState<DynamicForm>
     with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -314,9 +317,20 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
                       _FormSubmitButton(
                         l10n: l10n,
                         visibleFields: visibleFields,
-                        onSubmit: () {
-                          if (notifier.validateStep(visibleFields)) {
-                            widget.onSubmit(state.values);
+                        isSubmitting: _isSubmitting,
+                        onSubmit: () async {
+                          if (_isSubmitting) return;
+                          if (!notifier.validateStep(visibleFields)) return;
+
+                          setState(() => _isSubmitting = true);
+                          try {
+                            await Future.sync(
+                              () => widget.onSubmit(state.values),
+                            );
+                          } finally {
+                            if (mounted) {
+                              setState(() => _isSubmitting = false);
+                            }
                           }
                         },
                         enableSubmitWhen: widget.enableSubmitWhen,
@@ -355,12 +369,14 @@ class _FormSubmitButton extends ConsumerWidget {
   final DashboardL10n l10n;
   final List<DynamicField> visibleFields;
   final VoidCallback onSubmit;
+  final bool isSubmitting;
   final bool Function(Map<String, dynamic> values)? enableSubmitWhen;
 
   const _FormSubmitButton({
     required this.l10n,
     required this.visibleFields,
     required this.onSubmit,
+    required this.isSubmitting,
     this.enableSubmitWhen,
   });
 
@@ -373,12 +389,13 @@ class _FormSubmitButton extends ConsumerWidget {
     if (enableSubmitWhen != null) {
       enableSubmit = enableSubmit && enableSubmitWhen!(formState.values);
     }
+    final canPress = enableSubmit && !isSubmitting;
 
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: enableSubmit
+          backgroundColor: canPress
               ? AppColors.buttonGreen
               : const Color(0xFFB8C9BA),
           foregroundColor: Colors.white,
@@ -387,28 +404,37 @@ class _FormSubmitButton extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        onPressed: enableSubmit ? onSubmit : null,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            KImageProvider(
-              image: AppIcons.submitButtonIcon,
-              width: 14,
-              height: 14,
-              tintColor: Colors.white,
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                l10n.dynamicFormSubmit,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
+        onPressed: canPress ? onSubmit : null,
+        child: isSubmitting
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  KImageProvider(
+                    image: AppIcons.submitButtonIcon,
+                    width: 14,
+                    height: 14,
+                    tintColor: Colors.white,
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      l10n.dynamicFormSubmit,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

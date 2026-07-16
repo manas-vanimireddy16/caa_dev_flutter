@@ -14,7 +14,12 @@ class MaintenanceHomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const maintenanceServiceCode = 'CAAS016';
     final service =
-        ref.watch(serviceTreeProvider).serviceByCode(maintenanceServiceCode) ??
+        ref
+            .watch(serviceTreeProvider)
+            .serviceByCodeOrSubServiceCodes(
+              serviceCode: maintenanceServiceCode,
+              subServiceCodes: const ['CAA035', 'CAA045'],
+            ) ??
         Service(code: maintenanceServiceCode, name: 'Maintenance');
 
     return DynamicServiceShell(

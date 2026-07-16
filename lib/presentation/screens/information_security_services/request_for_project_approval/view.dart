@@ -19,6 +19,7 @@ import 'package:code_setup/presentation/common_widgets/analytics/request_trend_b
 import 'package:code_setup/presentation/common_widgets/request_details/reusable_table_row_model.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/scrollable_request_details_tab_bar.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
@@ -62,6 +63,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
+import 'package:code_setup/utils/helper/pending_request_detail_tab_registry.dart';
+import 'package:code_setup/utils/helper/request_details_tab_index.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_action_items_tabs.dart';
 import 'package:flutter/rendering.dart' hide Border;
 import 'package:flutter/services.dart';

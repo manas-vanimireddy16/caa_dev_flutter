@@ -16,6 +16,7 @@ import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_da
 import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
 import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/scrollable_request_details_tab_bar.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
@@ -49,6 +50,8 @@ import 'package:code_setup/presentation/screens/task_management/models/employee_
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
 import 'package:code_setup/repository/legal_consultation_services/raise_a_legal_complaint/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/utils/helper/request_details_tab_index.dart';
+import 'package:code_setup/utils/helper/pending_request_detail_tab_registry.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';

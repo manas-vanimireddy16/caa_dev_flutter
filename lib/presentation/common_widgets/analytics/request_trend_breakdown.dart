@@ -416,7 +416,7 @@ class RequestTrendBreakdownCard extends StatelessWidget {
               ],
             ),
             16.toVerticalSizedBox,
-            // Bar Chart Section
+            // Bar Chart Section — scroll horizontally when bars don't fit
             AspectRatio(
               aspectRatio: 1.8,
               child: _RequestTrendBarChart(
@@ -443,7 +443,9 @@ class _RequestTrendBarChart extends StatefulWidget {
 }
 
 class _RequestTrendBarChartState extends State<_RequestTrendBarChart> {
-  int? touchedIndex;
+  static const double _leftAxisReservedSize = 36;
+  static const double _bottomTitlesReservedSize = 28;
+  static const double _groupExtraSpace = 16;
 
   @override
   Widget build(BuildContext context) {
@@ -451,117 +453,208 @@ class _RequestTrendBarChartState extends State<_RequestTrendBarChart> {
     if (widget.data.isNotEmpty) {
       maxValue = (widget.data.reduce((a, b) => a > b ? a : b) * 1.2).ceil();
     }
-    final currentTheme = KAppX.globalProvider
-        .read(KAppX.theme.current)
-        .themeBox;
     final maxDataValue = widget.data.isEmpty
-        ? 0
+        ? 0.0
         : widget.data.reduce((a, b) => a > b ? a : b).toDouble();
-
     final rawMax = maxDataValue * 1.2;
-
     final interval = ChartUtils.calculateInterval(rawMax);
-    final maxY = ChartUtils.calculateNiceMaxY(rawMax);
+    final maxY = maxValue.toDouble();
     final axisLabelStyle = AppTextStyles.requestTrendBreakdownAxisLabel();
-    return BarChart(
-      BarChartData(
-        minY: 0,
-        maxY: maxValue.toDouble(),
-        barGroups: List.generate(
-          12,
-          (i) => BarChartGroupData(
-            x: i,
-            barRods: [
-              BarChartRodData(
-                toY: widget.data.isNotEmpty ? widget.data[i].toDouble() : 0.0,
-                color: AppColors.trendBarColor,
-                width: 20.toAutoScaledWidth,
-                borderRadius: BorderRadius.circular(0),
-                borderSide: BorderSide.none,
-                // Optional - subtle elevation on touch
-                rodStackItems: [],
+    final barWidth = 20.toAutoScaledWidth;
+    final barCount = max(widget.labels.length, widget.data.length);
+    final safeBarCount = barCount == 0 ? 12 : barCount;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final chartHeight = constraints.maxHeight;
+        final scrollableViewportWidth = max(
+          0.0,
+          constraints.maxWidth - _leftAxisReservedSize,
+        );
+        final minBarsWidth = safeBarCount * (barWidth + _groupExtraSpace);
+        final barsWidth = max(scrollableViewportWidth, minBarsWidth);
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Fixed Y-axis — does not scroll with the bars.
+            SizedBox(
+              width: _leftAxisReservedSize,
+              child: _FixedYAxis(
+                maxY: maxY,
+                interval: interval,
+                bottomReserved: _bottomTitlesReservedSize,
+                labelStyle: axisLabelStyle,
               ),
-            ],
-          ),
-        ),
-        borderData: FlBorderData(show: false),
-        gridData: FlGridData(show: false),
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 36,
-              interval: interval,
-              minIncluded: true, // ⭐ ensures 0 is shown
-              getTitlesWidget: (value, meta) {
-                return SideTitleWidget(
-                  meta: meta,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: SizedBox(
+                  width: barsWidth,
+                  height: chartHeight,
+                  child: BarChart(
+                    BarChartData(
+                      minY: 0,
+                      maxY: maxY,
+                      groupsSpace: _groupExtraSpace,
+                      barGroups: List.generate(
+                        safeBarCount,
+                        (i) => BarChartGroupData(
+                          x: i,
+                          barRods: [
+                            BarChartRodData(
+                              toY: i < widget.data.length
+                                  ? widget.data[i].toDouble()
+                                  : 0.0,
+                              color: AppColors.trendBarColor,
+                              width: barWidth,
+                              borderRadius: BorderRadius.circular(0),
+                              borderSide: BorderSide.none,
+                              rodStackItems: const [],
+                            ),
+                          ],
+                        ),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      gridData: FlGridData(show: false),
+                      titlesData: FlTitlesData(
+                        leftTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: _bottomTitlesReservedSize,
+                            interval: 1,
+                            getTitlesWidget: (value, meta) {
+                              final index = value.toInt();
+                              if (index < 0 ||
+                                  index >= widget.labels.length) {
+                                return const SizedBox.shrink();
+                              }
+
+                              final month = widget.labels[index];
+                              final shortMonth = month.length >= 3
+                                  ? month.substring(0, 3)
+                                  : month;
+
+                              return SideTitleWidget(
+                                meta: meta,
+                                child: Text(
+                                  shortMonth,
+                                  textAlign: TextAlign.center,
+                                  style: axisLabelStyle,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      barTouchData: BarTouchData(
+                        enabled: true,
+                        touchTooltipData: BarTouchTooltipData(
+                          getTooltipColor: (group) => Colors.white,
+                          tooltipBorderRadius: BorderRadius.circular(
+                            8.toAutoScaledWidth,
+                          ),
+                          fitInsideVertically: true,
+                          fitInsideHorizontally: true,
+                          tooltipPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                            if (groupIndex < 0 ||
+                                groupIndex >= widget.labels.length ||
+                                groupIndex >= widget.data.length) {
+                              return null;
+                            }
+                            final month = widget.labels[groupIndex];
+                            final value = widget.data[groupIndex];
+                            return BarTooltipItem(
+                              '$month, ${DateTime.now().year} : $value',
+                              const TextStyle(
+                                color: Color(0xFF282357),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _FixedYAxis extends StatelessWidget {
+  final double maxY;
+  final double interval;
+  final double bottomReserved;
+  final TextStyle labelStyle;
+
+  const _FixedYAxis({
+    required this.maxY,
+    required this.interval,
+    required this.bottomReserved,
+    required this.labelStyle,
+  });
+
+  List<double> get _tickValues {
+    if (maxY <= 0) return const [0];
+    final safeInterval = interval <= 0 ? maxY : interval;
+    final values = <double>[];
+    for (double value = 0; value <= maxY + 0.0001; value += safeInterval) {
+      values.add(value);
+    }
+    if (values.isEmpty || values.last < maxY) {
+      values.add(maxY);
+    }
+    return values;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ticks = _tickValues;
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottomReserved),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final plotHeight = constraints.maxHeight;
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              for (final value in ticks)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: maxY == 0
+                      ? 0
+                      : (value / maxY) * plotHeight - 6,
                   child: Text(
                     value.toInt().toString(),
                     textAlign: TextAlign.center,
-                    style: axisLabelStyle,
+                    style: labelStyle,
                   ),
-                );
-              },
-            ),
-          ),
-
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 28,
-              interval: 1, // ⭐ show EVERY month
-              getTitlesWidget: (value, meta) {
-                final index = value.toInt();
-
-                final month = widget.labels[index];
-
-                /// ⭐ force short name (Jan Feb Mar)
-                final shortMonth = month.length >= 3
-                    ? month.substring(0, 3)
-                    : month;
-
-                return SideTitleWidget(
-                  meta: meta,
-                  child: Text(
-                    shortMonth,
-                    textAlign: TextAlign.center,
-                    style: axisLabelStyle,
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-        barTouchData: BarTouchData(
-          enabled: true,
-          touchTooltipData: BarTouchTooltipData(
-            getTooltipColor: (group) =>
-                Colors.white, // custom tooltip background color
-            tooltipBorderRadius: BorderRadius.circular(8.toAutoScaledWidth),
-            fitInsideVertically: true,
-            fitInsideHorizontally: true,
-            tooltipPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 8,
-            ),
-            getTooltipItem: (group, groupIndex, rod, rodIndex) {
-              final month = widget.labels[groupIndex];
-              final value = widget.data[groupIndex];
-              return BarTooltipItem(
-                '$month, ${DateTime.now().year} : $value',
-                const TextStyle(
-                  color: Color(0xFF282357),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
                 ),
-              );
-            },
-          ),
-        ),
+            ],
+          );
+        },
       ),
     );
   }

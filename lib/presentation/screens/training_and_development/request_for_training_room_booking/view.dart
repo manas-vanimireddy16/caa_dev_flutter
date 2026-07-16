@@ -15,6 +15,7 @@ import 'package:code_setup/presentation/common_widgets/analytics/request_status_
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/scrollable_request_details_tab_bar.dart';
 import 'package:code_setup/presentation/common_widgets/my_requests_tab_page_sync_registry.dart';
 import 'package:code_setup/presentation/common_widgets/request_list_search_styles.dart';
 import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
@@ -43,6 +44,8 @@ import 'package:code_setup/repository/security_access/domain/domain.dart';
 import 'package:code_setup/repository/training_and_development/request_for_training_room_booking/domain/domain.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
 import 'package:code_setup/utils/helper/helper.dart';
+import 'package:code_setup/utils/helper/request_details_tab_index.dart';
+import 'package:code_setup/utils/helper/pending_request_detail_tab_registry.dart';
 import 'package:code_setup/utils/helper/stat_summary_helper.dart';
 import 'package:code_setup/utils/helper/type_checker.dart' hide FileType;
 import 'package:equatable/equatable.dart';

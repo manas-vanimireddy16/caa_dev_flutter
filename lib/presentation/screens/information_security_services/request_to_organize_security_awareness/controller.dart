@@ -451,17 +451,16 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> openRequestDetails(
     int id, {
     bool fromActionItems = false,
+    int initialTabIndex = RequestDetailsTabIndex.requestDetails,
   }) async {
-    updateRequestTab(0);
+    updateRequestTab(initialTabIndex);
 
     await KAppX.router.push(
-      RequestForProjectApprovalDetailsRoute(
+      OrganizeSecurityAwarenessRequestDetailsTabRoute(
         id: id,
         from: fromActionItems ? 'action items' : '',
         service: service,
         subService: subService,
-        serviceId: service.id ?? 0,
-        subServiceId: subService.id ?? 0,
       ),
     );
 

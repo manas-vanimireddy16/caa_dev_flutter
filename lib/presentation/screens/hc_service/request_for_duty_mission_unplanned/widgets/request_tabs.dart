@@ -22,24 +22,17 @@ class RequestTabs extends ConsumerWidget {
     // ✅ Correct provider family usage
     final controller = ref.read(_vsProvider(providerArgs).notifier);
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: List.generate(4, (index) {
-          final labels = [
-            "Request Details",
-            "Request History",
-            "Attachments",
-            "Work Flow",
-          ];
-          return TabItem(
-            text: labels[index],
-            index: index,
-            selectedIndex: selectedTab,
-            onTap: () => controller.updateRequestTab(index),
-          );
-        }),
-      ),
+    final labels = [
+      "Request Details",
+      "Request History",
+      "Attachments",
+      "Work Flow",
+    ];
+
+    return ScrollableRequestDetailsTabBar(
+      labels: labels,
+      selectedIndex: selectedTab,
+      onTap: controller.updateRequestTab,
     );
   }
 }

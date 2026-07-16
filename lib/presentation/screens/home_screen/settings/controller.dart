@@ -106,8 +106,7 @@ class SettingsController extends StateNotifier<SettingsState> {
 
   Future<void> signOut() async {
     await _signOutMsalIfNeeded();
-    await KAuthCred().clearSession();
-    KAppX.router.replace(MicrosoftLoginRoute());
+    await KAuthCred().logoutToLogin();
   }
 
   Future<void> _signOutMsalIfNeeded() async {
@@ -125,22 +124,7 @@ class SettingsController extends StateNotifier<SettingsState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      final storage = KAuthCred();
-
-      // 1️⃣ Clear all stored auth data
-      await storage.clearSession();
-
-      // 2️⃣ Clear in-memory token
-      // accessToken = '';
-
-      // 3️⃣ Reset state
-      // state = _ViewState.init();
-      // KAuthCred().getProfileData().then((profile) {
-      //   profile?.accessToken = ''; // Should be null or empty
-      // });
-
-      // 4️⃣ Navigate to Login
-      KAppX.router.replace(MicrosoftLoginRoute());
+      await KAuthCred().logoutToLogin();
 
       debugPrint("✅ JWT Logout Successful");
     } catch (e) {

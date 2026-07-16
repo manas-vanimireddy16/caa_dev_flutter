@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:code_setup/modules/domain/core/storage/persistent_storage/persistent_storage.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/models/user_model.dart';
+import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 import 'package:code_setup/utils/helper/role_context_sync.dart';
@@ -95,6 +96,7 @@ class KAuthCred {
   static const storageKey = 'fm';
   static const roleKey = 'role';
   static const userInfokey = 'userInfo';
+  static bool _isLoggingOut = false;
 
   final KPersistentStorage _persistentStorage;
 
@@ -262,11 +264,7 @@ class KAuthCred {
 
   /// Reloads persisted session into Riverpod after hot restart.
   Future<void> hydrateProvidersFromStorage() async {
-    await Future.wait([
-      getProfileData(),
-      getUserInfoData(),
-      getSelectedRole(),
-    ]);
+    await Future.wait([getProfileData(), getUserInfoData(), getSelectedRole()]);
   }
 
   /// Resolves the logged-in user id from memory or persistent storage.
@@ -297,9 +295,9 @@ class KAuthCred {
       if (parts.length < 2) return null;
 
       final normalized = base64Url.normalize(parts[1]);
-      final payload = jsonDecode(
-        utf8.decode(base64Url.decode(normalized)),
-      ) as Map<String, dynamic>;
+      final payload =
+          jsonDecode(utf8.decode(base64Url.decode(normalized)))
+              as Map<String, dynamic>;
 
       final id = payload['userId'];
       if (id is int) return id;
@@ -312,5 +310,24 @@ class KAuthCred {
     await deleteProfileData();
     await deleteUserInfoData();
     await deleteRoleData();
+  }
+
+  Future<void> logoutToLogin({bool clearNetworkCache = true}) async {
+    if (_isLoggingOut) return;
+    _isLoggingOut = true;
+
+    try {
+      if (clearNetworkCache) {
+        KAppX.network.bootDown();
+      }
+      await clearSession();
+      await KAppX.router.replace(const MicrosoftLoginRoute());
+    } catch (e, st) {
+      log('Logout to login failed: $e', stackTrace: st);
+    } finally {
+      Future<void>.delayed(const Duration(seconds: 1), () {
+        _isLoggingOut = false;
+      });
+    }
   }
 }

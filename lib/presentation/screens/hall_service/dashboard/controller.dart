@@ -417,12 +417,14 @@ class _VSController extends StateNotifier<_ViewState> {
     Service? service,
     SubService? subService,
     bool fromActionItems = false,
+    int initialTabIndex = RequestDetailsTabIndex.requestDetails,
   }) => navigateToDashboardRequestDetails(
     subServiceCode: name,
     requestId: requestId,
     service: service,
     subService: subService,
     fromActionItems: fromActionItems,
+    initialTabIndex: initialTabIndex,
   );
 
   Future<void> refreshAfterReturn() async {

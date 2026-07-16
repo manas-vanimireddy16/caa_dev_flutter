@@ -141,9 +141,14 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchAnnouncements() async {
     state = state.copyWith(isLoading: true);
-    final announcements = await dashboardInstance.getModels();
-    final anns = announcements;
-    state = state.copyWith(isLoading: false, announcements: anns);
+    try {
+      final announcements = await dashboardInstance.getModels();
+      state = state.copyWith(isLoading: false, announcements: announcements);
+    } catch (e) {
+      // Safety net — getModels should not throw, but keep dashboard usable.
+      debugPrint('fetchAnnouncements failed: $e');
+      state = state.copyWith(isLoading: false, announcements: const []);
+    }
   }
 
   Future<void> selectOrStoreRole(UserRoleResponse userRoles) async {

@@ -13,10 +13,13 @@ import 'package:code_setup/presentation/common_widgets/request_details/common_re
 import 'package:code_setup/presentation/common_widgets/request_details/common_workflow.dart';
 import 'package:code_setup/presentation/common_widgets/file_upload.dart';
 import 'package:code_setup/presentation/common_widgets/request_card.dart';
+import 'package:code_setup/utils/helper/pending_request_detail_tab_registry.dart';
+import 'package:code_setup/utils/helper/request_details_tab_index.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_status_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/request_trend_breakdown.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/stat_summary_data.dart';
 import 'package:code_setup/presentation/common_widgets/tab_item.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/scrollable_request_details_tab_bar.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
@@ -409,15 +412,14 @@ class _RequestforDutyMissionUnplannedScreenState
                                         '',
                                   },
                                   onTap: () async {
-                                    KAppX.router.push(
-                                      RequestforDutyMissionDetailsRoute(
-                                        from: 'employee',
-                                        id: item.id ?? 0,
-                                        serviceId: widget.service.id ?? 0,
-                                        subServiceId: widget.subService.id ?? 0,
-                                        service: widget.service,
-                                        subService: widget.subService,
-                                      ),
+                                    await controller.openRequestDetails(
+                                      item.id ?? 0,
+                                    );
+                                  },
+                                  onWorkflowTap: () async {
+                                    await controller.openRequestDetails(
+                                      item.id ?? 0,
+                                      initialTabIndex: RequestDetailsTabIndex.workflow,
                                     );
                                   },
                                 );
@@ -466,16 +468,16 @@ class _RequestforDutyMissionUnplannedScreenState
                                         '',
                                   },
                                   onTap: () async {
-                                    KAppX.router.push(
-                                      RequestforDutyMissionDetailsRoute(
-                                        from: 'action items',
-                                        id: item.id ?? 0,
-                                        service: widget.service,
-                                        subService: widget.subService,
-
-                                        serviceId: widget.service.id ?? 0,
-                                        subServiceId: widget.subService.id ?? 0,
-                                      ),
+                                    await controller.openRequestDetails(
+                                      item.id ?? 0,
+                                      fromActionItems: true,
+                                    );
+                                  },
+                                  onWorkflowTap: () async {
+                                    await controller.openRequestDetails(
+                                      item.id ?? 0,
+                                      fromActionItems: true,
+                                      initialTabIndex: RequestDetailsTabIndex.workflow,
                                     );
                                   },
                                 );

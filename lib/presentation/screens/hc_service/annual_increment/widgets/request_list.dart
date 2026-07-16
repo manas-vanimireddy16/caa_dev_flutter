@@ -87,6 +87,13 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
               fromActionItems: widget.isActionItemsTab,
             );
           },
+          onWorkflowTap: () async {
+            await controller.openRequestDetails(
+              item.base.id ?? 0,
+              fromActionItems: widget.isActionItemsTab,
+              initialTabIndex: RequestDetailsTabIndex.workflow,
+            );
+          },
         );
       },
     );

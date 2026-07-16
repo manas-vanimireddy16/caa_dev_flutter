@@ -95,7 +95,10 @@ class LegalServicesRequestWorkflowTimeline extends StatelessWidget {
     if (userId == null) return null;
 
     for (final a in details.approvalDetails ?? []) {
-      if (a.approverUserId == userId || a.approvedBy == userId) {
+      if (a.approverUserId == userId ||
+          a.approvedBy == userId ||
+          a.approverUser?.id == userId ||
+          a.approvedByUser?.id == userId) {
         return a;
       }
     }
@@ -103,18 +106,25 @@ class LegalServicesRequestWorkflowTimeline extends StatelessWidget {
   }
 
   // ------------------ NORMALIZE MODELS ------------------
-  UserModel? _mapApproverUserToUser(ApproverUserModel? u) {
+  UserModel? _mapApproverUserToUser(
+    ApproverUserModel? u, {
+    DepartmentModel? department,
+    SectionModel? section,
+  }) {
     if (u == null) return null;
 
     return UserModel(
       id: u.id,
       employeeId: u.employeeId,
       employeeName: u.employeeName,
+      employeeArabicName: u.employeeArabicName,
       email: u.email,
       mobile: u.mobile,
-      // departmentId: u.department,
-      // sectionId: u.section,
-      // positionId: u.position,
+      department:
+          department ??
+          (u.department != null ? DepartmentModel(id: u.department) : null),
+      section:
+          section ?? (u.section != null ? SectionModel(id: u.section) : null),
     );
   }
 
@@ -127,28 +137,24 @@ class LegalServicesRequestWorkflowTimeline extends StatelessWidget {
   ({UserModel? user, RoleModel? role}) _resolveActorAndRole(
     WorkflowDetailModel wf,
   ) {
-    // 1️⃣ NEW workflow fields
-    if (wf.approvedByUser != null || wf.approverRole != null) {
-      return (user: wf.approvedByUser, role: wf.approverRole);
-    }
+    RoleModel? role = wf.approverRole ?? wf.role;
+    UserModel? user = wf.approvedByUser ?? wf.user;
 
-    // 2️⃣ OLD workflow fields
-    if (wf.user != null || wf.role != null) {
-      return (user: wf.user, role: wf.role);
-    }
-
-    // 3️⃣ FINAL FALLBACK → approvalDetails
-    final approval = _findApprovalByUserId(wf.approverUserId);
-    if (approval != null) {
-      return (
-        user: _mapApproverUserToUser(
-          approval.approvedByUser ?? approval.approverUser,
-        ),
-        role: _mapApproverRoleToRole(approval.approverRole),
+    if (user == null) {
+      final approval = _findApprovalByUserId(
+        wf.approverUserId ?? wf.approvedBy ?? wf.updatedBy ?? wf.userId,
       );
+      if (approval != null) {
+        user = _mapApproverUserToUser(
+          approval.approvedByUser ?? approval.approverUser,
+          department: approval.department,
+          section: approval.section,
+        );
+        role ??= _mapApproverRoleToRole(approval.approverRole);
+      }
     }
 
-    return (user: null, role: null);
+    return (user: user, role: role);
   }
 
   // ------------------ SORT WORKFLOW ------------------

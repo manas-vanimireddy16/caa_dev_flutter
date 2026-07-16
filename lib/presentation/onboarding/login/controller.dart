@@ -121,8 +121,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> signOut() async {
     await _signOutMsalIfNeeded();
-    await KAuthCred().clearSession();
-    // KAppX.router.replace(MicrosoftLoginRoute());
+    accessToken = '';
+    if (mounted) {
+      state = _ViewState.init();
+    }
+    await KAuthCred().logoutToLogin();
   }
 
   Future<void> _signOutMsalIfNeeded() async {
@@ -314,27 +317,23 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> logoutJwt() async {
     try {
-      state = state.copyWith(isLoading: true);
+      if (mounted) {
+        state = state.copyWith(isLoading: true);
+      }
 
-      final storage = KAuthCred();
-
-      // 1️⃣ Clear all stored auth data
-      await storage.clearSession();
-
-      // 2️⃣ Clear in-memory token
       accessToken = '';
+      if (mounted) {
+        state = _ViewState.init();
+      }
 
-      // 3️⃣ Reset state
-      state = _ViewState.init();
-
-      // 4️⃣ Navigate to Login
-      KAppX.router.replace(MicrosoftLoginRoute());
-
+      await KAuthCred().logoutToLogin();
       debugPrint("✅ JWT Logout Successful");
     } catch (e) {
       debugPrint("❌ Logout Error: $e");
     } finally {
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 

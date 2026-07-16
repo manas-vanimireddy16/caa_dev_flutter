@@ -17,7 +17,12 @@ class LegalConsultationServicesHomeScreen extends ConsumerWidget {
             .watch(serviceTreeProvider)
             .serviceByCodeOrSubServiceCodes(
               serviceCode: 'CAAS05',
-              // subServiceCodes: const ['CAA027', 'CAA029'],
+              subServiceCodes: const [
+                'CAA027',
+                'CAA028',
+                'CAA029',
+                'CAA030',
+              ],
             ) ??
         Service(name: 'Legal Services');
 

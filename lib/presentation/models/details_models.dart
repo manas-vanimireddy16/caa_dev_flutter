@@ -9,6 +9,14 @@ import 'package:code_setup/presentation/screens/hc_service/models/human_resource
 import 'package:code_setup/presentation/screens/information_security_services/models/cyber_security_risk_management_model.dart';
 import 'package:code_setup/utils/mappers/approval_detail_mapper.dart';
 
+int? parseFlexibleInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value.trim());
+  return int.tryParse('$value');
+}
+
 DepartmentModel? parseDepartmentFromJson(Map<String, dynamic> json) {
   if (json['user_department'] is Map) {
     return DepartmentModel.fromJson(json['user_department']);
@@ -18,6 +26,12 @@ DepartmentModel? parseDepartmentFromJson(Map<String, dynamic> json) {
   }
   if (json['department'] is int && (json['department'] as int) > 0) {
     return DepartmentModel(id: json['department']);
+  }
+  if (json['department'] is String) {
+    final id = int.tryParse((json['department'] as String).trim());
+    if (id != null && id > 0) {
+      return DepartmentModel(id: id);
+    }
   }
 
   final name = json['department_name']?.toString().trim();
@@ -36,6 +50,12 @@ DepartmentModel? parseDepartmentFromJson(Map<String, dynamic> json) {
   if (json['department_id'] is int && (json['department_id'] as int) > 0) {
     return DepartmentModel(id: json['department_id']);
   }
+  if (json['department_id'] is String) {
+    final id = int.tryParse((json['department_id'] as String).trim());
+    if (id != null && id > 0) {
+      return DepartmentModel(id: id);
+    }
+  }
 
   return null;
 }
@@ -49,6 +69,12 @@ SectionModel? parseSectionFromJson(Map<String, dynamic> json) {
   }
   if (json['section'] is int && (json['section'] as int) > 0) {
     return SectionModel(id: json['section']);
+  }
+  if (json['section'] is String) {
+    final id = int.tryParse((json['section'] as String).trim());
+    if (id != null && id > 0) {
+      return SectionModel(id: id);
+    }
   }
 
   final name = json['section_name']?.toString().trim();
@@ -66,6 +92,12 @@ SectionModel? parseSectionFromJson(Map<String, dynamic> json) {
 
   if (json['section_id'] is int && (json['section_id'] as int) > 0) {
     return SectionModel(id: json['section_id']);
+  }
+  if (json['section_id'] is String) {
+    final id = int.tryParse((json['section_id'] as String).trim());
+    if (id != null && id > 0) {
+      return SectionModel(id: id);
+    }
   }
 
   return null;
@@ -777,14 +809,18 @@ class RequestDetailData {
     //           (x) => ApprovalDetailModel.fromJson(x),
     //         ),
     //       ),
-    approvalDetails: ((json['approval_details'] ?? json['approvals']) as List?)
-        ?.map((e) {
-          final normalizedJson = ApprovalDetailMapper.normalize(
-            e as Map<String, dynamic>,
-          );
-          return ApprovalDetailModel.fromJson(normalizedJson);
-        })
-        .toList(),
+    approvalDetails:
+        ((json['approval_details'] ??
+                    json['approvals'] ??
+                    json['approver_details'])
+                as List?)
+            ?.map((e) {
+              final normalizedJson = ApprovalDetailMapper.normalize(
+                e as Map<String, dynamic>,
+              );
+              return ApprovalDetailModel.fromJson(normalizedJson);
+            })
+            .toList(),
 
     chatMessages: json["chat_messages"] == null
         ? []
@@ -2284,7 +2320,8 @@ class RequestModel {
       ifSponsored: json['if_sponsored'],
       allowancePercentage:
           json['allowance_percentage']?.toString() ??
-          json['increment_percentage']?.toString(),
+          json['increment_percentage']?.toString() ??
+          json['assignment_allowance']?.toString(),
       airTicketRequired: json['air_ticket_required'],
       vehicleRequired: json['vehicle_required'],
       remarks: json['remarks'],
@@ -3358,15 +3395,15 @@ class WorkflowDetailModel {
       contentAr: json['content_ar'] as String?,
       statusAr: json['status_ar'] as String?,
       // -------- OLD IDs --------
-      userId: json['user_id'] as int?,
-      roleId: json['role_id'] as int?,
-      departmentId: json['department_id'] as int?,
-      sectionId: json['section_id'] as int?,
+      userId: parseFlexibleInt(json['user_id']),
+      roleId: parseFlexibleInt(json['role_id']),
+      departmentId: parseFlexibleInt(json['department_id']),
+      sectionId: parseFlexibleInt(json['section_id']),
 
       // -------- Workflow specific --------
-      approverRoleId: json['approver_role_id'] as int?,
-      approverUserId: json['approver_user_id'] as int?,
-      approvedBy: json['approved_by'] as int?,
+      approverRoleId: parseFlexibleInt(json['approver_role_id']),
+      approverUserId: parseFlexibleInt(json['approver_user_id']),
+      approvedBy: parseFlexibleInt(json['approved_by']),
 
       // -------- NEW --------
       // workflowData: json['workflow_data'],
@@ -3567,14 +3604,14 @@ class ApprovalDetailModel {
       requestId: json['request_id'],
       serviceId: json['service_id'],
       subServiceId: json['sub_service_id'],
-      approverUserId: json['approver_user_id'],
-      approverRoleId: json['approver_role_id'],
+      approverUserId: parseFlexibleInt(json['approver_user_id']),
+      approverRoleId: parseFlexibleInt(json['approver_role_id']),
       comment: json['comment'],
       approvalStatus: json['approval_status'],
-      level: json['level'],
-      departmentId: json['department_id'],
-      sectionId: json['section_id'],
-      approvedBy: json['approved_by'],
+      level: parseFlexibleInt(json['level']),
+      departmentId: parseFlexibleInt(json['department_id']),
+      sectionId: parseFlexibleInt(json['section_id']),
+      approvedBy: parseFlexibleInt(json['approved_by']),
       isManager: json['is_manager'],
       createdBy: json['created_by'],
       createdAt: json['created_at'],

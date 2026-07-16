@@ -467,9 +467,11 @@ class _VSController extends StateNotifier<_ViewState> {
     return {
       'Request Id': item.base.id?.toString() ?? '-',
       'status': item.base.status ?? '-',
+      'Request Type': item.base.subService?.subServiceName ?? '-',
       'Request By': item.base.createdByUser?.employeeName ?? '-',
       'Cycle Period': item.cyclePeriod ?? '-',
       'Request Submission Date': item.base.createdAt.toString(),
+      // 'Goal Title': item.goalTitle ?? '-',
 
       /// ================= EMPLOYEE INFO =================
 
@@ -552,8 +554,9 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> openRequestDetails(
     int id, {
     bool fromActionItems = false,
+    int initialTabIndex = RequestDetailsTabIndex.requestDetails,
   }) async {
-    updateRequestTab(0);
+    updateRequestTab(initialTabIndex);
 
     await KAppX.router.push(
       PerformanceManagementDetailsRoute(
@@ -949,7 +952,6 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-
   Future<List<PerformanceManagementModel>> loadMyRequestsPage(
     int pageKey, {
     String searchText = '',
@@ -1168,13 +1170,45 @@ class _VSController extends StateNotifier<_ViewState> {
     required int approverId,
     required int requestId,
   }) {
-    // final showDecionNumber = lastApprover(
-    //   state.requestDetails.approvalDetails ?? [],
-    // );
+    final activeLevel = getActiveApprovalLevel(
+      state.requestDetails.approvalDetails ?? [],
+    );
+    final isFirstApproval =
+        type == ApprovalDialogType.approve && (activeLevel?.level == 2);
+
+    if (isFirstApproval) {
+      final goals = state.requestDetails.goals ?? const <GoalModel>[];
+      final subtitle =
+          subService.subServiceName?.trim().isNotEmpty == true
+          ? subService.subServiceName!.trim()
+          : 'Performance Management';
+
+      KAppX.extendedRouter.dialog.showKDialog(
+        barrierDismissible: false,
+        builder: (_) => PerformanceManagementFirstApprovalDialog(
+          goals: goals,
+          subtitle: subtitle,
+          onApprove: (goalPayload) async {
+            await updateGoalsRating(
+              requestId: requestId,
+              goals: goalPayload,
+            );
+            await onApprove(
+              approverId,
+              requestId,
+              '',
+              ApprovalStatus.approved.apiValue,
+              null,
+            );
+          },
+        ),
+      );
+      return;
+    }
+
     KAppX.extendedRouter.dialog.showKDialog(
       builder: (_) => ApprovalCommentDialog(
         type: type,
-        // showDecisionNumber: showDecionNumber,
         onSubmit: (comment, decisionNo) async {
           final status = type == ApprovalDialogType.approve
               ? ApprovalStatus.approved
@@ -1183,12 +1217,22 @@ class _VSController extends StateNotifier<_ViewState> {
           await onApprove(
             approverId,
             requestId,
-            comment.trim(), // always safe
+            comment.trim(),
             status.apiValue,
-            decisionNo, // ✅ backend-safe string
+            decisionNo,
           );
         },
       ),
+    );
+  }
+
+  Future<void> updateGoalsRating({
+    required int requestId,
+    required List<Map<String, dynamic>> goals,
+  }) async {
+    await performanceManagementInstance.updateGoalsRating(
+      requestId: requestId,
+      goals: goals,
     );
   }
 
@@ -1310,8 +1354,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await performanceManagementInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      fetchActionItems();
-      fetchRequests();
+      refreshRequestLists();
       fetchApprovalKpi();
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
@@ -1356,10 +1399,9 @@ class _VSController extends StateNotifier<_ViewState> {
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
-      await fetchActionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1382,8 +1424,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // await performanceManagementInstance.onSendInProgress(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
-      await fetchActionItems();
-      await fetchRequests();
+      refreshRequestLists();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1834,8 +1875,7 @@ class _VSController extends StateNotifier<_ViewState> {
         fetchApprovalStatusBreakdown('weekly');
         fetchApprovalTrendBreakDown(DateTime.now().year.toString());
         fetchApprovalKpi();
-        fetchRequests();
-        fetchActionItems();
+        refreshRequestLists();
       }
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');

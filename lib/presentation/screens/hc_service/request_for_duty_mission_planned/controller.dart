@@ -1584,6 +1584,25 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(requestDetailTab: index);
   }
 
+  Future<void> openRequestDetails(
+    int id, {
+    bool fromActionItems = false,
+    int initialTabIndex = RequestDetailsTabIndex.requestDetails,
+  }) async {
+    updateRequestTab(initialTabIndex);
+
+    await KAppX.router.push(
+      RequestforDutyMissionPlannedDetailsRoute(
+        id: id,
+        from: fromActionItems ? 'action items' : 'employee',
+        service: service,
+        subService: subService,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      ),
+    );
+  }
+
   void updateTabIndex(int index) {
     state = state.copyWith(tabIndex: index);
   }

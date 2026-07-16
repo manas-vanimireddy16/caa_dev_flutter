@@ -345,7 +345,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
   Widget _needMoreInfoTriggerButton(DashboardL10n l10n) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+      // borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
         side: BorderSide(

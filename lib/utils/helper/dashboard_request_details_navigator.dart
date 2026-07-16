@@ -5,7 +5,38 @@ import 'package:code_setup/utils/helper/pending_request_detail_tab_registry.dart
 import 'package:code_setup/utils/helper/request_details_tab_index.dart';
 import 'package:flutter/foundation.dart';
 
-const _itServiceSubServiceCodes = {'CAA003', 'CAA004', 'CAA005', 'CAA059'};
+/// Sub-services that support opening Request Details on a specific tab
+/// (e.g. Workflow) via [PendingRequestDetailTabRegistry].
+const _workflowTabEnabledSubServiceCodes = {
+  // IT Services
+  'CAA003', 'CAA004', 'CAA005', 'CAA059',
+  // Logistics
+  'CAA031', 'CAA032', 'CAA033',
+  // Training & Development
+  'CAA015', 'CAA016', 'CAA018', 'CAA019', 'CAA049',
+  // Legal Services
+  'CAA027', 'CAA028', 'CAA029', 'CAA030',
+  // Tender Services
+  'CAA011', 'CAA012', 'CAA013', 'CAA014',
+  // Maintenance
+  'CAA035', 'CAA045',
+  // Aviation Security
+  'CAA010',
+  // Hall Services
+  'CAA050',
+  // Hotel Reservation
+  'CAA046',
+  // Information Security
+  'CAA006',
+  // Security Access
+  'CAA021', 'CAA023', 'CAA025',
+  // Task Management
+  'CAA034', 'CAA065',
+  // HC Services
+  'CAA036', 'CAA037', 'CAA038', 'CAA039', 'CAA040',
+  'CAA060', 'CAA061', 'CAA062', 'CAA063', 'CAA064',
+  'CAA066', 'CAA067', 'CAA068', 'CAA069',
+};
 
 Future<void> navigateToDashboardRequestDetails({
   required String subServiceCode,
@@ -22,7 +53,7 @@ Future<void> navigateToDashboardRequestDetails({
   final subServiceId = resolvedSubService.id ?? 0;
   final normalizedCode = subServiceCode.trim();
 
-  if (_itServiceSubServiceCodes.contains(normalizedCode) &&
+  if (_workflowTabEnabledSubServiceCodes.contains(normalizedCode) &&
       initialTabIndex != RequestDetailsTabIndex.requestDetails) {
     PendingRequestDetailTabRegistry.set(
       serviceId: serviceId,

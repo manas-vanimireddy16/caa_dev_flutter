@@ -285,6 +285,15 @@ class _DashboardRequestList extends StatelessWidget {
             subService: item.subService,
             fromActionItems: fromActionItems,
           ),
+          onWorkflowTap: () => navigateToDashboardRequestDetails(
+            subServiceCode: item.subServiceCode ?? item.subService?.code ?? '',
+            requestId:
+                int.tryParse(item.requestId ?? '') ?? base?.id ?? item.id ?? 0,
+            service: item.service,
+            subService: item.subService,
+            fromActionItems: fromActionItems,
+            initialTabIndex: RequestDetailsTabIndex.workflow,
+          ),
           data: {
             'request_id': item.requestId ?? base?.id ?? item.id ?? '-',
             'request_name':

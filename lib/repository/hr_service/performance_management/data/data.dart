@@ -695,6 +695,33 @@ class PerformanceManagementRepositoryImple
   }
 
   @override
+  Future<void> updateGoalsRating({
+    required int requestId,
+    required List<Map<String, dynamic>> goals,
+  }) async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw ApiException('Client is null - cannot process $_serviceLabel request');
+    }
+
+    final url = ApiEndPoint.performanceManagementGoalsRating(requestId);
+
+    try {
+      final response = await client.put(url, data: {'goals': goals});
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw ApiException(
+          response.data?['message'] ??
+              'Failed to update $_serviceLabel goal ratings',
+        );
+      }
+    } on DioException catch (error) {
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    }
+  }
+
+  @override
   Future<List<ChatMessageModel>> getchatById(int id) async {
     final client = await KAppX.network.secureClient();
 

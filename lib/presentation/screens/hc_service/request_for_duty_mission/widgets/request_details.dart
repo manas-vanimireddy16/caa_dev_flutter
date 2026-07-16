@@ -34,9 +34,15 @@ class _RequestforDutyMissionDetailsScreenState
       subService: widget.subService,
     );
     Future.microtask(() {
-      ref
-          .read(_vsProvider(_providerArgs).notifier)
-          .fetchRequestDetailsById(widget.id);
+      final controller = ref.read(_vsProvider(_providerArgs).notifier);
+      final pendingTab = PendingRequestDetailTabRegistry.consumeIfPresent(
+        serviceId: widget.serviceId,
+        subServiceId: widget.subServiceId,
+      );
+      if (pendingTab != null) {
+        controller.updateRequestTab(pendingTab);
+      }
+      controller.fetchRequestDetailsById(widget.id);
     });
   }
 
@@ -47,7 +53,9 @@ class _RequestforDutyMissionDetailsScreenState
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
+      appBar: KAppBar(
+        title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle),
+      ),
       body: Consumer(
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));

@@ -388,7 +388,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'User Name': item.base?.createdByUser?.employeeName ?? '-',
       'Request Type': item.base?.subService?.subServiceName ?? '-',
       'Assigned Employee Name': item.assignedEmployeeName ?? '',
-      'Date': item.createdBy.toString(),
+      'Date': formatDate(item.createdAt.toString()),
       // 'Vehicle Number': item.vehicleNumber ?? 'N/A',
       // 'Maintenance Type': item.typeOfMaintenanceRequired ?? 'N/A',
       // 'Request Submission Date': formatDate(
@@ -424,8 +424,9 @@ class _VSController extends StateNotifier<_ViewState> {
       'To Entity': request?.toEntity ?? '',
       'Start Date': request?.startDate ?? '',
       'End Date': request.endDate ?? '',
-      'Reason for Request': request?.reasonForRequest.toString() ?? '',
+      'Reason for Request': request?.reasonForRequest?.join(', ') ?? '',
       'Salary Payment Source': request.salaryPaymentSource ?? '',
+
       // 'Vehicle Number': request?.vehicleNumber ?? 'N/A',
       // 'Maintenance Type': request?.typeOfMaintenanceRequired ?? 'N/A',
       // 'Preferred Maintenance Date': formatDate(
@@ -492,8 +493,9 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> openRequestDetails(
     int id, {
     bool fromActionItems = false,
+    int initialTabIndex = RequestDetailsTabIndex.requestDetails,
   }) async {
-    updateRequestTab(0);
+    updateRequestTab(initialTabIndex);
 
     await KAppX.router.push(
       TemporaryAssignmentDecisionDetailsRoute(

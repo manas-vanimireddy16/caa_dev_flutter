@@ -95,6 +95,20 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               fromActionItems: widget.isActionItemsTab,
             );
           },
+          onWorkflowTap: () {
+            controller.navigateToRoute(
+              name: item.subServiceCode ?? subService.code ?? '',
+              requestId:
+                  int.tryParse(item.requestId ?? '') ??
+                  base?.id ??
+                  item.id ??
+                  0,
+              service: service,
+              subService: subService,
+              fromActionItems: widget.isActionItemsTab,
+              initialTabIndex: RequestDetailsTabIndex.workflow,
+            );
+          },
         );
       },
     );

@@ -30,18 +30,10 @@ class RequestDetailsTabs extends ConsumerWidget {
       l10n.workFlowTabLabel,
     ];
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: List.generate(4, (index) {
-          return TabItem(
-            text: labels[index],
-            index: index,
-            selectedIndex: state.requestDetailTab,
-            onTap: () => controller.updateRequestTab(index),
-          );
-        }),
-      ),
+    return ScrollableRequestDetailsTabBar(
+      labels: labels,
+      selectedIndex: state.requestDetailTab,
+      onTap: controller.updateRequestTab,
     );
   }
 }

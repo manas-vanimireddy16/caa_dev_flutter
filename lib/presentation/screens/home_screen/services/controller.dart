@@ -383,6 +383,9 @@ class _VSController extends StateNotifier<_ViewState> {
         case 'HSS':
           KAppX.router.push(const HallServicesHomeRoute());
           return;
+        case 'CAAS05':
+          KAppX.router.push(const LegalConsultationServicesHomeRoute());
+          return;
         case 'CAAS08':
           KAppX.router.push(const HRServiceHomeRoute());
           return;
@@ -413,16 +416,46 @@ class _VSController extends StateNotifier<_ViewState> {
         KAppX.router.push(const LogisticsHomeRoute());
         return;
       }
-      if (codes.any({'CAA027', 'CAA028', 'CAA029'}.contains)) {
+      if (codes.any({'CAA027', 'CAA028', 'CAA029', 'CAA030'}.contains)) {
         KAppX.router.push(const LegalConsultationServicesHomeRoute());
+        return;
+      }
+      if (codes.any({'CAA011', 'CAA012', 'CAA013', 'CAA014'}.contains)) {
+        KAppX.router.push(const TenderServiceHomeRoute());
+        return;
+      }
+      if (codes.any({'CAA035', 'CAA045'}.contains)) {
+        KAppX.router.push(const MaintenanceHomeRoute());
         return;
       }
       if (codes.contains('CAA010')) {
         KAppX.router.push(const AviationSecurityFacilitationHomeRoute());
         return;
       }
+      if (codes.contains('CAA050')) {
+        KAppX.router.push(const HallServicesHomeRoute());
+        return;
+      }
+      if (codes.contains('CAA046')) {
+        KAppX.router.push(const HotelReservationHomeRoute());
+        return;
+      }
+      if (codes.contains('CAA006')) {
+        KAppX.router.push(const SecuritySelfHomeRoute());
+        return;
+      }
       if (codes.any({'CAA021', 'CAA023', 'CAA025'}.contains)) {
         KAppX.router.push(const RequestForAccessHomeRoute());
+        return;
+      }
+      if (codes.any(
+        {'CAA015', 'CAA016', 'CAA018', 'CAA019', 'CAA049'}.contains,
+      )) {
+        KAppX.router.push(const TrainingandDevelopmentHomeRoute());
+        return;
+      }
+      if (codes.any({'CAA034', 'CAA065'}.contains)) {
+        KAppX.router.push(const TrainingsandDevelopmentHomeRoute());
         return;
       }
 
@@ -442,6 +475,9 @@ class _VSController extends StateNotifier<_ViewState> {
         break;
       case 'HSS':
         KAppX.router.push(const HallServicesHomeRoute());
+        break;
+      case 'CAAS05':
+        KAppX.router.push(const LegalConsultationServicesHomeRoute());
         break;
       case 'CAAS08':
         KAppX.router.push(const HRServiceHomeRoute());
@@ -628,6 +664,14 @@ class _VSController extends StateNotifier<_ViewState> {
           ),
         );
         break;
+      case 'CAA028':
+        KAppX.router.push(
+          RaiseLegalComplaintRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       case 'CAA030':
         KAppX.router.push(
           RequestForLegalContractReviewRoute(
@@ -637,6 +681,15 @@ class _VSController extends StateNotifier<_ViewState> {
         );
         break;
 
+      /// Tender Services
+      case 'CAA011':
+        KAppX.router.push(
+          RequestTenderServiceRoute(
+            service: service ?? Service(),
+            subService: subService ?? SubService(),
+          ),
+        );
+        break;
       case 'CAA012':
         KAppX.router.push(
           RequestAServiceToRespondToEnquiriesRoute(
