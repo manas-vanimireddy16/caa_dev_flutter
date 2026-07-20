@@ -518,7 +518,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> refreshAfterReturn() async {
     await Future.wait([
       fetchKpi(),
-      fetchStatusBreakdown('monthly'),
+      fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
     refreshActiveRequestList();
@@ -569,7 +569,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.requestDetailsLabel('Description'),
       type: FieldType.text,
       placeholder: l10n.writeHereMinMax,
-      required: true,
+      // required: true,
     ),
     DynamicField(
       name: 'attachments',
@@ -587,13 +587,13 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       placeholder: l10n.enter,
     ),
-    DynamicField(
-      name: 'decision_date',
-      label: l10n.decisionDate,
-      type: FieldType.date,
-      required: true,
-      placeholder: l10n.select,
-    ),
+    // DynamicField(
+    //   name: 'decision_date',
+    //   label: l10n.decisionDate,
+    //   type: FieldType.date,
+    //   required: true,
+    //   placeholder: l10n.select,
+    // ),
     DynamicField(
       name: 'decision_subject',
       label: l10n.decisionSubject,
@@ -607,31 +607,31 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.text,
       placeholder: l10n.enter,
     ),
-    DynamicField(
-      name: 'time',
-      label: l10n.times,
-      type: FieldType.time,
-      placeholder: l10n.select,
-    ),
-    DynamicField(
-      name: 'location',
-      label: l10n.location,
-      type: FieldType.text,
-      placeholder: l10n.enter,
-    ),
-    DynamicField(
-      name: 'requests',
-      label: l10n.requests,
-      type: FieldType.text,
-      placeholder: l10n.enter,
-    ),
-    DynamicField(
-      name: 'events',
-      label: l10n.events,
-      type: FieldType.text,
-      required: true,
-      placeholder: l10n.enter,
-    ),
+    // DynamicField(
+    //   name: 'time',
+    //   label: l10n.times,
+    //   type: FieldType.time,
+    //   placeholder: l10n.select,
+    // ),
+    // DynamicField(
+    //   name: 'location',
+    //   label: l10n.location,
+    //   type: FieldType.text,
+    //   placeholder: l10n.enter,
+    // ),
+    // DynamicField(
+    //   name: 'requests',
+    //   label: l10n.requests,
+    //   type: FieldType.text,
+    //   placeholder: l10n.enter,
+    // ),
+    // DynamicField(
+    //   name: 'events',
+    //   label: l10n.events,
+    //   type: FieldType.text,
+    //   required: true,
+    //   placeholder: l10n.enter,
+    // ),
   ];
 
   List<DynamicField> buildAppealStepThreeFields(DashboardL10n l10n) => [
@@ -714,7 +714,7 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'grievance_details',
       label: l10n.grievanceDetails,
       type: FieldType.text,
-      required: true,
+      // required: true,
       placeholder: l10n.writeHereMinMax,
     ),
     DynamicField(
@@ -1590,12 +1590,12 @@ class _VSController extends StateNotifier<_ViewState> {
     if (index == 0) {
       refreshMyRequestsList();
       fetchKpi();
-      fetchStatusBreakdown('monthly');
+      fetchStatusBreakdown('weekly');
       fetchTrendBreakDown(DateTime.now().year.toString());
     } else {
       refreshActionItemsList();
       fetchApprovalKpi();
-      fetchApprovalStatusBreakdown('monthly');
+      fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     }
   }

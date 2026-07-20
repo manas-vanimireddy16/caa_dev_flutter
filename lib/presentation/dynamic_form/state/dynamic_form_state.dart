@@ -172,6 +172,13 @@ class DynamicForm extends ConsumerStatefulWidget {
   final String title;
   final bool Function(Map<String, dynamic> values)? enableSubmitWhen;
 
+  /// Prefill form values (e.g. edit mode). Takes precedence over field
+  /// [DynamicField.initialValue].
+  final Map<String, dynamic>? apiValues;
+
+  /// Overrides the default Submit button label.
+  final String? submitButtonLabel;
+
   /// When non-null, the **Next** button is only enabled if this returns true
   /// for the current step (e.g. custom widgets storing state outside [values]).
   final bool Function(
@@ -188,6 +195,8 @@ class DynamicForm extends ConsumerStatefulWidget {
     required this.onSubmit,
     required this.title,
     this.enableSubmitWhen,
+    this.apiValues,
+    this.submitButtonLabel,
     this.canProceedFromStep,
   });
 
@@ -206,7 +215,9 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      ref.read(dynamicFormProvider.notifier).initialize(widget.steps);
+      ref
+          .read(dynamicFormProvider.notifier)
+          .initialize(widget.steps, apiValues: widget.apiValues);
     });
   }
 
@@ -318,6 +329,7 @@ class _DynamicFormState extends ConsumerState<DynamicForm>
                         l10n: l10n,
                         visibleFields: visibleFields,
                         isSubmitting: _isSubmitting,
+                        submitButtonLabel: widget.submitButtonLabel,
                         onSubmit: () async {
                           if (_isSubmitting) return;
                           if (!notifier.validateStep(visibleFields)) return;
@@ -370,6 +382,7 @@ class _FormSubmitButton extends ConsumerWidget {
   final List<DynamicField> visibleFields;
   final VoidCallback onSubmit;
   final bool isSubmitting;
+  final String? submitButtonLabel;
   final bool Function(Map<String, dynamic> values)? enableSubmitWhen;
 
   const _FormSubmitButton({
@@ -377,6 +390,7 @@ class _FormSubmitButton extends ConsumerWidget {
     required this.visibleFields,
     required this.onSubmit,
     required this.isSubmitting,
+    this.submitButtonLabel,
     this.enableSubmitWhen,
   });
 
@@ -427,7 +441,7 @@ class _FormSubmitButton extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Flexible(
                     child: Text(
-                      l10n.dynamicFormSubmit,
+                      submitButtonLabel ?? l10n.dynamicFormSubmit,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,

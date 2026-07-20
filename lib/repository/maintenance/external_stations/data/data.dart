@@ -52,6 +52,40 @@ class ExternalMaintenanceRepositoryImpl
   }
 
   @override
+  Future<Map<String, dynamic>> externalMaintenanceUpdateRequest(
+    int requestId,
+    Map<String, dynamic> payload,
+  ) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.externalMaintenanceUpdateRequest(requestId);
+
+    try {
+      if (client == null) {
+        throw ApiException('Client is null — cannot update request');
+      }
+
+      final response = await client.put(url, data: payload);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ShowFlutterToast().showFlutterToastSuccess(
+          response.data['message'] ?? 'Request updated successfully',
+        );
+        return response.data as Map<String, dynamic>;
+      } else {
+        ShowFlutterToast().showFlutterToastFailure(
+          response.data['message'] ?? 'Failed to update request',
+        );
+        return response.data as Map<String, dynamic>;
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data['message'] ?? e.message;
+      throw ApiException(message);
+    } catch (e) {
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,
   ) async {

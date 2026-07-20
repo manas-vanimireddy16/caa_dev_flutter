@@ -194,6 +194,10 @@ class _MaintenanceofExternalServiceDetailsScreenState
                       //   'Rejected',
                       // );
                     },
+                    onUpdate: () async {
+                      if (requestId == null || requestId == 0) return;
+                      await controller.openUpdateRequestForm(requestId);
+                    },
                   ),
                 ] else if (selectedTab == 2) ...[
                   EmployeeInformationCard(

@@ -5423,6 +5423,8 @@ class MaintenanceExternalServiceNewRequestRoute
     required int subServiceId,
     required _i101.Service service,
     required _i101.SubService subService,
+    bool isEditMode = false,
+    int? requestId,
     List<_i99.PageRouteInfo>? children,
   }) : super(
          MaintenanceExternalServiceNewRequestRoute.name,
@@ -5432,6 +5434,8 @@ class MaintenanceExternalServiceNewRequestRoute
            subServiceId: subServiceId,
            service: service,
            subService: subService,
+           isEditMode: isEditMode,
+           requestId: requestId,
          ),
          initialChildren: children,
        );
@@ -5448,6 +5452,8 @@ class MaintenanceExternalServiceNewRequestRoute
         subServiceId: args.subServiceId,
         service: args.service,
         subService: args.subService,
+        isEditMode: args.isEditMode,
+        requestId: args.requestId,
       );
     },
   );
@@ -5460,6 +5466,8 @@ class MaintenanceExternalServiceNewRequestRouteArgs {
     required this.subServiceId,
     required this.service,
     required this.subService,
+    this.isEditMode = false,
+    this.requestId,
   });
 
   final _i100.Key? key;
@@ -5472,9 +5480,13 @@ class MaintenanceExternalServiceNewRequestRouteArgs {
 
   final _i101.SubService subService;
 
+  final bool isEditMode;
+
+  final int? requestId;
+
   @override
   String toString() {
-    return 'MaintenanceExternalServiceNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+    return 'MaintenanceExternalServiceNewRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, isEditMode: $isEditMode, requestId: $requestId}';
   }
 
   @override
@@ -5485,7 +5497,9 @@ class MaintenanceExternalServiceNewRequestRouteArgs {
         serviceId == other.serviceId &&
         subServiceId == other.subServiceId &&
         service == other.service &&
-        subService == other.subService;
+        subService == other.subService &&
+        isEditMode == other.isEditMode &&
+        requestId == other.requestId;
   }
 
   @override
@@ -5494,7 +5508,9 @@ class MaintenanceExternalServiceNewRequestRouteArgs {
       serviceId.hashCode ^
       subServiceId.hashCode ^
       service.hashCode ^
-      subService.hashCode;
+      subService.hashCode ^
+      isEditMode.hashCode ^
+      requestId.hashCode;
 }
 
 /// generated route for

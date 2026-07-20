@@ -943,40 +943,57 @@ class _AddCommentBoxState extends State<AddCommentBox> {
               () async {
                 await widget.onUpdate?.call();
               },
-              icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+              icon: Icon(
+                Icons.edit_outlined,
+                color: Colors.white,
+                size: 14.toAutoScaledWidth,
+              ),
               disabled: widget.updateButtonDisabled,
             ),
           ],
         );
 
       case ActionButtonsType.approveRejectUpdate:
-        return Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          alignment: WrapAlignment.end,
+        return Row(
           children: [
-            _actionButton(
-              l10n.commentButtonApprove,
-              const Color(0xFF0D652D),
-              () async {
-                await widget.onApprove?.call();
-              },
+            Expanded(
+              child: _actionButton(
+                l10n.commentButtonApprove,
+                _CommentsRoutingStyles.approveGreen,
+                () async {
+                  await widget.onApprove?.call();
+                },
+                icon: _whiteActionIcon(
+                  'assets/icons/check_circle_24dp_white.svg',
+                ),
+              ),
             ),
-            _actionButton(
-              l10n.commentButtonReject,
-              const Color(0xFFC02211),
-              () async {
-                await widget.onReject?.call();
-              },
+            SizedBox(width: 8.toAutoScaledWidth),
+            Expanded(
+              child: _actionButton(
+                l10n.commentButtonReject,
+                _CommentsRoutingStyles.rejectRed,
+                () async {
+                  await widget.onReject?.call();
+                },
+                icon: _whiteActionIcon('assets/icons/close_24dp_white.svg'),
+              ),
             ),
-            _actionButton(
-              l10n.commentButtonUpdate,
-              AppColors.primaryBlue75,
-              () async {
-                await widget.onUpdate?.call();
-              },
-              icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-              disabled: widget.updateButtonDisabled,
+            SizedBox(width: 8.toAutoScaledWidth),
+            Expanded(
+              child: _actionButton(
+                l10n.commentButtonUpdate,
+                AppColors.primaryBlue75,
+                () async {
+                  await widget.onUpdate?.call();
+                },
+                icon: Icon(
+                  Icons.edit_outlined,
+                  color: Colors.white,
+                  size: 14.toAutoScaledWidth,
+                ),
+                disabled: widget.updateButtonDisabled,
+              ),
             ),
           ],
         );

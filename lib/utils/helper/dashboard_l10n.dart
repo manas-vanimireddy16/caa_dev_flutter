@@ -65,11 +65,9 @@ class DashboardL10n {
   String get coverageInformationSection =>
       _t('Coverage Information', 'معلومات التغطية');
 
-  String get coverageDetailsSection =>
-      _t('Coverage Details', 'تفاصيل التغطية');
+  String get coverageDetailsSection => _t('Coverage Details', 'تفاصيل التغطية');
 
-  String get nameOfAttendeesLabel =>
-      _t('Name of Attendees', 'أسماء الحاضرين');
+  String get nameOfAttendeesLabel => _t('Name of Attendees', 'أسماء الحاضرين');
 
   String get addAttendeeName => _t('Add Name', 'إضافة الاسم');
 
@@ -121,8 +119,7 @@ class DashboardL10n {
   String get workflowActionTakenBy =>
       _t('Action Taken By', 'الإجراء المؤدي بواسطة');
 
-  String get workflowDepartmentName =>
-      _t('Department Name', 'اسم الدائرة');
+  String get workflowDepartmentName => _t('Department Name', 'اسم الدائرة');
 
   String get workflowSectionName => _t('Section Name', 'اسم القسم');
 
@@ -379,6 +376,9 @@ class DashboardL10n {
       _t('Update Actual Return', 'تحديث الإرجاع الفعلي');
 
   String get commentButtonUpdate => _t('Update', 'تحديث');
+
+  String get updateExternalServiceRequestTitle =>
+      _t('Update External Service Request', 'تحديث طلب الخدمة الخارجية');
 
   String get transportSelectReturnDate =>
       _t('Please select return date', 'يرجى اختيار تاريخ الإرجاع');
@@ -1000,25 +1000,19 @@ class DashboardL10n {
     'يجب أن يكون الوصف 5 أحرف على الأقل',
   );
 
-  String get mustBeAtLeast3Characters => _t(
-    'Must be at least 3 characters',
-    'يجب ألا يقل عن 3 أحرف',
-  );
+  String get mustBeAtLeast3Characters =>
+      _t('Must be at least 3 characters', 'يجب ألا يقل عن 3 أحرف');
 
   String get mustBeAtLeast10CharactersLong => _t(
     'Description must be at least 10 characters long',
     'يجب أن يكون الوصف 10 أحرف على الأقل',
   );
 
-  String get cannotExceed250Characters => _t(
-    'Cannot exceed 250 characters',
-    'لا يجوز أن يتجاوز 250 حرفًا',
-  );
+  String get cannotExceed250Characters =>
+      _t('Cannot exceed 250 characters', 'لا يجوز أن يتجاوز 250 حرفًا');
 
-  String get cannotExceed255Characters => _t(
-    'Cannot exceed 255 characters',
-    'لا يجوز أن يتجاوز 255 حرفًا',
-  );
+  String get cannotExceed255Characters =>
+      _t('Cannot exceed 255 characters', 'لا يجوز أن يتجاوز 255 حرفًا');
 
   String get logisticsDescription3250 => _t(
     'Write here (min 3, max 250 characters)',
@@ -1030,10 +1024,8 @@ class DashboardL10n {
     'أضف تعليقاتك (اختياري، 5–250 حرفًا إن وُجد نص)',
   );
 
-  String get otherVehicleRequiredForLabel => _t(
-    'Other Vehicle Required For',
-    'الغرض الآخر للمركبة',
-  );
+  String get otherVehicleRequiredForLabel =>
+      _t('Other Vehicle Required For', 'الغرض الآخر للمركبة');
 
   String get otherVehicleRequiredForMinLength => _t(
     'Other Vehicle Required For must be at least 5 characters',
@@ -2576,7 +2568,7 @@ class DashboardL10n {
   String dynamicFormStepOf(int current, int total) =>
       _t('Step $current of $total', 'الخطوة $current من $total');
 
-  String get titleOfComplaint => _t('Title of the Complaint', 'عنوان الشكوى');
+  String get titleOfComplaint => _t('Title of the Appeal', 'عنوان التظلم');
 
   String get requestClassification =>
       _t('Request Classification', 'تصنيف الطلب');

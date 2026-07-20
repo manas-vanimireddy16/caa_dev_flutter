@@ -13,6 +13,10 @@ abstract class ExternalMaintenanceRepository {
   Future<Map<String, dynamic>> externalMaintenanceCreateRequest(
     Map<String, dynamic> payload,
   );
+  Future<Map<String, dynamic>> externalMaintenanceUpdateRequest(
+    int requestId,
+    Map<String, dynamic> payload,
+  );
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,
   );

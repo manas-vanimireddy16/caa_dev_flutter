@@ -491,7 +491,147 @@ class _VSController extends StateNotifier<_ViewState> {
     );
   }
 
+  Future<void> openUpdateRequestForm(int requestId) async {
+    final result = await KAppX.router.push<bool>(
+      MaintenanceExternalServiceNewRequestRoute(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+        service: service,
+        subService: subService,
+        isEditMode: true,
+        requestId: requestId,
+      ),
+    );
+
+    if (result == true) {
+      // Leave details and return to the Request Maintenance list.
+      KAppX.router.pop();
+    }
+  }
+
   final externalMaintenanceInstance = ExternalMaintenanceRepository();
+
+  static const _knownStationCategories = {
+    'Workshop',
+    'Training',
+    'Duty Mission',
+    'Assignment',
+  };
+
+  static const _knownIssueTypes = {
+    'Equipment',
+    'Facility',
+    'Infrastructure',
+  };
+
+  String _normalizeDateForForm(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return '';
+    final trimmed = raw.trim();
+    try {
+      final dt = DateTime.parse(trimmed);
+      final y = dt.year.toString().padLeft(4, '0');
+      final m = dt.month.toString().padLeft(2, '0');
+      final d = dt.day.toString().padLeft(2, '0');
+      return '$y-$m-$d';
+    } catch (_) {
+      if (trimmed.length >= 10) return trimmed.substring(0, 10);
+      return trimmed;
+    }
+  }
+
+  Map<String, dynamic> buildExternalMaintenanceFormValues(
+    RequestModel? request, {
+    List<AttachmentModel> attachments = const [],
+  }) {
+    final stationCategory = request?.stationCategory?.trim() ?? '';
+    final typeOfIssue = request?.typeOfIssue?.trim() ?? '';
+
+    String categoryValue = '';
+    String categoryOther = '';
+    if (_knownStationCategories.contains(stationCategory)) {
+      categoryValue = stationCategory;
+    } else if (stationCategory.isNotEmpty) {
+      categoryValue = 'Other';
+      categoryOther = stationCategory;
+    }
+
+    String issueValue = '';
+    String issueOther = '';
+    if (_knownIssueTypes.contains(typeOfIssue)) {
+      issueValue = typeOfIssue;
+    } else if (typeOfIssue.isNotEmpty) {
+      issueValue = 'Other';
+      issueOther = typeOfIssue;
+    }
+
+    final attachmentItems = attachments
+        .where((a) => (a.fileUrl ?? '').isNotEmpty || (a.fileName ?? '').isNotEmpty)
+        .map(
+          (a) => FileUploadItem(
+            documentId: a.fileUrl,
+            filename: a.fileName,
+            originalName: a.fileName,
+            size: int.tryParse(a.fileSize ?? ''),
+            downloadUrl: a.fileUrl,
+          ),
+        )
+        .toList();
+
+    return {
+      'external_station_name_or_location':
+          request?.externalStationNameOrLocation ?? '',
+      'station_category': categoryValue,
+      'station_category_other': categoryOther,
+      'type_of_issue': issueValue,
+      'type_of_issue_other': issueOther,
+      'urgency_level': request?.urgencyLevel ?? '',
+      'date_of_issue_occurred': _normalizeDateForForm(
+        request?.dateOfIssueOccurred,
+      ),
+      'contact_person_name': request?.contactPersonName ?? '',
+      'contact_person_number': request?.contactPersonNumber ?? '',
+      'contact_person_designation': request?.contactPersonDesignation ?? '',
+      'detailed_description': request?.detailedDescription ?? '',
+      'attachments': attachmentItems,
+    };
+  }
+
+  /// Loads request details for edit without toggling the shared details loader.
+  Future<Map<String, dynamic>?> loadFormValuesForEdit(int requestId) async {
+    try {
+      if (state.requestDetails.request?.id == requestId) {
+        if (state.attachmentsById.isEmpty) {
+          await fetchAttachmentsById(requestId);
+        }
+        return buildExternalMaintenanceFormValues(
+          state.requestDetails.request,
+          attachments: state.attachmentsById,
+        );
+      }
+
+      final details = await externalMaintenanceInstance.getRequestsById(
+        id: requestId,
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+      );
+
+      if (details == null) return null;
+
+      state = state.copyWith(requestDetails: details);
+      await fetchAttachmentsById(requestId);
+
+      return buildExternalMaintenanceFormValues(
+        details.request,
+        attachments: state.attachmentsById,
+      );
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+      rethrow;
+    } catch (e) {
+      debugPrint(e.toString());
+      rethrow;
+    }
+  }
 
   List<DynamicField> buildExternalMaintenanceFields(DashboardL10n l10n) => [
     DynamicField(
@@ -1295,8 +1435,8 @@ class _VSController extends StateNotifier<_ViewState> {
       debugPrint('this user can only approve');
       return ActionButtonsType.assignReject;
     } else if (level != null) {
-      debugPrint('this user can approve and reject');
-      return ActionButtonsType.approveReject;
+      debugPrint('this user can approve, reject and update');
+      return ActionButtonsType.approveRejectUpdate;
     }
 
     return ActionButtonsType.none;
@@ -1536,11 +1676,13 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
-  Future<void> submitProjectApprovalRequest(
+  Future<bool> submitProjectApprovalRequest(
     int serviceId,
     int subServiceId,
-    Map<String, dynamic> values,
-  ) async {
+    Map<String, dynamic> values, {
+    bool isEditMode = false,
+    int? requestId,
+  }) async {
     try {
       state = state.copyWith(isLoading: true);
 
@@ -1551,16 +1693,29 @@ class _VSController extends StateNotifier<_ViewState> {
         // state.hrTasks,
       );
 
+      if (isEditMode && requestId != null) {
+        payload['request_id'] = requestId;
+      }
+
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await externalMaintenanceInstance
-          .externalMaintenanceCreateRequest(payload);
+      final Map<String, dynamic> response;
+      if (isEditMode && requestId != null) {
+        response = await externalMaintenanceInstance
+            .externalMaintenanceUpdateRequest(requestId, payload);
+      } else {
+        response = await externalMaintenanceInstance
+            .externalMaintenanceCreateRequest(payload);
+      }
 
       if (response['status'] == 'success') {
         _refreshDashboard();
+        return true;
       }
+      return false;
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
+      return false;
     } finally {
       state = state.copyWith(isLoading: false);
     }
