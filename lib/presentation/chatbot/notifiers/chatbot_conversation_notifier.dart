@@ -6,8 +6,8 @@ import 'package:code_setup/presentation/chatbot/models/chatbot_question_response
 import 'package:code_setup/presentation/chatbot/state/chatbot_conversation_state.dart';
 import 'package:code_setup/repository/chatbot/domain/domain.dart';
 import 'package:code_setup/repository/common_dashboard_all_services/domain/domain.dart';
-import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 import 'package:code_setup/utils/helper/exception_handling.dart';
+import 'package:code_setup/utils/helper/mobile_service_scope.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final chatbotConversationProvider =
@@ -16,7 +16,7 @@ final chatbotConversationProvider =
       ChatbotConversationState
     >(ChatbotConversationNotifier.new);
 
-/// Handles chat messages and outbound requests to the chatbot service.
+/// Handles chat messages, navigation, and chatbot API calls.
 class ChatbotConversationNotifier
     extends AutoDisposeNotifier<ChatbotConversationState> {
   final ChatbotRepository _chatbotRepository = ChatbotRepository();
@@ -26,6 +26,10 @@ class ChatbotConversationNotifier
   int _messageCounter = 0;
   String? _cachedRoleName;
   bool _didStart = false;
+  bool _servicesLoaded = false;
+
+  /// Cached questions keyed by sub-service code.
+  final Map<String, List<ChatbotQuestion>> _questionsCache = {};
 
   @override
   ChatbotConversationState build() {
@@ -34,10 +38,6 @@ class ChatbotConversationNotifier
         _createMessage(
           role: ChatMessageRole.assistant,
           text: "Hello! I'm your AI assistant. How can I help you today?",
-        ),
-        _createMessage(
-          role: ChatMessageRole.assistant,
-          text: 'Please select a service to continue.',
         ),
       ],
     );
@@ -50,22 +50,21 @@ class ChatbotConversationNotifier
     return initialState;
   }
 
-  Future<void> loadServices() async {
+  /// Loads role-services once and shows the services option panel.
+  Future<void> loadServices({bool forceRefresh = false}) async {
     if (state.isLoading) return;
+
+    if (_servicesLoaded && state.services.isNotEmpty && !forceRefresh) {
+      state = state.copyWith(
+        optionsPanel: ChatbotOptionsPanel.services,
+        clearErrorMessage: true,
+      );
+      return;
+    }
 
     state = state.copyWith(
       isLoading: true,
-      isInputEnabled: false,
-      showFeedbackButtons: false,
-      step: ChatbotConversationStep.services,
-      subServices: const [],
-      questions: const [],
-      clearSelectedService: true,
-      clearSelectedServiceCode: true,
-      clearSelectedSubService: true,
-      clearSelectedSubServiceCode: true,
-      clearSelectedQuestion: true,
-      clearCurrentAnswer: true,
+      optionsPanel: ChatbotOptionsPanel.services,
       clearErrorMessage: true,
     );
 
@@ -77,11 +76,12 @@ class ChatbotConversationNotifier
 
       final response = await _dashboardRepository.getUserRoles(userId);
       final services = _uniqueMobileServices(response.data?.roleDetails ?? []);
+      _servicesLoaded = true;
 
       state = state.copyWith(
         services: services,
         isLoading: false,
-        step: ChatbotConversationStep.services,
+        optionsPanel: ChatbotOptionsPanel.services,
         messages: services.isEmpty
             ? [
                 ...state.messages,
@@ -93,8 +93,65 @@ class ChatbotConversationNotifier
             : state.messages,
       );
     } catch (_) {
-      _showError(keepInputEnabled: false);
+      _showError();
     }
+  }
+
+  /// Re-show cached services without clearing conversation history.
+  void showServices() {
+    if (state.isLoading) return;
+
+    if (state.services.isEmpty) {
+      Future.microtask(() => loadServices(forceRefresh: true));
+      return;
+    }
+
+    state = state.copyWith(
+      optionsPanel: ChatbotOptionsPanel.services,
+      clearErrorMessage: true,
+    );
+  }
+
+  /// Re-show sub-services for the current service (no services API call).
+  void showSubServices() {
+    if (state.isLoading) return;
+    final service = state.selectedService;
+    if (service == null) return;
+
+    final subServices = MobileServiceScope.filterSubServices(
+      service.subservices ?? const [],
+    );
+
+    state = state.copyWith(
+      subServices: subServices,
+      optionsPanel: ChatbotOptionsPanel.subServices,
+      clearErrorMessage: true,
+    );
+  }
+
+  /// Re-show predefined questions for the current sub-service (uses cache).
+  Future<void> showQuestions() async {
+    if (state.isLoading) return;
+    final subService = state.selectedSubService;
+    final code = state.selectedSubServiceCode?.trim();
+    if (subService == null || code == null || code.isEmpty) return;
+
+    final cached = _questionsCache[code];
+    if (cached != null) {
+      state = state.copyWith(
+        questions: cached,
+        optionsPanel: cached.isEmpty
+            ? ChatbotOptionsPanel.none
+            : ChatbotOptionsPanel.questions,
+        clearErrorMessage: true,
+      );
+      if (cached.isEmpty) {
+        _appendNoQuestionsMessage();
+      }
+      return;
+    }
+
+    await _loadQuestionsForSubService(code, announce: false);
   }
 
   Future<void> selectService(Service service) async {
@@ -116,19 +173,14 @@ class ChatbotConversationNotifier
       ],
       selectedService: service,
       selectedServiceCode: (service.code ?? '').trim(),
-      selectedSubService: null,
       clearSelectedSubService: true,
-      selectedSubServiceCode: null,
       clearSelectedSubServiceCode: true,
-      selectedQuestion: null,
       clearSelectedQuestion: true,
-      currentAnswer: null,
       clearCurrentAnswer: true,
       subServices: subServices,
       questions: const [],
-      step: ChatbotConversationStep.subServices,
+      optionsPanel: ChatbotOptionsPanel.subServices,
       isInputEnabled: false,
-      showFeedbackButtons: false,
       clearErrorMessage: true,
     );
   }
@@ -138,7 +190,7 @@ class ChatbotConversationNotifier
 
     final subServiceCode = (subService.code ?? '').trim();
     if (subServiceCode.isEmpty) {
-      _showError(keepInputEnabled: false);
+      _showError();
       return;
     }
 
@@ -152,58 +204,18 @@ class ChatbotConversationNotifier
       ],
       selectedSubService: subService,
       selectedSubServiceCode: subServiceCode,
-      selectedQuestion: null,
       clearSelectedQuestion: true,
-      currentAnswer: null,
       clearCurrentAnswer: true,
-      isLoading: true,
-      isInputEnabled: false,
-      showFeedbackButtons: false,
       clearErrorMessage: true,
     );
 
-    try {
-      final userId = _requireUserId();
-      final role = await _resolveRoleName(userId);
-      final response = await _chatbotRepository.getQuestions(
-        subServiceCode: subServiceCode,
-        userId: userId,
-        role: role,
-      );
-
-      if (response.questionCount == 0 || response.questions.isEmpty) {
-        state = state.copyWith(
-          messages: [
-            ...state.messages,
-            _createMessage(
-              role: ChatMessageRole.assistant,
-              text: 'Unable to load questions. Please try again.',
-            ),
-          ],
-          questions: const [],
-          step: ChatbotConversationStep.subServices,
-          isLoading: false,
-          isInputEnabled: false,
-          showFeedbackButtons: false,
-        );
-        return;
-      }
-
-      state = state.copyWith(
-        messages: [
-          ...state.messages,
-          _createMessage(
-            role: ChatMessageRole.assistant,
-            text: 'Please answer the following questions.',
-          ),
-        ],
-        questions: response.questions,
-        step: ChatbotConversationStep.questions,
-        isLoading: false,
-      );
-    } catch (_) {
-      _showError(keepInputEnabled: false);
+    final cached = _questionsCache[subServiceCode];
+    if (cached != null) {
+      _applyQuestions(cached, announce: true);
+      return;
     }
+
+    await _loadQuestionsForSubService(subServiceCode, announce: true);
   }
 
   Future<void> selectQuestion(ChatbotQuestion question) async {
@@ -217,7 +229,7 @@ class ChatbotConversationNotifier
       selectedQuestion: question,
       isLoading: true,
       isInputEnabled: false,
-      showFeedbackButtons: false,
+      optionsPanel: ChatbotOptionsPanel.none,
       clearCurrentAnswer: true,
       clearErrorMessage: true,
     );
@@ -230,61 +242,11 @@ class ChatbotConversationNotifier
         userId: userId,
         role: role,
       );
+      // Keep input hidden until the user taps Not Helpful.
       _appendAnswer(response, keepInputEnabled: false);
     } catch (_) {
       _showError(keepInputEnabled: false);
     }
-  }
-
-  void markHelpful() {
-    if (state.isLoading) return;
-
-    final selectedService = state.selectedService;
-    final subServices = selectedService == null
-        ? const <SubService>[]
-        : MobileServiceScope.filterSubServices(
-            selectedService.subservices ?? const [],
-          );
-
-    state = state.copyWith(
-      messages: [
-        ...state.messages,
-        _createMessage(
-          role: ChatMessageRole.assistant,
-          text: 'Please select another service or sub-service.',
-        ),
-      ],
-      step: ChatbotConversationStep.services,
-      subServices: subServices,
-      questions: const [],
-      isInputEnabled: false,
-      showFeedbackButtons: false,
-      clearSelectedSubService: true,
-      clearSelectedSubServiceCode: true,
-      clearSelectedQuestion: true,
-      clearCurrentAnswer: true,
-    );
-
-    if (state.services.isEmpty) {
-      Future.microtask(loadServices);
-    }
-  }
-
-  void markNotHelpful() {
-    if (state.isLoading) return;
-
-    state = state.copyWith(
-      messages: [
-        ...state.messages,
-        _createMessage(
-          role: ChatMessageRole.assistant,
-          text: 'Please describe your question.',
-        ),
-      ],
-      step: ChatbotConversationStep.manualInput,
-      isInputEnabled: true,
-      showFeedbackButtons: false,
-    );
   }
 
   Future<void> sendMessage(String rawText) async {
@@ -303,7 +265,7 @@ class ChatbotConversationNotifier
         _createMessage(role: ChatMessageRole.user, text: text),
       ],
       isLoading: true,
-      showFeedbackButtons: false,
+      optionsPanel: ChatbotOptionsPanel.none,
       clearErrorMessage: true,
     );
 
@@ -316,10 +278,130 @@ class ChatbotConversationNotifier
         userId: userId,
         role: role,
       );
+      // After a custom question, keep the text field enabled.
       _appendAnswer(response, keepInputEnabled: true);
     } catch (_) {
       _showError(keepInputEnabled: true);
     }
+  }
+
+  /// Records helpful / not-helpful feedback for a specific answer message.
+  ///
+  /// Not Helpful enables the text field so the user can ask a custom question.
+  void submitFeedback(String messageId, {required bool helpful}) {
+    final index = state.messages.indexWhere((m) => m.id == messageId);
+    if (index < 0) return;
+
+    final message = state.messages[index];
+    if (!message.isAnswer || message.hasFeedback) return;
+
+    final updated = List<ChatMessage>.from(state.messages);
+    updated[index] = message.copyWith(
+      feedback: helpful
+          ? ChatbotFeedbackChoice.helpful
+          : ChatbotFeedbackChoice.notHelpful,
+    );
+
+    if (helpful) {
+      state = state.copyWith(messages: updated);
+      return;
+    }
+
+    state = state.copyWith(
+      messages: [
+        ...updated,
+        _createMessage(
+          role: ChatMessageRole.assistant,
+          text: 'Please describe your question.',
+        ),
+      ],
+      isInputEnabled: true,
+      optionsPanel: ChatbotOptionsPanel.none,
+    );
+  }
+
+  Future<void> _loadQuestionsForSubService(
+    String subServiceCode, {
+    required bool announce,
+  }) async {
+    state = state.copyWith(isLoading: true, clearErrorMessage: true);
+
+    try {
+      final userId = _requireUserId();
+      final role = await _resolveRoleName(userId);
+      final response = await _chatbotRepository.getQuestions(
+        subServiceCode: subServiceCode,
+        userId: userId,
+        role: role,
+      );
+
+      final questions = response.questions;
+      _questionsCache[subServiceCode] = questions;
+      _applyQuestions(questions, announce: announce);
+    } catch (_) {
+      _showError(keepInputEnabled: true);
+    }
+  }
+
+  void _applyQuestions(List<ChatbotQuestion> questions, {required bool announce}) {
+    if (questions.isEmpty) {
+      state = state.copyWith(
+        questions: const [],
+        optionsPanel: ChatbotOptionsPanel.none,
+        isLoading: false,
+        isInputEnabled: true,
+      );
+      if (announce) {
+        _appendNoQuestionsMessage();
+      }
+      return;
+    }
+
+    final messages = announce
+        ? [
+            ...state.messages,
+            _createMessage(
+              role: ChatMessageRole.assistant,
+              text: 'Please select a question, or type your own below.',
+            ),
+          ]
+        : state.messages;
+
+    state = state.copyWith(
+      messages: messages,
+      questions: questions,
+      optionsPanel: ChatbotOptionsPanel.questions,
+      isLoading: false,
+      isInputEnabled: true,
+    );
+  }
+
+  void _appendNoQuestionsMessage() {
+    final alreadyShown = state.messages.any(
+      (m) =>
+          m.isAssistant &&
+          m.text.contains('No predefined questions are available'),
+    );
+    if (alreadyShown &&
+        state.messages.isNotEmpty &&
+        state.messages.last.text.contains(
+          'No predefined questions are available',
+        )) {
+      return;
+    }
+
+    state = state.copyWith(
+      messages: [
+        ...state.messages,
+        _createMessage(
+          role: ChatMessageRole.assistant,
+          text:
+              'No predefined questions are available for this sub-service. You can ask your question below.',
+        ),
+      ],
+      optionsPanel: ChatbotOptionsPanel.none,
+      isInputEnabled: true,
+    );
   }
 
   void _appendAnswer(
@@ -334,28 +416,35 @@ class ChatbotConversationNotifier
     state = state.copyWith(
       messages: [
         ...state.messages,
-        _createMessage(role: ChatMessageRole.assistant, text: answer),
+        _createMessage(
+          role: ChatMessageRole.assistant,
+          text: answer,
+          isAnswer: true,
+        ),
       ],
       currentAnswer: response,
       isLoading: false,
       isInputEnabled: keepInputEnabled,
-      showFeedbackButtons: true,
-      questions: const [],
+      optionsPanel: ChatbotOptionsPanel.none,
     );
   }
 
-  void _showError({required bool keepInputEnabled}) {
+  void _showError({bool keepInputEnabled = false}) {
+    final enableInput = keepInputEnabled || state.hasSelectedSubService;
+
     state = state.copyWith(
       messages: [
         ...state.messages,
         _createMessage(
           role: ChatMessageRole.assistant,
           text: 'Unable to process your request. Please try again.',
+          isError: true,
         ),
       ],
       isLoading: false,
-      isInputEnabled: keepInputEnabled,
-      showFeedbackButtons: false,
+      isInputEnabled: enableInput,
+      // Keep the options panel closed so the error + nav actions are visible.
+      optionsPanel: ChatbotOptionsPanel.none,
     );
   }
 
@@ -492,6 +581,8 @@ class ChatbotConversationNotifier
   ChatMessage _createMessage({
     required ChatMessageRole role,
     required String text,
+    bool isAnswer = false,
+    bool isError = false,
   }) {
     _messageCounter += 1;
     return ChatMessage(
@@ -499,6 +590,8 @@ class ChatbotConversationNotifier
       role: role,
       text: text,
       createdAt: DateTime.now(),
+      isAnswer: isAnswer,
+      isError: isError,
     );
   }
 }

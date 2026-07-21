@@ -74,14 +74,47 @@ class _ChatbotConversationViewState
                         ScrollViewKeyboardDismissBehavior.onDrag,
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                     children: [
-                      for (final message in conversation.messages)
+                      for (final message in conversation.messages) ...[
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.only(bottom: 4),
                           child: ChatbotMessageBubble(
                             text: message.text,
                             isUser: message.isUser,
                           ),
                         ),
+                        if (message.isAnswer)
+                          ChatbotMessageActions(
+                            feedback: message.feedback,
+                            showFeedback: true,
+                            showShowServices: true,
+                            showShowSubServices:
+                                conversation.hasSelectedService,
+                            showShowQuestions:
+                                conversation.hasSelectedSubService,
+                            onHelpful: conversation.isLoading
+                                ? null
+                                : () => notifier.submitFeedback(
+                                    message.id,
+                                    helpful: true,
+                                  ),
+                            onNotHelpful: conversation.isLoading
+                                ? null
+                                : () => notifier.submitFeedback(
+                                    message.id,
+                                    helpful: false,
+                                  ),
+                            onShowServices: conversation.isLoading
+                                ? null
+                                : notifier.showServices,
+                            onShowSubServices: conversation.isLoading
+                                ? null
+                                : notifier.showSubServices,
+                            onShowQuestions: conversation.isLoading
+                                ? null
+                                : () => notifier.showQuestions(),
+                          ),
+                        const SizedBox(height: 8),
+                      ],
                       if (conversation.isLoading)
                         const Padding(
                           padding: EdgeInsets.only(top: 8, bottom: 8),
@@ -91,24 +124,20 @@ class _ChatbotConversationViewState
                             isPending: true,
                           ),
                         ),
-                      _ChatbotGuidedOptions(
+                      _ChatbotOptionsPanel(
                         conversation: conversation,
-                        onRetry: notifier.loadServices,
+                        onRetry: () =>
+                            notifier.loadServices(forceRefresh: true),
                         onServiceSelected: notifier.selectService,
                         onSubServiceSelected: notifier.selectSubService,
                         onQuestionSelected: notifier.selectQuestion,
                       ),
-                      if (conversation.showFeedbackButtons)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8, bottom: 12),
-                          child: ChatbotFeedbackButtons(
-                            onHelpful: conversation.isLoading
-                                ? null
-                                : notifier.markHelpful,
-                            onNotHelpful: conversation.isLoading
-                                ? null
-                                : notifier.markNotHelpful,
-                          ),
+                      if (!conversation.isLoading)
+                        _ContextualNavActions(
+                          conversation: conversation,
+                          onShowServices: notifier.showServices,
+                          onShowSubServices: notifier.showSubServices,
+                          onShowQuestions: () => notifier.showQuestions(),
                         ),
                     ],
                   ),
@@ -120,6 +149,84 @@ class _ChatbotConversationViewState
             ),
         ],
       ),
+    );
+  }
+}
+
+/// Navigation chips shown with the current options panel (not answer-specific).
+class _ContextualNavActions extends StatelessWidget {
+  final ChatbotConversationState conversation;
+  final VoidCallback onShowServices;
+  final VoidCallback onShowSubServices;
+  final VoidCallback onShowQuestions;
+
+  const _ContextualNavActions({
+    required this.conversation,
+    required this.onShowServices,
+    required this.onShowSubServices,
+    required this.onShowQuestions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final panel = conversation.optionsPanel;
+
+    // After an answer, nav lives on the answer message itself.
+    if (panel == ChatbotOptionsPanel.none) {
+      final last = conversation.messages.isEmpty
+          ? null
+          : conversation.messages.last;
+      final showForEmptyQuestions =
+          conversation.hasSelectedSubService &&
+          last != null &&
+          last.isAssistant &&
+          !last.isAnswer &&
+          last.text.contains('No predefined questions');
+      final showForCustomPrompt =
+          conversation.isInputEnabled &&
+          last != null &&
+          last.isAssistant &&
+          !last.isAnswer &&
+          last.text.contains('Please describe your question');
+      final showForError =
+          last != null &&
+          last.isError &&
+          conversation.hasSelectedSubService;
+
+      if (!showForEmptyQuestions &&
+          !showForCustomPrompt &&
+          !showForError) {
+        return const SizedBox.shrink();
+      }
+
+      return ChatbotMessageActions(
+        showShowServices: true,
+        showShowSubServices:
+            !showForError && conversation.hasSelectedService,
+        showShowQuestions: showForError && conversation.hasSelectedSubService,
+        onShowServices: onShowServices,
+        onShowSubServices: onShowSubServices,
+        onShowQuestions: onShowQuestions,
+      );
+    }
+
+    if (panel == ChatbotOptionsPanel.services) {
+      return const SizedBox.shrink();
+    }
+
+    if (panel == ChatbotOptionsPanel.subServices) {
+      return ChatbotMessageActions(
+        showShowServices: true,
+        onShowServices: onShowServices,
+      );
+    }
+
+    // Questions panel
+    return ChatbotMessageActions(
+      showShowServices: true,
+      showShowSubServices: conversation.hasSelectedService,
+      onShowServices: onShowServices,
+      onShowSubServices: onShowSubServices,
     );
   }
 }
@@ -173,14 +280,14 @@ class _EmptyChatState extends StatelessWidget {
   }
 }
 
-class _ChatbotGuidedOptions extends StatelessWidget {
+class _ChatbotOptionsPanel extends StatelessWidget {
   final ChatbotConversationState conversation;
   final VoidCallback onRetry;
   final ValueChanged<Service> onServiceSelected;
   final ValueChanged<SubService> onSubServiceSelected;
   final ValueChanged<ChatbotQuestion> onQuestionSelected;
 
-  const _ChatbotGuidedOptions({
+  const _ChatbotOptionsPanel({
     required this.conversation,
     required this.onRetry,
     required this.onServiceSelected,
@@ -190,117 +297,88 @@ class _ChatbotGuidedOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (conversation.isLoading || conversation.showFeedbackButtons) {
+    if (conversation.isLoading ||
+        conversation.optionsPanel == ChatbotOptionsPanel.none) {
       return const SizedBox.shrink();
     }
 
-    final optionGroups = _buildOptionGroups();
-    final hasOptions = optionGroups.any((group) => group.items.isNotEmpty);
-
-    if (!hasOptions && conversation.step == ChatbotConversationStep.services) {
-      return Align(
-        alignment: Alignment.centerLeft,
-        child: _OptionSelectionCard(
-          title: 'Select Service',
-          items: [
-            _OptionItem(
-              title: 'Retry',
-              subtitle: 'Tap to load services again',
-              icon: Icons.refresh_rounded,
-              onTap: onRetry,
-            ),
-          ],
-        ),
-      );
+    final items = _buildItems();
+    if (items.isEmpty) {
+      if (conversation.optionsPanel == ChatbotOptionsPanel.services) {
+        return Padding(
+          padding: const EdgeInsets.only(left: 36, top: 4, bottom: 8),
+          child: ChatbotActionChip(
+            label: 'Retry loading services',
+            icon: Icons.refresh_rounded,
+            onTap: onRetry,
+          ),
+        );
+      }
+      return const SizedBox.shrink();
     }
 
-    if (!hasOptions) return const SizedBox.shrink();
+    final title = switch (conversation.optionsPanel) {
+      ChatbotOptionsPanel.services => 'Select a service',
+      ChatbotOptionsPanel.subServices => 'Select a sub-service',
+      ChatbotOptionsPanel.questions => 'Select a question',
+      ChatbotOptionsPanel.none => '',
+    };
 
     return Padding(
-      padding: const EdgeInsets.only(top: 4, bottom: 12, left: 36),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final group in optionGroups)
-              if (group.items.isNotEmpty) ...[
-                _OptionSelectionCard(title: group.title, items: group.items),
-                const SizedBox(height: 12),
-              ],
-          ],
-        ),
+      padding: const EdgeInsets.only(left: 36, top: 4, bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextStyles.cairo(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: ChatbotTheme.mutedText,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(spacing: 8, runSpacing: 8, children: items),
+        ],
       ),
     );
   }
 
-  List<_OptionGroup> _buildOptionGroups() {
-    return switch (conversation.step) {
-      ChatbotConversationStep.services => [
-        _OptionGroup(
-          title: 'Select Service',
-          items: conversation.services
-              .map(
-                (service) => _OptionItem(
-                  title: _serviceTitle(service),
-                  subtitle: _serviceCode(service),
-                  icon: Icons.folder_outlined,
-                  selected: _isSelectedService(service),
-                  onTap: () => onServiceSelected(service),
-                ),
-              )
-              .toList(),
-        ),
-        if (conversation.subServices.isNotEmpty)
-          _OptionGroup(
-            title: 'Select Sub-Service',
-            items: conversation.subServices
-                .map(
-                  (subService) => _OptionItem(
-                    title: _subServiceTitle(subService),
-                    subtitle: _subServiceCode(subService),
-                    icon: Icons.description_outlined,
-                    selected: _isSelectedSubService(subService),
-                    onTap: () => onSubServiceSelected(subService),
-                  ),
-                )
-                .toList(),
-          ),
-      ],
-      ChatbotConversationStep.subServices => [
-        _OptionGroup(
-          title: 'Select Sub-Service',
-          items: conversation.subServices
-              .map(
-                (subService) => _OptionItem(
-                  title: _subServiceTitle(subService),
-                  subtitle: _subServiceCode(subService),
-                  icon: Icons.description_outlined,
-                  selected: _isSelectedSubService(subService),
-                  onTap: () => onSubServiceSelected(subService),
-                ),
-              )
-              .toList(),
-        ),
-      ],
-      ChatbotConversationStep.questions => [
-        _OptionGroup(
-          title: 'Questions',
-          items: conversation.questions
-              .map(
-                (question) => _OptionItem(
-                  title: question.question,
-                  icon: Icons.help_outline_rounded,
-                  selected:
-                      conversation.selectedQuestion?.questionId ==
-                      question.questionId,
-                  onTap: () => onQuestionSelected(question),
-                ),
-              )
-              .toList(),
-        ),
-      ],
-      ChatbotConversationStep.manualInput => const <_OptionGroup>[],
+  List<Widget> _buildItems() {
+    return switch (conversation.optionsPanel) {
+      ChatbotOptionsPanel.services => conversation.services
+          .map(
+            (service) => ChatbotActionChip(
+              label: _serviceTitle(service),
+              icon: Icons.folder_outlined,
+              selected: _isSelectedService(service),
+              onTap: () => onServiceSelected(service),
+            ),
+          )
+          .toList(),
+      ChatbotOptionsPanel.subServices => conversation.subServices
+          .map(
+            (subService) => ChatbotActionChip(
+              label: _subServiceTitle(subService),
+              icon: Icons.description_outlined,
+              selected: _isSelectedSubService(subService),
+              onTap: () => onSubServiceSelected(subService),
+            ),
+          )
+          .toList(),
+      ChatbotOptionsPanel.questions => conversation.questions
+          .map(
+            (question) => ChatbotActionChip(
+              label: question.question,
+              icon: Icons.help_outline_rounded,
+              selected:
+                  conversation.selectedQuestion?.questionId ==
+                  question.questionId,
+              onTap: () => onQuestionSelected(question),
+            ),
+          )
+          .toList(),
+      ChatbotOptionsPanel.none => const <Widget>[],
     };
   }
 
@@ -325,218 +403,14 @@ class _ChatbotGuidedOptions extends StatelessWidget {
   String _serviceTitle(Service service) {
     final name = service.name?.trim();
     if (name != null && name.isNotEmpty) return name;
-    return _serviceCode(service) ?? 'Service';
-  }
-
-  String? _serviceCode(Service service) {
     final code = service.code?.trim();
-    return code != null && code.isNotEmpty ? code : null;
+    return code != null && code.isNotEmpty ? code : 'Service';
   }
 
   String _subServiceTitle(SubService subService) {
     final name = subService.subServiceName?.trim();
     if (name != null && name.isNotEmpty) return name;
-    return _subServiceCode(subService) ?? 'Sub-service';
-  }
-
-  String? _subServiceCode(SubService subService) {
     final code = subService.code?.trim();
-    return code != null && code.isNotEmpty ? code : null;
-  }
-}
-
-class _OptionGroup {
-  final String title;
-  final List<_OptionItem> items;
-
-  const _OptionGroup({required this.title, required this.items});
-}
-
-class _OptionItem {
-  final String title;
-  final String? subtitle;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback? onTap;
-
-  const _OptionItem({
-    required this.title,
-    required this.icon,
-    required this.onTap,
-    this.subtitle,
-    this.selected = false,
-  });
-}
-
-class _OptionSelectionCard extends StatelessWidget {
-  static const double _height = 304;
-  static const Color _headerColor = Color(0xFF1F2A67);
-
-  final String title;
-  final List<_OptionItem> items;
-
-  const _OptionSelectionCard({required this.title, required this.items});
-
-  @override
-  Widget build(BuildContext context) {
-    final maxWidth = MediaQuery.sizeOf(context).width - 96;
-
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 180),
-      child: SizedBox(
-        key: ValueKey('$title-${items.length}'),
-        height: _height,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: maxWidth.clamp(260.0, 380.0).toDouble(),
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: ChatbotTheme.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    color: _headerColor,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: Text(
-                      title,
-                      style: AppTextStyles.cairo(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ScrollConfiguration(
-                      behavior: const MaterialScrollBehavior().copyWith(
-                        scrollbars: false,
-                      ),
-                      child: ListView.separated(
-                        primary: false,
-                        physics: const ClampingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        itemCount: items.length,
-                        separatorBuilder: (_, __) => const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: ChatbotTheme.border,
-                        ),
-                        itemBuilder: (context, index) {
-                          final item = items[index];
-                          return _OptionTile(item: item);
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _OptionTile extends StatelessWidget {
-  final _OptionItem item;
-
-  const _OptionTile({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    final backgroundColor = item.selected
-        ? ChatbotTheme.primary.withValues(alpha: 0.08)
-        : Colors.white;
-    final iconBackground = item.selected
-        ? ChatbotTheme.primary
-        : ChatbotTheme.primary.withValues(alpha: 0.08);
-    final iconColor = item.selected ? Colors.white : ChatbotTheme.primary;
-
-    return Material(
-      color: backgroundColor,
-      child: InkWell(
-        onTap: item.onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 64),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            child: Row(
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 160),
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: iconBackground,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(item.icon, size: 20, color: iconColor),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.cairo(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: ChatbotTheme.aiBubbleText,
-                          height: 1.25,
-                        ),
-                      ),
-                      if (item.subtitle != null) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          item.subtitle!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.cairo(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: ChatbotTheme.mutedText,
-                            height: 1.2,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  size: 22,
-                  color: item.selected
-                      ? ChatbotTheme.primary
-                      : ChatbotTheme.mutedText,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    return code != null && code.isNotEmpty ? code : 'Sub-service';
   }
 }

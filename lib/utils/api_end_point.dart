@@ -33,6 +33,9 @@ class ApiEndPoint {
 
   static const String departmentsList =
       '/v1/user-service/master/departments/listing';
+
+  static String departmentsByDgDepartment(int departmentId) =>
+      '/v1/user-service/master/departments/by-dg-department/$departmentId';
   static const String countryList = '/v1/user-service/country-master/list';
 
   /// Dashboard

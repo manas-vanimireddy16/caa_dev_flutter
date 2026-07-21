@@ -747,6 +747,9 @@ class DashboardL10n {
   String get enterCompanyName => _t('Enter Company Name', 'أدخل اسم الشركة');
 
   String get companyName => _t('Company Name', 'اسم الشركة');
+  String get companyPhoneNumber =>
+      _t('Company Phone Number', 'رقم هاتف الشركة');
+
   String get attachment => _t('Attachment', 'مرفق');
   String get descriptionPlaceholder =>
       _t('Write your description', 'اكتب وصفك');
@@ -1334,6 +1337,110 @@ class DashboardL10n {
 
   String get followUpDepartmentProjectsMaintenance =>
       _t('Projects & Maintenance', 'المشاريع والصيانة');
+
+  /// Follow-up report — action cards (stepper)
+  String get followUpDetailsStepTitle => _t('Details', 'التفاصيل');
+
+  String get followUpActionsStepTitle => _t('Actions', 'الإجراءات');
+
+  String followUpActionCardTitle(int index) =>
+      _t('Action $index', 'الإجراء $index');
+
+  String get followUpAddAction => _t('Add', 'إضافة');
+
+  String get followUpActionsRequired =>
+      _t('Please complete all action details', 'يرجى إكمال جميع تفاصيل الإجراء');
+
+  String get followUpSelect => _t('Select', 'اختر');
+
+  String get followUpUpload => _t('upload', 'رفع');
+
+  String get followUpRelevantDepartmentLabel =>
+      _t('Relevant Department', 'الإدارة ذات الصلة');
+
+  String get followUpSelectRelevantDepartment =>
+      _t('Select Relevant Department', 'اختر الإدارة ذات الصلة');
+
+  /// Action card field labels
+  String get followUpSentByFieldLabel => _t(
+    'Reference Number / Letter Date (Sent By)',
+    'الرقم المرجعي / تاريخ الخطاب (مرسل من)',
+  );
+
+  String get followUpGeneralManagerCommentLabel =>
+      _t("General Manager's Comment", 'تعليق المدير العام');
+
+  String get followUpResponseDateLabel =>
+      _t('Response Date (Target Date)', 'تاريخ الرد (التاريخ المستهدف)');
+
+  String get followUpActionStatusLabel => _t('Action Status', 'حالة الإجراء');
+
+  String get followUpActionTakenLabel => _t('Action Taken', 'الإجراء المتخذ');
+
+  String get followUpEnterActionTaken =>
+      _t('Enter Action Taken', 'أدخل الإجراء المتخذ');
+
+  String get followUpDelayPeriodLabel => _t('Delay Period', 'مدة التأخير');
+
+  String get followUpAttachmentOptionalLabel =>
+      _t('Attachment (Optional)', 'المرفق (اختياري)');
+
+  /// Sent By options
+  String get followUpSentByLetter => _t('Letter', 'خطاب');
+
+  String get followUpSentByEmail => _t('Email', 'بريد إلكتروني');
+
+  String get followUpSentByInstruction => _t('Instruction', 'تعليمات');
+
+  String get followUpSentByMinutes => _t('Minutes (Meeting)', 'محضر (اجتماع)');
+
+  String get followUpSentByOther => _t('Other', 'أخرى');
+
+  /// Subject classification options (extra)
+  String get followUpNormal => _t('Normal', 'عادي');
+
+  String get followUpImportant => _t('Important', 'مهم');
+
+  String get followUpHighlyConfidential =>
+      _t('Highly Confidential', 'سري للغاية');
+
+  String get followUpRestricted => _t('Restricted', 'مقيد');
+
+  String get followUpLimited => _t('Limited', 'محدود');
+
+  /// General Manager's Comment options
+  String get followUpGmReviewAction => _t(
+    'For Review and Necessary Action',
+    'للمراجعة واتخاذ الإجراء اللازم',
+  );
+
+  String get followUpGmInformation => _t('For Information', 'للعلم');
+
+  String get followUpGmFollowUp => _t('Follow-up', 'متابعة');
+
+  String get followUpGmNecessaryAction => _t(
+    'For necessary action as applicable',
+    'لاتخاذ الإجراء اللازم حسب الاقتضاء',
+  );
+
+  /// Response Date (Target Date) options
+  String get followUpResponse10Days => _t('10 days', '10 أيام');
+
+  String get followUpResponse7Days => _t('7 Days', '7 أيام');
+
+  String get followUpResponse2Weeks => _t('2 Weeks', 'أسبوعان');
+
+  String get followUpResponse1WeekTo1Month =>
+      _t('1 Week - 1 Month', 'أسبوع - شهر');
+
+  /// Action Status options
+  String get followUpStatusNoResponse => _t('No Response', 'لا يوجد رد');
+
+  String get followUpStatusCompleted => _t('Completed', 'مكتمل');
+
+  String get followUpStatusInProgress => _t('In Progress', 'قيد التنفيذ');
+
+  String get followUpStatusOverdue => _t('Overdue', 'متأخر');
 
   /// IT Services
   /// Salalah

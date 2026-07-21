@@ -55,8 +55,14 @@ class _FollowUpReportNewRequestScreenState
         ],
         child: DynamicForm(
           title: formTitle,
-          stepTitles: const [''],
-          steps: [controller.buildFollowUpReportFields(l10n)],
+          stepTitles: [
+            l10n.followUpDetailsStepTitle,
+            l10n.followUpActionsStepTitle,
+          ],
+          steps: [
+            controller.buildFollowUpReportFields(l10n),
+            controller.buildFollowUpActionFields(l10n),
+          ],
 
           /// ⭐ VERY IMPORTANT
           // enableSubmitWhen: (values) {

@@ -69,7 +69,7 @@ import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:code_setup/presentation/common_widgets/section_content_divider.dart';
 
-part 'widgets/request_for_legal_contract_review_new_request.dart';
+part 'widgets/legal_complaint_new_request.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
 part 'widgets/request_details_tabs.dart';

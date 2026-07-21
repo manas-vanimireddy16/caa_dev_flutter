@@ -11,6 +11,8 @@ class KNetworkingDefaults {
   KNetworkingDefaults._();
 
   final String baseUrl = 'https://caa.altomouhit.com';
+  //staging https://stg-hama.caa.gov.om https://145.241.138.214
+  //dev https://caa.altomouhit.com
 
   final Map<String, String> defaultHeaders = {
     _KNetworkHeaderKeys.contentType: 'application/json',

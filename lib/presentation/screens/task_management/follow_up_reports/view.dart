@@ -18,10 +18,12 @@ import 'package:code_setup/presentation/common_widgets/tab_item.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/scrollable_request_details_tab_bar.dart';
 import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
+import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
 import 'package:code_setup/presentation/core_widgets/input_field/text_field.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/dynamic_form/models/dynamic_field.dart';
 import 'package:code_setup/presentation/dynamic_form/models/field_type.dart';
+import 'package:code_setup/presentation/dynamic_form/widget/fields/dynamic_field_label_style.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_notifier.dart';
 import 'package:code_setup/presentation/dynamic_form/state/dynamic_form_state.dart';
 import 'package:code_setup/presentation/models/activity_feed_model.dart';
@@ -44,6 +46,7 @@ import 'package:code_setup/presentation/screens/hc_service/models/position_model
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/follow_up_request_data_model.dart';
+import 'package:code_setup/presentation/screens/task_management/models/relevant_department_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/hall_request_data_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/hall_respone_form.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/location_model.dart';
@@ -73,6 +76,7 @@ import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 
 part 'widgets/request_to_book_caa_halls_request.dart';
+part 'widgets/follow_up_action_cards.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
 part 'widgets/request_details_tabs.dart';

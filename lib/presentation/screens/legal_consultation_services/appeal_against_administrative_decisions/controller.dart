@@ -526,7 +526,6 @@ class _VSController extends StateNotifier<_ViewState> {
 
   void openNewRequestForm() {
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
-    fetchUsers();
     // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
       AppealAgainstAdministrativeDecisionsNewRequestRoute(
@@ -634,114 +633,88 @@ class _VSController extends StateNotifier<_ViewState> {
     // ),
   ];
 
-  List<DynamicField> buildAppealStepThreeFields(DashboardL10n l10n) => [
-    DynamicField(
-      name: 'grievant_name',
-      label: l10n.grievantName,
-      type: FieldType.select,
-      optionsBuilder: (ref) {
-        final formL10n = DashboardL10n.of(ref.context);
+  List<DynamicField> buildAppealStepThreeFields(DashboardL10n l10n) {
+    final user = KAppX.globalProvider.read(userInfoProvider)?.data;
+    final isArabic = l10n.isArabic;
 
-        return state.usersList
-            .map(
-              (user) => DropdownOption(
-                label: user.displayName(isArabic: formL10n.isArabic),
-                value: user.id.toString(),
-              ),
-            )
-            .toList();
-      },
-      required: true,
-      onChanged: (value, ref) {
-        final formL10n = DashboardL10n.of(ref.context);
-        final selectedUser = state.usersList.firstWhere(
-          (e) => e.id.toString() == value,
-        );
-
-        ref.read(dynamicFormProvider.notifier).autoPopulate({
-          'grievant_employee_number': selectedUser.employeeId,
-          'grievant_directorate': selectedUser.directorate,
-          'grievant_department': selectedUser.department?.displayName(
-            isArabic: formL10n.isArabic,
+    return [
+      DynamicField(
+        name: 'grievant_employee_number',
+        label: l10n.grievantEmployeeNumber,
+        type: FieldType.text,
+        required: true,
+        disabled: true,
+        initialValue: user?.employeeId ?? '',
+        placeholder: l10n.enter,
+      ),
+      DynamicField(
+        name: 'grievant_directorate',
+        label: l10n.grievantDirectorate,
+        type: FieldType.text,
+        required: true,
+        disabled: true,
+        initialValue: user?.directorate ?? '',
+        placeholder: l10n.enter,
+      ),
+      DynamicField(
+        name: 'grievant_department',
+        label: l10n.grievantDepartment,
+        type: FieldType.text,
+        required: true,
+        disabled: true,
+        initialValue:
+            user?.department?.displayName(isArabic: isArabic) ?? '',
+        placeholder: l10n.enter,
+      ),
+      DynamicField(
+        name: 'grievant_section',
+        label: l10n.grievantSection,
+        type: FieldType.text,
+        required: true,
+        disabled: true,
+        initialValue: user?.section?.displayName(isArabic: isArabic) ?? '',
+        placeholder: l10n.enter,
+      ),
+      DynamicField(
+        name: 'grievant_relationship',
+        label: l10n.grievantRelationshipToMatter,
+        type: FieldType.text,
+        required: true,
+        placeholder: l10n.enter,
+      ),
+      DynamicField(
+        name: 'grievance_details',
+        label: l10n.grievanceDetails,
+        type: FieldType.text,
+        // required: true,
+        placeholder: l10n.writeHereMinMax,
+      ),
+      DynamicField(
+        name: 'attachment_1',
+        label: l10n.attachment1,
+        type: FieldType.file,
+        required: false,
+      ),
+      DynamicField(
+        name: 'attachment_2',
+        label: l10n.attachment2,
+        type: FieldType.file,
+        required: false,
+      ),
+      DynamicField(
+        name: 'acknowledgement',
+        label: l10n.declaration,
+        type: FieldType.acknowledgement,
+        required: true,
+        acknowledgements: [
+          AcknowledgementItem(
+            id: 'Declaration Acknowledged',
+            text: l10n.appealDeclarationAcknowledgementText,
           ),
-          'grievant_section': selectedUser.section?.displayName(
-            isArabic: formL10n.isArabic,
-          ),
-        });
-      },
-      placeholder: l10n.selectEmployee,
-    ),
-    DynamicField(
-      name: 'grievant_employee_number',
-      label: l10n.grievantEmployeeNumber,
-      type: FieldType.text,
-      required: true,
-      disabled: true,
-      placeholder: l10n.enter,
-    ),
-    DynamicField(
-      name: 'grievant_directorate',
-      label: l10n.grievantDirectorate,
-      type: FieldType.text,
-      required: true,
-      disabled: true,
-      placeholder: l10n.enter,
-    ),
-    DynamicField(
-      name: 'grievant_department',
-      label: l10n.grievantDepartment,
-      type: FieldType.text,
-      required: true,
-      disabled: true,
-      placeholder: l10n.enter,
-    ),
-    DynamicField(
-      name: 'grievant_section',
-      label: l10n.grievantSection,
-      type: FieldType.text,
-      required: true,
-      disabled: true,
-      placeholder: l10n.enter,
-    ),
-    DynamicField(
-      name: 'grievant_relationship',
-      label: l10n.grievantRelationshipToMatter,
-      type: FieldType.text,
-      required: true,
-      placeholder: l10n.enter,
-    ),
-    DynamicField(
-      name: 'grievance_details',
-      label: l10n.grievanceDetails,
-      type: FieldType.text,
-      // required: true,
-      placeholder: l10n.writeHereMinMax,
-    ),
-    DynamicField(
-      name: 'attachment_1',
-      label: l10n.attachment1,
-      type: FieldType.file,
-      required: false,
-    ),
-    DynamicField(
-      name: 'attachment_2',
-      label: l10n.attachment2,
-      type: FieldType.file,
-      required: false,
-    ),
-    DynamicField(
-      name: 'acknowledgement',
-      label: l10n.declaration,
-      type: FieldType.acknowledgement,
-      required: true,
-      acknowledgements: [
-        AcknowledgementItem(
-          id: 'Declaration Acknowledged',
-          text: l10n.appealDeclarationAcknowledgementText,
-        ),
-      ],
-    ),
-  ];
+        ],
+      ),
+    ];
+  }
 
   /// ========================= API CALLS =========================
 
@@ -1678,6 +1651,16 @@ class _VSController extends StateNotifier<_ViewState> {
   ) {
     final userInfo = KAppX.globalProvider.read(userInfoProvider);
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
+    final user = userInfo?.data;
+
+    final grievantName = (user?.employeeName?.trim().isNotEmpty ?? false)
+        ? user!.employeeName
+        : (user?.employeeArabicName ?? '');
+
+    final departmentId =
+        int.tryParse(user?.department?.id ?? '') ?? selectedRole?.departmentId;
+    final sectionId =
+        int.tryParse(user?.section?.id ?? '') ?? selectedRole?.sectionId;
 
     final payload = {
       "service_id": serviceId,
@@ -1693,11 +1676,12 @@ class _VSController extends StateNotifier<_ViewState> {
       "decision_subject": values['decision_subject'] ?? "",
       "grievance_details": values['grievance_details'] ?? "",
 
-      "grievant_name": values['grievant_name'] ?? "",
-      "grievant_employee_number": values['grievant_employee_number'] ?? "",
+      "grievant_name": grievantName ?? "",
+      "grievant_employee_number":
+          user?.employeeId ?? values['grievant_employee_number'] ?? "",
       "grievant_directorate_id": values['grievant_directorate_id'],
-      "grievant_department_id": values['grievant_department_id'],
-      "grievant_section_id": values['grievant_section_id'],
+      "grievant_department_id": departmentId,
+      "grievant_section_id": sectionId,
       "grievant_relationship_to_matter": values['grievant_relationship'] ?? "",
 
       "declaration_acknowledged":

@@ -8,6 +8,7 @@ import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/follow_up_request_data_model.dart';
+import 'package:code_setup/presentation/screens/task_management/models/relevant_department_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/hall_request_data_model.dart';
 import 'package:code_setup/presentation/screens/training_and_development/models/hall_respone_form.dart';
 import 'package:code_setup/repository/task_management/follow_up_report/domain/domain.dart';
@@ -746,6 +747,36 @@ class FollowUpReportRepositoryImpl implements FollowUpReportRepository {
       }
     } catch (e) {
       throw Exception('Error in getActionItems: $e');
+    }
+  }
+
+  @override
+  Future<List<RelevantDepartmentModel>> getRelevantDepartments({
+    required int departmentId,
+  }) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client != null) {
+        final url = ApiEndPoint.departmentsByDgDepartment(departmentId);
+        final queryParams = {'offset': 1, 'limit': 10000};
+        final response = await client.get(url, queryParameters: queryParams);
+
+        if (response.statusCode == 200) {
+          final data = Map<String, dynamic>.from(response.data);
+          return RelevantDepartmentResponse.fromJson(data).data;
+        } else {
+          throw ApiException(
+            response.data?['message'] ?? 'Failed to fetch relevant departments',
+          );
+        }
+      }
+      return [];
+    } on DioException catch (error) {
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      throw ApiException(e.toString());
     }
   }
 

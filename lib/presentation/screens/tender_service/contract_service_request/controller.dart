@@ -576,7 +576,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= PHONE =================
     DynamicField(
       name: 'phone',
-      label: l10n.phoneNumber,
+      label: l10n.companyPhoneNumber,
       type: FieldType.number,
       placeholder: l10n.enterPhoneNumber,
       required: true,

@@ -60,6 +60,7 @@ class _ViewState {
   final List<ChatMessageModel> chatById;
   final List<AttachmentModel> attachmentsById;
   final List<HallData> availableHalls;
+  final List<RelevantDepartmentModel> relevantDepartments;
   final List<String> months = [
     'January',
     'February',
@@ -103,6 +104,7 @@ class _ViewState {
     required this.chatById,
     required this.attachmentsById,
     required this.availableHalls,
+    required this.relevantDepartments,
   });
 
   _ViewState.init()
@@ -132,6 +134,7 @@ class _ViewState {
 
         attachmentsById: [],
         availableHalls: [],
+        relevantDepartments: [],
       );
 
   _ViewState copyWith({
@@ -201,6 +204,7 @@ class _ViewState {
     List<ResidentalUnitRentalLocationModel>? unitLocations,
     List<SectionModel>? sections,
     List<HallData>? availableHalls,
+    List<RelevantDepartmentModel>? relevantDepartments,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -230,6 +234,7 @@ class _ViewState {
       chatById: chatById ?? this.chatById,
       attachmentsById: attachmentsById ?? this.attachmentsById,
       availableHalls: availableHalls ?? this.availableHalls,
+      relevantDepartments: relevantDepartments ?? this.relevantDepartments,
     );
   }
 }
@@ -306,7 +311,28 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    fetchRelevantDepartments();
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
+  }
+
+  /// Loads the departments under the logged-in user's DG department for the
+  /// "Relevant Department" dropdown.
+  Future<void> fetchRelevantDepartments() async {
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
+    final departmentId = selectedRole?.departmentId;
+
+    if (departmentId == null) return;
+
+    try {
+      final departments = await followupReportInstance.getRelevantDepartments(
+        departmentId: departmentId,
+      );
+      state = state.copyWith(relevantDepartments: departments);
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      debugPrint('Error fetching relevant departments: $e');
+    }
   }
 
   void onSearchChanged(String value) {
@@ -530,84 +556,6 @@ class _VSController extends StateNotifier<_ViewState> {
   final followupReportInstance = FollowUpReportRepository();
 
   List<DynamicField> buildFollowUpReportFields(DashboardL10n l10n) => [
-    /// ================= SENT BY =================
-    DynamicField(
-      name: 'sent_by',
-      label: l10n.requestDetailsLabel('Sent By'),
-      type: FieldType.text,
-      required: true,
-      placeholder: l10n.followUpEnterSentBy,
-
-      validator: (value, values) {
-        final text = value?.toString().trim() ?? '';
-
-        if (text.isEmpty) {
-          return l10n.followUpSentByRequired;
-        }
-
-        return null;
-      },
-    ),
-
-    /// ================= LETTER DATE =================
-    DynamicField(
-      name: 'letter_date',
-      label: l10n.requestDetailsLabel('Letter Date'),
-      type: FieldType.date,
-      required: true,
-      placeholder: 'MM/DD/YYYY',
-
-      validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return l10n.followUpLetterDateRequired;
-        }
-
-        return null;
-      },
-    ),
-
-    /// ================= SUBJECT =================
-    DynamicField(
-      name: 'subject',
-      label: l10n.requestDetailsLabel('Subject'),
-      type: FieldType.text,
-      required: true,
-      placeholder: l10n.followUpEnterSubject,
-
-      validator: (value, values) {
-        final text = value?.toString().trim() ?? '';
-
-        if (text.isEmpty) {
-          return l10n.followUpSubjectRequired;
-        }
-
-        return null;
-      },
-    ),
-
-    /// ================= SUBJECT CLASSIFICATION =================
-    DynamicField(
-      name: 'subject_classification',
-      label: l10n.requestDetailsLabel('Subject Classification'),
-      type: FieldType.select,
-      required: true,
-      placeholder: l10n.followUpSelectSubjectClassification,
-
-      options: [
-        DropdownOption(label: l10n.followUpUrgent, value: 'Urgent'),
-        DropdownOption(label: l10n.followUpVeryUrgent, value: 'Very Urgent'),
-        DropdownOption(label: l10n.followUpConfidential, value: 'Confidential'),
-      ],
-
-      validator: (value, values) {
-        if (value == null || value.toString().isEmpty) {
-          return l10n.followUpSubjectClassificationRequired;
-        }
-
-        return null;
-      },
-    ),
-
     /// ================= TOPIC =================
     DynamicField(
       name: 'topic',
@@ -655,6 +603,29 @@ class _VSController extends StateNotifier<_ViewState> {
         }
 
         return null;
+      },
+    ),
+
+    /// ================= RELEVANT DEPARTMENT =================
+    DynamicField(
+      name: 'relevant_department',
+      label: l10n.followUpRelevantDepartmentLabel,
+      type: FieldType.select,
+      required: false,
+      placeholder: l10n.followUpSelectRelevantDepartment,
+
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final formState = ref.watch(_vsProvider(params));
+
+        return formState.relevantDepartments
+            .map(
+              (department) => DropdownOption(
+                value: department.id,
+                label: department.displayName(isArabic: formL10n.isArabic),
+              ),
+            )
+            .toList();
       },
     ),
 
@@ -706,6 +677,49 @@ class _VSController extends StateNotifier<_ViewState> {
 
         if (value is List && value.isEmpty) {
           return l10n.followUpUploadAttachmentRequired;
+        }
+
+        return null;
+      },
+    ),
+  ];
+
+  /// ================= ACTION CARDS (STEP 2) =================
+  List<DynamicField> buildFollowUpActionFields(DashboardL10n l10n) => [
+    DynamicField(
+      name: kFollowUpActionsKey,
+      label: l10n.followUpActionsStepTitle,
+      type: FieldType.custom,
+      required: true,
+      builder: (context, ref) => const FollowUpActionCards(),
+      validator: (value, values) {
+        final list = value is List ? value : const [];
+
+        if (list.isEmpty) {
+          return l10n.followUpActionsRequired;
+        }
+
+        const requiredKeys = [
+          'sent_by',
+          'letter_date',
+          'subject',
+          'subject_classification',
+          'general_manager_comment',
+          'response_date',
+          'action_status',
+          'action_taken',
+        ];
+
+        for (final item in list) {
+          if (item is! Map) {
+            return l10n.followUpActionsRequired;
+          }
+          for (final key in requiredKeys) {
+            final fieldValue = item[key];
+            if (fieldValue == null || fieldValue.toString().trim().isEmpty) {
+              return l10n.followUpActionsRequired;
+            }
+          }
         }
 
         return null;
@@ -1566,11 +1580,42 @@ class _VSController extends StateNotifier<_ViewState> {
         .toList();
   }
 
+  /// Maps a single action card (as serialized by [FollowUpActionCards]) into
+  /// a `report_items` entry expected by the backend.
+  Map<String, dynamic> _buildReportItem(Map<dynamic, dynamic> card) {
+    return {
+      "reference_type": card['sent_by'] ?? "",
+      "letter_date": card['letter_date'] ?? "",
+      "subject": card['subject'] ?? "",
+      "subject_classification": card['subject_classification'] ?? "",
+      "general_manager_comment": card['general_manager_comment'] ?? "",
+      "response_date_target": card['response_date'] ?? "",
+      "action_status": card['action_status'] ?? "",
+      "action_taken": card['action_taken'] ?? "",
+      "delay_period": (card['delay_period'] ?? "0").toString(),
+      "attachment": card['attachment'],
+    };
+  }
+
   Map<String, dynamic> _buildPayload(
     int serviceId,
     int subServiceId,
     Map<String, dynamic> values,
   ) {
+    /// ACTION CARDS → report_items
+    final actionCards = values[kFollowUpActionsKey] is List
+        ? List<Map<dynamic, dynamic>>.from(
+            (values[kFollowUpActionsKey] as List).whereType<Map>(),
+          )
+        : <Map<dynamic, dynamic>>[];
+
+    final reportItems = actionCards.map(_buildReportItem).toList();
+
+    /// The first card's values are also flattened at the top level.
+    final firstCard = actionCards.isNotEmpty
+        ? actionCards.first
+        : <dynamic, dynamic>{};
+
     return {
       /// SERVICE
       "service_id": serviceId,
@@ -1581,18 +1626,12 @@ class _VSController extends StateNotifier<_ViewState> {
 
       "req_user_section_id": values['req_user_section_id'],
 
-      /// LETTER DETAILS
-      "sent_by": values['sent_by'] ?? "",
-
-      "letter_date": values['letter_date'] ?? "",
-
-      "subject": values['subject'] ?? "",
-
-      "subject_classification": values['subject_classification'] ?? "",
-
+      /// REQUEST DETAILS
       "topic": values['topic'] ?? "",
 
       "concerned_department": values['concerned_department'] ?? "",
+
+      "relevant_department": values['relevant_department'] ?? "",
 
       /// DATE RANGE
       "date_from": values['date_from'] ?? "",
@@ -1601,6 +1640,28 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ATTACHMENTS
       "attachments": _buildAttachments(values),
+
+      /// LETTER DETAILS (flattened first report item)
+      "sent_by": firstCard['sent_by'] ?? "",
+
+      "letter_date": firstCard['letter_date'] ?? "",
+
+      "subject": firstCard['subject'] ?? "",
+
+      "subject_classification": firstCard['subject_classification'] ?? "",
+
+      "general_manager_comment": firstCard['general_manager_comment'] ?? "",
+
+      "response_date_target": firstCard['response_date'] ?? "",
+
+      "action_status": firstCard['action_status'] ?? "",
+
+      "action_taken": firstCard['action_taken'] ?? "",
+
+      "delay_period": (firstCard['delay_period'] ?? "0").toString(),
+
+      /// ACTION CARDS
+      "report_items": reportItems,
     };
   }
 

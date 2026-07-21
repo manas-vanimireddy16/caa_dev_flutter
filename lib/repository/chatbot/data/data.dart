@@ -142,11 +142,16 @@ class ChatbotRepositoryImpl implements ChatbotRepository {
       }
 
       final errorMessage =
-          response.data?['message'] ?? 'Unexpected error occurred';
+          response.data?['message'] ??
+          response.data?['detail'] ??
+          'Unexpected error occurred';
       throw ApiException(errorMessage.toString());
     } on DioException catch (error) {
-      final message = error.response?.data?['message'] ?? error.message;
-      throw ApiException(message ?? 'Network error occurred');
+      final data = error.response?.data;
+      final message = data is Map
+          ? (data['message'] ?? data['detail'] ?? error.message)
+          : error.message;
+      throw ApiException(message?.toString() ?? 'Network error occurred');
     }
   }
 }

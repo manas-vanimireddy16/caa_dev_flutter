@@ -20,18 +20,15 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
     with AutomaticKeepAliveClientMixin {
   PagingController<int, AppealAgainstAdministrativeModel>? _pagingController;
   bool _controllerInitialized = false;
+  VoidCallback? _disposeCleanup;
 
   @override
   bool get wantKeepAlive => true;
 
   @override
   void dispose() {
-    final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
-    if (widget.isActionItemsTab) {
-      controller.onActionItemsListRefresh = null;
-    } else {
-      controller.onMyRequestsListRefresh = null;
-    }
+    // Do not use ref here — Riverpod throws if the widget is already disposed.
+    _disposeCleanup?.call();
     _pagingController?.dispose();
     super.dispose();
   }
@@ -46,31 +43,29 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
     _controllerInitialized = true;
 
     if (widget.isActionItemsTab) {
-      _pagingController = PagingController<int, AppealAgainstAdministrativeModel>(
-        getNextPageKey: (state) =>
-            ListPagination.nextPageKey(state),
-        fetchPage: (pageKey) => controller.loadActionItemsPage(
-          pageKey,
-          searchText: controller.searchController.text.trim(),
-          status: ref
-              .read(_vsProvider(widget.providerArgs))
-              .actionItemsStatusFilter,
-        ),
-      );
+      _pagingController =
+          PagingController<int, AppealAgainstAdministrativeModel>(
+            getNextPageKey: (state) => ListPagination.nextPageKey(state),
+            fetchPage: (pageKey) => controller.loadActionItemsPage(
+              pageKey,
+              searchText: controller.searchController.text.trim(),
+              status: controller.state.actionItemsStatusFilter,
+            ),
+          );
       controller.onActionItemsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onActionItemsListRefresh = null;
     } else {
-      _pagingController = PagingController<int, AppealAgainstAdministrativeModel>(
-        getNextPageKey: (state) =>
-            ListPagination.nextPageKey(state),
-        fetchPage: (pageKey) => controller.loadMyRequestsPage(
-          pageKey,
-          searchText: controller.searchController.text.trim(),
-          status: ref
-              .read(_vsProvider(widget.providerArgs))
-              .myRequestsStatusFilter,
-        ),
-      );
+      _pagingController =
+          PagingController<int, AppealAgainstAdministrativeModel>(
+            getNextPageKey: (state) => ListPagination.nextPageKey(state),
+            fetchPage: (pageKey) => controller.loadMyRequestsPage(
+              pageKey,
+              searchText: controller.searchController.text.trim(),
+              status: controller.state.myRequestsStatusFilter,
+            ),
+          );
       controller.onMyRequestsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onMyRequestsListRefresh = null;
     }
   }
 

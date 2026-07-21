@@ -3,6 +3,7 @@ import 'package:code_setup/presentation/models/kpi_model.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
 import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/follow_up_request_data_model.dart';
+import 'package:code_setup/presentation/screens/task_management/models/relevant_department_model.dart';
 import 'package:code_setup/repository/task_management/follow_up_report/data/data.dart';
 
 abstract class FollowUpReportRepository {
@@ -77,4 +78,10 @@ abstract class FollowUpReportRepository {
   });
   Future<List<DepartmentModel>> getDepartments();
   Future<List<SectionModel>> getSections({required String? userDepartmentId});
+
+  /// Departments that belong to the given DG department (logged-in user's
+  /// department). Used to populate the "Relevant Department" dropdown.
+  Future<List<RelevantDepartmentModel>> getRelevantDepartments({
+    required int departmentId,
+  });
 }

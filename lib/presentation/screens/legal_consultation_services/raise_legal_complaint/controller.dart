@@ -571,15 +571,15 @@ class _VSController extends StateNotifier<_ViewState> {
 
   final raiseLegalComplaintInstance = RaiseALegalComplaintRepository();
   List<DynamicField> buildLegalComplaintStepOneFields(DashboardL10n l10n) => [
-    DynamicField(
-      name: 'request_date',
-      label: l10n.incidentDate,
-      type: FieldType.date,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-      required: true,
-    ),
+    // DynamicField(
+    //   name: 'request_date',
+    //   label: l10n.incidentDate,
+    //   type: FieldType.date,
+    //   initialDate: DateTime.now(),
+    //   firstDate: DateTime(2000),
+    //   lastDate: DateTime.now().add(const Duration(days: 365)),
+    //   required: true,
+    // ),
     DynamicField(
       name: 'title',
       label: l10n.titleOfComplaint,
@@ -607,6 +607,60 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<DynamicField> buildLegalComplaintStepTwoFields(DashboardL10n l10n) => [
     DynamicField(
+      name: 'complainant_name',
+      label: l10n.complainantName,
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.selectEmployee,
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final vsState = ref.watch(_vsProvider(params));
+        return vsState.usersList
+            .map(
+              (user) => DropdownOption(
+                label: user.displayName(isArabic: formL10n.isArabic),
+                value: user.id.toString(),
+              ),
+            )
+            .toList();
+      },
+
+      // onChanged: (value, ref) async {
+      //   final selectedUser = _findUser(value);
+      //   if (selectedUser == null) return;
+
+      //   final formL10n = DashboardL10n.of(ref.context);
+      //   final formNotifier = ref.read(dynamicFormProvider.notifier);
+      //   formNotifier.autoPopulate({
+      //     'complainant_name_display': selectedUser.displayName(
+      //       isArabic: formL10n.isArabic,
+      //     ),
+      //     'complainant_position': _userPositionLabel(
+      //       selectedUser,
+      //       formL10n.isArabic,
+      //     ),
+      //     'complainant_employee_id': selectedUser.employeeId,
+      //     'complainant_directorate': selectedUser.directorate,
+      //     'complainant_department': selectedUser.department?.id?.toString(),
+      //     'complainant_section': '',
+      //   });
+
+      //   final departmentId = selectedUser.department?.id;
+      //   if (departmentId != null && departmentId > 0) {
+      //     await ref
+      //         .read(_vsProvider(params).notifier)
+      //         .fetchComplainantSections(departmentId);
+      //     final sectionId = selectedUser.section?.id;
+      //     if (sectionId != null) {
+      //       formNotifier.updateValue(
+      //         'complainant_section',
+      //         sectionId.toString(),
+      //       );
+      //     }
+      //   }
+      // },
+    ),
+    DynamicField(
       name: 'individuals_involved',
       label: l10n.individualsInvolved,
       type: FieldType.text,
@@ -618,7 +672,7 @@ class _VSController extends StateNotifier<_ViewState> {
       label: l10n.incidentTime,
       type: FieldType.time,
       placeholder: l10n.select,
-      required: true,
+      // required: true,
     ),
     DynamicField(
       name: 'incident_date',
@@ -2164,20 +2218,20 @@ class _VSController extends StateNotifier<_ViewState> {
         'incident_events': values['incident_events'] ?? '',
         'incident_other_details': values['incident_other_details'] ?? '',
       },
-      'complainant': {
-        'name':
-            values['complainant_name_display']?.toString() ??
-            _userNameLabel(values['complainant_name']?.toString(), false),
-        'position': values['complainant_position'] ?? '',
-        'employee_id': values['complainant_employee_id']?.toString() ?? '',
-        'directorate': values['complainant_directorate'] ?? '',
-        'department_id': complainantDepartmentId,
-        'department_name': complainantDepartmentName,
-        'section_id': complainantSectionId,
-        'section_name': complainantSectionName,
-        'department': complainantDepartmentName,
-        'section': complainantSectionName,
-      },
+      // 'complainant': {
+      //   'name':
+      //       values['complainant_name_display']?.toString() ??
+      //       _userNameLabel(values['complainant_name']?.toString(), false),
+      //   'position': values['complainant_position'] ?? '',
+      //   'employee_id': values['complainant_employee_id']?.toString() ?? '',
+      //   'directorate': values['complainant_directorate'] ?? '',
+      //   'department_id': complainantDepartmentId,
+      //   'department_name': complainantDepartmentName,
+      //   'section_id': complainantSectionId,
+      //   'section_name': complainantSectionName,
+      //   'department': complainantDepartmentName,
+      //   'section': complainantSectionName,
+      // },
       'complained_employee': {
         'name':
             values['complained_employee_name_display']?.toString() ??

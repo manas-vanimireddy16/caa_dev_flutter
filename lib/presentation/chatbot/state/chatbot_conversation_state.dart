@@ -4,15 +4,15 @@ import 'package:code_setup/presentation/chatbot/models/chatbot_answer_response.d
 import 'package:code_setup/presentation/chatbot/models/chatbot_question_response.dart';
 import 'package:equatable/equatable.dart';
 
-enum ChatbotConversationStep { services, subServices, questions, manualInput }
+/// Which selectable option list is currently visible in the chat.
+enum ChatbotOptionsPanel { none, services, subServices, questions }
 
 class ChatbotConversationState extends Equatable {
   final List<ChatMessage> messages;
   final bool isLoading;
   final bool isInputEnabled;
-  final bool showFeedbackButtons;
   final String? errorMessage;
-  final ChatbotConversationStep step;
+  final ChatbotOptionsPanel optionsPanel;
   final List<Service> services;
   final List<SubService> subServices;
   final List<ChatbotQuestion> questions;
@@ -27,9 +27,8 @@ class ChatbotConversationState extends Equatable {
     this.messages = const [],
     this.isLoading = false,
     this.isInputEnabled = false,
-    this.showFeedbackButtons = false,
     this.errorMessage,
-    this.step = ChatbotConversationStep.services,
+    this.optionsPanel = ChatbotOptionsPanel.none,
     this.services = const [],
     this.subServices = const [],
     this.questions = const [],
@@ -41,14 +40,17 @@ class ChatbotConversationState extends Equatable {
     this.currentAnswer,
   });
 
+  bool get hasSelectedService => selectedService != null;
+  bool get hasSelectedSubService => selectedSubService != null;
+  bool get hasQuestions => questions.isNotEmpty;
+
   ChatbotConversationState copyWith({
     List<ChatMessage>? messages,
     bool? isLoading,
     bool? isInputEnabled,
-    bool? showFeedbackButtons,
     String? errorMessage,
     bool clearErrorMessage = false,
-    ChatbotConversationStep? step,
+    ChatbotOptionsPanel? optionsPanel,
     List<Service>? services,
     List<SubService>? subServices,
     List<ChatbotQuestion>? questions,
@@ -69,11 +71,10 @@ class ChatbotConversationState extends Equatable {
       messages: messages ?? this.messages,
       isLoading: isLoading ?? this.isLoading,
       isInputEnabled: isInputEnabled ?? this.isInputEnabled,
-      showFeedbackButtons: showFeedbackButtons ?? this.showFeedbackButtons,
       errorMessage: clearErrorMessage
           ? null
           : errorMessage ?? this.errorMessage,
-      step: step ?? this.step,
+      optionsPanel: optionsPanel ?? this.optionsPanel,
       services: services ?? this.services,
       subServices: subServices ?? this.subServices,
       questions: questions ?? this.questions,
@@ -103,9 +104,8 @@ class ChatbotConversationState extends Equatable {
     messages,
     isLoading,
     isInputEnabled,
-    showFeedbackButtons,
     errorMessage,
-    step,
+    optionsPanel,
     services,
     subServices,
     questions,
