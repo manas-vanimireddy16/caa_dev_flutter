@@ -692,6 +692,18 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
   /// ------------------------------------------------
   void onUploadFileSuccess(String fieldName, FileUploadItem file) {
     final current = List<FileUploadItem>.from(state.values[fieldName] ?? []);
+    final alreadyExists = current.any(
+      (existing) =>
+          (existing.documentId != null &&
+              existing.documentId == file.documentId) ||
+          (existing.downloadUrl != null &&
+              existing.downloadUrl == file.downloadUrl) ||
+          (existing.originalName != null &&
+              existing.originalName == file.originalName &&
+              existing.size == file.size),
+    );
+    if (alreadyExists) return;
+
     current.add(file);
 
     state = state.copyWith(values: {...state.values, fieldName: current});

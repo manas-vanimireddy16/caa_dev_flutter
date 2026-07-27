@@ -637,6 +637,7 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshRequestLists() {
     refreshMyRequestsList();
     refreshActionItemsList();
+    fetchApprovalKpi();
   }
 
   void refreshActiveRequestList() {

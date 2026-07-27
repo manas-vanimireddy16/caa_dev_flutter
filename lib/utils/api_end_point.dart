@@ -54,9 +54,9 @@ class ApiEndPoint {
       '/v1/user-service/dashboard/sla/my-requests/analytics/status-breakdown';
 
   static const String dashboardApprovalTrendBreakdown =
-      '/v1/user-service/dashboard/sla/my-requests/analytics/trend-breakdown';
+      '/v1/user-service/dashboard/sla/for-approval/analytics/trend-breakdown';
   static const String dashboardApprovalStatusBreakdown =
-      '/v1/user-service/dashboard/sla/my-requests/analytics/status-breakdown';
+      '/v1/user-service/dashboard/sla/for-approval/analytics/status-breakdown';
 
   static const String importantLinks = '/v1/user-service/important-links';
   static const String setActiveRole = '/v1/user-service/userrole/set-active';

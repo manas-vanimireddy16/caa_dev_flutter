@@ -641,6 +641,7 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshRequestLists() {
     refreshMyRequestsList();
     refreshActionItemsList();
+    fetchApprovalKpi();
   }
 
   void refreshActiveRequestList() {
@@ -1231,7 +1232,9 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceId: subService.id ?? 0,
       );
       if (attachments != null) {
-        state = state.copyWith(attachmentsById: attachments);
+        state = state.copyWith(
+          attachmentsById: _dedupeAttachments(attachments),
+        );
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
@@ -1239,6 +1242,28 @@ class _VSController extends StateNotifier<_ViewState> {
       // optionally handle other errors
       debugPrint(e.toString());
     }
+  }
+
+  List<AttachmentModel> _dedupeAttachments(List<AttachmentModel> attachments) {
+    final seenIds = <int>{};
+    final seenKeys = <String>{};
+    final unique = <AttachmentModel>[];
+
+    for (final attachment in attachments) {
+      final id = attachment.id;
+      if (id != null && id != 0) {
+        if (seenIds.contains(id)) continue;
+        seenIds.add(id);
+      } else {
+        final key =
+            '${attachment.fileUrl ?? ''}|${attachment.fileName ?? ''}|${attachment.fileSize ?? ''}';
+        if (key.trim() == '||' || seenKeys.contains(key)) continue;
+        seenKeys.add(key);
+      }
+      unique.add(attachment);
+    }
+
+    return unique;
   }
 
   Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
@@ -1611,7 +1636,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();
       refreshRequestLists();
-      fetchApprovalKpi();
+
       fetchApprovalStatusBreakdown('weekly');
       fetchApprovalTrendBreakDown(DateTime.now().year.toString());
       fetchStatusBreakdown('weekly');
@@ -2320,9 +2345,20 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {
-    return (values['travel_itinerary'] as List<FileUploadItem>? ?? [])
-        .map((file) => file.toJson())
-        .toList();
+    final files =
+        values['travel_itinerary'] as List<FileUploadItem>? ?? [];
+    final seen = <String>{};
+    final attachments = <Map<String, dynamic>>[];
+
+    for (final file in files) {
+      final key =
+          '${file.downloadUrl ?? file.documentId ?? ''}|${file.originalName ?? ''}|${file.size ?? ''}';
+      if (seen.contains(key)) continue;
+      seen.add(key);
+      attachments.add(file.toJson());
+    }
+
+    return attachments;
   }
 
   Map<String, dynamic> _buildPayload(

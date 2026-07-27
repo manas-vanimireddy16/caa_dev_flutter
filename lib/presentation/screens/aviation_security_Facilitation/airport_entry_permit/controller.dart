@@ -1017,6 +1017,9 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.date,
       required: true,
       placeholder: 'dd-mm-yyyy',
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      initialDate: DateTime.now(),
     ),
 
     /// ================= PASSPORT / ID =================
@@ -1145,6 +1148,19 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: 'dd-mm-yyyy',
 
       disabledWhen: (values) => values['permit_type'] == 'permanent',
+      onChanged: (value, ref) {
+        final values = ref.read(dynamicFormProvider).values;
+        final endValue = values['end_date']?.toString();
+        if (value == null || endValue == null || endValue.isEmpty) return;
+
+        final startDate = DateTime.tryParse(value.toString());
+        final endDate = DateTime.tryParse(endValue);
+        if (startDate != null &&
+            endDate != null &&
+            endDate.isBefore(startDate)) {
+          ref.read(dynamicFormProvider.notifier).updateValue('end_date', '');
+        }
+      },
     ),
 
     /// ================= END DATE =================
@@ -1160,28 +1176,13 @@ class _VSController extends StateNotifier<_ViewState> {
           values['permit_type'] == 'temporary'),
 
       disabledWhen: (values) => values['permit_type'] == 'permanent',
-
-      onChanged: (value, ref) {
-        // final values =
-        //     ref.read(dynamicFormProvider).formValues;
-
-        // final start = values['start_date'];
-        // final end = value;
-
-        // if (start != null && end != null) {
-        //   final startDate = DateTime.parse(start);
-        //   final endDate = DateTime.parse(end);
-
-        //   final days =
-        //       endDate.difference(startDate).inDays;
-
-        //   ref
-        //       .read(dynamicFormProvider.notifier)
-        //       .updateFieldValue(
-        //         'duration_days',
-        //         days > 0 ? days.toString() : '0',
-        //       );
-        // }
+      firstDateWhen: (values) {
+        final start = values['start_date']?.toString();
+        if (start != null && start.isNotEmpty) {
+          final parsed = DateTime.tryParse(start);
+          if (parsed != null) return parsed;
+        }
+        return DateTime.now();
       },
     ),
 

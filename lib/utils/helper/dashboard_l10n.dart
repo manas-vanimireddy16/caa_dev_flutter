@@ -1257,11 +1257,6 @@ class DashboardL10n {
   String get validAttendeeCountRequired =>
       _t('Please enter a valid attendee count', 'يرجى إدخال عدد حضور صالح');
 
-  String get subject => _t('Subject', 'الموضوع');
-
-  String get subjectClassification =>
-      _t('Subject Classification', 'تصنيف الموضوع');
-
   String get topic => _t('Topic', 'الموضوع');
 
   String get concernedDepartment =>
@@ -1274,8 +1269,6 @@ class DashboardL10n {
   String get sentBy => _t('Sent By', 'أرسل بواسطة');
 
   String get sentDate => _t('Sent Date', 'تاريخ الإرسال');
-
-  String get letterDate => _t('Letter Date', 'تاريخ الخطاب');
 
   /// Follow-up report
   String get followUpEnterSentBy => _t('Enter Sent By', 'أدخل اسم المرسل');
@@ -1320,6 +1313,35 @@ class DashboardL10n {
     'Please upload at least one attachment',
     'يرجى رفع مرفق واحد على الأقل',
   );
+  String get referenceNumberSentBy =>
+      _t('Reference Number (Sent By)', 'رقم القيد (مرسل من)');
+
+  String get letterDate => _t('Letter Date', 'تاريخ الخطاب');
+
+  String get subject => _t('Subject', 'الموضوع');
+
+  String get subjectClassification =>
+      _t('Subject Classification', 'تصنيف الموضوع');
+
+  String get generalManagerComment =>
+      _t('General Manager\'s Comment', 'تعليق المدير العام');
+
+  String get responseDateTargetDate =>
+      _t('Response Date (Target Date)', 'تاريخ الرد (التاريخ المستهدف)');
+
+  String get actionStatus => _t('Action Status', 'حالة الإجراء');
+
+  String get completed => _t('Completed', 'تم اللازم');
+
+  String get inProgress => _t('In Progress', 'قيد الإجراء');
+
+  String get noResponse => _t('No Response', 'لم يتم الرد');
+
+  String get overdue => _t('Overdue', 'متأخر');
+
+  String get actionTaken => _t('Action Taken', 'الإجراء المتخذ');
+
+  String get delayPeriod => _t('Delay Period', 'فترة التأخير');
 
   String get followUpUrgent => _t('Urgent', 'عاجل');
 
@@ -1348,8 +1370,10 @@ class DashboardL10n {
 
   String get followUpAddAction => _t('Add', 'إضافة');
 
-  String get followUpActionsRequired =>
-      _t('Please complete all action details', 'يرجى إكمال جميع تفاصيل الإجراء');
+  String get followUpActionsRequired => _t(
+    'Please complete all action details',
+    'يرجى إكمال جميع تفاصيل الإجراء',
+  );
 
   String get followUpSelect => _t('Select', 'اختر');
 
@@ -1409,10 +1433,8 @@ class DashboardL10n {
   String get followUpLimited => _t('Limited', 'محدود');
 
   /// General Manager's Comment options
-  String get followUpGmReviewAction => _t(
-    'For Review and Necessary Action',
-    'للمراجعة واتخاذ الإجراء اللازم',
-  );
+  String get followUpGmReviewAction =>
+      _t('For Review and Necessary Action', 'للمراجعة واتخاذ الإجراء اللازم');
 
   String get followUpGmInformation => _t('For Information', 'للعلم');
 

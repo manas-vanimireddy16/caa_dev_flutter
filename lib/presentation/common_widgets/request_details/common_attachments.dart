@@ -280,7 +280,7 @@ class CommonAttachmentsTabContent extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            ...attachments.map(
+            ..._dedupeAttachments(attachments).map(
               (file) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: _AttachmentFileCard(
@@ -295,6 +295,28 @@ class CommonAttachmentsTabContent extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  List<AttachmentModel> _dedupeAttachments(List<AttachmentModel> attachments) {
+    final seenIds = <int>{};
+    final seenKeys = <String>{};
+    final unique = <AttachmentModel>[];
+
+    for (final attachment in attachments) {
+      final id = attachment.id;
+      if (id != null && id != 0) {
+        if (seenIds.contains(id)) continue;
+        seenIds.add(id);
+      } else {
+        final key =
+            '${attachment.fileUrl ?? ''}|${attachment.fileName ?? ''}|${attachment.fileSize ?? ''}';
+        if (key.trim() == '||' || seenKeys.contains(key)) continue;
+        seenKeys.add(key);
+      }
+      unique.add(attachment);
+    }
+
+    return unique;
   }
 }
 

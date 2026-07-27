@@ -144,7 +144,9 @@ class _LogisticsServicesDashboardScreenState
             legendHeading: l10n.breakdown,
             statusLabelBuilder: l10n.statusLabel,
             onChanged: controller.onStatusFilterChanged,
-            breakdown: state.statusBreakdown.data,
+            breakdown: state.tabIndex == 0
+                ? state.statusBreakdown.data
+                : state.approvalStatusBreakdown.data,
           ),
           16.toVerticalSizedBox,
 

@@ -184,7 +184,9 @@ class _LogisticsForeignersRequestPortalScreenState
             onChanged: (value) => controller.onStatusFilterChanged(
               value != null ? l10n.periodFilterValue(value) : null,
             ),
-            breakdown: state.statusBreakdown.data,
+            breakdown: state.tabIndex == 0
+                ? state.statusBreakdown.data
+                : state.approvalStatusBreakdown.data,
           ),
           16.toVerticalSizedBox,
 

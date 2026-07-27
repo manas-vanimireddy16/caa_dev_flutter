@@ -72,10 +72,9 @@ class FileUploadItem {
 
     return {
       'file_name': originalName,
-      'file_url': documentId, // Use download link → correct for API
-      'file_type': ext, // Extract file extension
-      // Use real file name
-      'file_size': size, // Forward size
+      'file_url': downloadUrl ?? documentId,
+      'file_type': ext,
+      'file_size': size,
     };
   }
 }

@@ -100,7 +100,7 @@ class CommonDashboardRepositoryImpl implements CommonDashboardRepository {
         };
 
         final response = await client.get(
-          ApiEndPoint.dashboardApprovalTrendBreakdown,
+          ApiEndPoint.dashboardApprovalStatusBreakdown,
           queryParameters: queryParams,
         );
 
@@ -142,7 +142,7 @@ class CommonDashboardRepositoryImpl implements CommonDashboardRepository {
         };
 
         final response = await client.get(
-          ApiEndPoint.dashboardApprovalStatusBreakdown,
+          ApiEndPoint.dashboardApprovalTrendBreakdown,
           queryParameters: queryParams,
         );
 

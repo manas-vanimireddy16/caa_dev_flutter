@@ -175,6 +175,42 @@ class RequestStatusBreakdownCard extends StatelessWidget {
   //     );
   //   }
   // }
+  bool _isTotalStatus(String? status) {
+    final normalized = status?.toLowerCase().trim() ?? '';
+    return normalized == 'total' ||
+        normalized == 'total requests' ||
+        normalized == 'total tickets' ||
+        normalized == 'total approvals';
+  }
+
+  int _resolveCenterTotal(List<ChartData> chartSections) {
+    for (final section in chartSections) {
+      if (_isTotalStatus(section.status) && section.count != null) {
+        return section.count!;
+      }
+    }
+
+    final fromBreakdown =
+        breakdown?.totalRequests ?? breakdown?.totalApprovals;
+    if (fromBreakdown != null) return fromBreakdown;
+
+    return chartSections
+        .where((section) => !_isTotalStatus(section.status))
+        .fold<int>(0, (sum, section) => sum + (section.count ?? 0));
+  }
+
+  List<ChartData> _ensureTotalSection(List<ChartData> chartSections) {
+    if (chartSections.any((section) => _isTotalStatus(section.status))) {
+      return chartSections;
+    }
+
+    final total = _resolveCenterTotal(chartSections);
+    return [
+      ChartData(status: 'Total', count: total, percentage: 100),
+      ...chartSections,
+    ];
+  }
+
   Widget _buildContent(BuildContext context, List<ChartData> chartSections) {
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)
@@ -192,6 +228,12 @@ class RequestStatusBreakdownCard extends StatelessWidget {
               .toList()
         : chartSections;
 
+    final sectionsWithTotal = _ensureTotalSection(filteredSections);
+    final centerTotal = _resolveCenterTotal(sectionsWithTotal);
+    final pieSections = sectionsWithTotal
+        .where((section) => !_isTotalStatus(section.status))
+        .toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -206,14 +248,14 @@ class RequestStatusBreakdownCard extends StatelessWidget {
                   PieChartData(
                     sectionsSpace: 3,
                     centerSpaceRadius: 50,
-                    sections: filteredSections
-                        .where(
-                          (section) => section.status?.toLowerCase() != 'total',
-                        )
-                        .map((section) {
+                    sections: pieSections.map((section) {
+                          final value =
+                              (section.count?.toDouble() ?? 0) > 0
+                              ? section.count!.toDouble()
+                              : (section.percentage ?? 0);
                           return PieChartSectionData(
                             color: getStatusColor(section.status),
-                            value: section.percentage,
+                            value: value,
                             title: '',
                             radius: 26,
                             borderSide: const BorderSide(
@@ -232,7 +274,7 @@ class RequestStatusBreakdownCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${data.isNotEmpty ? data[0].count ?? 0 : 0}',
+                      '$centerTotal',
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(
                             fontWeight: FontWeight.w700,
@@ -256,7 +298,7 @@ class RequestStatusBreakdownCard extends StatelessWidget {
         ),
         const SizedBox(height: _chartToBreakdownGap),
         _BreakdownLegend(
-          sections: filteredSections,
+          sections: sectionsWithTotal,
           legendHeading: legendHeading,
           centerMetricLabel: centerMetricLabel,
           statusLabelBuilder: statusLabelBuilder,
@@ -283,7 +325,8 @@ class _BreakdownLegend extends StatelessWidget {
     final normalized = status?.toLowerCase().trim() ?? '';
     return normalized == 'total' ||
         normalized == 'total requests' ||
-        normalized == 'total tickets';
+        normalized == 'total tickets' ||
+        normalized == 'total approvals';
   }
 
   String _resolveLabel(ChartData section) {
