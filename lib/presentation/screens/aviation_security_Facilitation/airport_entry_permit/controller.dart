@@ -1464,7 +1464,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// ================= ACKNOWLEDGEMENT 1 =================
     DynamicField(
       name: 'acknowledgement_1',
-      label: l10n.acknowledgements,
+      label: 'I agree to comply with CAA\'s security policies',
       type: FieldType.acknowledgement,
       required: true,
 
@@ -2035,12 +2035,12 @@ If you suspect privacy compromise: Close all tabs and windows you are browsing C
 
         await airportPermitInstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
 
-      /// 3️⃣ Clear UI state
-      // chatController.clear();
+      // Clear local attachment draft before reloading request details
       state.attachments.clear();
+      chatController.clear();
+
+      await fetchRequestDetailsById(requestId);
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
       debugPrintStack(stackTrace: st);

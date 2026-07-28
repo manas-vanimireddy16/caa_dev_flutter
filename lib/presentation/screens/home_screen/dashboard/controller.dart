@@ -3,7 +3,7 @@ part of 'view.dart';
 // Holds the index of the selected bottom nav tab
 final bottomNavIndexProvider = StateProvider<int>((ref) => 0);
 
-final _vsProvider =
+final homeDashboardProvider =
     StateNotifierProvider.autoDispose<_VSController, _ViewState>((ref) {
       final stateController = _VSController();
 

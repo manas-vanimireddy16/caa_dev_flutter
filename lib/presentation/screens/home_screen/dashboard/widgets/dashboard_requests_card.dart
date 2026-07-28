@@ -29,7 +29,7 @@ class _DashboardRequestsCardState extends ConsumerState<DashboardRequestsCard> {
   }
 
   void _search(String value) {
-    final controller = ref.read(_vsProvider.notifier);
+    final controller = ref.read(homeDashboardProvider.notifier);
     if (_selectedTab == 0) {
       controller.fetchRequests(searchText: value.trim());
     } else {
@@ -39,7 +39,7 @@ class _DashboardRequestsCardState extends ConsumerState<DashboardRequestsCard> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(_vsProvider);
+    final state = ref.watch(homeDashboardProvider);
     final l10n = DashboardL10n.of(context);
     final items = _selectedTab == 0 ? state.requestData : state.actionItems;
     final isLoading = _selectedTab == 0

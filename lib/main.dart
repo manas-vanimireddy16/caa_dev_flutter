@@ -1,5 +1,4 @@
-import 'dart:ui';
-import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/l10n/app_localizations.dart';
 import 'package:code_setup/modules/router/app_router.dart';
 import 'package:code_setup/presentation/app.dart';
@@ -60,7 +59,9 @@ class _MyAppState extends ConsumerState<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      routerConfig: appRouter.config(),
+      routerConfig: appRouter.config(
+        navigatorObservers: () => [AutoRouteObserver()],
+      ),
     );
   }
 }

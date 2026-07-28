@@ -29,12 +29,45 @@ part 'controller.dart';
 part 'widgets/dashboard_requests_card.dart';
 
 @RoutePage()
-class AnnouncementScreen extends ConsumerWidget {
+class AnnouncementScreen extends ConsumerStatefulWidget {
   const AnnouncementScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(_vsProvider);
+  ConsumerState<AnnouncementScreen> createState() => _AnnouncementScreenState();
+}
+
+class _AnnouncementScreenState extends ConsumerState<AnnouncementScreen>
+    with AutoRouteAwareStateMixin<AnnouncementScreen> {
+  @override
+  void didInitTabRoute(TabPageRoute? previousRoute) {
+    super.didInitTabRoute(previousRoute);
+    _refreshHomeRequests();
+  }
+
+  @override
+  void didChangeTabRoute(TabPageRoute previousRoute) {
+    super.didChangeTabRoute(previousRoute);
+    _refreshHomeRequests();
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    _refreshHomeRequests();
+  }
+
+  Future<void> _refreshHomeRequests() async {
+    if (!mounted) return;
+    final controller = ref.read(homeDashboardProvider.notifier);
+    await Future.wait([
+      controller.fetchRequests(),
+      controller.fetchActionItems(),
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(homeDashboardProvider);
     final l10n = DashboardL10n.of(context);
     final storedUser = ref.watch(userProvider);
     final userInfo = ref.watch(userInfoProvider);
@@ -95,7 +128,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(_vsProvider);
+    final state = ref.watch(homeDashboardProvider);
     final UserModel? user = state.user;
     final storedUser = ref.watch(userProvider);
     final userInfo = ref.watch(userInfoProvider);

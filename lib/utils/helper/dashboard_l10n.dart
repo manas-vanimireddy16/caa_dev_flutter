@@ -1151,7 +1151,7 @@ class DashboardL10n {
     'لقد قرأت وقبلت سياسة الأمان والخصوصية',
   );
   String get airportEntryPermitSecurityPrivacyPolicy => _t(
-    'I have read and understood all the security policies outlined above.',
+    'I agree to comply with CAA\'s security policies.',
     'سياسة الأمان والخصوصية',
   );
 
