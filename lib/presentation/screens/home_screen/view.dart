@@ -12,6 +12,9 @@ import 'package:code_setup/modules/router/app_router.gr.dart';
 
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 
+import 'package:code_setup/presentation/screens/home_screen/dashboard/view.dart';
+import 'package:code_setup/presentation/screens/home_screen/services/view.dart';
+
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
@@ -109,6 +112,7 @@ class HomePage extends ConsumerWidget {
                       tabsRouter.setActiveIndex(0);
 
                       stateController.onTabChanged(0);
+                      _refreshHomeTab(ref);
                     },
 
                     currentTheme: currentTheme,
@@ -142,6 +146,7 @@ class HomePage extends ConsumerWidget {
                       tabsRouter.setActiveIndex(1);
 
                       stateController.onTabChanged(1);
+                      _refreshServicesTab(ref);
                     },
 
                     currentTheme: currentTheme,
@@ -205,6 +210,27 @@ class HomePage extends ConsumerWidget {
       ),
     );
   }
+}
+
+Future<void> _refreshHomeTab(WidgetRef ref) async {
+  final controller = ref.read(homeDashboardProvider.notifier);
+  await Future.wait([
+    controller.fetchRequests(),
+    controller.fetchActionItems(),
+  ]);
+}
+
+Future<void> _refreshServicesTab(WidgetRef ref) async {
+  final controller = ref.read(servicesProvider.notifier);
+  final auth = KAuthCred();
+  await auth.hydrateProvidersFromStorage();
+  final userId = await auth.resolveUserId();
+  if (userId == null || userId <= 0) return;
+
+  await Future.wait([
+    controller.fetchUserRoles(userId),
+    controller.fetchBookmarks(),
+  ]);
 }
 
 Widget _buildNavItem({

@@ -1714,7 +1714,7 @@ class DashboardL10n {
   String get fileServers => _t('File Servers', 'خوادم الملفات');
 
   String get internalDataBase =>
-      _t('Internal data Bases', 'قواعد البيانات الداخلية');
+      _t('Internal Databases', 'قواعد البيانات الداخلية');
 
   String get sysAppToAccess => _t(
     'Systems / Application to Access',

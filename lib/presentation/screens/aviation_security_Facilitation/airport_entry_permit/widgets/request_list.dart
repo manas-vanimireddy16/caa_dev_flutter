@@ -19,11 +19,20 @@ class RequestsPage extends ConsumerStatefulWidget {
 class _RequestsPageState extends ConsumerState<RequestsPage> {
   PagingController<int, AirportPermitRequestModel>? _pagingController;
   bool _controllerInitialized = false;
+  VoidCallback? _disposeCleanup;
 
   @override
   void dispose() {
-    _pagingController?.dispose();
+    _disposeCleanup?.call();
+    final pagingController = _pagingController;
+    _pagingController = null;
+    pagingController?.dispose();
     super.dispose();
+  }
+
+  void _refreshList() {
+    if (!mounted) return;
+    _pagingController?.refresh();
   }
 
   void _ensureController(_VSController controller) {
@@ -42,7 +51,8 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               .actionItemsStatusFilter,
         ),
       );
-      controller.onActionItemsListRefresh = () => _pagingController?.refresh();
+      controller.onActionItemsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onActionItemsListRefresh = null;
     } else {
       _pagingController = PagingController<int, AirportPermitRequestModel>(
         getNextPageKey: (state) =>
@@ -55,7 +65,8 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               .myRequestsStatusFilter,
         ),
       );
-      controller.onMyRequestsListRefresh = () => _pagingController?.refresh();
+      controller.onMyRequestsListRefresh = _refreshList;
+      _disposeCleanup = () => controller.onMyRequestsListRefresh = null;
     }
   }
 
@@ -70,7 +81,7 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
             ? s.actionItemsStatusFilter
             : s.myRequestsStatusFilter,
       ),
-      (_, __) => _pagingController?.refresh(),
+      (_, __) => _refreshList(),
     );
 
     return PaginatedListSection<AirportPermitRequestModel>(

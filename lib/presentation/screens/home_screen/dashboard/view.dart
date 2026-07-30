@@ -56,13 +56,16 @@ class _AnnouncementScreenState extends ConsumerState<AnnouncementScreen>
     _refreshHomeRequests();
   }
 
-  Future<void> _refreshHomeRequests() async {
+  /// Tab/route lifecycle callbacks run while the tree is building, so the
+  /// provider can only be updated once the current frame is done.
+  void _refreshHomeRequests() {
     if (!mounted) return;
-    final controller = ref.read(homeDashboardProvider.notifier);
-    await Future.wait([
-      controller.fetchRequests(),
-      controller.fetchActionItems(),
-    ]);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final controller = ref.read(homeDashboardProvider.notifier);
+      controller.fetchRequests();
+      controller.fetchActionItems();
+    });
   }
 
   @override

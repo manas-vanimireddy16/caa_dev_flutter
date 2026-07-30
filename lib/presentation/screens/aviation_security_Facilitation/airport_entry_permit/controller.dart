@@ -707,6 +707,7 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshRequestLists() {
     refreshMyRequestsList();
     refreshActionItemsList();
+    fetchApprovalKpi();
   }
 
   void refreshActiveRequestList() {
@@ -1612,8 +1613,13 @@ If you suspect privacy compromise: Close all tabs and windows you are browsing C
 
   /// ========================= API CALLS =========================
 
-  Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final requests = await airportPermitInstance.getRequestsById(
         id: id,
@@ -1638,8 +1644,13 @@ If you suspect privacy compromise: Close all tabs and windows you are browsing C
           // fetchAssignEmployeesList();
           debugPrint('this user can only approve');
         }
+      } else if (showLoading) {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      if (showLoading) {
+        state = state.copyWith(isLoading: false);
+      }
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -2036,11 +2047,15 @@ If you suspect privacy compromise: Close all tabs and windows you are browsing C
         await airportPermitInstance.sendChat(payload, requestId);
       }
 
+      if (!hasMessage && !hasAttachment) return;
+
       // Clear local attachment draft before reloading request details
       state.attachments.clear();
-      chatController.clear();
+      if (hasMessage) {
+        chatController.clear();
+      }
 
-      await fetchRequestDetailsById(requestId);
+      await fetchRequestDetailsById(requestId, showLoading: false);
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
       debugPrintStack(stackTrace: st);
@@ -2440,7 +2455,14 @@ If you suspect privacy compromise: Close all tabs and windows you are browsing C
       state = state.copyWith(approvalId: value);
 
   void updateRequestTab(int index) {
+    if (state.requestDetailTab == index) return;
+
     state = state.copyWith(requestDetailTab: index);
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId > 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {
