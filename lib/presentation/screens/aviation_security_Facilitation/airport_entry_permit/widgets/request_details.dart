@@ -54,11 +54,29 @@ class _AirportEntryRequestDetailsTabScreenState
   Widget build(BuildContext context) {
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
     final l10n = DashboardL10n.of(context);
+    final state = ref.watch(_vsProvider(_providerArgs));
+    final showDownload = controller.canDownloadAirportPermitPdf;
 
     return KScaffold(
       backgroundColor: AppColors.homeSurfaceColor,
       appBar: KAppBar(
         title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle),
+        actions: [
+          if (showDownload)
+            IconButton(
+              tooltip: 'Download PDF',
+              onPressed: state.isGeneratingPdf
+                  ? null
+                  : () => controller.downloadAirportPermitPdf(),
+              icon: state.isGeneratingPdf
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.download_outlined),
+            ),
+        ],
       ),
 
       /// IMPORTANT — This fixes your issue.

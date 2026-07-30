@@ -56,6 +56,7 @@ class _ViewState {
   final int approvalId;
 
   final bool isButtonDisabled;
+  final bool isGeneratingPdf;
   final List<ChatMessageModel> chatById;
   final List<AttachmentModel> attachmentsById;
   final List<NationalityData> nationalityList;
@@ -533,6 +534,7 @@ class _ViewState {
     required this.requestDetailTab,
     required this.approvalId,
     required this.isButtonDisabled,
+    required this.isGeneratingPdf,
     required this.chatById,
     required this.attachmentsById,
     required this.isRequestLoading,
@@ -562,6 +564,7 @@ class _ViewState {
         requestDetailTab: 0,
         approvalId: 0,
         isButtonDisabled: false,
+        isGeneratingPdf: false,
         chatById: [],
 
         attachmentsById: [],
@@ -608,6 +611,7 @@ class _ViewState {
     String? threatOption,
     bool? isFormValid,
     bool? isButtonDisabled,
+    bool? isGeneratingPdf,
     List<ChatMessageModel>? chatById,
     List<Position>? positionsList,
     String? selectedPositionName,
@@ -666,6 +670,7 @@ class _ViewState {
       requestDetailTab: requestDetailTab ?? this.requestDetailTab,
       approvalId: approvalId ?? this.approvalId,
       isButtonDisabled: isButtonDisabled ?? this.isButtonDisabled,
+      isGeneratingPdf: isGeneratingPdf ?? this.isGeneratingPdf,
       chatById: chatById ?? this.chatById,
       attachmentsById: attachmentsById ?? this.attachmentsById,
       nationalityList: nationalityList ?? this.nationalityList,
@@ -2192,7 +2197,7 @@ If you suspect privacy compromise: Close all tabs and windows you are browsing C
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final user = KAppX.globalProvider.read(userInfoProvider);
 
-    final int userId = int.parse(user!.data!.id!);
+    final int userId = int.tryParse(user?.data?.id ?? '') ?? 0;
 
     debugPrint('---------------- APPROVAL CHECK ----------------');
     debugPrint('Logged User ID: $userId');
@@ -2857,6 +2862,43 @@ If you suspect privacy compromise: Close all tabs and windows you are browsing C
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalKpi();
     refreshRequestLists();
+  }
+
+  /// Mirrors React `isPrintEnabled` for the Airport Entry Permit download button.
+  bool get canDownloadAirportPermitPdf =>
+      AirportPermitApprovalValidator.shouldShowDownloadButton(
+        state.requestDetails,
+      );
+
+  Future<void> downloadAirportPermitPdf() async {
+    if (!mounted || state.isGeneratingPdf) return;
+    if (!canDownloadAirportPermitPdf) return;
+
+    state = state.copyWith(isGeneratingPdf: true);
+    try {
+      final data = AirportPermitPdfData.fromRequestDetails(
+        state.requestDetails,
+      );
+      final bytes = await AirportPermitPdfGenerator.generate(data);
+      final fileName = AirportPermitPdfGenerator.fileNameFor(data.requestId);
+      await AirportPermitPdfFileSaver.saveAndOpen(
+        bytes: bytes,
+        fileName: fileName,
+      );
+      if (!mounted) return;
+      Fluttertoast.showToast(msg: 'PDF downloaded successfully');
+    } catch (e, st) {
+      debugPrint('Airport Entry Permit PDF error: $e\n$st');
+      if (mounted) {
+        Fluttertoast.showToast(
+          msg: 'Failed to generate PDF: ${e.toString()}',
+        );
+      }
+    } finally {
+      if (mounted) {
+        state = state.copyWith(isGeneratingPdf: false);
+      }
+    }
   }
 
   @override

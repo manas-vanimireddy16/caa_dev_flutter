@@ -109,6 +109,7 @@ class _VSController extends StateNotifier<_ViewState> {
     await auth.hydrateProvidersFromStorage();
 
     final savedRole = await auth.getSelectedRole();
+    if (!mounted) return;
     if (savedRole != null) {
       await Future.wait([fetchRequests(), fetchActionItems()]);
       return;
@@ -129,6 +130,7 @@ class _VSController extends StateNotifier<_ViewState> {
         userData?.userId ?? int.tryParse(userInfo?.data?.id ?? '') ?? 0;
 
     if (userId == 0) return;
+    if (!mounted) return;
 
     state = state.copyWith(isLoading: true);
     final userModel = await dashboardInstance.getUser(userId);
@@ -136,17 +138,21 @@ class _VSController extends StateNotifier<_ViewState> {
     print(user.data?.employeeName);
     print(user.data?.department?.id);
 
+    if (!mounted) return;
     state = state.copyWith(isLoading: false, user: user);
   }
 
   Future<void> fetchAnnouncements() async {
+    if (!mounted) return;
     state = state.copyWith(isLoading: true);
     try {
       final announcements = await dashboardInstance.getModels();
+      if (!mounted) return;
       state = state.copyWith(isLoading: false, announcements: announcements);
     } catch (e) {
       // Safety net — getModels should not throw, but keep dashboard usable.
       debugPrint('fetchAnnouncements failed: $e');
+      if (!mounted) return;
       state = state.copyWith(isLoading: false, announcements: const []);
     }
   }
@@ -215,6 +221,7 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
+    if (!mounted) return;
     state = state.copyWith(isRequestLoading: true, requestError: '');
 
     try {
@@ -232,6 +239,7 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceIds: subServiceIds,
       );
 
+      if (!mounted) return;
       state = state.copyWith(
         requestData: requests,
         serviceIds: serviceIds,
@@ -239,6 +247,7 @@ class _VSController extends StateNotifier<_ViewState> {
         isRequestLoading: false,
       );
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(
         isRequestLoading: false,
         requestError: e.toString(),
@@ -252,6 +261,7 @@ class _VSController extends StateNotifier<_ViewState> {
     String searchText = '',
     String status = '',
   }) async {
+    if (!mounted) return;
     state = state.copyWith(isActionItemLoading: true, actionItemError: '');
 
     try {
@@ -273,6 +283,7 @@ class _VSController extends StateNotifier<_ViewState> {
         subServiceIds: subServiceIds,
       );
 
+      if (!mounted) return;
       state = state.copyWith(
         actionItems: items,
         serviceIds: serviceIds,
@@ -280,6 +291,7 @@ class _VSController extends StateNotifier<_ViewState> {
         isActionItemLoading: false,
       );
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(
         isActionItemLoading: false,
         actionItemError: e.toString(),

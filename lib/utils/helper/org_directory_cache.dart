@@ -26,6 +26,14 @@ abstract final class OrgDirectoryCache {
     return _loading ??= _load();
   }
 
+  /// Drops the cached directory so the next session reloads it with its own token.
+  static void reset() {
+    _departments = const [];
+    _sections = const [];
+    _loading = null;
+    _loaded = false;
+  }
+
   static Future<void> _load() async {
     try {
       final client = await KAppX.network.secureClient();

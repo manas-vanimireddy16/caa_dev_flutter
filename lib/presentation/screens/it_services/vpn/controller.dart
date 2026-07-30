@@ -264,6 +264,7 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshRequestLists() {
     refreshMyRequestsList();
     refreshActionItemsList();
+    fetchApprovalKpi();
   }
 
   void refreshActiveRequestList() {
@@ -1759,7 +1760,7 @@ Violation of this policy may result in:
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final user = KAppX.globalProvider.read(userInfoProvider);
 
-    final int userId = int.parse(user!.data!.id!);
+    final int userId = int.tryParse(user?.data?.id ?? '') ?? 0;
 
     debugPrint('---------------- APPROVAL CHECK ----------------');
     debugPrint('Logged User ID: $userId');

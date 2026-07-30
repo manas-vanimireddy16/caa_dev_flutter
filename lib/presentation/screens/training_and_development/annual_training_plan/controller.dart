@@ -924,7 +924,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final user = KAppX.globalProvider.read(userInfoProvider);
 
-    final int userId = int.parse(user!.data!.id!);
+    final int userId = int.tryParse(user?.data?.id ?? '') ?? 0;
 
     /// 1️⃣ Delegate always allowed
     if (approval.delegateUserId == userId) return true;

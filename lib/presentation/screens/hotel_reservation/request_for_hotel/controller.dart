@@ -235,6 +235,7 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshRequestLists() {
     refreshMyRequestsList();
     refreshActionItemsList();
+    fetchApprovalKpi();
   }
 
   void refreshActiveRequestList() {
@@ -584,7 +585,9 @@ class _VSController extends StateNotifier<_ViewState> {
         if (checkInDate != null &&
             checkOutDate != null &&
             checkOutDate.isBefore(checkInDate)) {
-          ref.read(dynamicFormProvider.notifier).updateValue('checkOutDate', '');
+          ref
+              .read(dynamicFormProvider.notifier)
+              .updateValue('checkOutDate', '');
         }
       },
     ),
@@ -1239,7 +1242,7 @@ info@caa.gov.om
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final user = KAppX.globalProvider.read(userInfoProvider);
 
-    final int userId = int.parse(user!.data!.id!);
+    final int userId = int.tryParse(user?.data?.id ?? '') ?? 0;
 
     debugPrint('---------------- APPROVAL CHECK ----------------');
     debugPrint('Logged User ID: $userId');

@@ -67,6 +67,9 @@ dependencies:
   printing: ^5.14.2
   infinite_scroll_pagination: ^5.1.1
   url_launcher: ^6.3.1
+  path_provider: ^2.1.6
+  open_filex: ^4.7.0
+  permission_handler: ^12.0.3
 
 dev_dependencies:
   flutter_test:

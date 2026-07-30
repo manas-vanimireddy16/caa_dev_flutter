@@ -7,6 +7,7 @@ import 'package:code_setup/modules/domain/models/user_model.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/mobile_service_scope.dart';
+import 'package:code_setup/utils/helper/org_directory_cache.dart';
 import 'package:code_setup/utils/helper/role_context_sync.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -128,7 +129,7 @@ class KAuthCred {
         decoder: jsonDecode,
       );
 
-      if (jsonData != null) {
+      if (jsonData != null && !_isLoggingOut) {
         final user = User.fromJson(Map<String, dynamic>.from(jsonData));
         KAppX.globalProvider.read(userProvider.notifier).state = user;
         return user;
@@ -191,7 +192,7 @@ class KAuthCred {
         decoder: jsonDecode,
       );
 
-      if (jsonData != null) {
+      if (jsonData != null && !_isLoggingOut) {
         final role = MobileServiceScope.filterSelectedRole(
           SelectedUserRole.fromJson(Map<String, dynamic>.from(jsonData)),
         );
@@ -239,7 +240,7 @@ class KAuthCred {
         decoder: jsonDecode,
       );
 
-      if (jsonData != null) {
+      if (jsonData != null && !_isLoggingOut) {
         final role = UserInformation.fromJson(
           Map<String, dynamic>.from(jsonData),
         );
@@ -262,9 +263,12 @@ class KAuthCred {
     }
   }
 
-  /// Reloads persisted session into Riverpod after hot restart.
-  Future<void> hydrateProvidersFromStorage() async {
-    await Future.wait([getProfileData(), getUserInfoData(), getSelectedRole()]);
+  /// Reloads persisted session into Riverpod after hot restart and returns the
+  /// profile that was actually found in storage.
+  Future<User?> hydrateProvidersFromStorage() async {
+    final profile = getProfileData();
+    await Future.wait([profile, getUserInfoData(), getSelectedRole()]);
+    return profile;
   }
 
   /// Resolves the logged-in user id from memory or persistent storage.
@@ -310,6 +314,19 @@ class KAuthCred {
     await deleteProfileData();
     await deleteUserInfoData();
     await deleteRoleData();
+    _clearSessionProviders();
+  }
+
+  /// Nulls the session providers again once every delete has finished, so a read
+  /// that was already in flight cannot leave a stale user in memory.
+  void _clearSessionProviders() {
+    try {
+      KAppX.globalProvider.read(userProvider.notifier).state = null;
+      KAppX.globalProvider.read(userInfoProvider.notifier).state = null;
+      KAppX.globalProvider.read(rolesProvider.notifier).state = null;
+    } catch (e, st) {
+      log('Error clearing session providers: $e\n$st');
+    }
   }
 
   Future<void> logoutToLogin({bool clearNetworkCache = true}) async {
@@ -320,8 +337,12 @@ class KAuthCred {
       if (clearNetworkCache) {
         KAppX.network.bootDown();
       }
+      OrgDirectoryCache.reset();
       await clearSession();
-      await KAppX.router.replace(const MicrosoftLoginRoute());
+      await KAppX.router.replaceAll(
+        [const MicrosoftLoginRoute()],
+        updateExistingRoutes: false,
+      );
     } catch (e, st) {
       log('Logout to login failed: $e', stackTrace: st);
     } finally {

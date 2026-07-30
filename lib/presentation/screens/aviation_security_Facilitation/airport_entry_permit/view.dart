@@ -41,6 +41,10 @@ import 'package:code_setup/presentation/screens/asset_affairs/models/unit_locati
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/airport_entry_area_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/airport_entry_request_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/nationality_list_model.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/airport_entry_permit/pdf/airport_permit_approval_validator.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/airport_entry_permit/pdf/airport_permit_pdf_data.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/airport_entry_permit/pdf/airport_permit_pdf_file_saver.dart';
+import 'package:code_setup/presentation/screens/aviation_security_Facilitation/airport_entry_permit/pdf/airport_permit_pdf_generator.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_list.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/goal_weight_model.dart';

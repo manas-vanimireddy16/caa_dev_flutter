@@ -117,20 +117,26 @@ class SettingsController extends StateNotifier<SettingsState> {
         rethrow;
       }
       debugPrint('No MSAL account cached; clearing local session only.');
+    } catch (e) {
+      // MSAL may never have initialized; the local session must still be cleared.
+      debugPrint('MSAL sign-out skipped: $e');
     }
   }
 
   Future<void> logoutJwt() async {
-    try {
-      state = state.copyWith(isLoading: true);
+    if (state.isLoggingOut) return;
+    state = state.copyWith(isLoggingOut: true);
 
+    try {
       await KAuthCred().logoutToLogin();
 
       debugPrint("✅ JWT Logout Successful");
     } catch (e) {
       debugPrint("❌ Logout Error: $e");
     } finally {
-      state = state.copyWith(isLoading: false);
+      if (mounted) {
+        state = state.copyWith(isLoggingOut: false);
+      }
     }
   }
 
@@ -144,17 +150,14 @@ class SettingsController extends StateNotifier<SettingsState> {
   }
 
   Future<void> onLogoutPressed(BuildContext context) async {
+    if (state.isLoggingOut) return;
     state = state.copyWith(isLoggingOut: true);
-    // final loginProvider = KAppX.globalProvider.read(loginVsProvider.notifier);
     try {
       await signOut();
-      // TODO: Clear auth credentials here
-      // await AuthCred.clear();
-
-      // TODO: Navigate to login / splash screen using AutoRoute
-      // context.replaceRoute(const LoginRoute());
     } finally {
-      state = state.copyWith(isLoggingOut: false);
+      if (mounted) {
+        state = state.copyWith(isLoggingOut: false);
+      }
     }
   }
 

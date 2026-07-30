@@ -79,6 +79,12 @@ class _VSController extends StateNotifier<_ViewState> {
   final Set<int> _pendingBookmarkToggles = {};
   bool _isFetchingBookmarks = false;
 
+  /// Only the newest roles request is allowed to write [_ViewState.services],
+  /// so a slower earlier response can never overwrite a fresher list.
+  int _rolesFetchToken = 0;
+  Future<void>? _inFlightRolesFetch;
+  int? _inFlightUserId;
+
   bool isBookmarked(int serviceId) =>
       serviceId != 0 && state.bookmarkedServiceIds.contains(serviceId);
 
@@ -125,50 +131,82 @@ class _VSController extends StateNotifier<_ViewState> {
         .toSet();
   }
 
-  Future<void> fetchUserRoles(int id) async {
+  Future<void> fetchUserRoles(int id, {bool force = false}) {
     if (id <= 0) {
       debugPrint('fetchUserRoles skipped: invalid user id ($id)');
-      return;
+      return Future<void>.value();
     }
+
+    // The tab bar, the route observer and pull-to-refresh can all ask for the
+    // same data at once. Share a single request instead of racing them.
+    final inFlight = _inFlightRolesFetch;
+    if (!force && inFlight != null && _inFlightUserId == id) {
+      return inFlight;
+    }
+
+    final token = ++_rolesFetchToken;
+    final request = _runFetchUserRoles(id, token);
+    _inFlightRolesFetch = request;
+    _inFlightUserId = id;
+    request.whenComplete(() {
+      if (_rolesFetchToken == token) {
+        _inFlightRolesFetch = null;
+        _inFlightUserId = null;
+      }
+    });
+    return request;
+  }
+
+  Future<void> _runFetchUserRoles(int id, int token) async {
     if (!mounted) return;
     state = state.copyWith(isLoading: true);
 
     try {
       final roles = await _fetchAndStoreRoles(id);
-      if (!mounted) return;
+      if (!mounted || token != _rolesFetchToken) return;
 
       final effectiveRoleId = await _ensureRoleSelected(roles);
-      if (!mounted) return;
+      if (!mounted || token != _rolesFetchToken) return;
 
-      final services = _filterServicesByRole(roles, effectiveRoleId);
-      await _storeSelectedRole(roles, effectiveRoleId);
-      if (!mounted) return;
+      final detail = _findRoleDetail(roles, effectiveRoleId);
+      if (detail == null) {
+        // The response carries no usable role. Keep whatever is on screen
+        // rather than replacing a good list with an empty one.
+        debugPrint('fetchUserRoles: role $effectiveRoleId not in response');
+        state = state.copyWith(isLoading: false);
+        return;
+      }
 
-      state = state.copyWith(services: services, isLoading: false);
+      final services = MobileServiceScope.filterServices(
+        detail.services ?? const [],
+      );
+      await _storeSelectedRole(effectiveRoleId, detail);
+      if (!mounted || token != _rolesFetchToken) return;
+
+      state = state.copyWith(
+        services: services,
+        selectedRole: detail.role?.name ?? state.selectedRole,
+        isLoading: false,
+      );
     } catch (e) {
       debugPrint('fetchUserRoles error: $e');
-      if (mounted) {
+      if (mounted && token == _rolesFetchToken) {
         state = state.copyWith(isLoading: false);
       }
     }
   }
 
-  List<Service> _filterServicesByRole(UserRoleResponse roles, int roleId) {
-    final matched = roles.data?.roleDetails?.firstWhere(
-      (d) => d.role?.id == roleId,
-      orElse: () => RoleDetail(services: []),
-    );
+  RoleDetail? _findRoleDetail(UserRoleResponse roles, int roleId) {
+    final details = roles.data?.roleDetails;
+    if (details == null || roleId == 0) return null;
 
-    return MobileServiceScope.filterServices(matched?.services ?? const []);
+    for (final detail in details) {
+      if (detail.role?.id == roleId) return detail;
+    }
+    return null;
   }
 
-  Future<void> _storeSelectedRole(UserRoleResponse roles, int roleId) async {
-    final detail = roles.data?.roleDetails?.firstWhere(
-      (item) => item.role?.id == roleId,
-      orElse: () => RoleDetail(services: []),
-    );
-    if (detail == null) return;
-
+  Future<void> _storeSelectedRole(int roleId, RoleDetail detail) async {
     await KAuthCred().storeSelectedRole(
       SelectedUserRole(
         roleId: roleId,
@@ -202,15 +240,18 @@ class _VSController extends StateNotifier<_ViewState> {
     );
 
     if (userId == null || userId == 0) return;
-    await fetchUserRoles(userId);
+    await fetchUserRoles(userId, force: true);
   }
 
   Future<int> _ensureRoleSelected(UserRoleResponse roles) async {
     final storage = KAuthCred();
     final saved = await storage.getSelectedRole();
+    final savedRoleId = saved?.roleId ?? 0;
 
-    if (saved?.roleId != null && saved!.roleId != 0) {
-      return saved.roleId;
+    // A stored role that no longer exists on the account would resolve to an
+    // empty service list, so fall back to the first role the API returned.
+    if (savedRoleId != 0 && _findRoleDetail(roles, savedRoleId) != null) {
+      return savedRoleId;
     }
 
     final firstRole = roles.data?.roleDetails?.firstOrNull?.role?.id ?? 0;
@@ -235,24 +276,32 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> selectOrStoreRole(UserRoleResponse userRoles) async {
-    final storage = KAuthCred();
-    final first = userRoles.data!.rolesSummary!.first;
+    final details = userRoles.data?.roleDetails;
+    if (details == null || details.isEmpty) {
+      debugPrint('selectOrStoreRole skipped: response carries no role details');
+      return;
+    }
 
-    final detail = userRoles.data!.roleDetails!.firstWhere(
-      (e) => e.role?.id == first.roleId,
-      orElse: () => userRoles.data!.roleDetails!.first,
-    );
+    final first = userRoles.data?.rolesSummary?.firstOrNull;
+    final detail =
+        _findRoleDetail(userRoles, first?.roleId ?? 0) ?? details.first;
+
+    final roleId = detail.role?.id ?? first?.roleId ?? 0;
+    if (roleId == 0) {
+      debugPrint('selectOrStoreRole skipped: no usable role id');
+      return;
+    }
 
     final selected = SelectedUserRole(
-      roleId: first.roleId!,
-      roleName: first.roleName!,
+      roleId: roleId,
+      roleName: detail.role?.name ?? first?.roleName ?? '',
       departmentId: detail.department?.id ?? 0,
       sectionId: detail.section?.id ?? 0,
       services: MobileServiceScope.filterServices(detail.services ?? const []),
     );
 
-    await storage.storeSelectedRole(selected);
-    debugPrint('Selected Role: ${selected.services}');
+    await KAuthCred().storeSelectedRole(selected);
+    debugPrint('Selected Role: ${selected.roleName} (${selected.roleId})');
   }
 
   Future<void> fetchBookmarks() async {
