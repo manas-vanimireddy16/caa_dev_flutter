@@ -569,9 +569,23 @@ class _VSController extends StateNotifier<_ViewState> {
     DynamicField(
       name: 'location',
       label: l10n.locationOfEvent,
-      type: FieldType.text,
-      placeholder: l10n.enter,
+      type: FieldType.select,
+      placeholder: l10n.select,
       required: true,
+      options: const [
+        DropdownOption(value: 'VIP Hall', label: 'VIP Hall'),
+        DropdownOption(value: 'Aviation Hall', label: 'Aviation Hall'),
+        DropdownOption(value: 'Masarat Hall', label: 'Masarat Hall'),
+        DropdownOption(value: 'Others', label: 'Others'),
+      ],
+    ),
+    DynamicField(
+      name: 'other_location',
+      label: 'Other Event Location',
+      type: FieldType.text,
+      required: true,
+      placeholder: l10n.otherDetailsPlaceholder,
+      visibleWhen: (values) => values['location'] == 'Others',
     ),
 
     /// ================= TYPE OF EVENT =================
@@ -645,8 +659,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
   /// ========================= API CALLS =========================
 
-  Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final requests = await requestEventSupportInstance.getRequestsById(
         id: id,
@@ -673,6 +692,7 @@ class _VSController extends StateNotifier<_ViewState> {
         }
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -1047,11 +1067,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await requestEventSupportInstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
+
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
-      // chatController.clear();
+      chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
@@ -1425,8 +1445,14 @@ class _VSController extends StateNotifier<_ViewState> {
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {
@@ -1535,7 +1561,9 @@ class _VSController extends StateNotifier<_ViewState> {
       "request_for": values['request_for'] ?? "",
       "date_of_event": values['event_date'] ?? "",
 
-      "location_of_event": values['location'] ?? "",
+      "location_of_event": values['location'] == 'Others'
+          ? (values['other_location'] ?? '')
+          : (values['location'] ?? ""),
       "type_of_event": values['event_type'] ?? "",
 
       "phone_number": values['phone_number'] ?? "",

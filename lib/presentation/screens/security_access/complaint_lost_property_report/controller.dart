@@ -387,6 +387,12 @@ class _VSController extends StateNotifier<_ViewState> {
       'Location of Where Item Was Lost': item?.locationWhereItemWasLost ?? '-',
       'Date and Time of Loss': formatDate(item?.dateTimeOfLoss) ?? '-',
       'Item Description': item?.itemDescription ?? '-',
+      'Lost Item Classification': item?.lostItemClassification ?? '-',
+      if ((item?.lostItemClassification ?? '') == 'CAA Property')
+        'CAA Property Type': (item?.caaPropertyType?.isNotEmpty ?? false)
+            ? item!.caaPropertyType!
+            : '-',
+      'Lost Card': item?.lostCard ?? '-',
       // 'Type of Project': item.titleOfProject ?? 'NA',
 
       /// 👇 APPROVER (SINGLE LINE)
@@ -413,6 +419,12 @@ class _VSController extends StateNotifier<_ViewState> {
           request?.locationWhereItemWasLost ?? '-',
       'Date and Time of Loss': formatDate(request?.dateTimeOfLoss) ?? '-',
       'Item Description': request?.itemDescription ?? '-',
+      'Lost Item Classification': request?.lostItemClassification ?? '-',
+      if ((request?.lostItemClassification ?? '') == 'CAA Property')
+        'CAA Property Type': (request?.caaPropertyType?.isNotEmpty ?? false)
+            ? request!.caaPropertyType!
+            : '-',
+      'Lost Card': request?.lostCard ?? '-',
     };
   }
 
@@ -474,7 +486,22 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    returnToMyRequestsTab();
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
@@ -534,6 +561,74 @@ class _VSController extends StateNotifier<_ViewState> {
 
         return null;
       },
+    ),
+
+    /// ================= LOST ITEM CLASSIFICATION =================
+    DynamicField(
+      name: 'lost_item_classification',
+      label: l10n.lostItemClassification,
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.selectLostItemClassification,
+      options: [
+        DropdownOption(
+          value: 'Personal Property',
+          label: l10n.personalProperty,
+        ),
+        DropdownOption(value: 'CAA Property', label: l10n.caaProperty),
+      ],
+      onChanged: (value, ref) {
+        final form = ref.read(dynamicFormProvider.notifier);
+        if (value != 'CAA Property') {
+          form.updateValue('caa_property_type', '');
+          form.updateValue('other_caa_property', '');
+        }
+      },
+    ),
+
+    /// ================= CAA PROPERTY TYPE =================
+    DynamicField(
+      name: 'caa_property_type',
+      label: l10n.caaPropertyType,
+      type: FieldType.select,
+      required: true,
+      placeholder: l10n.selectCaaPropertyType,
+      visibleWhen: (values) => values['lost_item_classification'] == 'CAA Property',
+      options: [
+        DropdownOption(value: 'Access Card', label: l10n.accessCard),
+        DropdownOption(value: 'Other', label: l10n.other),
+      ],
+      onChanged: (value, ref) {
+        if (value != 'Other') {
+          ref
+              .read(dynamicFormProvider.notifier)
+              .updateValue('other_caa_property', '');
+        }
+      },
+    ),
+
+    /// ================= OTHER CAA PROPERTY =================
+    DynamicField(
+      name: 'other_caa_property',
+      label: l10n.otherCaaProperty,
+      type: FieldType.text,
+      required: true,
+      placeholder: l10n.enterOtherCaaProperty,
+      visibleWhen: (values) =>
+          values['lost_item_classification'] == 'CAA Property' &&
+          values['caa_property_type'] == 'Other',
+    ),
+
+    /// ================= LOST CARD =================
+    DynamicField(
+      name: 'lost_card',
+      label: l10n.lostCard,
+      type: FieldType.radio,
+      required: true,
+      options: [
+        DropdownOption(value: 'Yes', label: l10n.yesNoYes),
+        DropdownOption(value: 'No', label: l10n.yesNoNo),
+      ],
     ),
 
     /// ================= LOCATION WHERE ITEM WAS LOST =================
@@ -615,8 +710,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
   /// ========================= API CALLS =========================
 
-  Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final requests = await complaintLostReportInstance.getRequestsById(
         id: id,
@@ -643,6 +743,7 @@ class _VSController extends StateNotifier<_ViewState> {
         }
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -1029,11 +1130,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await complaintLostReportInstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
+
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
-      // chatController.clear();
+      chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
@@ -1074,9 +1175,13 @@ class _VSController extends StateNotifier<_ViewState> {
       // if (decisionNo != null) {
       KAppX.router.pop();
       // }
-      // await fetchactionItems();
+      returnToMyRequestsTab();
       refreshRequestLists();
-      await fetchApprovalKpi();
+      await Future.wait([
+        fetchApprovalKpi(),
+        fetchApprovalStatusBreakdown('weekly'),
+        fetchApprovalTrendBreakDown(DateTime.now().year.toString()),
+      ]);
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1387,8 +1492,14 @@ class _VSController extends StateNotifier<_ViewState> {
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {
@@ -1479,6 +1590,16 @@ class _VSController extends StateNotifier<_ViewState> {
     final time = values['time_of_loss']?.toString() ?? '';
     final dateTime = DateTime.parse('$date $time');
 
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
+    final classification =
+        values['lost_item_classification']?.toString() ?? '';
+    final caaPropertyType = values['caa_property_type']?.toString() ?? '';
+    final otherCaaProperty = values['other_caa_property']?.toString() ?? '';
+
+    final resolvedCaaPropertyType = classification == 'CAA Property'
+        ? (caaPropertyType == 'Other' ? otherCaaProperty : caaPropertyType)
+        : '';
+
     return {
       "service_id": serviceId,
       "sub_service_id": subServiceId,
@@ -1492,9 +1613,15 @@ class _VSController extends StateNotifier<_ViewState> {
 
       "description": values['description'] ?? "",
 
-      "req_user_department_id": values['req_user_department_id'],
+      "lost_item_classification": classification,
+      "caa_property_type": resolvedCaaPropertyType,
+      "lost_card": values['lost_card']?.toString() ?? 'No',
 
-      "req_user_section_id": values['req_user_section_id'],
+      "req_user_department_id":
+          values['req_user_department_id'] ?? selectedRole?.departmentId ?? 0,
+
+      "req_user_section_id":
+          values['req_user_section_id'] ?? selectedRole?.sectionId ?? 0,
 
       "attachments": _buildAttachments(values),
     };

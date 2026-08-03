@@ -1842,8 +1842,14 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(itTechnicianId: value);
   }
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId);
+    }
   }
 
   // Pick File
@@ -2103,11 +2109,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await dashboardinstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
+
+      await fetchRequestDetailsById(requestId);
 
       /// 3️⃣ Clear UI state
-      // chatController.clear();
+      chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');

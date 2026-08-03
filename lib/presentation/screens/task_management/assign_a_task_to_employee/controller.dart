@@ -706,7 +706,15 @@ class _VSController extends StateNotifier<_ViewState> {
     refreshActiveRequestList();
   }
 
+  static const _raiseRequestAllowedRoleIds = {3, 4, 5, 6};
+
+  bool get canRaiseRequest {
+    final roleId = KAppX.globalProvider.read(rolesProvider)?.roleId;
+    return roleId != null && _raiseRequestAllowedRoleIds.contains(roleId);
+  }
+
   void openNewRequestForm() {
+    if (!canRaiseRequest) return;
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
     // state = state.copyWith(selectedUsersList: []);
     KAppX.router.push(
@@ -1339,12 +1347,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await assignatasktoemployeeInstance.sendChat(payload, requestId);
       }
-      // fetchChatById(requestId);
-      // fetchAttachmentsById(requestId);
-      fetchRequestDetailsById(requestId);
+
+      await fetchRequestDetailsById(requestId);
 
       /// 3️⃣ Clear UI state
-      // chatController.clear();
+      chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
@@ -1563,8 +1570,14 @@ class _VSController extends StateNotifier<_ViewState> {
     state = state.copyWith(selectedFileUrl: urls);
   }
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId);
+    }
   }
 
   void updateTabIndex(int index) {

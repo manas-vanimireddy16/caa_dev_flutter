@@ -14,6 +14,10 @@ class ComplaintLostPropertyRequestModel {
   final String? itemDescription;
   final String? description;
 
+  final String? lostItemClassification;
+  final String? caaPropertyType;
+  final String? lostCard;
+
   final String? referenceNumber;
 
   final String? status;
@@ -27,6 +31,9 @@ class ComplaintLostPropertyRequestModel {
     this.locationWhereItemWasLost,
     this.itemDescription,
     this.description,
+    this.lostItemClassification,
+    this.caaPropertyType,
+    this.lostCard,
     this.referenceNumber,
     this.status,
   });
@@ -55,6 +62,10 @@ class ComplaintLostPropertyRequestModel {
 
       description: json['description'],
 
+      lostItemClassification: json['lost_item_classification'],
+      caaPropertyType: json['caa_property_type'],
+      lostCard: json['lost_card'],
+
       referenceNumber: json['reference_number'],
 
       status: json['status'],
@@ -75,6 +86,10 @@ class ComplaintLostPropertyRequestModel {
       'item_description': itemDescription,
 
       'description': description,
+
+      'lost_item_classification': lostItemClassification,
+      'caa_property_type': caaPropertyType,
+      'lost_card': lostCard,
 
       'reference_number': referenceNumber,
 

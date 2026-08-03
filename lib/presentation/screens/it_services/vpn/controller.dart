@@ -754,6 +754,14 @@ class _VSController extends StateNotifier<_ViewState> {
         DropdownOption(value: 'ONE_TIME', label: l10n.oneTime),
         DropdownOption(value: 'Permanent', label: l10n.permanent),
       ],
+      onChanged: (value, ref) {
+        final form = ref.read(dynamicFormProvider.notifier);
+        if (value == 'Permanent') {
+          final today = DateTime.now().toIso8601String().split('T').first;
+          form.updateValue('start_date', today);
+          form.updateValue('end_date', '');
+        }
+      },
     ),
 
     /// ================= START DATE =================
@@ -916,8 +924,13 @@ Violation of this policy may result in:
 
   /// ========================= API CALLS =========================
 
-  Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final requests = await vpnInstance.getRequestsById(
         id: id,
@@ -950,6 +963,7 @@ Violation of this policy may result in:
         }
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       debugPrint('API ERROR: ${apiError.message}');
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
@@ -1584,10 +1598,11 @@ Violation of this policy may result in:
 
         await vpnInstance.sendChat(payload, requestId);
       }
-      fetchRequestDetailsById(requestId);
+
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
-      // chatController.clear();
+      chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
@@ -2026,8 +2041,14 @@ Violation of this policy may result in:
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {

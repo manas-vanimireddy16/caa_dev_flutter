@@ -1424,6 +1424,9 @@ class RequestModel {
   final String? locationWhereItemWasLost;
 
   final String? itemDescription;
+  final String? lostItemClassification;
+  final String? caaPropertyType;
+  final String? lostCard;
 
   // ─────────────────────────────
   // TRAINING ROOM BOOKING FIELDS
@@ -1865,6 +1868,9 @@ class RequestModel {
     this.dateTimeOfLoss,
     this.locationWhereItemWasLost,
     this.itemDescription,
+    this.lostItemClassification,
+    this.caaPropertyType,
+    this.lostCard,
 
     this.eventLocation,
     this.eventDetails,
@@ -2295,6 +2301,9 @@ class RequestModel {
       locationWhereItemWasLost: json['location_where_item_was_lost'],
 
       itemDescription: json['item_description'],
+      lostItemClassification: json['lost_item_classification'],
+      caaPropertyType: json['caa_property_type'],
+      lostCard: json['lost_card'],
 
       missionSponsoredBy: json['mission_sponsored_by'],
       missionPurpose: json['mission_purpose'],

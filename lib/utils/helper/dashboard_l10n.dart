@@ -1082,6 +1082,31 @@ class DashboardL10n {
   String get locationWhereItemWasLost =>
       _t('Location where item was lost', 'موقع فقدان المفقودات');
 
+  String get lostItemClassification =>
+      _t('Lost Item Classification', 'تصنيف المفقودات');
+
+  String get selectLostItemClassification =>
+      _t('Select lost item classification', 'اختر تصنيف المفقودات');
+
+  String get personalProperty => _t('Personal Property', 'ممتلكات شخصية');
+
+  String get caaProperty => _t('CAA Property', 'ممتلكات الهيئة');
+
+  String get caaPropertyType => _t('CAA Property Type', 'نوع ممتلكات الهيئة');
+
+  String get selectCaaPropertyType =>
+      _t('Select CAA property type', 'اختر نوع ممتلكات الهيئة');
+
+  // String get accessCard => _t('Access Card', 'بطاقة الدخول');
+
+  String get otherCaaProperty =>
+      _t('Other CAA Property', 'ممتلكات أخرى للهيئة');
+
+  String get enterOtherCaaProperty =>
+      _t('Enter other CAA property', 'أدخل ممتلكات الهيئة الأخرى');
+
+  String get lostCard => _t('Lost Card', 'بطاقة مفقودة');
+
   String get scholarship => _t('Scholarship', 'المنحة الدراسية');
 
   String get instituteName => _t('Institute name', 'اسم المعهد / المؤسسة');

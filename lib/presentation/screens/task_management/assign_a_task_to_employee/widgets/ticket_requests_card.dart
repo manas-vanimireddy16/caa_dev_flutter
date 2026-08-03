@@ -74,6 +74,8 @@ class _TicketRequestsCardState extends ConsumerState<TicketRequestsCard> {
     final state = ref.watch(_vsProvider(widget.providerArgs));
     final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
     final l10n = DashboardL10n.of(context);
+    ref.watch(rolesProvider); // rebuild when selected role changes
+    final canRaiseRequest = controller.canRaiseRequest;
 
     ref.listen(_vsProvider(widget.providerArgs).select((s) => s.tabIndex),
         (_, next) {
@@ -125,19 +127,20 @@ class _TicketRequestsCardState extends ConsumerState<TicketRequestsCard> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Material(
-                  color: TicketRequestsCard._addButtonColor,
-                  shape: const CircleBorder(),
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    onTap: controller.openNewRequestForm,
-                    child: const SizedBox(
-                      width: 36,
-                      height: 36,
-                      child: Icon(Icons.add, color: Colors.white, size: 22),
+                if (canRaiseRequest)
+                  Material(
+                    color: TicketRequestsCard._addButtonColor,
+                    shape: const CircleBorder(),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      onTap: controller.openNewRequestForm,
+                      child: const SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: Icon(Icons.add, color: Colors.white, size: 22),
+                      ),
                     ),
                   ),
-                ),
                 PopupMenuButton<String>(
                   tooltip: l10n.isArabic ? 'تصفية' : 'Filter',
                   padding: EdgeInsets.zero,
