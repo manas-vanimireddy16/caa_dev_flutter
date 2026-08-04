@@ -21,7 +21,6 @@ class LegalConsultationServicesHomeScreen extends ConsumerWidget {
                 'CAA027',
                 'CAA028',
                 'CAA029',
-                'CAA030',
               ],
             ) ??
         Service(name: 'Legal Services');

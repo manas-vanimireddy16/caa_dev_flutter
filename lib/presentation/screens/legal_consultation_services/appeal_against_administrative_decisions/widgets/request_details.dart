@@ -50,8 +50,8 @@ class _AppealAgainstAdministrativeDecisionsDetailsScreenState
       }
       controller.fetchRequestDetailsById(
         widget.id,
-        widget.serviceId,
-        widget.subServiceId,
+        serviceId: widget.serviceId,
+        subServiceId: widget.subServiceId,
       );
     });
   }

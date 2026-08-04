@@ -1,6 +1,6 @@
 part of '../view.dart';
 
-class TicketRequestsCard extends ConsumerWidget {
+class TicketRequestsCard extends ConsumerStatefulWidget {
   final _VSControllerParams providerArgs;
   final FocusNode focusNode;
   final PageController pageController;
@@ -13,9 +13,55 @@ class TicketRequestsCard extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(_vsProvider(providerArgs));
-    final controller = ref.read(_vsProvider(providerArgs).notifier);
+  ConsumerState<TicketRequestsCard> createState() =>
+      _TicketRequestsCardState();
+}
+
+class _TicketRequestsCardState extends ConsumerState<TicketRequestsCard> {
+  bool _suppressPageChanged = false;
+
+  void _syncPageToTab(int index) {
+    void jumpToTabPage() {
+      if (!widget.pageController.hasClients) return;
+      widget.pageController.jumpToPage(index);
+    }
+
+    _suppressPageChanged = true;
+    jumpToTabPage();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      jumpToTabPage();
+      _suppressPageChanged = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    MyRequestsTabPageSyncRegistry.register(
+      serviceId: widget.providerArgs.service.id,
+      subServiceId: widget.providerArgs.subService.id,
+      handler: _syncPageToTab,
+    );
+  }
+
+  @override
+  void dispose() {
+    MyRequestsTabPageSyncRegistry.unregister(
+      serviceId: widget.providerArgs.service.id,
+      subServiceId: widget.providerArgs.subService.id,
+    );
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(_vsProvider(widget.providerArgs));
+    final controller = ref.read(_vsProvider(widget.providerArgs).notifier);
+
+    ref.listen(_vsProvider(widget.providerArgs).select((s) => s.tabIndex),
+        (_, next) {
+      _syncPageToTab(next);
+    });
 
     return Card(
       color: Colors.white,
@@ -43,7 +89,7 @@ class TicketRequestsCard extends ConsumerWidget {
 
             /// Search
             KTextField(
-              focusNode: focusNode,
+              focusNode: widget.focusNode,
               hintText: "Search by ID or Name",
               controller: controller.searchController,
               onChanged: controller.onSearchChanged,
@@ -55,12 +101,12 @@ class TicketRequestsCard extends ConsumerWidget {
             RequestTabs(
               selectedIndex: state.tabIndex,
               onTabChanged: (index) {
-                focusNode.unfocus();
+                widget.focusNode.unfocus();
                 controller.searchController.clear();
                 controller.onSearchChanged("");
                 controller.updateTabIndex(index);
 
-                pageController.animateToPage(
+                widget.pageController.animateToPage(
                   index,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
@@ -74,16 +120,17 @@ class TicketRequestsCard extends ConsumerWidget {
             SizedBox(
               height: 400,
               child: PageView(
-                controller: pageController,
+                controller: widget.pageController,
                 onPageChanged: (index) {
-                  focusNode.unfocus();
+                  if (_suppressPageChanged) return;
+                  widget.focusNode.unfocus();
                   controller.searchController.clear();
                   controller.onSearchChanged("");
                   controller.updateTabIndex(index);
                 },
                 children: [
-                  RequestsPage(providerArgs: providerArgs),
-                  RequestsPage(providerArgs: providerArgs),
+                  RequestsPage(providerArgs: widget.providerArgs),
+                  RequestsPage(providerArgs: widget.providerArgs),
                 ],
               ),
             ),

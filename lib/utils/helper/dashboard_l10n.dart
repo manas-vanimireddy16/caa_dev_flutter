@@ -377,6 +377,11 @@ class DashboardL10n {
 
   String get commentButtonUpdate => _t('Update', 'تحديث');
 
+  String get commentButtonEdit => _t('Edit', 'تعديل');
+
+  String get followUpEditRequestTitle =>
+      _t('Edit Follow-up Report', 'تعديل تقرير المتابعة');
+
   String get updateExternalServiceRequestTitle =>
       _t('Update External Service Request', 'تحديث طلب الخدمة الخارجية');
 

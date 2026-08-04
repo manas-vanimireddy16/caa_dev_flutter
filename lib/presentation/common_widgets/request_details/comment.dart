@@ -982,7 +982,7 @@ class _AddCommentBoxState extends State<AddCommentBox> {
             SizedBox(width: 8.toAutoScaledWidth),
             Expanded(
               child: _actionButton(
-                l10n.commentButtonUpdate,
+                l10n.commentButtonEdit,
                 AppColors.primaryBlue75,
                 () async {
                   await widget.onUpdate?.call();

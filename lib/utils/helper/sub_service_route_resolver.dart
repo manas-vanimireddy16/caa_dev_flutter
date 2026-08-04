@@ -82,7 +82,7 @@ class SubServiceRouteResolver {
     if (subServiceCodes.any({'CAA031', 'CAA032', 'CAA033'}.contains)) {
       return const LogisticsHomeRoute();
     }
-    if (subServiceCodes.any({'CAA027', 'CAA028', 'CAA029', 'CAA030'}.contains)) {
+    if (subServiceCodes.any({'CAA027', 'CAA028', 'CAA029'}.contains)) {
       return const LegalConsultationServicesHomeRoute();
     }
     if (subServiceCodes.any(
@@ -248,12 +248,6 @@ class SubServiceRouteResolver {
         break;
       case 'CAA029':
         route = AppealAgainstAdministrativeDecisionsRoute(
-          service: service,
-          subService: subService,
-        );
-        break;
-      case 'CAA030':
-        route = RequestForLegalContractReviewRoute(
           service: service,
           subService: subService,
         );

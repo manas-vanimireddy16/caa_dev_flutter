@@ -41,7 +41,7 @@ import 'package:code_setup/presentation/screens/hc_service/models/position_model
 import 'package:code_setup/presentation/screens/it_services/models/muscat_roles_model.dart';
 import 'package:code_setup/presentation/screens/it_services/models/muscat_user_model.dart';
 import 'package:code_setup/presentation/screens/legal_consultation_services/models/legal_contract_review_model.dart';
-import 'package:code_setup/presentation/screens/legal_consultation_services/widgets/workflow_widget.dart';
+import 'package:code_setup/presentation/common_widgets/request_details/common_workflow.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/employee_information_card.dart';
 import 'package:code_setup/presentation/screens/information_security_services/models/security_threat_reassign.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';

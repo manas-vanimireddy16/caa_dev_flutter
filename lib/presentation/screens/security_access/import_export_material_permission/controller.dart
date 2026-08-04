@@ -369,13 +369,38 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
+  String _displayApprovalStatus(String? status) {
+    final normalized =
+        status?.toLowerCase().replaceAll('_', ' ').trim() ?? '';
+    if (normalized == 'in progress' || normalized == 'inprogress') {
+      return 'Pending';
+    }
+    return status?.trim().isNotEmpty == true ? status!.trim() : 'N/A';
+  }
+
+  /// Keeps full datetime including time, e.g. `2026-08-04T06:56`.
+  String _formatFullRequestedDate(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return 'N/A';
+    try {
+      final dt = DateTime.parse(raw).toLocal();
+      final y = dt.year.toString().padLeft(4, '0');
+      final m = dt.month.toString().padLeft(2, '0');
+      final d = dt.day.toString().padLeft(2, '0');
+      final h = dt.hour.toString().padLeft(2, '0');
+      final min = dt.minute.toString().padLeft(2, '0');
+      return '$y-$m-${d}T$h:$min';
+    } catch (_) {
+      return raw;
+    }
+  }
+
   Map<String, String> buildStatusInformation() {
     final request = state.requestDetails.request;
     final approvals = state.requestDetails.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
     return {
-      "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
+      "Approval Status": _displayApprovalStatus(request?.status),
+      "Requested Date": _formatFullRequestedDate(request?.createdAt),
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))
@@ -427,12 +452,28 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
+    returnToMyRequestsTab();
     await refreshAfterReturn();
+  }
+
+  void returnToMyRequestsTab() {
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
+    updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
     await Future.wait([
       fetchKpi(),
+      fetchApprovalKpi(),
       fetchStatusBreakdown('weekly'),
       fetchTrendBreakDown(DateTime.now().year.toString()),
     ]);
@@ -473,11 +514,11 @@ class _VSController extends StateNotifier<_ViewState> {
       required: true,
       options: [
         DropdownOption(
-          value: 'import',
+          value: 'Import',
           label: l10n.importExportTypeOption('import'),
         ),
         DropdownOption(
-          value: 'export',
+          value: 'Export',
           label: l10n.importExportTypeOption('export'),
         ),
         DropdownOption(
@@ -627,8 +668,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
   /// ========================= API CALLS =========================
 
-  Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final requests = await ImportExportMaterialInstance.getRequestsById(
         id: id,
@@ -655,6 +701,7 @@ class _VSController extends StateNotifier<_ViewState> {
         }
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -1031,11 +1078,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await ImportExportMaterialInstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
+
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
-      // chatController.clear();
+      chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
@@ -1424,8 +1471,14 @@ class _VSController extends StateNotifier<_ViewState> {
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {

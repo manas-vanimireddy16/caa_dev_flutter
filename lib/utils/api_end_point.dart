@@ -3054,6 +3054,9 @@ class ApiEndPoint {
 
   /// ===================== REQUEST APIs =====================
 
+  /// Users list for legal complaint (asset affairs)
+  static const String assetAffairsUsers = '/v1/asset-affairs-service/users';
+
   /// Send Request (Create Request)
   static const String legalComplaintSendRequest =
       '/v1/asset-affairs-service/legal-complaint-review/request';

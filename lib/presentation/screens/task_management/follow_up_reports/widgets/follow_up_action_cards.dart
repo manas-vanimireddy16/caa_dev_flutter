@@ -19,28 +19,50 @@ class FollowUpActionCards extends ConsumerStatefulWidget {
 
 class _FollowUpActionCardsState extends ConsumerState<FollowUpActionCards> {
   final List<_FollowUpActionCardData> _cards = [];
+  bool _hydrated = false;
 
   @override
   void initState() {
     super.initState();
+    _hydrateFromForm();
 
-    /// ✅ Re-hydrate cards from the form values (e.g. returning to this step).
+    /// Form apiValues are applied in a post-frame callback; re-hydrate after.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (!_hydrated || _cards.every((c) => (c.sentBy ?? '').isEmpty)) {
+        _hydrateFromForm(force: true);
+        setState(() {});
+      }
+      _sync();
+    });
+  }
+
+  void _hydrateFromForm({bool force = false}) {
+    if (_hydrated && !force) return;
+
     final existing = ref.read(dynamicFormProvider).values[kFollowUpActionsKey];
+    if (existing is! List || existing.isEmpty) {
+      if (_cards.isEmpty) {
+        _cards.add(_FollowUpActionCardData());
+      }
+      return;
+    }
 
-    if (existing is List && existing.isNotEmpty) {
-      for (final raw in existing) {
-        if (raw is Map) {
-          _cards.add(_FollowUpActionCardData.fromMap(raw));
-        }
+    for (final card in _cards) {
+      card.dispose();
+    }
+    _cards.clear();
+
+    for (final raw in existing) {
+      if (raw is Map) {
+        _cards.add(_FollowUpActionCardData.fromMap(raw));
       }
     }
 
     if (_cards.isEmpty) {
       _cards.add(_FollowUpActionCardData());
     }
-
-    /// Push the initial serialized list into the form after first frame.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _sync());
+    _hydrated = true;
   }
 
   @override
@@ -629,12 +651,13 @@ class _FollowUpActionCardData {
 
   factory _FollowUpActionCardData.fromMap(Map<dynamic, dynamic> map) {
     return _FollowUpActionCardData(
-      sentBy: map['sent_by'] as String?,
+      sentBy: (map['sent_by'] ?? map['reference_type']) as String?,
       letterDate: map['letter_date'] as String?,
       subject: map['subject'] as String?,
       subjectClassification: map['subject_classification'] as String?,
       generalManagerComment: map['general_manager_comment'] as String?,
-      responseDate: map['response_date'] as String?,
+      responseDate:
+          (map['response_date'] ?? map['response_date_target']) as String?,
       actionStatus: map['action_status'] as String?,
       actionTaken: map['action_taken'] as String?,
       delayPeriod: (map['delay_period'] ?? '0').toString(),

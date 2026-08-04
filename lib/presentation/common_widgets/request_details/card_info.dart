@@ -310,9 +310,14 @@ class CardInfo extends StatelessWidget {
 
   String _statusLabel(String status) {
     final resolved = _resolveStatus(status);
+    final normalized = resolved.toLowerCase().replaceAll('_', ' ').trim();
 
-    if (isShowClosed && resolved.toLowerCase() == 'approved') {
+    if (isShowClosed && normalized == 'approved') {
       return 'Closed';
+    }
+
+    if (normalized == 'in progress' || normalized == 'inprogress') {
+      return statusLabelBuilder?.call('Pending') ?? 'Pending';
     }
 
     return statusLabelBuilder?.call(resolved) ?? resolved;
@@ -415,20 +420,6 @@ class CardInfo extends StatelessWidget {
           ),
           const SizedBox(height: 16),
         ],
-        if (showApproverCard) ...[
-          Text(
-            _label('Approver'),
-            style: AppTextStyles.requestDetailsFieldHeading(),
-          ),
-          const SizedBox(height: 8),
-          _ApproverInfoCard(
-            name: approverDetails.name ?? '',
-            email: approverDetails.email ?? '',
-            initials: _initialsFromName(approverDetails.name ?? ''),
-            iconSize: _RequestDetailsIconSize.statusSection,
-          ),
-          const SizedBox(height: 16),
-        ],
         if (statusEntry != null) ...[
           Text(
             _label(statusEntry.key),
@@ -441,6 +432,20 @@ class CardInfo extends StatelessWidget {
               status: _resolveStatus(statusEntry.value),
               displayLabel: _statusLabel(statusEntry.value),
             ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (showApproverCard) ...[
+          Text(
+            _label('Approver'),
+            style: AppTextStyles.requestDetailsFieldHeading(),
+          ),
+          const SizedBox(height: 8),
+          _ApproverInfoCard(
+            name: approverDetails.name ?? '',
+            email: approverDetails.email ?? '',
+            initials: _initialsFromName(approverDetails.name ?? ''),
+            iconSize: _RequestDetailsIconSize.statusSection,
           ),
           const SizedBox(height: 16),
         ],

@@ -593,7 +593,8 @@ class _VSController extends StateNotifier<_ViewState> {
       type: FieldType.select,
       required: true,
       placeholder: l10n.selectCaaPropertyType,
-      visibleWhen: (values) => values['lost_item_classification'] == 'CAA Property',
+      visibleWhen: (values) =>
+          values['lost_item_classification'] == 'CAA Property',
       options: [
         DropdownOption(value: 'Access Card', label: l10n.accessCard),
         DropdownOption(value: 'Other', label: l10n.other),
@@ -1173,7 +1174,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await Future.delayed(Duration(seconds: 2));
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
       returnToMyRequestsTab();
       refreshRequestLists();
@@ -1591,8 +1592,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final dateTime = DateTime.parse('$date $time');
 
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
-    final classification =
-        values['lost_item_classification']?.toString() ?? '';
+    final classification = values['lost_item_classification']?.toString() ?? '';
     final caaPropertyType = values['caa_property_type']?.toString() ?? '';
     final otherCaaProperty = values['other_caa_property']?.toString() ?? '';
 

@@ -33,7 +33,8 @@ class RequestDetailsTabs extends ConsumerWidget {
     return ScrollableRequestDetailsTabBar(
       labels: labels,
       selectedIndex: state.requestDetailTab,
-      onTap: controller.updateRequestTab,
+      onTap: (index) =>
+          controller.updateRequestTab(index, refreshDetails: true),
     );
   }
 }

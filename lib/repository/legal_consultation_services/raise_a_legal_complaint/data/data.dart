@@ -733,7 +733,7 @@ class RaiseALegalComplaintRepositoryImple
     }
 
     try {
-      final response = await client.get(ApiEndPoint.dutyMissionUsers);
+      final response = await client.get(ApiEndPoint.assetAffairsUsers);
 
       if (response.statusCode != 200) {
         throw ApiException('Failed to fetch users: ${response.statusCode}');

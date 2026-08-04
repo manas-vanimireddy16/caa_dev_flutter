@@ -494,10 +494,7 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
-    if (fromActionItems) {
-      returnToMyRequestsTab();
-    }
-
+    returnToMyRequestsTab();
     await refreshAfterReturn();
   }
 
@@ -740,11 +737,14 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> fetchRequestDetailsById(
-    int id, [
+    int id, {
     int serviceId = 0,
     int subServiceId = 0,
-  ]) async {
-    state = state.copyWith(isLoading: true);
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
 
     try {
       final requests = await appealAgainstAdministrativeDecisionsInstance
@@ -1170,12 +1170,10 @@ class _VSController extends StateNotifier<_ViewState> {
           requestId,
         );
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
-      fetchRequestDetailsById(requestId);
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
-      // chatController.clear();
+      chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
@@ -1451,8 +1449,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   bool _isPendingOrInProgress(String? status) {
-    final s = status?.toLowerCase();
-    return s == 'in progress';
+    final s = status?.toLowerCase().replaceAll('_', ' ').trim();
+    return s == 'pending' || s == 'in progress' || s == 'assigned';
   }
 
   bool _isCompleted(String? status) {
@@ -1482,7 +1480,10 @@ class _VSController extends StateNotifier<_ViewState> {
       pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
       final next = pendingList.first;
 
-      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
+      final department = next.department?.departmentName;
+      final section = next.section?.sectionName;
+
+      /// 🔹 RULE 1: approver user EXISTS → NAME + EMAIL (+ dept/section)
       if (next.approverRoleId != null) {
         final name = next.approverUser?.employeeName;
         final email = next.approverUser?.email;
@@ -1493,19 +1494,24 @@ class _VSController extends StateNotifier<_ViewState> {
             'name': name!,
             if ((email ?? '').isNotEmpty) 'email': email!,
             if ((roleName ?? '').isNotEmpty) 'role': roleName!,
+            if ((department ?? '').isNotEmpty) 'department': department!,
+            if ((section ?? '').isNotEmpty) 'section': section!,
           };
         }
       }
 
-      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
-      final department = next.department?.departmentName;
-      final section = next.section?.sectionName;
-
+      /// 🔹 RULE 2: NO USER → DEPARTMENT + SECTION
       if ((department ?? '').isNotEmpty) {
         return {
           'department': department!,
           if ((section ?? '').isNotEmpty) 'section': section!,
         };
+      }
+
+      /// 🔹 RULE 3: ROLE ONLY
+      final fallbackRole = next.approverRole?.name;
+      if ((fallbackRole ?? '').isNotEmpty) {
+        return {'role': fallbackRole!};
       }
 
       return {};
@@ -1549,8 +1555,14 @@ class _VSController extends StateNotifier<_ViewState> {
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {

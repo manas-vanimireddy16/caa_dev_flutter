@@ -12,6 +12,15 @@ abstract class FollowUpReportRepository {
   Future<Map<String, dynamic>> followUpReportCreateRequest(
     Map<String, dynamic> payload,
   );
+
+  Future<Map<String, dynamic>> followUpReportUpdateRequest(
+    int requestId,
+    Map<String, dynamic> payload,
+  );
+
+  /// Raw request payload for edit autofill (includes report_items).
+  Future<Map<String, dynamic>?> getRequestRawById(int id);
+
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,
   );

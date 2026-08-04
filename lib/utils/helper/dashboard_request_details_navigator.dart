@@ -15,7 +15,7 @@ const _workflowTabEnabledSubServiceCodes = {
   // Training & Development
   'CAA015', 'CAA016', 'CAA018', 'CAA019', 'CAA049',
   // Legal Services
-  'CAA027', 'CAA028', 'CAA029', 'CAA030',
+  'CAA027', 'CAA028', 'CAA029',
   // Tender Services
   'CAA011', 'CAA012', 'CAA013', 'CAA014',
   // Maintenance
@@ -254,18 +254,6 @@ Future<void> navigateToDashboardRequestDetails({
     case 'CAA028':
       await KAppX.router.push(
         RaiseLegalComplaintDetailsRoute(
-          id: requestId,
-          from: from,
-          service: resolvedService,
-          subService: resolvedSubService,
-          serviceId: serviceId,
-          subServiceId: subServiceId,
-        ),
-      );
-      break;
-    case 'CAA030':
-      await KAppX.router.push(
-        RequestForLegalContractReviewDetailsRoute(
           id: requestId,
           from: from,
           service: resolvedService,

@@ -104,9 +104,7 @@ class _LegalConsultationandReviewofAdministrativeDecisionsDetailsScreenState
             l10n: l10n,
             requestId: requestId?.toString(),
             status: request?.status,
-            assignedTo: approverMap['name'] ??
-                approverMap['role'] ??
-                approverMap['department'],
+            assignedTo: controller.buildAssignedToLabel(approvals),
             user: createdByUser,
             labelBuilder: l10n.requestDetailsLabel,
 
@@ -199,9 +197,7 @@ class _LegalConsultationandReviewofAdministrativeDecisionsDetailsScreenState
                   ),
                 ] else if (selectedTab == 3) ...[
                   employeeSection(),
-                  LegalServicesRequestWorkflowTimeline(
-                    details: state.requestDetails,
-                  ),
+                  RequestWorkflowTimeline(details: state.requestDetails),
                 ],
               ],
             ),

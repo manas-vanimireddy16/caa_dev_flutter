@@ -500,17 +500,7 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
-    if (fromActionItems) {
-      returnToMyRequestsTab();
-    } else {
-      MyRequestsTabPageSyncRegistry.syncToTab(
-        serviceId: service.id,
-        subServiceId: subService.id,
-        index: 0,
-      );
-      refreshMyRequestsList();
-    }
-
+    returnToMyRequestsTab();
     await refreshAfterReturn();
   }
 
@@ -555,7 +545,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
   final followupReportInstance = FollowUpReportRepository();
 
-  List<DynamicField> buildFollowUpReportFields(DashboardL10n l10n) => [
+  List<DynamicField> buildFollowUpReportFields(
+    DashboardL10n l10n, {
+    bool isEditMode = false,
+  }) => [
     /// ================= TOPIC =================
     DynamicField(
       name: 'topic',
@@ -668,9 +661,11 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'attachments',
       label: l10n.requestDetailsLabel('Attachments'),
       type: FieldType.file,
-      required: true,
+      required: !isEditMode,
 
       validator: (value, values) {
+        if (isEditMode) return null;
+
         if (value == null) {
           return l10n.followUpAttachmentRequired;
         }
@@ -729,8 +724,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
   /// ========================= API CALLS =========================
 
-  Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final requests = await followupReportInstance.getRequestsById(
         id: id,
@@ -757,6 +757,7 @@ class _VSController extends StateNotifier<_ViewState> {
         }
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -1141,11 +1142,11 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await followupReportInstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
+
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
-      // chatController.clear();
+      chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
@@ -1362,13 +1363,18 @@ class _VSController extends StateNotifier<_ViewState> {
     final bool? isPresident = level.isPresident;
     final int approvalLevel = level.level ?? 0;
     final bool ishasReplace = level.isReplace ?? false;
+    final bool canEdit = selectedRole.roleId == 39;
 
     if (isManager == true) {
       debugPrint('this user can only approve');
-      return ActionButtonsType.assignReject;
+      return canEdit
+          ? ActionButtonsType.approveRejectUpdate
+          : ActionButtonsType.assignReject;
     } else if (level != null) {
       debugPrint('this user can approve and reject');
-      return ActionButtonsType.approveReject;
+      return canEdit
+          ? ActionButtonsType.approveRejectUpdate
+          : ActionButtonsType.approveReject;
     }
 
     return ActionButtonsType.none;
@@ -1496,8 +1502,14 @@ class _VSController extends StateNotifier<_ViewState> {
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {
@@ -1665,36 +1677,219 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
-  Future<void> submitProjectApprovalRequest(
+  Future<bool> submitProjectApprovalRequest(
     int serviceId,
     int subServiceId,
-    Map<String, dynamic> values,
-  ) async {
+    Map<String, dynamic> values, {
+    bool isEditMode = false,
+    int? requestId,
+  }) async {
     try {
       state = state.copyWith(isLoading: true);
 
-      final payload = _buildPayload(
-        serviceId,
-        subServiceId,
-        values,
-        // state.hrTasks,
-      );
+      final Map<String, dynamic> payload;
+      if (isEditMode) {
+        payload = _buildUpdatePayload(values);
+      } else {
+        payload = _buildPayload(
+          serviceId,
+          subServiceId,
+          values,
+        );
+      }
 
       debugPrint("✅ Final Payload: $payload");
 
-      final response = await followupReportInstance.followUpReportCreateRequest(
-        payload,
-      );
+      final Map<String, dynamic> response;
+      if (isEditMode && requestId != null) {
+        response = await followupReportInstance.followUpReportUpdateRequest(
+          requestId,
+          payload,
+        );
+      } else {
+        response = await followupReportInstance.followUpReportCreateRequest(
+          payload,
+        );
+      }
 
       if (response['status'] == 'success') {
         await Future.delayed(Duration(seconds: 2));
         _refreshDashboard();
+        return true;
       }
+      return false;
     } catch (e, st) {
       debugPrint('❌ Error submitting request: $e\n$st');
+      return false;
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  Future<void> openEditRequestForm(int requestId) async {
+    await fetchRelevantDepartments();
+    final result = await KAppX.router.push<bool>(
+      FollowUpReportNewRequestRoute(
+        serviceId: service.id ?? 0,
+        subServiceId: subService.id ?? 0,
+        service: service,
+        subService: subService,
+        isEditMode: true,
+        requestId: requestId,
+      ),
+    );
+
+    if (result == true) {
+      await fetchRequestDetailsById(requestId, showLoading: false);
+    }
+  }
+
+  String _normalizeDateForForm(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return '';
+    final trimmed = raw.trim();
+    try {
+      final dt = DateTime.parse(trimmed);
+      final y = dt.year.toString().padLeft(4, '0');
+      final m = dt.month.toString().padLeft(2, '0');
+      final d = dt.day.toString().padLeft(2, '0');
+      return '$y-$m-$d';
+    } catch (_) {
+      if (trimmed.length >= 10) return trimmed.substring(0, 10);
+      return trimmed;
+    }
+  }
+
+  int? _resolveRelevantDepartmentId(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is int) return raw;
+    final asInt = int.tryParse(raw.toString());
+    if (asInt != null) return asInt;
+
+    final name = raw.toString().trim().toLowerCase();
+    if (name.isEmpty) return null;
+
+    for (final department in state.relevantDepartments) {
+      final en = (department.departmentName ?? '').trim().toLowerCase();
+      final ar = (department.departmentArabicName ?? '').trim().toLowerCase();
+      if (en == name || ar == name) {
+        return department.id;
+      }
+    }
+    return null;
+  }
+
+  String _resolveRelevantDepartmentName(dynamic raw) {
+    if (raw == null) return '';
+    if (raw is String && int.tryParse(raw) == null) {
+      return raw.trim();
+    }
+
+    final id = raw is int ? raw : int.tryParse(raw.toString());
+    if (id == null) return raw.toString();
+
+    for (final department in state.relevantDepartments) {
+      if (department.id == id) {
+        return department.departmentName ?? '';
+      }
+    }
+    return raw.toString();
+  }
+
+  Map<String, dynamic> _mapReportItemToActionCard(Map<dynamic, dynamic> item) {
+    return {
+      'sent_by': item['reference_type'] ?? item['sent_by'] ?? '',
+      'letter_date': _normalizeDateForForm(
+        item['letter_date']?.toString(),
+      ),
+      'subject': item['subject'] ?? '',
+      'subject_classification': item['subject_classification'] ?? '',
+      'general_manager_comment': item['general_manager_comment'] ?? '',
+      'response_date':
+          item['response_date_target'] ?? item['response_date'] ?? '',
+      'action_status': item['action_status'] ?? '',
+      'action_taken': item['action_taken'] ?? '',
+      'delay_period': (item['delay_period'] ?? '0').toString(),
+      'attachment': item['attachment'],
+    };
+  }
+
+  Future<Map<String, dynamic>?> loadFormValuesForEdit(int requestId) async {
+    final raw = await followupReportInstance.getRequestRawById(requestId);
+    if (raw == null) return null;
+
+    await fetchRelevantDepartments();
+
+    final reportItemsRaw = raw['report_items'];
+    final List<Map<String, dynamic>> actionCards = [];
+
+    if (reportItemsRaw is List && reportItemsRaw.isNotEmpty) {
+      for (final item in reportItemsRaw) {
+        if (item is Map) {
+          actionCards.add(_mapReportItemToActionCard(item));
+        }
+      }
+    }
+
+    if (actionCards.isEmpty) {
+      actionCards.add(
+        _mapReportItemToActionCard({
+          'reference_type': raw['sent_by'],
+          'letter_date': raw['letter_date'],
+          'subject': raw['subject'],
+          'subject_classification': raw['subject_classification'],
+          'general_manager_comment': raw['general_manager_comment'],
+          'response_date_target': raw['response_date_target'],
+          'action_status': raw['action_status'],
+          'action_taken': raw['action_taken'],
+          'delay_period': raw['delay_period'],
+          'attachment': null,
+        }),
+      );
+    }
+
+    return {
+      'topic': raw['topic'] ?? '',
+      'concerned_department': raw['concerned_department'] ?? '',
+      'relevant_department': _resolveRelevantDepartmentId(
+        raw['relevant_department'],
+      ),
+      'date_from': _normalizeDateForForm(raw['date_from']?.toString()),
+      'date_to': _normalizeDateForForm(raw['date_to']?.toString()),
+      kFollowUpActionsKey: actionCards,
+    };
+  }
+
+  Map<String, dynamic> _buildUpdatePayload(Map<String, dynamic> values) {
+    final actionCards = values[kFollowUpActionsKey] is List
+        ? List<Map<dynamic, dynamic>>.from(
+            (values[kFollowUpActionsKey] as List).whereType<Map>(),
+          )
+        : <Map<dynamic, dynamic>>[];
+
+    final reportItems = actionCards.map(_buildReportItem).toList();
+    final firstCard = actionCards.isNotEmpty
+        ? actionCards.first
+        : <dynamic, dynamic>{};
+
+    return {
+      'topic': values['topic'] ?? '',
+      'concerned_department': values['concerned_department'] ?? '',
+      'relevant_department': _resolveRelevantDepartmentName(
+        values['relevant_department'],
+      ),
+      'date_from': values['date_from'] ?? '',
+      'date_to': values['date_to'] ?? '',
+      'sent_by': firstCard['sent_by'] ?? '',
+      'letter_date': firstCard['letter_date'] ?? '',
+      'subject': firstCard['subject'] ?? '',
+      'subject_classification': firstCard['subject_classification'] ?? '',
+      'general_manager_comment': firstCard['general_manager_comment'] ?? '',
+      'response_date_target': firstCard['response_date'] ?? '',
+      'action_status': firstCard['action_status'] ?? '',
+      'action_taken': firstCard['action_taken'] ?? '',
+      'delay_period': (firstCard['delay_period'] ?? '0').toString(),
+      'report_items': reportItems,
+    };
   }
 
   Future<void> _refreshDashboard() async {

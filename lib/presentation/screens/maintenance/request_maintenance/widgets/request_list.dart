@@ -86,7 +86,6 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               item.base?.id ?? 0,
               fromActionItems: widget.isActionItemsTab,
             );
-            controller.updateTabIndex(0);
           },
           onWorkflowTap: () async {
             await controller.openRequestDetails(
@@ -94,7 +93,6 @@ class _RequestsPageState extends ConsumerState<RequestsPage> {
               fromActionItems: widget.isActionItemsTab,
               initialTabIndex: RequestDetailsTabIndex.workflow,
             );
-            controller.updateTabIndex(0);
           },
         );
       },

@@ -465,7 +465,7 @@ class _VSController extends StateNotifier<_ViewState> {
         KAppX.router.push(const LogisticsHomeRoute());
         return;
       }
-      if (codes.any({'CAA027', 'CAA028', 'CAA029', 'CAA030'}.contains)) {
+      if (codes.any({'CAA027', 'CAA028', 'CAA029'}.contains)) {
         KAppX.router.push(const LegalConsultationServicesHomeRoute());
         return;
       }
@@ -716,14 +716,6 @@ class _VSController extends StateNotifier<_ViewState> {
       case 'CAA028':
         KAppX.router.push(
           RaiseLegalComplaintRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
-      case 'CAA030':
-        KAppX.router.push(
-          RequestForLegalContractReviewRoute(
             service: service ?? Service(),
             subService: subService ?? SubService(),
           ),

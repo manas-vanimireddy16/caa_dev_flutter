@@ -54,6 +54,80 @@ class FollowUpReportRepositoryImpl implements FollowUpReportRepository {
   }
 
   @override
+  Future<Map<String, dynamic>> followUpReportUpdateRequest(
+    int requestId,
+    Map<String, dynamic> payload,
+  ) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.followUpReportRequestById(requestId);
+
+    try {
+      if (client == null) {
+        throw ApiException('Client is null — cannot update Follow-up request');
+      }
+
+      final response = await client.put(url, data: payload);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ShowFlutterToast().showFlutterToastSuccess(
+          response.data['message'] ?? 'Request updated successfully',
+        );
+        return response.data is Map<String, dynamic>
+            ? response.data as Map<String, dynamic>
+            : {'status': 'success'};
+      } else {
+        ShowFlutterToast().showFlutterToastFailure(
+          response.data['message'] ?? 'Failed to update request',
+        );
+        return response.data is Map<String, dynamic>
+            ? response.data as Map<String, dynamic>
+            : {'status': 'error'};
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data['message'] ?? e.message;
+      throw ApiException(message);
+    } catch (e) {
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>?> getRequestRawById(int id) async {
+    final client = await KAppX.network.secureClient();
+
+    try {
+      if (client == null) return null;
+
+      final url = ApiEndPoint.followUpReportRequestById(id);
+      final response = await client.get(url);
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed: ${response.statusCode}');
+      }
+
+      final data = response.data;
+      if (data is! Map) return null;
+
+      final inner = data['data'];
+      if (inner is! Map) return null;
+
+      final map = Map<String, dynamic>.from(inner);
+
+      if (map['request'] is Map) {
+        final request = Map<String, dynamic>.from(map['request'] as Map);
+        if (map['report_items'] is List) {
+          request['report_items'] = map['report_items'];
+        }
+        return request;
+      }
+
+      return map;
+    } catch (e) {
+      throw Exception('Error fetching request raw details: $e');
+    }
+  }
+
+  @override
   Future<List<Map<String, dynamic>>> uploadAttachments(
     List<Map<String, dynamic>> attachments,
   ) async {

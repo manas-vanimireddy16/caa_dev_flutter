@@ -187,11 +187,9 @@ class _FollowUpReportDetailsScreenState
                         approverId: approverId ?? 0,
                         requestId: requestId ?? 0,
                       );
-                      // controller.onReject(
-                      //   approverId ?? 0,
-                      //   requestId ?? 0,
-                      //   'Rejected',
-                      // );
+                    },
+                    onUpdate: () async {
+                      await controller.openEditRequestForm(requestId ?? 0);
                     },
                   ),
                 ] else if (selectedTab == 2) ...[

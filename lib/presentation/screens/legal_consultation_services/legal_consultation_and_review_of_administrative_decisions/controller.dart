@@ -508,20 +508,42 @@ class _VSController extends StateNotifier<_ViewState> {
     };
   }
 
+  String _displayApprovalStatus(String? status) {
+    final normalized =
+        status?.toLowerCase().replaceAll('_', ' ').trim() ?? '';
+    if (normalized == 'in progress' || normalized == 'inprogress') {
+      return 'Pending';
+    }
+    return status?.trim().isNotEmpty == true ? status!.trim() : 'N/A';
+  }
+
+  /// Keeps full datetime including time, e.g. `2026-08-04T06:56`.
+  String _formatFullRequestedDate(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return 'N/A';
+    try {
+      final dt = DateTime.parse(raw).toLocal();
+      final y = dt.year.toString().padLeft(4, '0');
+      final m = dt.month.toString().padLeft(2, '0');
+      final d = dt.day.toString().padLeft(2, '0');
+      final h = dt.hour.toString().padLeft(2, '0');
+      final min = dt.minute.toString().padLeft(2, '0');
+      return '$y-$m-${d}T$h:$min';
+    } catch (_) {
+      return raw;
+    }
+  }
+
   Map<String, String> buildStatusInformation() {
     final request = state.requestDetails;
     final approvals = state.requestDetails.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
-    return {
-      "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
-      // "Last Updated":
-      //     request?.updatedAt?.split('T').first ?? 'N/A',
-      if (nextApprover.containsKey('department'))
-        'Department': nextApprover['department']!,
-      if (nextApprover.containsKey('section'))
-        'Section': nextApprover['section']!,
+    final assignedTo = _buildDepartmentSection(nextApprover);
 
+    return {
+      if (assignedTo.isNotEmpty && assignedTo != '-')
+        'Assigned To': assignedTo,
+      'Approval Status': _displayApprovalStatus(request?.status),
+      'Requested Date': _formatFullRequestedDate(request?.createdAt),
       if (nextApprover.containsKey('name'))
         'Approver Name': nextApprover['name']!,
       if (nextApprover.containsKey('email'))
@@ -546,6 +568,21 @@ class _VSController extends StateNotifier<_ViewState> {
     }
 
     return department ?? '-';
+  }
+
+  String buildAssignedToLabel(List<ApprovalDetailModel>? approvals) {
+    final approverMap = resolveApproverMap(approvals);
+    final departmentSection = _buildDepartmentSection(approverMap);
+    if (departmentSection.isNotEmpty && departmentSection != '-') {
+      return departmentSection;
+    }
+    if (approverMap.containsKey('name')) {
+      return approverMap['name']!;
+    }
+    if (approverMap.containsKey('role')) {
+      return approverMap['role']!;
+    }
+    return 'N/A';
   }
 
   String get currentStatusFilter => state.tabIndex == 0
@@ -588,10 +625,7 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
-    if (fromActionItems) {
-      returnToMyRequestsTab();
-    }
-
+    returnToMyRequestsTab();
     await refreshAfterReturn();
   }
 
@@ -673,8 +707,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
   /// ========================= API CALLS =========================
 
-  Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isDetailsLoading: true);
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isDetailsLoading: true);
+    }
     try {
       final requests = await legalConsultationandReviewoInstance
           .getRequestsById(
@@ -698,11 +737,12 @@ class _VSController extends StateNotifier<_ViewState> {
         }
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isDetailsLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       debugPrint(e.toString());
     } finally {
-      if (mounted) {
+      if (mounted && showLoading) {
         state = state.copyWith(isDetailsLoading: false);
       }
     }
@@ -1375,11 +1415,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await legalConsultationandReviewoInstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
-      // chatController.clear();
+      chatController.clear();
       state.attachments.clear();
     } catch (e, st) {
       debugPrint('❌ Failed to send chat: $e');
@@ -1617,8 +1656,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   bool _isPendingOrInProgress(String? status) {
-    final s = status?.toLowerCase().trim();
-    return s == 'in progress';
+    final s = status?.toLowerCase().replaceAll('_', ' ').trim();
+    return s == 'pending' || s == 'in progress' || s == 'assigned';
   }
 
   bool _isCompleted(String? status) {
@@ -1639,7 +1678,7 @@ class _VSController extends StateNotifier<_ViewState> {
       return {};
     }
 
-    /// 1️⃣ IN-PROGRESS (only one at a time)
+    /// 1️⃣ NEXT PENDING / IN-PROGRESS (LOWEST LEVEL)
     final pendingList = approvals
         .where((a) => _isPendingOrInProgress(a.approvalStatus))
         .toList();
@@ -1648,7 +1687,10 @@ class _VSController extends StateNotifier<_ViewState> {
       pendingList.sort((a, b) => (a.level ?? 0).compareTo(b.level ?? 0));
       final next = pendingList.first;
 
-      /// 🔹 RULE 1: approverId EXISTS → NAME + EMAIL
+      final department = next.department?.departmentName;
+      final section = next.section?.sectionName;
+
+      /// 🔹 RULE 1: approver user EXISTS → NAME + EMAIL (+ dept/section)
       if (next.approverRoleId != null) {
         final name = next.approverUser?.employeeName;
         final email = next.approverUser?.email;
@@ -1659,19 +1701,24 @@ class _VSController extends StateNotifier<_ViewState> {
             'name': name!,
             if ((email ?? '').isNotEmpty) 'email': email!,
             if ((roleName ?? '').isNotEmpty) 'role': roleName!,
+            if ((department ?? '').isNotEmpty) 'department': department!,
+            if ((section ?? '').isNotEmpty) 'section': section!,
           };
         }
       }
 
-      /// 🔹 RULE 2: approverId NULL → DEPARTMENT + SECTION
-      final department = next.department?.departmentName;
-      final section = next.section?.sectionName;
-
+      /// 🔹 RULE 2: NO USER → DEPARTMENT + SECTION
       if ((department ?? '').isNotEmpty) {
         return {
           'department': department!,
           if ((section ?? '').isNotEmpty) 'section': section!,
         };
+      }
+
+      /// 🔹 RULE 3: ROLE ONLY
+      final fallbackRole = next.approverRole?.name;
+      if ((fallbackRole ?? '').isNotEmpty) {
+        return {'role': fallbackRole!};
       }
 
       return {};
@@ -1715,8 +1762,14 @@ class _VSController extends StateNotifier<_ViewState> {
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {
