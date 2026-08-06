@@ -343,7 +343,9 @@ class _VSController extends StateNotifier<_ViewState> {
   void refreshActionItemsList() => onActionItemsListRefresh?.call();
 
   void refreshRequestLists() {
+    Future.delayed(Duration(seconds: 2));
     refreshMyRequestsList();
+    fetchApprovalKpi();
     refreshActionItemsList();
   }
 
@@ -509,10 +511,7 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
-    if (fromActionItems) {
-      returnToMyRequestsTab();
-    }
-
+    returnToMyRequestsTab();
     await refreshAfterReturn();
   }
 
@@ -670,10 +669,8 @@ class _VSController extends StateNotifier<_ViewState> {
         final vsState = ref.watch(_vsProvider(params));
         return vsState.positionsList
             .map(
-              (e) => DropdownOption(
-                value: e.id.toString(),
-                label: e.name ?? '',
-              ),
+              (e) =>
+                  DropdownOption(value: e.id.toString(), label: e.name ?? ''),
             )
             .toList();
       },
@@ -779,7 +776,13 @@ class _VSController extends StateNotifier<_ViewState> {
     } catch (e) {}
   }
 
-  Future<void> fetchRequestDetailsById(int id) async {
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final requests = await transferFromOneJobtoAnotherJobNatureInstance
           .getRequestsById(
@@ -791,8 +794,9 @@ class _VSController extends StateNotifier<_ViewState> {
       if (requests != null) {
         state = state.copyWith(
           requestDetails: requests,
-          chatById: requests.chatMessages ?? [],
+          chatById: (requests.chatMessages ?? []).toList(),
           attachmentsById: requests.attachments ?? [],
+          isLoading: false,
         );
         updateButtonDisabledFromApprovals(requests.approvalDetails ?? []);
 
@@ -804,13 +808,17 @@ class _VSController extends StateNotifier<_ViewState> {
 
         if (actionType == ActionButtonsType.assignReject) {
           fetchRolesList();
-          // fetch
         }
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
-    } catch (e) {
-      debugPrint(e.toString());
+    } catch (e, st) {
+      state = state.copyWith(isLoading: false);
+      debugPrint('fetchRequestDetailsById error: $e');
+      debugPrintStack(stackTrace: st);
     }
   }
 
@@ -1277,7 +1285,7 @@ class _VSController extends StateNotifier<_ViewState> {
           requestId,
         );
       }
-      await fetchRequestDetailsById(requestId);
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
       // chatController.clear();
@@ -1430,6 +1438,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await transferFromOneJobtoAnotherJobNatureInstance.onAssignEmployee(
         payload,
       );
+      KAppX.router.pop();
 
       // Refresh details after assigning
       // await fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
@@ -1704,8 +1713,14 @@ class _VSController extends StateNotifier<_ViewState> {
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {
@@ -1802,9 +1817,9 @@ class _VSController extends StateNotifier<_ViewState> {
       /// -------- FINAL PAYLOAD (TRAINING REQUEST) --------
       final payload = {
         // ================= USER / REQUEST INFO =================
-        "req_user_department_id": userData?.departmentId ?? 0,
-        "req_user_section_id": userData?.sectionId ?? 0,
-        "req_user_position_id": userInfo?.data?.position?.id ?? 0,
+        // "req_user_department_id": userData?.departmentId ?? 0,
+        // "req_user_section_id": userData?.sectionId ?? 0,
+        // "req_user_position_id": userInfo?.data?.position?.id ?? 0,
 
         // ================= SERVICE INFO =================
         "service_id": serviceId,
@@ -1863,8 +1878,6 @@ class _VSController extends StateNotifier<_ViewState> {
           // ================= ATTACHMENTS =================
           "files": attachments,
         };
-
-        Future.delayed(Duration(seconds: 2));
 
         fetchKpi();
         fetchStatusBreakdown('weekly');

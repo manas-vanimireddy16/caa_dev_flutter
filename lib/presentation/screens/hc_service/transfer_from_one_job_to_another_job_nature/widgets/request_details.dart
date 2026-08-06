@@ -55,37 +55,38 @@ class _TransferFromOneJobtoAnotherJobNatureDetailsScreenState
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
+      appBar: KAppBar(
+        title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle),
+      ),
       body: Consumer(
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));
+          final details = state.requestDetails;
+          final request = details.request;
+          final requestId = request?.id ?? details.id;
+          final detailsLoaded = requestId != null && requestId != 0;
 
-          if (state.requestDetails == null || state.isLoading) {
+          if (state.isLoading && !detailsLoaded) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final request = state.requestDetails.request;
-          final createdByUser = request?.createdByUser;
-          final requestId = request?.id;
+          final createdByUser = request?.createdByUser ?? details.createdByUser;
           final attachments = state.attachmentsById;
           final chats = state.chatById;
-          final approvals = state.requestDetails.approvalDetails ?? [];
+          final approvals = details.approvalDetails ?? [];
           final selectedTab = state.requestDetailTab;
-          final active = controller.getActiveApprovalLevel(
-            state.requestDetails.approvalDetails ?? [],
-          );
+          final active = controller.getActiveApprovalLevel(approvals);
           final actionType = controller.getActionButtonsType(
-            state.requestDetails,
+            details,
             approvals,
           );
           final nextApprover = controller.resolveApproverMap(approvals);
           final approverId = active?.id;
-          final isFromActionItems = widget.from.toLowerCase() == 'action items';
 
           Widget employeeSection() => EmployeeInformationCard(
             l10n: l10n,
             requestId: requestId?.toString(),
-            status: request?.status,
+            status: request?.status ?? details.status,
             assignedTo: controller.buildAssignedToLabel(approvals),
             user: createdByUser,
             labelBuilder: l10n.requestDetailsLabel,
@@ -115,8 +116,11 @@ class _TransferFromOneJobtoAnotherJobNatureDetailsScreenState
                     technicalInformationTitle: l10n.technicalDetailsSection,
                     requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: {
-                      "Approval Status": request?.status ?? 'N/A',
-                      "Requested Date": request?.createdAt ?? 'N/A',
+                      "Approval Status":
+                          request?.status ?? details.status ?? 'N/A',
+                      "Requested Date":
+                          formatDate(request?.createdAt ?? details.createdAt) ??
+                          'N/A',
                       if (nextApprover.containsKey('department'))
                         'Department': nextApprover['department']!,
                       if (nextApprover.containsKey('section'))
@@ -127,33 +131,45 @@ class _TransferFromOneJobtoAnotherJobNatureDetailsScreenState
                         'Approver Email': nextApprover['email']!,
                     },
                     requestInfo: {
-                      "Service Type": request?.service?.name ?? 'N/A',
+                      "Service Type":
+                          request?.service?.name ??
+                          details.service?.name ??
+                          'N/A',
                       "Sub Service Type":
-                          request?.subService?.subServiceName ?? 'N/A',
-                      "Employee Id": request?.employeeId ?? 'N/A',
+                          request?.subService?.subServiceName ??
+                          details.subService?.subServiceName ??
+                          'N/A',
+                      "Employee Id":
+                          request?.employeeId ?? details.employeeId ?? 'N/A',
                       "Current Job Position":
-                          request?.currentJobPosition ?? 'N/A',
+                          request?.currentJobPosition ??
+                          details.currentJobPosition ??
+                          'N/A',
                       "Position To be Transferred":
-                          request?.positionToBeTransferred ?? 'N/A',
+                          request?.positionToBeTransferred ??
+                          details.positionToBeTransferred ??
+                          'N/A',
                       "Effective From Date":
-                          request?.effectiveFromDate ?? 'N/A',
+                          request?.effectiveFromDate ??
+                          details.effectiveFromDate ??
+                          'N/A',
                       "Civil Id Card Number":
-                          request?.civilIdCardNumber ?? 'N/A',
-                      "Description": request?.description ?? 'N/A',
+                          request?.civilIdCardNumber ??
+                          details.civilIdCardNumber ??
+                          'N/A',
+                      "Description":
+                          request?.description ?? details.description ?? 'N/A',
                     },
                     technicalInfo: {
                       'Extension Number':
-                          request?.createdByUser?.extensionNumber.toString() ??
-                          '0',
+                          createdByUser?.extensionNumber?.toString() ?? '0',
                     },
                   ),
                 ] else if (selectedTab == 1) ...[
                   employeeSection(),
                   CommentsCard(
                     from: widget.from,
-                    showButtons:
-                        isFromActionItems &&
-                        actionType != ActionButtonsType.none,
+                    showButtons: actionType != ActionButtonsType.none,
                     actionType: actionType,
                     entries: chats,
                     controller: controller.chatController,
@@ -206,10 +222,7 @@ class _TransferFromOneJobtoAnotherJobNatureDetailsScreenState
                   ),
                 ] else if (selectedTab == 3) ...[
                   employeeSection(),
-                  RequestWorkflowTimeline(
-                    details: state.requestDetails,
-                    l10n: l10n,
-                  ),
+                  RequestWorkflowTimeline(details: details, l10n: l10n),
                 ],
               ],
             ),

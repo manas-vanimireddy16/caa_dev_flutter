@@ -677,7 +677,7 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
       );
     }
 
-    final url = ApiEndPoint.jobTransferSendAttachmentById(attachmentId);
+    final url = ApiEndPoint.jobTransferAttachmentById(attachmentId);
 
     try {
       final response = await client.delete(url);
@@ -805,7 +805,8 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
         final response = await client.get(url); //queryParameters: queryParams
 
         if (response.statusCode == 200) {
-          final Map<String, dynamic> json = response.data;
+          final Map<String, dynamic> json =
+              Map<String, dynamic>.from(response.data as Map);
 
           /// Convert JSON → Model
           final result = RequestDetailModel.fromJson(json);
@@ -820,8 +821,12 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
       } else {
         return null;
       }
-    } catch (e) {
-      throw ApiException('Failed to fetch $_serviceLabel data');
+    } on ApiException {
+      rethrow;
+    } catch (e, st) {
+      debugPrint('getRequestsById parse/network error: $e');
+      debugPrintStack(stackTrace: st);
+      throw ApiException('Failed to fetch $_serviceLabel data: $e');
     }
   }
 

@@ -1528,7 +1528,7 @@ class ApiEndPoint {
 
   /// Send chat message (POST)
   static String jobTransferSendChatById(int requestId) =>
-      '/v1/hr-service/job-transfer/requests/$requestId/chats';
+      '/v1/hr-service/job-transfer/requests/$requestId/chat';
 
   /// Get chats (GET)
   static String jobTransferChatsById(int requestId) =>
@@ -1538,6 +1538,10 @@ class ApiEndPoint {
 
   /// Upload attachment for request (POST)
   static String jobTransferSendAttachmentById(int requestId) =>
+      '/v1/hr-service/job-transfer/requests/$requestId/attachment';
+
+  /// Get attachments for request (GET)
+  static String jobTransferAttachmentsByRequestId(int requestId) =>
       '/v1/hr-service/job-transfer/requests/$requestId/attachments';
 
   /// Get/Delete attachment by attachment ID

@@ -555,10 +555,7 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
-    if (fromActionItems) {
-      returnToMyRequestsTab();
-    }
-
+    returnToMyRequestsTab();
     await refreshAfterReturn();
   }
 
@@ -691,8 +688,10 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
-  Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchRequestDetailsById(int id, {bool showLoading = true}) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final requests = await skillsEnhancementInstance.getRequestsById(
         id: id,
@@ -1203,8 +1202,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await skillsEnhancementInstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
       // chatController.clear();
@@ -1630,8 +1628,14 @@ class _VSController extends StateNotifier<_ViewState> {
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {
