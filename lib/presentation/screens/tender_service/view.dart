@@ -18,7 +18,7 @@ class TenderServiceHomeScreen extends ConsumerWidget {
             .watch(serviceTreeProvider)
             .serviceByCodeOrSubServiceCodes(
               serviceCode: serviceCode,
-              subServiceCodes: const ['CAA011', 'CAA012', 'CAA013', 'CAA014'],
+              subServiceCodes: const ['CAA012', 'CAA013', 'CAA014'],
             ) ??
         Service(code: serviceCode, name: 'Tender Services');
 

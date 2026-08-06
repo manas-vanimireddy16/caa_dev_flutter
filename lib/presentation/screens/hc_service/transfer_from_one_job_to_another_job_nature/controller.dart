@@ -325,6 +325,9 @@ class _VSController extends StateNotifier<_ViewState> {
   final Service service;
   final SubService subService;
 
+  _VSControllerParams get params =>
+      _VSControllerParams(service: service, subService: subService);
+
   _VSController({required this.service, required this.subService})
     : super(_ViewState.init());
   Timer? _searchDebounce;
@@ -537,6 +540,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void openNewRequestForm() {
+    fetchUsers();
+    fetchpositionsList();
     KAppX.router.push(
       TransferFromOneJobtoAnotherJobNatureNewRequestRoute(
         serviceId: service.id ?? 0,
@@ -553,36 +558,46 @@ class _VSController extends StateNotifier<_ViewState> {
 
   final assignmentdecisionInstance = AssignmentDecisionRepoistory();
 
-  List<DynamicField> get jobTransferForm => [
+  List<DynamicField> buildJobTransferForm(DashboardL10n l10n) => [
     /// -------- SELECT USER --------
     DynamicField(
       name: 'userId',
-      label: 'Select User',
+      label: l10n.selectUser,
       type: FieldType.select,
       required: true,
-      placeholder: 'Select',
-      options: state.usersList
-          .map(
-            (e) => DropdownOption(
-              value: e.id.toString(),
-              label: e.employeeName ?? '',
-            ),
-          )
-          .toList(),
-
-      // ✅ IMPORTANT PART
+      placeholder: l10n.select,
+      optionsBuilder: (ref) {
+        final formL10n = DashboardL10n.of(ref.context);
+        final vsState = ref.watch(_vsProvider(params));
+        return vsState.usersList
+            .map(
+              (e) => DropdownOption(
+                value: e.id.toString(),
+                label: formL10n.isArabic
+                    ? (e.employeeArabicName?.trim().isNotEmpty == true
+                          ? e.employeeArabicName!
+                          : (e.employeeName ?? ''))
+                    : (e.employeeName ?? ''),
+              ),
+            )
+            .toList();
+      },
       onChanged: (value, ref) {
-        final formState = ref.read(dynamicFormProvider);
-
-        final selectedUser = state.usersList.firstWhere(
-          (e) => e.id.toString() == value,
-        );
+        final vsState = ref.read(_vsProvider(params));
+        Employee? selectedUser;
+        for (final user in vsState.usersList) {
+          if (user.id.toString() == value?.toString()) {
+            selectedUser = user;
+            break;
+          }
+        }
+        if (selectedUser == null) return;
 
         ref.read(dynamicFormProvider.notifier).autoPopulate({
-          'employeeName': selectedUser.employeeName,
-          'civilIdNumber': selectedUser.civilEmployeeId,
-          'employeeId': selectedUser.employeeId,
-          'currentJobPosition': selectedUser.position?.name,
+          'employeeName': selectedUser.employeeName ?? '',
+          'civilIdNumber': selectedUser.civilEmployeeId ?? '',
+          'employeeId': selectedUser.employeeId ?? '',
+          'currentJobPosition': selectedUser.position?.name ?? '',
         });
       },
     ),
@@ -590,82 +605,114 @@ class _VSController extends StateNotifier<_ViewState> {
     /// -------- ASSIGNED EMPLOYEE NAME --------
     DynamicField(
       name: 'employeeName',
-      label: 'Assigned Employee Name',
+      label: l10n.assignedEmployeeName,
       type: FieldType.text,
       required: true,
-      disabled: true, // ✅ auto-filled
+      placeholder: l10n.enter,
+      disabled: true,
     ),
 
     /// -------- CIVIL ID CARD NUMBER --------
     DynamicField(
       name: 'civilIdNumber',
-      label: 'Civil ID Card Number',
+      label: l10n.civilIdCardNumber,
       type: FieldType.text,
       required: true,
-      disabled: true, // ✅ auto-filled
+      placeholder: l10n.enter,
+      disabled: true,
     ),
 
     /// -------- EMPLOYEE ID --------
     DynamicField(
       name: 'employeeId',
-      label: 'Employee ID',
+      label: l10n.employeeId,
       type: FieldType.text,
       required: true,
-      disabled: true, // ✅ auto-filled
+      placeholder: l10n.enter,
+      disabled: true,
     ),
 
     /// -------- REASON FOR REQUEST --------
     DynamicField(
       name: 'reasonForRequest',
-      label: 'Reason For Request',
-      type: FieldType.textarea,
+      label: l10n.reasonForRequest,
+      type: FieldType.text,
       required: true,
-      placeholder: 'Enter reason',
+      placeholder: l10n.enter,
+      validator: (value, _) {
+        final text = value?.toString().trim() ?? '';
+        if (text.isEmpty) return null; // required handles empty
+        if (text.length < 10 || text.length > 250) {
+          return l10n.reasonForRequestMustBeBetween10And250;
+        }
+        return null;
+      },
     ),
 
     /// -------- CURRENT JOB POSITION --------
     DynamicField(
       name: 'currentJobPosition',
-      label: 'Current Job Position',
+      label: l10n.currentJobPosition,
       type: FieldType.text,
       required: true,
-      disabled: true, // ✅ auto-filled
+      placeholder: l10n.enter,
+      disabled: true,
     ),
 
     /// -------- POSITION TO BE TRANSFERRED --------
     DynamicField(
       name: 'transferPosition',
-      label: 'Position to be Transferred',
+      label: l10n.positionToBeTransferred,
       type: FieldType.select,
       required: true,
-      placeholder: 'Select',
-      options: state.positionsList
-          .map(
-            (e) => DropdownOption(value: e.id.toString(), label: e.name ?? ''),
-          )
-          .toList(),
+      placeholder: l10n.select,
+      optionsBuilder: (ref) {
+        final vsState = ref.watch(_vsProvider(params));
+        return vsState.positionsList
+            .map(
+              (e) => DropdownOption(
+                value: e.id.toString(),
+                label: e.name ?? '',
+              ),
+            )
+            .toList();
+      },
     ),
 
     /// -------- EFFECTIVE FROM DATE --------
     DynamicField(
       name: 'effectiveFromDate',
-      label: 'Effective from Date',
+      label: l10n.effectiveFromDate,
       type: FieldType.date,
       required: true,
+      placeholder: 'MM/DD/YYYY',
     ),
 
     /// -------- DESCRIPTION --------
     DynamicField(
       name: 'description',
-      label: 'Description',
+      label: l10n.descriptionLabel,
       type: FieldType.textarea,
+      placeholder: l10n.enter,
+      validator: (value, _) {
+        final text = value?.toString().trim() ?? '';
+        if (text.isEmpty) return null;
+        if (text.length < 10 || text.length > 250) {
+          return l10n.descriptionMustBeBetween10And250Characters;
+        }
+        return null;
+      },
     ),
 
     /// -------- ATTACHMENTS --------
     DynamicField(
       name: 'attachments',
-      label: 'Attachments',
+      label: l10n.attachmentsTabLabel,
       type: FieldType.file,
+      required: false,
+      maxFiles: 5,
+      maxFileSizeInMB: 10,
+      allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'],
     ),
   ];
 
@@ -683,16 +730,16 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Future<void> fetchUsers() async {
     try {
+      // Uses existing GET /v1/hr-service/users
       final users = await assignmentdecisionInstance.getUsers();
-
       state = state.copyWith(usersList: users);
-      print('✅ Users fetched: ${users.length}');
+      debugPrint('✅ Users fetched: ${users.length}');
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
-      print('❌ API ERROR: ${apiError.message}');
+      debugPrint('❌ API ERROR: ${apiError.message}');
     } catch (e, stack) {
-      print('❌ UNKNOWN ERROR: $e');
-      print(stack);
+      debugPrint('❌ UNKNOWN ERROR: $e');
+      debugPrint('$stack');
     }
   }
 

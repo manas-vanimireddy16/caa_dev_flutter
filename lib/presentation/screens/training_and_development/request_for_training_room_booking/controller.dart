@@ -353,19 +353,17 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<StatSummaryData> requestStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.kpiData.data?.toJson(),
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> approverStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.approvalKpiData.data?.toJson(),
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
       state.tabIndex == 0
@@ -536,14 +534,8 @@ class _VSController extends StateNotifier<_ViewState> {
       value: 'Training Rooms (D1, D2)',
       label: 'Training Rooms (D1, D2)',
     ),
-    DropdownOption(
-      value: 'Lecture Hall',
-      label: 'Lecture Hall',
-    ),
-    DropdownOption(
-      value: 'Laboratory',
-      label: 'Laboratory',
-    ),
+    DropdownOption(value: 'Lecture Hall', label: 'Lecture Hall'),
+    DropdownOption(value: 'Laboratory', label: 'Laboratory'),
   ];
 
   List<DynamicField> buildTrainingRoomBookingForm(DashboardL10n l10n) => [
@@ -693,8 +685,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Start Date': formatDate(item.dateOfEvent),
       'End Date': formatDate(item.endDateOfEvent),
       'Number of Attendees': item.numberOfAttendees?.toString() ?? '-',
-      if ((attendeeNames ?? '').isNotEmpty)
-        'Name of Attendees': attendeeNames!,
+      if ((attendeeNames ?? '').isNotEmpty) 'Name of Attendees': attendeeNames!,
       if (approvers.length == 2) ...{
         'Department': approvers[0],
         'Section': approvers[1],
@@ -734,7 +725,10 @@ class _VSController extends StateNotifier<_ViewState> {
     final request = _detailRequest;
 
     return {
-      'Service Type': _detailField((r) => r.service?.name, detail.service?.name ?? ''),
+      'Service Type': _detailField(
+        (r) => r.service?.name,
+        detail.service?.name ?? '',
+      ),
       'Sub Service Type': _detailField(
         (r) => r.subService?.subServiceName,
         detail.subService?.subServiceName ?? '',
@@ -743,7 +737,10 @@ class _VSController extends StateNotifier<_ViewState> {
         (r) => r.purposeOfTraining,
         detail.purposeOfTraining ?? '',
       ),
-      'Date of Event': _detailField((r) => r.dateOfEvent, detail.dateOfEvent ?? ''),
+      'Date of Event': _detailField(
+        (r) => r.dateOfEvent,
+        detail.dateOfEvent ?? '',
+      ),
       'End Date of Event': _detailField(
         (r) => r.endDateOfEvent,
         detail.endDateOfEvent ?? '',
@@ -788,12 +785,8 @@ class _VSController extends StateNotifier<_ViewState> {
 
     return {
       'Approval Status': _detailField((r) => r.status, detail.status ?? ''),
-      'Requested Date': formatDate(
-        request?.createdAt ?? detail.createdAt,
-      ),
-      'Last Updated': formatDate(
-        request?.updatedAt ?? detail.updatedAt,
-      ),
+      'Requested Date': formatDate(request?.createdAt ?? detail.createdAt),
+      'Last Updated': formatDate(request?.updatedAt ?? detail.updatedAt),
       if (nextApprover.containsKey('department'))
         'Department': nextApprover['department']!,
       if (nextApprover.containsKey('section'))
@@ -870,10 +863,7 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
-    if (fromActionItems) {
-      returnToMyRequestsTab();
-    }
-
+    returnToMyRequestsTab();
     await refreshAfterReturn();
   }
 
@@ -884,6 +874,11 @@ class _VSController extends StateNotifier<_ViewState> {
       index: 0,
     );
     updateTabIndex(0);
+    MyRequestsTabPageSyncRegistry.syncToTab(
+      serviceId: service.id,
+      subServiceId: subService.id,
+      index: 0,
+    );
   }
 
   Future<void> refreshAfterReturn() async {
@@ -913,8 +908,13 @@ class _VSController extends StateNotifier<_ViewState> {
       RequestForTrainingRoomBookingRepository();
   final securityAccessInstance = SecurityAccessRepoistory();
 
-  Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isLoading: true, requestDetailTab: 0);
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final requests = await requestForTrainingRoomBookingInstance
           .getRequestsById(
@@ -956,7 +956,8 @@ class _VSController extends StateNotifier<_ViewState> {
         id,
       );
       if (requests != null) {
-        state = state.copyWith(chatById: requests);
+        final chats = requests.reversed.toList();
+        state = state.copyWith(chatById: chats);
       }
     } on ApiException catch (apiError) {
       Fluttertoast.showToast(msg: apiError.message);
@@ -1240,7 +1241,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
         debugPrint('📎 Attachment-only payload: $payload');
 
-        // await requestForTrainingRoomBookingInstance.sendAttachment(payload, requestId);
+        await requestForTrainingRoomBookingInstance.sendAttachment(
+          payload,
+          requestId,
+        );
       }
 
       /// ------------------------------------------------------------
@@ -1266,7 +1270,7 @@ class _VSController extends StateNotifier<_ViewState> {
           requestId,
         );
       }
-      fetchChatById(requestId);
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
       chatController.clear();
@@ -1637,8 +1641,14 @@ class _VSController extends StateNotifier<_ViewState> {
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {

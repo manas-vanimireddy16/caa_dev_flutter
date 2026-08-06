@@ -15,6 +15,7 @@ class CommonRequestDetails extends StatelessWidget {
   final bool showAllowanceSection;
   final bool showGoalsSection;
   final RequestDetailTable? table;
+  final Widget? requestCustomContent;
 
   final Map<String, String>? statusInfo;
   final Map<String, String>? requestInfo;
@@ -38,6 +39,7 @@ class CommonRequestDetails extends StatelessWidget {
     this.goals,
     this.showGoalsSection = false,
     this.table,
+    this.requestCustomContent,
     this.coverageInformationTitle,
     this.statusInformationTitle,
     this.requestInformationTitle,
@@ -79,19 +81,21 @@ class CommonRequestDetails extends StatelessWidget {
             info: requestInfo!,
             requestDetailsBuilder: requestDetailsLabelBuilder,
             hideEmptyValues: true,
-            customContent: table != null
-                ? RequestDetailTableRenderer(
-                    table:
-                        table ??
-                        RequestForAccommodationInMuscatGovernorateTable(
-                          rows: [],
-                        ),
-                  )
-                : showAllowanceSection
-                ? AllowanceTable(employees: allowanceEmployees ?? [])
-                : showGoalsSection
-                ? GoalsTable(goals: goals ?? [], isOnHold: true)
-                : null,
+            customContent:
+                requestCustomContent ??
+                (table != null
+                    ? RequestDetailTableRenderer(
+                        table:
+                            table ??
+                            RequestForAccommodationInMuscatGovernorateTable(
+                              rows: [],
+                            ),
+                      )
+                    : showAllowanceSection
+                    ? AllowanceTable(employees: allowanceEmployees ?? [])
+                    : showGoalsSection
+                    ? GoalsTable(goals: goals ?? [], isOnHold: true)
+                    : null),
           ),
           6.toVerticalSizedBox,
         ],

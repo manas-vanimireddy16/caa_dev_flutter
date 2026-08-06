@@ -2060,7 +2060,23 @@ class DashboardL10n {
       _t('Current Job Position', 'المسمى الوظيفي الحالي');
 
   String get assignedEmployeeName =>
-      _t('Assigned Employee Name', 'اسم الموظف المُعار');
+      _t('Assigned Employee Name', 'اسم الموظف الفعال');
+
+  String get positionToBeTransferred =>
+      _t('Position to be Transferred', 'المسمى الوظيفي المراد النقل إليه');
+
+  String get effectiveFromDate =>
+      _t('Effective from Date', 'تاريخ بدء السريان');
+
+  String get reasonForRequestMustBeBetween10And250 => _t(
+    'Reason for request must be between 10 and 250 characters',
+    'يجب أن يكون سبب الطلب بين 10 و 250 حرف',
+  );
+
+  String get descriptionMustBeBetween10And250Characters => _t(
+    'Description must be between 10 and 250 characters',
+    'يجب أن يكون الوصف بين 10 و 250 حرف',
+  );
 
   String get salaryPaymentSource =>
       _t('Salary Payment Source', 'جهة صرف الراتب');
@@ -2664,10 +2680,10 @@ class DashboardL10n {
       _t('Raise Legal Complaint', 'تقديم شكوى قانونية');
 
   String get legalComplaintStepRequestDetails =>
-      _t('Request Details', 'تفاصيل الطلب');
+      _t('Legal Consultation Review', 'مراجعة استشارة قانونية');
 
   String get legalComplaintStepComplaintIncident =>
-      _t('Complaint Incident', 'حادثة الشكوى');
+      _t('Complaint Details', 'تفاصيل الشكوى');
 
   String get legalComplaintStepUserDetails =>
       _t('User Details', 'بيانات المستخدم');
@@ -2675,8 +2691,10 @@ class DashboardL10n {
   String get legalComplaintStepReviewSubmit =>
       _t('Review & Submit', 'مراجعة وإرسال');
 
-  String get legalComplaintComplainantDetails =>
-      _t('Complainant Details', 'بيانات مقدم الشكوى');
+  String get legalComplaintComplainantDetails => _t(
+    'Details of the Employee Being Complained About',
+    'تفاصيل الموظف مُحل الشكوى',
+  );
 
   String get legalComplaintComplainedEmployeeDetails =>
       _t('Complained Employee Details', 'بيانات الموظف محل الشكوى');
@@ -2686,6 +2704,8 @@ class DashboardL10n {
   String get incidentTime => _t('Time', 'الوقت');
 
   String get incidentLocation => _t('Location', 'الموقع');
+
+  String get personEntity => _t('Person name or entity', 'اسم الشخص أو الجهة');
 
   String get incidentEvents => _t('Events', 'الاحداث');
 
@@ -2727,8 +2747,8 @@ class DashboardL10n {
   String dynamicFormStepOf(int current, int total) =>
       _t('Step $current of $total', 'الخطوة $current من $total');
 
-  String get titleOfComplaint => _t('Title of the Appeal', 'عنوان التظلم');
-
+  String get titleOfComplaint => _t('Title of the Complaint', 'عنوان الشكوى');
+  String get titleOfAppeal => _t('Title of the appeal', 'عنوان التظلم');
   String get requestClassification =>
       _t('Request Classification', 'تصنيف الطلب');
 

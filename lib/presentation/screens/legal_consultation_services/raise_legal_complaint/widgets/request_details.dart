@@ -121,11 +121,27 @@ class _RaiseLegalComplaintDetailsScreenState
                 if (selectedTab == 0) ...[
                   employeeSection(),
                   CommonRequestDetails(
+                    statusInformationTitle: l10n.requestDetailsLabel(
+                      'Status Information',
+                    ),
+                    requestInformationTitle: l10n.requestDetailsLabel(
+                      'Request Information',
+                    ),
+                    technicalInformationTitle: l10n.technicalDetailsSection,
+                    requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: controller.buildStatusInformation(),
-
                     requestInfo: controller.buildRequestInformationData(),
+                    requestCustomContent: _LegalComplaintRequestSections(
+                      l10n: l10n,
+                      header: controller.buildLegalComplaintHeaderFields(),
+                      complaintFields:
+                          controller.buildComplaintDetailsFields(l10n),
+                      complainantFields:
+                          controller.buildComplainantDetailsFields(l10n),
+                      complainedEmployeeFields: controller
+                          .buildComplainedEmployeeDetailsFields(l10n),
+                    ),
                     technicalInfo: controller.buildTechnicalInformation(),
-                    // table: controller.mapAccommodationTableForDetails(),
                   ),
                 ] else if (selectedTab == 1) ...[
                   employeeSection(),
@@ -197,6 +213,160 @@ class _RaiseLegalComplaintDetailsScreenState
           );
         },
       ),
+    );
+  }
+}
+
+class _LegalComplaintRequestSections extends StatelessWidget {
+  final DashboardL10n l10n;
+  final ({String title, String description}) header;
+  final List<({String label, String value})> complaintFields;
+  final List<({String label, String value})> complainantFields;
+  final List<({String label, String value})> complainedEmployeeFields;
+
+  const _LegalComplaintRequestSections({
+    required this.l10n,
+    required this.header,
+    required this.complaintFields,
+    required this.complainantFields,
+    required this.complainedEmployeeFields,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _LegalComplaintHeaderField(
+          label: l10n.titleOfComplaint,
+          value: header.title,
+        ),
+        const SizedBox(height: 14),
+        _LegalComplaintHeaderField(
+          label: l10n.descriptionLabel,
+          value: header.description,
+        ),
+        const SizedBox(height: 18),
+        _LegalComplaintInfoSubsection(
+          title: l10n.legalComplaintStepComplaintIncident,
+          fields: complaintFields,
+        ),
+        const SizedBox(height: 16),
+        _LegalComplaintInfoSubsection(
+          title: l10n.requestDetailsLabel('Complainant Details'),
+          fields: complainantFields,
+        ),
+        const SizedBox(height: 16),
+        _LegalComplaintInfoSubsection(
+          title: l10n.legalComplaintComplainedEmployeeDetails,
+          fields: complainedEmployeeFields,
+        ),
+      ],
+    );
+  }
+}
+
+class _LegalComplaintHeaderField extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _LegalComplaintHeaderField({
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF777A80),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF25272C),
+            height: 1.35,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LegalComplaintInfoSubsection extends StatelessWidget {
+  final String title;
+  final List<({String label, String value})> fields;
+
+  const _LegalComplaintInfoSubsection({
+    required this.title,
+    required this.fields,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF24262B),
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Divider(height: 1, thickness: 1, color: Color(0xFFE6E6E6)),
+        const SizedBox(height: 12),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final itemWidth = (constraints.maxWidth - 12) / 2;
+            return Wrap(
+              spacing: 12,
+              runSpacing: 14,
+              children: [
+                for (final field in fields)
+                  SizedBox(
+                    width: itemWidth,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          field.label,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF777A80),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          field.value,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF25272C),
+                            height: 1.35,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+      ],
     );
   }
 }

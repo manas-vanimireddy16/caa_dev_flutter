@@ -768,6 +768,48 @@ class RaiseALegalComplaintRepositoryImple
   }
 
   @override
+  Future<EmployeeList?> getUserById(int userId) async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw ApiException('Client is null - cannot fetch user details');
+    }
+
+    try {
+      final response = await client.get(
+        ApiEndPoint.legalComplaintUserById(userId),
+      );
+
+      if (response.statusCode != 200) {
+        throw ApiException(
+          'Failed to fetch user details: ${response.statusCode}',
+        );
+      }
+
+      final dynamic responseData = response.data;
+      Map<String, dynamic>? userJson;
+
+      if (responseData is Map) {
+        final data = responseData['data'];
+        if (data is Map<String, dynamic>) {
+          userJson = data;
+        } else if (data is Map) {
+          userJson = Map<String, dynamic>.from(data);
+        } else if (responseData.containsKey('id')) {
+          userJson = Map<String, dynamic>.from(responseData);
+        }
+      }
+
+      if (userJson == null) return null;
+      return EmployeeList.fromJson(userJson);
+    } on DioException catch (error) {
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    } catch (e) {
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
   Future<List<DepartmentModel>> getDepartments() async {
     final client = await KAppX.network.secureClient();
 

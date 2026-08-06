@@ -417,7 +417,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Date of Submission': formatDate(
         request?.submissionDate.toString() ?? '',
       ),
-      'Title of the Complaint': request?.titleOfComplaint ?? '-',
+      'Title of the Appeal': request?.titleOfComplaint ?? '-',
       'Appeal Against Decision': request?.appealAgainstDecision ?? '-',
       'Description': request?.description ?? '-',
       'Decision Number': request?.decisionNumber ?? '-',
@@ -659,8 +659,7 @@ class _VSController extends StateNotifier<_ViewState> {
         type: FieldType.text,
         required: true,
         disabled: true,
-        initialValue:
-            user?.department?.displayName(isArabic: isArabic) ?? '',
+        initialValue: user?.department?.displayName(isArabic: isArabic) ?? '',
         placeholder: l10n.enter,
       ),
       DynamicField(
@@ -1656,6 +1655,47 @@ class _VSController extends StateNotifier<_ViewState> {
     return allFiles.map((file) => file.toJson()).toList();
   }
 
+  List<String> _parseStringArray(dynamic value) {
+    if (value == null) return [];
+    if (value is List) {
+      return value
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    }
+    final text = value.toString().trim();
+    if (text.isEmpty) return [];
+    return text
+        .split(RegExp(r'[\n,]'))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+  }
+
+  int _toIntOrZero(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    return int.tryParse(value.toString()) ?? 0;
+  }
+
+  String? _optionalTrimmed(dynamic value) {
+    final text = value?.toString().trim();
+    if (text == null || text.isEmpty) return null;
+    return text;
+  }
+
+  String _submissionDate(dynamic value) {
+    final raw = value?.toString().trim() ?? '';
+    if (raw.isNotEmpty) {
+      // Prefer YYYY-MM-DD when a full ISO timestamp is provided.
+      return raw.contains('T') ? raw.split('T').first : raw;
+    }
+    final now = DateTime.now();
+    final month = now.month.toString().padLeft(2, '0');
+    final day = now.day.toString().padLeft(2, '0');
+    return '${now.year}-$month-$day';
+  }
+
   Map<String, dynamic> _buildPayload(
     int serviceId,
     int subServiceId,
@@ -1665,42 +1705,50 @@ class _VSController extends StateNotifier<_ViewState> {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final user = userInfo?.data;
 
-    final grievantName = (user?.employeeName?.trim().isNotEmpty ?? false)
-        ? user!.employeeName
-        : (user?.employeeArabicName ?? '');
+    final departmentId = _toIntOrZero(
+      user?.department?.id ?? selectedRole?.departmentId,
+    );
+    final sectionId = _toIntOrZero(
+      user?.section?.id ?? selectedRole?.sectionId,
+    );
+    // User profile exposes directorate as a name string; id is not available.
+    final directorateId = _toIntOrZero(
+      values['grievant_directorate_id'] ?? user?.directorate,
+    );
 
-    final departmentId =
-        int.tryParse(user?.department?.id ?? '') ?? selectedRole?.departmentId;
-    final sectionId =
-        int.tryParse(user?.section?.id ?? '') ?? selectedRole?.sectionId;
-
-    final payload = {
-      "service_id": serviceId,
-      "sub_service_id": subServiceId,
-
-      "submission_date": values['submission_date'],
-      "title_of_complaint": values['request_title'] ?? "",
-      "appeal_against_decision": values['appeal_against_decision'] ?? "",
-      "description": values['description'] ?? "",
-
-      "decision_number": values['decision_number'] ?? "",
-      "decision_date": values['decision_date'],
-      "decision_subject": values['decision_subject'] ?? "",
-      "grievance_details": values['grievance_details'] ?? "",
-
-      "grievant_name": grievantName ?? "",
-      "grievant_employee_number":
-          user?.employeeId ?? values['grievant_employee_number'] ?? "",
-      "grievant_directorate_id": values['grievant_directorate_id'],
-      "grievant_department_id": departmentId,
-      "grievant_section_id": sectionId,
-      "grievant_relationship_to_matter": values['grievant_relationship'] ?? "",
-
-      "declaration_acknowledged":
+    final payload = <String, dynamic>{
+      'service_id': serviceId,
+      'sub_service_id': subServiceId,
+      'submission_date': _submissionDate(values['submission_date']),
+      'title_of_complaint':
+          values['request_title'] ?? values['title_of_complaint'] ?? '',
+      'appeal_against_decision': values['appeal_against_decision'] ?? '',
+      'decision_number': values['decision_number'] ?? '',
+      'decision_subject': values['decision_subject'] ?? '',
+      'individuals_involved': _parseStringArray(values['individuals_involved']),
+      'grievant_employee_number':
+          user?.employeeId ?? values['grievant_employee_number'] ?? '',
+      'grievant_directorate_id': directorateId,
+      'grievant_department_id': departmentId,
+      'grievant_section_id': sectionId,
+      'grievant_relationship_to_matter':
+          values['grievant_relationship'] ??
+          values['grievant_relationship_to_matter'] ??
+          '',
+      'declaration_acknowledged':
           (values['acknowledgement'] as List?)?.isNotEmpty ?? false,
-
-      "attachments": _buildAttachments(values),
+      'attachments': _buildAttachments(values),
     };
+
+    final description = _optionalTrimmed(values['description']);
+    if (description != null) {
+      payload['description'] = description;
+    }
+
+    final grievanceDetails = _optionalTrimmed(values['grievance_details']);
+    if (grievanceDetails != null) {
+      payload['grievance_details'] = grievanceDetails;
+    }
 
     return payload;
   }

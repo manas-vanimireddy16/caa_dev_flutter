@@ -10,7 +10,9 @@ const String kFollowUpActionsKey = 'follow_up_actions';
 /// Comment, Response Date, Action Status, Action Taken, Delay Period and an
 /// optional Attachment. New cards can be appended with the "Add" button.
 class FollowUpActionCards extends ConsumerStatefulWidget {
-  const FollowUpActionCards({super.key});
+  final bool showAttachment;
+
+  const FollowUpActionCards({super.key, this.showAttachment = true});
 
   @override
   ConsumerState<FollowUpActionCards> createState() =>
@@ -134,6 +136,7 @@ class _FollowUpActionCardsState extends ConsumerState<FollowUpActionCards> {
             card: _cards[i],
             l10n: l10n,
             showRemove: _cards.length > 1,
+            showAttachment: widget.showAttachment,
             onRemove: () => _removeCard(i),
             onChanged: _sync,
             onPickAttachment: () => _pickAttachment(_cards[i]),
@@ -163,6 +166,7 @@ class _FollowUpActionCard extends StatefulWidget {
   final _FollowUpActionCardData card;
   final DashboardL10n l10n;
   final bool showRemove;
+  final bool showAttachment;
   final VoidCallback onRemove;
   final VoidCallback onChanged;
   final VoidCallback onPickAttachment;
@@ -173,6 +177,7 @@ class _FollowUpActionCard extends StatefulWidget {
     required this.card,
     required this.l10n,
     required this.showRemove,
+    this.showAttachment = true,
     required this.onRemove,
     required this.onChanged,
     required this.onPickAttachment,
@@ -231,27 +236,27 @@ class _FollowUpActionCardState extends State<_FollowUpActionCard> {
     ),
   ];
 
-  /// Action Status options carry a color to match the design.
+  /// Action Status options carry a color to match the web design.
   List<_StatusOption> get _actionStatusOptions => [
     _StatusOption(
       label: l10n.followUpStatusNoResponse,
       value: 'No Response',
-      color: const Color(0xFFE53935),
+      color: const Color(0xFF1E88E5), // blue
     ),
     _StatusOption(
       label: l10n.followUpStatusCompleted,
       value: 'Completed',
-      color: const Color(0xFF43A047),
+      color: const Color(0xFF7CB342), // light green
     ),
     _StatusOption(
       label: l10n.followUpStatusInProgress,
       value: 'In Progress',
-      color: const Color(0xFFF9A825),
+      color: const Color(0xFFFDD835), // yellow
     ),
     _StatusOption(
       label: l10n.followUpStatusOverdue,
       value: 'Overdue',
-      color: const Color(0xFF757575),
+      color: const Color(0xFF9E9E9E), // grey
     ),
   ];
 
@@ -466,13 +471,26 @@ class _FollowUpActionCardState extends State<_FollowUpActionCard> {
                 .map(
                   (o) => KDropdownItem<String>(
                     value: o.value,
-                    child: Text(
-                      o.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: o.color,
-                        fontWeight: FontWeight.w600,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: o.color.withValues(alpha: 0.22),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        o.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: o.color == const Color(0xFFFDD835)
+                              ? const Color(0xFFF57F17)
+                              : o.color,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -503,9 +521,10 @@ class _FollowUpActionCardState extends State<_FollowUpActionCard> {
             fieldHeadingText: l10n.followUpDelayPeriodLabel,
             fieldHeadingTextStyle: DynamicFieldLabelStyle.text,
           ),
-          const SizedBox(height: 15),
+          if (widget.showAttachment) ...[
+            const SizedBox(height: 15),
 
-            /// 10. Attachment (optional)
+            /// 10. Attachment (optional) — create only
             _AttachmentField(
               label: l10n.followUpAttachmentOptionalLabel,
               uploadLabel: l10n.followUpUpload,
@@ -521,6 +540,7 @@ class _FollowUpActionCardState extends State<_FollowUpActionCard> {
                 widget.onChanged();
               },
             ),
+          ],
           ],
         ],
       ),

@@ -331,19 +331,17 @@ class _VSController extends StateNotifier<_ViewState> {
       List.generate(6, (index) => (currentYear - index).toString());
   List<StatSummaryData> requestStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.kpiData.data?.toJson(),
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.kpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> approverStatsList(
     String Function(String key) titleForKey,
-  ) =>
-      StatSummaryHelper.buildStatList(
-        state.approvalKpiData.data?.toJson(),
-        titleForKey: titleForKey,
-      );
+  ) => StatSummaryHelper.buildStatList(
+    state.approvalKpiData.data?.toJson(),
+    titleForKey: titleForKey,
+  );
 
   List<StatSummaryData> currentStats(String Function(String key) titleForKey) =>
       state.tabIndex == 0
@@ -429,6 +427,15 @@ class _VSController extends StateNotifier<_ViewState> {
       'Number of Attendees': request?.numberOfAttendees.toString() ?? 'N/A',
       'Description': request?.description ?? 'N/A',
       'Media Coverage Required': request?.mediaCoverageRequired ?? 'N/A',
+      'Title of Category': request?.typeOfCategory ?? 'N/A',
+      'Media Coverage Required': request?.mediaCoverageRequired ?? 'N/A',
+      'Title of Category': request?.typeOfCategory ?? 'N/A',
+      'Attendee Names':
+          request?.nameOfAttendeesSelection
+              ?.map((e) => e.name)
+              .whereType<String>()
+              .join(', ') ??
+          'N/A',
     };
   }
 
@@ -504,10 +511,7 @@ class _VSController extends StateNotifier<_ViewState> {
       ),
     );
 
-    if (fromActionItems) {
-      returnToMyRequestsTab();
-    }
-
+    returnToMyRequestsTab();
     await refreshAfterReturn();
   }
 
@@ -693,8 +697,13 @@ class _VSController extends StateNotifier<_ViewState> {
 
   /// ========================= API CALLS =========================
 
-  Future<void> fetchRequestDetailsById(int id) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
+    if (showLoading) {
+      state = state.copyWith(isLoading: true);
+    }
     try {
       final requests = await requestTrainingInstance.getRequestsById(
         id: id,
@@ -721,6 +730,7 @@ class _VSController extends StateNotifier<_ViewState> {
         }
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
       state = state.copyWith(isLoading: false);
@@ -1123,8 +1133,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
         await requestTrainingInstance.sendChat(payload, requestId);
       }
-      fetchChatById(requestId);
-      fetchAttachmentsById(requestId);
+      await fetchRequestDetailsById(requestId, showLoading: false);
 
       /// 3️⃣ Clear UI state
       // chatController.clear();
@@ -1516,8 +1525,14 @@ class _VSController extends StateNotifier<_ViewState> {
   void onSelectedApprovalId(int value) =>
       state = state.copyWith(approvalId: value);
 
-  void updateRequestTab(int index) {
+  void updateRequestTab(int index, {bool refreshDetails = false}) {
     state = state.copyWith(requestDetailTab: index);
+    if (!refreshDetails) return;
+
+    final requestId = state.requestDetails.request?.id;
+    if (requestId != null && requestId != 0) {
+      fetchRequestDetailsById(requestId, showLoading: false);
+    }
   }
 
   void updateTabIndex(int index) {

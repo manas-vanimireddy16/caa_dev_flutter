@@ -13,11 +13,11 @@ const _workflowTabEnabledSubServiceCodes = {
   // Logistics
   'CAA031', 'CAA032', 'CAA033',
   // Training & Development
-  'CAA015', 'CAA016', 'CAA018', 'CAA019', 'CAA049',
+  'CAA015', 'CAA016', 'CAA019', 'CAA049',
   // Legal Services
   'CAA027', 'CAA028', 'CAA029',
   // Tender Services
-  'CAA011', 'CAA012', 'CAA013', 'CAA014',
+  'CAA012', 'CAA013', 'CAA014',
   // Maintenance
   'CAA035', 'CAA045',
   // Aviation Security
@@ -129,18 +129,6 @@ Future<void> navigateToDashboardRequestDetails({
     case 'CAA016':
       await KAppX.router.push(
         RequestForStudyLeaveDetailsRoute(
-          id: requestId,
-          from: from,
-          service: resolvedService,
-          subService: resolvedSubService,
-          serviceId: serviceId,
-          subServiceId: subServiceId,
-        ),
-      );
-      break;
-    case 'CAA018':
-      await KAppX.router.push(
-        AnnualTrainingPlanDetailsRoute(
           id: requestId,
           from: from,
           service: resolvedService,
@@ -369,18 +357,6 @@ Future<void> navigateToDashboardRequestDetails({
     case 'CAA020':
       await KAppX.router.push(
         RequestforCoverageDetailsRoute(
-          id: requestId,
-          from: from,
-          service: resolvedService,
-          subService: resolvedSubService,
-          serviceId: serviceId,
-          subServiceId: subServiceId,
-        ),
-      );
-      break;
-    case 'CAA011':
-      await KAppX.router.push(
-        RequestTenderServiceDetailsRoute(
           id: requestId,
           from: from,
           service: resolvedService,

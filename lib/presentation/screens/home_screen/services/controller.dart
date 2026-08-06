@@ -469,7 +469,7 @@ class _VSController extends StateNotifier<_ViewState> {
         KAppX.router.push(const LegalConsultationServicesHomeRoute());
         return;
       }
-      if (codes.any({'CAA011', 'CAA012', 'CAA013', 'CAA014'}.contains)) {
+      if (codes.any({'CAA012', 'CAA013', 'CAA014'}.contains)) {
         KAppX.router.push(const TenderServiceHomeRoute());
         return;
       }
@@ -498,7 +498,7 @@ class _VSController extends StateNotifier<_ViewState> {
         return;
       }
       if (codes.any(
-        {'CAA015', 'CAA016', 'CAA018', 'CAA019', 'CAA049'}.contains,
+        {'CAA015', 'CAA016', 'CAA019', 'CAA049'}.contains,
       )) {
         KAppX.router.push(const TrainingandDevelopmentHomeRoute());
         return;
@@ -723,14 +723,6 @@ class _VSController extends StateNotifier<_ViewState> {
         break;
 
       /// Tender Services
-      case 'CAA011':
-        KAppX.router.push(
-          RequestTenderServiceRoute(
-            service: service ?? Service(),
-            subService: subService ?? SubService(),
-          ),
-        );
-        break;
       case 'CAA012':
         KAppX.router.push(
           RequestAServiceToRespondToEnquiriesRoute(

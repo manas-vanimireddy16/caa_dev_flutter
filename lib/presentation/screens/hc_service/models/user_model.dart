@@ -146,14 +146,24 @@ class Employee {
       manpowerId: s(json['manpower_id']),
       mobile: s(json['mobile']),
       officeNumber: s(json['office_number']),
-      department: json['department'] != null
-          ? DepartmentModel.fromJson(json['department'])
+      department: json['department'] is Map
+          ? DepartmentModel.fromJson(
+              Map<String, dynamic>.from(json['department'] as Map),
+            )
           : null,
       category: s(json['category']),
       directorate: s(json['directorate']),
-      section: json['section'],
-      position: json['position'] != null
-          ? PositionModel.fromJson(json['position'])
+      section: json['section'] is int
+          ? json['section'] as int
+          : json['section'] is Map
+          ? int.tryParse(json['section']['id']?.toString() ?? '')
+          : int.tryParse(json['section']?.toString() ?? ''),
+      position: json['position'] is Map
+          ? PositionModel.fromJson(
+              Map<String, dynamic>.from(json['position'] as Map),
+            )
+          : json['position'] is int
+          ? PositionModel(id: json['position'] as int)
           : null,
       arabicPosition: s(json['arabic_position']),
       grade: s(json['grade']),

@@ -681,7 +681,7 @@ class RequestTrainingRepositoryImple implements RequestTrainingRepository {
       throw ApiException('Client is null');
     }
 
-    final url = ApiEndPoint.trainingRequestSendAttachmentById(attachmentId);
+    final url = ApiEndPoint.trainingRequestDeleteAttachmentById(attachmentId);
 
     try {
       final response = await client.delete(url);

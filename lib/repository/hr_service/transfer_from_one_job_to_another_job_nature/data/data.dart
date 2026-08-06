@@ -21,37 +21,48 @@ import 'package:http_parser/http_parser.dart';
 
 class TransferFromOneJobtoAnotherJobNatureRepositoryImple
     implements TransferFromOneJobtoAnotherJobNatureRepository {
-  static const String _serviceLabel = 'Transfer from One Job to Another Job Nature';
+  static const String _serviceLabel =
+      'Transfer from One Job to Another Job Nature';
   @override
   Future<List<EmployeeList>> getUsers(int departmentId) async {
     final client = await KAppX.network.secureClient();
     if (client == null) {
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     }
 
     try {
-      final response = await client.get(
-        ApiEndPoint.assignTaskToEmployeeUsersList(departmentId),
-      );
+      final response = await client.get(ApiEndPoint.hrServiceusers);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = response.data as Map<String, dynamic>;
+        final dynamic rawData = data['data'];
 
-        // 🔴 IMPORTANT: data['data'] is [ List<Employee>, totalCount ]
-        final List<dynamic> rawData = data['data'] as List<dynamic>? ?? [];
-
-        // rawData[0] contains the actual employee list
-        final List<dynamic> employeeList =
-            rawData.isNotEmpty && rawData[0] is List
-            ? rawData[0] as List<dynamic>
-            : [];
+        // API returns data as a direct List of users.
+        // Older shape was [ List<Employee>, totalCount ].
+        final List<dynamic> employeeList;
+        if (rawData is List) {
+          if (rawData.isNotEmpty && rawData.first is List) {
+            employeeList = rawData.first as List<dynamic>;
+          } else {
+            employeeList = rawData;
+          }
+        } else {
+          employeeList = const [];
+        }
 
         return employeeList
-            .map((e) => EmployeeList.fromJson(e as Map<String, dynamic>))
+            .whereType<Map>()
+            .map(
+              (e) => EmployeeList.fromJson(Map<String, dynamic>.from(e)),
+            )
             .toList();
       }
 
-      throw ApiException('Failed to fetch $_serviceLabel requests: ${response.statusCode}');
+      throw ApiException(
+        'Failed to fetch $_serviceLabel requests: ${response.statusCode}',
+      );
     } catch (e, st) {
       debugPrint('getUsers error: $e');
       debugPrintStack(stackTrace: st);
@@ -68,7 +79,9 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
 
     try {
       if (client == null) {
-        throw ApiException('Client is null - cannot create $_serviceLabel request');
+        throw ApiException(
+          'Client is null - cannot create $_serviceLabel request',
+        );
       }
 
       final response = await client.post(url, data: payload);
@@ -204,7 +217,8 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
         return LocationListResponseModel.fromJson(data);
       } else {
         final errorMessage =
-            response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+            response.data?['message'] ??
+            'Failed to process $_serviceLabel request';
         throw ApiException(errorMessage);
       }
     } on DioException catch (error) {
@@ -233,7 +247,8 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -269,7 +284,8 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           return KPIResponse.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
@@ -309,11 +325,14 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -348,11 +367,14 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -388,11 +410,14 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           return StatusBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -431,11 +456,14 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           return TrendBreakdownModel.fromJson(data);
         } else {
           final errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           throw ApiException(errorMessage);
         }
       }
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     } on DioException catch (error) {
       log('Failed to process $_serviceLabel request');
       final message = error.response?.data['message'] ?? error.message;
@@ -554,7 +582,8 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           return actionItems;
         } else {
           String errorMessage =
-              response.data?['message'] ?? 'Failed to process $_serviceLabel request';
+              response.data?['message'] ??
+              'Failed to process $_serviceLabel request';
           errorMessage =
               'Failed to fetch ActionItems transfer from one job to another job nature: $errorMessage';
           throw ApiException(errorMessage);
@@ -589,7 +618,8 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           return response.data["message"] ?? "Success";
         } else {
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Failed to process $_serviceLabel request";
+          return response.data["message"] ??
+              "Failed to process $_serviceLabel request";
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
@@ -622,7 +652,8 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           return response.data["message"] ?? "Success";
         } else {
           debugPrint('⚠️ Failed to send request: ${response.statusCode}');
-          return response.data["message"] ?? "Failed to process $_serviceLabel request";
+          return response.data["message"] ??
+              "Failed to process $_serviceLabel request";
         }
       } else {
         debugPrint('❌ Client is null — cannot send request');
@@ -641,7 +672,9 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
   Future<void> deleteAttachment(int attachmentId, {int? requestId}) async {
     final client = await KAppX.network.secureClient();
     if (client == null) {
-      throw ApiException('Client is null - cannot process $_serviceLabel request');
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
     }
 
     final url = ApiEndPoint.jobTransferSendAttachmentById(attachmentId);
@@ -652,7 +685,8 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           response.statusCode != 201 &&
           response.statusCode != 204) {
         throw ApiException(
-          response.data?['message'] ?? 'Failed to delete $_serviceLabel attachment',
+          response.data?['message'] ??
+              'Failed to delete $_serviceLabel attachment',
         );
       }
     } on DioException catch (error) {
@@ -711,7 +745,9 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel data: ${response.statusCode}',
+          );
         }
       } else {
         return [];
@@ -739,7 +775,9 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel data: ${response.statusCode}',
+          );
         }
       } else {
         return [];
@@ -775,7 +813,9 @@ class TransferFromOneJobtoAnotherJobNatureRepositoryImple
           /// Return only `data` (so UI can access sub-objects)
           return result.data;
         } else {
-          throw ApiException('Failed to fetch $_serviceLabel data: ${response.statusCode}');
+          throw ApiException(
+            'Failed to fetch $_serviceLabel data: ${response.statusCode}',
+          );
         }
       } else {
         return null;

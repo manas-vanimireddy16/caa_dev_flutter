@@ -14,6 +14,7 @@ List<AutoRoute> get _dynamicSubServiceRoutes => [
   AutoRoute(page: RequestEventSupportRoute.page),
   AutoRoute(page: RequestTrainingRoute.page),
   AutoRoute(page: RequestForStudyLeaveRoute.page),
+  AutoRoute(page: RequestForCancellationRoute.page),
   AutoRoute(page: RequestforTrainingRoomBookingRoute.page),
   AutoRoute(page: RequestToBookCAAHallsRoute.page),
   AutoRoute(page: SecurityThreatRoute.page),
@@ -678,6 +679,14 @@ class AppRouter extends RootStackRouter {
     AutoRoute(
       page: RequestForStudyLeaveDetailsRoute.page,
       path: RouteNames.requestForStudyLeaveDetails,
+    ),
+    AutoRoute(
+      page: RequestForCancellationNewRequestRoute.page,
+      path: RouteNames.requestForCancellationNewRequest,
+    ),
+    AutoRoute(
+      page: RequestForCancellationDetailsRoute.page,
+      path: RouteNames.requestForCancellationDetails,
     ),
 
     /// --- Assignment Decision ---

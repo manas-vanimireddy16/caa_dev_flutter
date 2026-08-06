@@ -533,11 +533,7 @@ class _VSController extends StateNotifier<_ViewState> {
     'Assignment',
   };
 
-  static const _knownIssueTypes = {
-    'Equipment',
-    'Facility',
-    'Infrastructure',
-  };
+  static const _knownIssueTypes = {'Equipment', 'Facility', 'Infrastructure'};
 
   String _normalizeDateForForm(String? raw) {
     if (raw == null || raw.trim().isEmpty) return '';
@@ -580,7 +576,9 @@ class _VSController extends StateNotifier<_ViewState> {
     }
 
     final attachmentItems = attachments
-        .where((a) => (a.fileUrl ?? '').isNotEmpty || (a.fileName ?? '').isNotEmpty)
+        .where(
+          (a) => (a.fileUrl ?? '').isNotEmpty || (a.fileName ?? '').isNotEmpty,
+        )
         .map(
           (a) => FileUploadItem(
             documentId: a.fileUrl,
@@ -1270,7 +1268,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await Future.delayed(Duration(seconds: 2));
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
       // await fetchactionItems();
       refreshRequestLists();
@@ -1713,16 +1711,12 @@ class _VSController extends StateNotifier<_ViewState> {
     try {
       state = state.copyWith(isLoading: true);
 
-      final payload = _buildPayload(
-        serviceId,
-        subServiceId,
-        values,
-        // state.hrTasks,
-      );
+      final payload = _buildPayload(serviceId, subServiceId, values);
 
-      if (isEditMode && requestId != null) {
-        payload['request_id'] = requestId;
-      }
+      // Web PUT uses request id only in the URL, not in the body.
+      // if (isEditMode && requestId != null) {
+      //   payload['request_id'] = requestId;
+      // }
 
       debugPrint("✅ Final Payload: $payload");
 

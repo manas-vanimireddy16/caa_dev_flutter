@@ -25,6 +25,8 @@ class ApiEndPoint {
 
   static const String sectionsList = '/v1/user-service/admin/sections/';
 
+  static const String hrServiceusers = '/v1/hr-service/users';
+
   static String download(String id) => '/v1/user-service/download/$id';
 
   static String getBookmarks(String userId) =>
@@ -1366,6 +1368,10 @@ class ApiEndPoint {
   /// Send attachment
   static String trainingRequestSendAttachmentById(int requestId) =>
       '/v1/hr-service/training/training-request/$requestId/attachment';
+
+  /// Delete attachment
+  static String trainingRequestDeleteAttachmentById(int attachmentId) =>
+      '/v1/hr-service/training/training-request/attachment/$attachmentId';
 
   /// Get attachments
   static String trainingRequestAttachmentsById(int requestId) =>
@@ -3056,6 +3062,10 @@ class ApiEndPoint {
 
   /// Users list for legal complaint (asset affairs)
   static const String assetAffairsUsers = '/v1/asset-affairs-service/users';
+
+  /// Selected user details for legal complaint form autofill
+  static String legalComplaintUserById(int userId) =>
+      '/v1/asset-affairs-service/legal-complaint-review/user/$userId';
 
   /// Send Request (Create Request)
   static const String legalComplaintSendRequest =

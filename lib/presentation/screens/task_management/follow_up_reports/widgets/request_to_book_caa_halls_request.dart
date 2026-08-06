@@ -118,7 +118,10 @@ class _FollowUpReportNewRequestScreenState
               l10n,
               isEditMode: widget.isEditMode,
             ),
-            controller.buildFollowUpActionFields(l10n),
+            controller.buildFollowUpActionFields(
+              l10n,
+              isEditMode: widget.isEditMode,
+            ),
           ],
           apiValues: widget.isEditMode ? _apiValues : null,
           submitButtonLabel:

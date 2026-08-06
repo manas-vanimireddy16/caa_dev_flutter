@@ -25,13 +25,13 @@ abstract final class MobileServiceScope {
     'CAA005',
     'CAA006',
     'CAA010',
-    'CAA011',
+    // 'CAA011', // Request a Tender Service — not on mobile yet
     'CAA012',
     'CAA013',
     'CAA014',
     'CAA015',
     'CAA016',
-    'CAA018',
+    // 'CAA018', // Annual Training Plan — not on mobile yet
     'CAA019',
     'CAA020',
     'CAA021',

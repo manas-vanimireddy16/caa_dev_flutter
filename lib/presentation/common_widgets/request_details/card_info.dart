@@ -328,10 +328,7 @@ class CardInfo extends StatelessWidget {
     if (trimmed.isEmpty) return true;
 
     final lower = trimmed.toLowerCase();
-    return lower == 'n/a' ||
-        lower == 'na' ||
-        lower == '-' ||
-        lower == 'null';
+    return lower == 'n/a' || lower == 'na' || lower == '-' || lower == 'null';
   }
 
   bool _isApproverKey(String key) {
@@ -349,7 +346,8 @@ class CardInfo extends StatelessWidget {
     final normalized = key.toLowerCase();
     return normalized == 'problem statement' ||
         normalized == 'description' ||
-        normalized == 'request title';
+        normalized == 'request title' ||
+        normalized == 'title of the complaint';
   }
 
   bool _isStatusSection(String sectionTitle) {
@@ -414,10 +412,7 @@ class CardInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (!_isEmptyValue(assignedTo)) ...[
-          InfoTile(
-            title: _label('Assigned To'),
-            text: assignedTo,
-          ),
+          InfoTile(title: _label('Assigned To'), text: assignedTo),
           const SizedBox(height: 16),
         ],
         if (statusEntry != null) ...[
@@ -458,17 +453,11 @@ class CardInfo extends StatelessWidget {
           ),
         if (!_isEmptyValue(department)) ...[
           const SizedBox(height: 16),
-          InfoTile(
-            title: _label('Department'),
-            text: department,
-          ),
+          InfoTile(title: _label('Department'), text: department),
         ],
         if (!_isEmptyValue(section)) ...[
           const SizedBox(height: 16),
-          InfoTile(
-            title: _label('Section'),
-            text: section,
-          ),
+          InfoTile(title: _label('Section'), text: section),
         ],
       ],
     );
@@ -564,7 +553,11 @@ class CardInfo extends StatelessWidget {
         .firstOrNull;
 
     final requestTitle = resolvedInfo.entries
-        .where((e) => e.key.toLowerCase() == 'request title')
+        .where(
+          (e) =>
+              e.key.toLowerCase() == 'request title' ||
+              e.key.toLowerCase() == 'title of the complaint',
+        )
         .map((entry) => MapEntry(entry.key, entry.value))
         .firstOrNull;
 
@@ -600,7 +593,12 @@ class CardInfo extends StatelessWidget {
                   tintColor: Color(0xFF000000),
                 ),
                 const SizedBox(width: 8),
-                Text(title, style: AppTextStyles.requestDetailsSectionHeading()),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: AppTextStyles.requestDetailsSectionHeading(),
+                  ),
+                ),
               ],
             ),
 
@@ -610,7 +608,10 @@ class CardInfo extends StatelessWidget {
 
             // Optional subtitle
             if (subtitle != null) ...[
-              Text(subtitle!, style: AppTextStyles.requestDetailsFieldContent()),
+              Text(
+                subtitle!,
+                style: AppTextStyles.requestDetailsFieldContent(),
+              ),
               const SizedBox(height: 16),
             ],
 

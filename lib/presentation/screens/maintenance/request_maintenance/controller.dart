@@ -679,15 +679,16 @@ class _VSController extends StateNotifier<_ViewState> {
       // required: true,
       placeholder: 'Enter Description',
 
-      validator: (value, values) {
-        final text = value?.toString().trim() ?? '';
-
-        if (text.isEmpty) {
-          return 'Description is required';
-        }
-
-        return null;
-      },
+      // Optional on web/mobile — do not block submit when empty.
+      // validator: (value, values) {
+      //   final text = value?.toString().trim() ?? '';
+      //
+      //   if (text.isEmpty) {
+      //     return 'Description is required';
+      //   }
+      //
+      //   return null;
+      // },
     ),
 
     /// ================= ATTACHMENTS =================
@@ -1106,48 +1107,62 @@ class _VSController extends StateNotifier<_ViewState> {
     return false;
   }
 
+  /// Dept/section pairs where `is_material_available` is not shown on approve
+  /// (aligned with web `SKIP_IS_MATERIAL_AVAILABLE_DEPT_SECTION`).
+  static const _skipIsMaterialAvailableDeptSection =
+      <({int departmentId, int sectionId})>[
+        (departmentId: 66, sectionId: 155), // Finance / Procurement
+        (departmentId: 106, sectionId: 371), // Assets Affairs / All Sections
+      ];
+
   bool shouldShowMaterialToggle(
     List<ApprovalDetailModel> list,
     ApprovalDetailModel? approver,
   ) {
-    if (approver == null) return false;
+    // if (approver == null) return false;
+    //
+    // /// determine final level
+    // final hasLevel1Dept106 =
+    //     state.requestDetails.approvalDetails?.any(
+    //       (e) => e.departmentId == 106 && e.level == 1,
+    //     ) ??
+    //     false;
+    //
+    // final int finalLevel = hasLevel1Dept106 ? 4 : 3;
+    //
+    // /// current approver must be the final approver
+    // if (approver.departmentId == 106 && approver.level == 1) {
+    //   return false;
+    // }
+    // if (approver.level != finalLevel) {
+    //   return true;
+    // }
+    //
+    // ApprovalDetailModel? finalApproval;
+    // for (final approval in list) {
+    //   if (approval.level == finalLevel) {
+    //     finalApproval = approval;
+    //     break;
+    //   }
+    // }
+    //
+    // if (finalApproval == null) {
+    //   return false;
+    // }
+    //
+    // /// hide toggle if final level still in progress
+    // final status = finalApproval.approvalStatus?.toLowerCase().trim();
+    // return status != 'in progress';
 
-    /// determine final level
-    final hasLevel1Dept106 =
-        state.requestDetails.approvalDetails?.any(
-          (e) => e.departmentId == 106 && e.level == 1,
-        ) ??
-        false;
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
+    if (selectedRole == null) return true;
 
-    final int finalLevel = hasLevel1Dept106 ? 4 : 3;
-
-    /// current approver must be the final approver
-    ///
-    if (approver.departmentId == 106 && approver.level == 1) {
-      return false;
-    }
-    if (approver.level != finalLevel) {
-      return true;
-    }
-
-    /// find that final level record
-    ApprovalDetailModel? finalApproval;
-
-    for (final approval in list) {
-      if (approval.level == finalLevel) {
-        finalApproval = approval;
-        break;
-      }
-    }
-
-    if (finalApproval == null) {
-      return false;
-    }
-
-    /// hide toggle if final level still in progress
-    final status = finalApproval.approvalStatus?.toLowerCase().trim();
-
-    return status != 'in progress';
+    final dep = selectedRole.departmentId;
+    final sec = selectedRole.sectionId;
+    final skipIsMaterialAvailable = _skipIsMaterialAvailableDeptSection.any(
+      (pair) => pair.departmentId == dep && pair.sectionId == sec,
+    );
+    return !skipIsMaterialAvailable;
   }
 
   void showApprovalCommentDialog({
@@ -1159,7 +1174,7 @@ class _VSController extends StateNotifier<_ViewState> {
       state.requestDetails.approvalDetails ?? [],
     );
 
-    /// ✅ toggle visibility check
+    /// ✅ toggle visibility check (web: role dept/section skip list)
     final showMaterialToggle = shouldShowMaterialToggle(
       state.requestDetails.approvalDetails ?? [],
       approver,
@@ -1169,13 +1184,13 @@ class _VSController extends StateNotifier<_ViewState> {
       builder: (_) => ApprovalCommentDialog(
         type: type,
 
-        /// ✅ show toggle only for approve
-        /// AND when last level is not in progress
-        isToggle:
-            type == ApprovalDialogType.approve &&
-            showMaterialToggle &&
-            (approver?.level != 1 || approver?.departmentId != 106),
+        /// ✅ show toggle only for approve when not skipped for role
+        isToggle: type == ApprovalDialogType.approve && showMaterialToggle,
 
+        // isToggle:
+        //     type == ApprovalDialogType.approve &&
+        //     showMaterialToggle &&
+        //     (approver?.level != 1 || approver?.departmentId != 106),
         toggleTitle: 'Is material available',
 
         togglePayloadKey: 'is_material_available',
@@ -1337,7 +1352,7 @@ class _VSController extends StateNotifier<_ViewState> {
       await Future.delayed(Duration(seconds: 2));
       KAppX.router.pop();
       // if (decisionNo != null) {
-      KAppX.router.pop();
+      // KAppX.router.pop();
       // }
       // await fetchactionItems();
       refreshRequestLists();

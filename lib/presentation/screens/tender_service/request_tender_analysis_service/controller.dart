@@ -375,8 +375,8 @@ class _VSController extends StateNotifier<_ViewState> {
       'status': item.base?.status ?? '-',
       'Request By': item.base?.createdByUser?.employeeName ?? '-',
       'Date': item.base?.createdAt.toString() ?? '-',
-      'Title of Project': item.titleOfProject ?? 'NA',
-      'Project Code/Budget Code': item.projectCodeBudgetCode ?? 'NA',
+      // 'Title of Project': item.titleOfProject ?? 'NA',
+      // 'Project Code/Budget Code': item.projectCodeBudgetCode ?? 'NA',
 
       /// 👇 APPROVER (SINGLE LINE)
       if (approverMap.containsKey('role')) ...{
@@ -396,8 +396,8 @@ class _VSController extends StateNotifier<_ViewState> {
       /// ───── LEFT COLUMN ─────
       "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
       'Request Submission Date': request?.createdAt.toString() ?? '-',
-      'Type of Project': request?.titleOfProject ?? 'NA',
-      'Project Code/Budget Code': request?.projectCodeBudgetCode ?? 'NA',
+      // 'Type of Project': request?.titleOfProject ?? 'NA',
+      // 'Project Code/Budget Code': request?.projectCodeBudgetCode ?? 'NA',
       'Description': request?.description ?? 'NA',
       'Request Type': request?.requestType ?? '-',
     };
@@ -507,40 +507,40 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<DynamicField> buildTenderAnalysisFields(DashboardL10n l10n) => [
     /// ================= TITLE OF PROJECT =================
-    DynamicField(
-      name: 'title_of_project',
-      label: l10n.titleOfProject,
-      type: FieldType.text,
-      placeholder: l10n.titleOfProjectPlaceholder,
-      required: true,
-      validator: (value, values) {
-        final text = value?.toString().trim() ?? '';
+    // DynamicField(
+    //   name: 'title_of_project',
+    //   label: l10n.titleOfProject,
+    //   type: FieldType.text,
+    //   placeholder: l10n.titleOfProjectPlaceholder,
+    //   required: true,
+    //   validator: (value, values) {
+    //     final text = value?.toString().trim() ?? '';
 
-        if (text.isEmpty) {
-          return l10n.titleOfProjectRequired;
-        }
+    //     if (text.isEmpty) {
+    //       return l10n.titleOfProjectRequired;
+    //     }
 
-        return null;
-      },
-    ),
+    //     return null;
+    //   },
+    // ),
 
-    /// ================= PROJECT CODE =================
-    DynamicField(
-      name: 'project_code_budget_code',
-      label: l10n.projectCodeBudgetCode,
-      type: FieldType.text,
-      placeholder: l10n.projectCodeBudgetCodePlaceholder,
-      required: true,
-      validator: (value, values) {
-        final text = value?.toString().trim() ?? '';
+    // /// ================= PROJECT CODE =================
+    // DynamicField(
+    //   name: 'project_code_budget_code',
+    //   label: l10n.projectCodeBudgetCode,
+    //   type: FieldType.text,
+    //   placeholder: l10n.projectCodeBudgetCodePlaceholder,
+    //   required: true,
+    //   validator: (value, values) {
+    //     final text = value?.toString().trim() ?? '';
 
-        if (text.isEmpty) {
-          return l10n.projectCodeBudgetCodeRequired;
-        }
+    //     if (text.isEmpty) {
+    //       return l10n.projectCodeBudgetCodeRequired;
+    //     }
 
-        return null;
-      },
-    ),
+    //     return null;
+    //   },
+    // ),
 
     /// ================= DESCRIPTION =================
     DynamicField(
@@ -1514,9 +1514,9 @@ class _VSController extends StateNotifier<_ViewState> {
       "sub_service_id": subServiceId,
 
       /// ⭐ PROJECT
-      "title_of_project": values['title_of_project'] ?? "",
+      // "title_of_project": values['title_of_project'] ?? "",
       "description": values['description'] ?? "",
-      "project_code_budget_code": values['project_code_budget_code'] ?? "",
+      // "project_code_budget_code": values['project_code_budget_code'] ?? "",
 
       /// ⭐ DATE + CONTACT
       "date_of_submission": values['date_of_submission'] ?? "",

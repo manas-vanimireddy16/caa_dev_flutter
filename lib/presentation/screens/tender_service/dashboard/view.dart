@@ -93,7 +93,7 @@ class _TenderServiceDashboardScreenState
             .read(serviceTreeProvider)
             .serviceByCodeOrSubServiceCodes(
               serviceCode: 'CAAS012',
-              subServiceCodes: const ['CAA011', 'CAA012', 'CAA013', 'CAA014'],
+              subServiceCodes: const ['CAA012', 'CAA013', 'CAA014'],
             ) ??
         selected.service;
 

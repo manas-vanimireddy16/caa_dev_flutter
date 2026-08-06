@@ -86,7 +86,7 @@ class SubServiceRouteResolver {
       return const LegalConsultationServicesHomeRoute();
     }
     if (subServiceCodes.any(
-      {'CAA015', 'CAA016', 'CAA018', 'CAA019', 'CAA049'}.contains,
+      {'CAA015', 'CAA016', 'CAA019', 'CAA049'}.contains,
     )) {
       return const TrainingandDevelopmentHomeRoute();
     }
@@ -97,7 +97,7 @@ class SubServiceRouteResolver {
       return const MediaCoverageHomeRoute();
     }
     if (subServiceCodes.any(
-      {'CAA011', 'CAA012', 'CAA013', 'CAA014'}.contains,
+      {'CAA012', 'CAA013', 'CAA014'}.contains,
     )) {
       return const TenderServiceHomeRoute();
     }
@@ -156,12 +156,6 @@ class SubServiceRouteResolver {
       case 'CAA006':
         route = SecurityThreatRoute(service: service, subService: subService);
         break;
-      case 'CAA011':
-        route = RequestTenderServiceRoute(
-          service: service,
-          subService: subService,
-        );
-        break;
       case 'CAA012':
         route = RequestAServiceToRespondToEnquiriesRoute(
           service: service,
@@ -185,12 +179,6 @@ class SubServiceRouteResolver {
         break;
       case 'CAA016':
         route = RequestForStudyLeaveRoute(
-          service: service,
-          subService: subService,
-        );
-        break;
-      case 'CAA018':
-        route = AnnualTrainingPlanRoute(
           service: service,
           subService: subService,
         );

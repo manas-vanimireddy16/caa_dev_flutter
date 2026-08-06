@@ -80,6 +80,7 @@ abstract class RaiseALegalComplaintRepository {
   Future<List<DepartmentModel>> getDepartments();
   Future<List<SectionModel>> getSections({required String? userDepartmentId});
   Future<List<EmployeeList>> getAllUsers();
+  Future<EmployeeList?> getUserById(int userId);
   Future<UsersResponseModel?> getUsersList({
     required int departmentId,
     required int sectionId,

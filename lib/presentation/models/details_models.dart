@@ -126,6 +126,8 @@ class RequestDetailModel {
 }
 
 class RequestDetailData {
+  /// Original API object for service-specific fields not shared by all models.
+  final Map<String, dynamic> rawJson;
   RequestModel? request;
   final CyberSecurityRiskModel? risk;
 
@@ -488,6 +490,7 @@ class RequestDetailData {
   final int? eventDepartmentId;
 
   RequestDetailData({
+    this.rawJson = const {},
     this.request,
     this.risk,
     this.workflowDetails,
@@ -788,6 +791,7 @@ class RequestDetailData {
   factory RequestDetailData.fromJson(
     Map<String, dynamic> json,
   ) => RequestDetailData(
+    rawJson: Map<String, dynamic>.from(json),
     request: json["request"] != null
         ? RequestModel.fromJson(json["request"])
         : RequestModel.fromJson(json),
@@ -1191,6 +1195,8 @@ class RequestDetailData {
 }
 
 class RequestModel {
+  /// Original API object for service-specific fields not shared by all models.
+  final Map<String, dynamic> rawJson;
   // ─────────────────────────────
   // COMMON FIELDS
   // ─────────────────────────────
@@ -1460,7 +1466,7 @@ class RequestModel {
   final String? typeOfCategory;
 
   final int? noOfAttendees;
-
+  final List<AttendeeSelection>? nameOfAttendeesSelection;
   final String? durationOfCourse;
   final String? instituteName;
   final String? courseStartDate;
@@ -1696,6 +1702,7 @@ class RequestModel {
   // ─────────────────────────────
 
   RequestModel({
+    this.rawJson = const {},
     this.id,
     this.serviceId,
     this.subServiceId,
@@ -1910,6 +1917,7 @@ class RequestModel {
     this.typeOfTraining,
     this.typeOfCategory,
     this.noOfAttendees,
+    this.nameOfAttendeesSelection,
 
     this.durationOfCourse,
     this.instituteName,
@@ -2110,6 +2118,7 @@ class RequestModel {
 
   factory RequestModel.fromJson(Map<String, dynamic> json) {
     return RequestModel(
+      rawJson: Map<String, dynamic>.from(json),
       id: json["id"],
       serviceId: json["service_id"],
       subServiceId: json["sub_service_id"],
@@ -2359,7 +2368,7 @@ class RequestModel {
       startTime: json['start_time'],
       endTime: json['end_time'],
       roomType: json['room_type'],
-      numberOfAttendees: json['number_of_attendees'],
+      numberOfAttendees: json['number_of_attendees'] ?? json['no_of_attendees'],
       networkSupportRequired: json['network_support_required'],
       mealsRequired: json['meals_required'],
       nameOfParticipants: (json['name_of_participants'] as List?)
@@ -2375,6 +2384,12 @@ class RequestModel {
       typeOfTraining: json['type_of_training'],
       typeOfCategory: json['type_of_category'],
       noOfAttendees: json['no_of_attendees'],
+      nameOfAttendeesSelection:
+          (json['name_of_attendees_selection'] as List<dynamic>?)
+              ?.map(
+                (e) => AttendeeSelection.fromJson(e as Map<String, dynamic>),
+              )
+              .toList(),
       durationOfCourse: json['duration_of_course'],
       instituteName: json['institute_name'],
       courseStartDate: json['course_start_date'],
@@ -2778,6 +2793,8 @@ class UserModel {
   final String? updatedAt;
 
   final bool? isAdmin;
+  final bool? isDeleted;
+  final String? isSelectedLang;
 
   /// FIXED — department can be ID or object AND API also gives user_department
   final DepartmentModel? department;
@@ -2861,6 +2878,8 @@ class UserModel {
     this.updatedBy,
     this.updatedAt,
     this.isAdmin,
+    this.isDeleted,
+    this.isSelectedLang,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -2931,6 +2950,8 @@ class UserModel {
       updatedAt: json['updated_at'] as String?,
 
       isAdmin: json['is_admin'] as bool?,
+      isDeleted: json['is_deleted'] as bool?,
+      isSelectedLang: json['is_selected_lang']?.toString(),
     );
   }
 
@@ -2983,6 +3004,15 @@ class UserModel {
       'children2_name': children2Name,
       'address': address,
       'religion': religion,
+      'is_admin': isAdmin,
+      'is_deleted': isDeleted,
+      'is_selected_lang': isSelectedLang,
+      'created_by': createdBy,
+      'created_at': createdAt,
+      'updated_by': updatedBy,
+      'updated_at': updatedAt,
+      'current_basic_salary': currentBasicSalary,
+      'previous_basic_salary': previousBasicSalary,
     };
   }
 }
@@ -3229,16 +3259,28 @@ class ServiceModel {
   final String? name;
   final String? arabicName;
   final String? description;
+  final String? arabicDescription;
   final String? code;
   final String? logoUrl;
+  final bool? isDeleted;
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
 
   ServiceModel({
     this.id,
     this.name,
     this.arabicName,
     this.description,
+    this.arabicDescription,
     this.code,
     this.logoUrl,
+    this.isDeleted,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
   });
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) => ServiceModel(
@@ -3246,8 +3288,14 @@ class ServiceModel {
     name: json['name'],
     arabicName: json['arabic_name'] as String?,
     description: json['description'],
+    arabicDescription: json['arabic_description'] as String?,
     code: json['code'],
     logoUrl: json['logo_url'],
+    isDeleted: json['is_deleted'] as bool?,
+    createdBy: json['created_by'] as int?,
+    createdAt: json['created_at'] as String?,
+    updatedBy: json['updated_by'] as int?,
+    updatedAt: json['updated_at'] as String?,
   );
 
   Map<String, dynamic> toJson() => {
@@ -3255,8 +3303,14 @@ class ServiceModel {
     'name': name,
     'arabic_name': arabicName,
     'description': description,
+    'arabic_description': arabicDescription,
     'code': code,
     'logo_url': logoUrl,
+    'is_deleted': isDeleted,
+    'created_by': createdBy,
+    'created_at': createdAt,
+    'updated_by': updatedBy,
+    'updated_at': updatedAt,
   };
 
   String displayName({required bool isArabic}) => localizedDisplayName(
@@ -3269,38 +3323,72 @@ class ServiceModel {
 class SubServiceModel {
   final int? id;
   final String? subServiceName;
+  final String? arabicName;
   final String? description;
+  final String? arabicDescription;
   final int? serviceId;
   final String? logoUrl;
   final String? code;
+  final bool? isDeleted;
+  final int? createdBy;
+  final String? createdAt;
+  final int? updatedBy;
+  final String? updatedAt;
 
   SubServiceModel({
     this.id,
     this.subServiceName,
+    this.arabicName,
     this.description,
+    this.arabicDescription,
     this.serviceId,
     this.logoUrl,
     this.code,
+    this.isDeleted,
+    this.createdBy,
+    this.createdAt,
+    this.updatedBy,
+    this.updatedAt,
   });
 
   factory SubServiceModel.fromJson(Map<String, dynamic> json) =>
       SubServiceModel(
         id: json['id'],
         subServiceName: json['sub_service_name'],
+        arabicName: json['arabic_name'] as String?,
         description: json['description'],
+        arabicDescription: json['arabic_description'] as String?,
         serviceId: json['service_id'],
         logoUrl: json['logo_url'],
         code: json['code'],
+        isDeleted: json['is_deleted'] as bool?,
+        createdBy: json['created_by'] as int?,
+        createdAt: json['created_at'] as String?,
+        updatedBy: json['updated_by'] as int?,
+        updatedAt: json['updated_at'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'sub_service_name': subServiceName,
+    'arabic_name': arabicName,
     'description': description,
+    'arabic_description': arabicDescription,
     'service_id': serviceId,
     'logo_url': logoUrl,
     'code': code,
+    'is_deleted': isDeleted,
+    'created_by': createdBy,
+    'created_at': createdAt,
+    'updated_by': updatedBy,
+    'updated_at': updatedAt,
   };
+
+  String displayName({required bool isArabic}) => localizedDisplayName(
+    isArabic: isArabic,
+    english: subServiceName,
+    arabic: arabicName,
+  );
 }
 
 class WorkflowDetailModel {
@@ -3881,6 +3969,8 @@ class ApproverUserModel {
 class ApproverRoleModel {
   final int? id;
   final String? name;
+  final String? arabicName;
+  final bool? isDeleted;
   final int? createdBy;
   final String? createdAt;
   final int? updatedBy;
@@ -3889,6 +3979,8 @@ class ApproverRoleModel {
   ApproverRoleModel({
     this.id,
     this.name,
+    this.arabicName,
+    this.isDeleted,
     this.createdBy,
     this.createdAt,
     this.updatedBy,
@@ -3899,6 +3991,8 @@ class ApproverRoleModel {
     return ApproverRoleModel(
       id: json['id'],
       name: json['name'],
+      arabicName: json['arabic_name'] as String?,
+      isDeleted: json['is_deleted'] as bool?,
       createdBy: json['created_by'],
       createdAt: json['created_at'],
       updatedBy: json['updated_by'],
@@ -3910,6 +4004,8 @@ class ApproverRoleModel {
     return {
       'id': id,
       'name': name,
+      'arabic_name': arabicName,
+      'is_deleted': isDeleted,
       'created_by': createdBy,
       'created_at': createdAt,
       'updated_by': updatedBy,
@@ -4008,6 +4104,7 @@ class ChatMessageModel {
 
   final int? userId;
   final int? roleId;
+  final int? approverRoleId;
 
   final String? message;
   final String? messageType;
@@ -4016,7 +4113,7 @@ class ChatMessageModel {
   final String? statusAr;
 
   final bool? isInternal;
-  final bool? isDeleted; // ✅ added
+  final bool? isDeleted;
 
   final int? createdBy;
   final String? createdAt;
@@ -4024,12 +4121,10 @@ class ChatMessageModel {
   final String? updatedAt;
 
   final UserModel? user;
-
-  // ✅ added relational models
-  // final RequestModel? request;
-  // final ServiceModel? service;
-  // final SubServiceModel? subService;
+  final ServiceModel? service;
+  final SubServiceModel? subService;
   final RoleModel? role;
+  final RoleModel? approverRole;
 
   ChatMessageModel({
     this.id,
@@ -4038,6 +4133,7 @@ class ChatMessageModel {
     this.subServiceId,
     this.userId,
     this.roleId,
+    this.approverRoleId,
     this.message,
     this.messageType,
     this.status,
@@ -4050,44 +4146,51 @@ class ChatMessageModel {
     this.messageAr,
     this.statusAr,
     this.user,
-    // this.request,
-    // this.service,
-    // this.subService,
+    this.service,
+    this.subService,
     this.role,
+    this.approverRole,
   });
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+    final roleJson = json['approver_role'] ?? json['role'];
+
     return ChatMessageModel(
       id: json['id'],
       requestId: json['request_id'],
       serviceId: json['service_id'],
       subServiceId: json['sub_service_id'],
       userId: json['user_id'],
-      messageAr: json['message_ar'] as String?,
-      statusAr: json['status_ar'] as String?,
       roleId: json['role_id'],
+      approverRoleId: json['approver_role_id'] ?? json['role_id'],
       message: json['message'],
       messageType: json['messageType'],
       status: json['status'],
+      messageAr: json['message_ar'] as String?,
+      statusAr: json['status_ar'] as String?,
       isInternal: json['is_internal'],
-      isDeleted: json['is_deleted'], // ✅ added
+      isDeleted: json['is_deleted'],
       createdBy: json['created_by'],
       createdAt: json['created_at'],
       updatedBy: json['updated_by'],
       updatedAt: json['updated_at'],
-      user: json['user'] is Map ? UserModel.fromJson(json['user']) : null,
-
-      // ✅ added parsing
-      // request: json['request'] != null
-      //     ? RequestModel.fromJson(json['request'])
-      //     : null,
-      // service: json['service'] != null
-      //     ? ServiceModel.fromJson(json['service'])
-      //     : null,
-      // subService: json['sub_service'] != null
-      //     ? SubServiceModel.fromJson(json['sub_service'])
-      //     : null,
-      role: json['role'] != null ? RoleModel.fromJson(json['role']) : null,
+      user: json['user'] is Map
+          ? UserModel.fromJson(Map<String, dynamic>.from(json['user']))
+          : null,
+      service: json['service'] is Map
+          ? ServiceModel.fromJson(Map<String, dynamic>.from(json['service']))
+          : null,
+      subService: json['sub_service'] is Map
+          ? SubServiceModel.fromJson(
+              Map<String, dynamic>.from(json['sub_service']),
+            )
+          : null,
+      role: roleJson is Map
+          ? RoleModel.fromJson(Map<String, dynamic>.from(roleJson))
+          : null,
+      approverRole: json['approver_role'] is Map
+          ? RoleModel.fromJson(Map<String, dynamic>.from(json['approver_role']))
+          : null,
     );
   }
 
@@ -4098,9 +4201,12 @@ class ChatMessageModel {
     'sub_service_id': subServiceId,
     'user_id': userId,
     'role_id': roleId,
+    'approver_role_id': approverRoleId,
     'message': message,
     'messageType': messageType,
     'status': status,
+    'message_ar': messageAr,
+    'status_ar': statusAr,
     'is_internal': isInternal,
     'is_deleted': isDeleted,
     'created_by': createdBy,
@@ -4108,10 +4214,10 @@ class ChatMessageModel {
     'updated_by': updatedBy,
     'updated_at': updatedAt,
     'user': user?.toJson(),
-    // 'request': request?.toJson(),
-    // 'service': service?.toJson(),
-    // 'sub_service': subService?.toJson(),
+    'service': service?.toJson(),
+    'sub_service': subService?.toJson(),
     'role': role?.toJson(),
+    'approver_role': approverRole?.toJson(),
   };
 }
 
@@ -4349,5 +4455,23 @@ class AirTicketDetailModel {
           ? DateTime.tryParse(json['updated_at'])
           : null,
     );
+  }
+}
+
+class AttendeeSelection {
+  final String? name;
+  final int? userId;
+
+  AttendeeSelection({this.name, this.userId});
+
+  factory AttendeeSelection.fromJson(Map<String, dynamic> json) {
+    return AttendeeSelection(
+      name: json['name'] as String?,
+      userId: json['user_id'] as int?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'name': name, 'user_id': userId};
   }
 }

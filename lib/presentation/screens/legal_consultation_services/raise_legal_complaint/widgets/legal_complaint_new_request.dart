@@ -61,14 +61,14 @@ class _RaiseLegalComplaintNewRequestScreenState
               stepTitles: [
                 l10n.legalComplaintStepRequestDetails,
                 l10n.legalComplaintStepComplaintIncident,
-                // l10n.legalComplaintComplainantDetails,
-                l10n.legalComplaintComplainedEmployeeDetails,
+                l10n.legalComplaintComplainantDetails,
+                // l10n.legalComplaintComplainedEmployeeDetails,
               ],
               steps: [
                 controller.buildLegalComplaintStepOneFields(l10n),
                 controller.buildLegalComplaintStepTwoFields(l10n),
-                // controller.buildLegalComplaintStepThreeFields(l10n),
-                controller.buildLegalComplaintStepFourFields(l10n),
+                controller.buildLegalComplaintStepThreeFields(l10n),
+                // controller.buildLegalComplaintStepFourFields(l10n),
               ],
               onSubmit: (values) async {
                 await controller.submitRaiseLegalComplaintRequest(

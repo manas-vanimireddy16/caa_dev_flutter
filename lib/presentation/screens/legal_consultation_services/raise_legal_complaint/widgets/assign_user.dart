@@ -22,6 +22,7 @@ class _AssignUserState extends ConsumerState<AssignUser> {
   int? selectedDepartmentId;
   int? selectedRoleId;
   int? selectedUserId;
+  final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
@@ -39,6 +40,12 @@ class _AssignUserState extends ConsumerState<AssignUser> {
       final controller = ref.read(_vsProvider(_providerArgs).notifier);
       await controller.resetAllocateDialog();
     });
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
   @override
@@ -212,6 +219,23 @@ class _AssignUserState extends ConsumerState<AssignUser> {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _commentController,
+            maxLines: 3,
+            decoration: InputDecoration(
+              labelText: 'Comment',
+              hintText: 'Enter comment',
+              alignLabelWithHint: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 14,
+              ),
+            ),
+          ),
           const SizedBox(height: 28),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -232,6 +256,7 @@ class _AssignUserState extends ConsumerState<AssignUser> {
                           state.selectedSectionId ?? 0,
                           selectedUserId ?? 0,
                           selectedDepartmentId ?? 0,
+                          _commentController.text.trim(),
                         );
                         widget.onSuccess();
                         KAppX.router.pop();

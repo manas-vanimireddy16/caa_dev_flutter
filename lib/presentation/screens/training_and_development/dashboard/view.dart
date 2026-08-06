@@ -96,7 +96,6 @@ class _TrainingAndDevelopmentDashboardScreenState
               subServiceCodes: const [
                 'CAA015',
                 'CAA016',
-                'CAA018',
                 'CAA019',
                 'CAA049',
               ],

@@ -610,6 +610,26 @@ class _VSController extends StateNotifier<_ViewState> {
       },
     ),
 
+    /// ================= CONTRACT DOCUMENTS =================
+    DynamicField(
+      name: 'contract_documents',
+      label: '',
+      type: FieldType.custom,
+      builder: (context, ref) => const ContractDocumentsChecklist(),
+      validator: (value, values) {
+        for (var i = 0; i < contractDocumentDefinitions.length; i++) {
+          if (values[contractDocCheckedKey(i)] != true) continue;
+          final files = values[contractDocFileKey(i)];
+          if (files is! List || files.isEmpty) {
+            return l10n.isArabic
+                ? 'يرجى إرفاق ملف لكل مستند محدد'
+                : 'Please upload an attachment for each checked document';
+          }
+        }
+        return null;
+      },
+    ),
+
     /// ================= ATTACHMENTS =================
     DynamicField(
       name: 'attachments',
@@ -1505,8 +1525,54 @@ class _VSController extends StateNotifier<_ViewState> {
 
   List<Map<String, dynamic>> _buildAttachments(Map<String, dynamic> values) {
     return (values['attachments'] as List<FileUploadItem>? ?? [])
-        .map((file) => file.toJson())
+        .map((file) {
+          final json = file.toJson();
+          return {...json, 'description': ''};
+        })
         .toList();
+  }
+
+  List<Map<String, dynamic>> _buildContractDocuments(
+    Map<String, dynamic> values,
+  ) {
+    final documents = <Map<String, dynamic>>[];
+
+    for (var i = 0; i < contractDocumentDefinitions.length; i++) {
+      if (values[contractDocCheckedKey(i)] != true) continue;
+
+      final files = values[contractDocFileKey(i)];
+      if (files is! List || files.isEmpty) continue;
+
+      final file = files.first;
+      if (file is! FileUploadItem) continue;
+
+      final doc = contractDocumentDefinitions[i];
+      documents.add({
+        'document_name': doc.documentName,
+        'description': doc.description,
+        'attachment': file.toJson(),
+      });
+    }
+
+    return documents;
+  }
+
+  List<Map<String, dynamic>> _mergeAttachmentsWithContractDocuments(
+    Map<String, dynamic> values,
+  ) {
+    final attachments = _buildAttachments(values);
+    final contractDocuments = _buildContractDocuments(values);
+
+    for (final doc in contractDocuments) {
+      final attachment = Map<String, dynamic>.from(
+        doc['attachment'] as Map<String, dynamic>? ?? {},
+      );
+      attachment['description'] = doc['document_name'] ?? '';
+      attachment['document_name'] = doc['document_name'] ?? '';
+      attachments.add(attachment);
+    }
+
+    return attachments;
   }
 
   Map<String, dynamic> _buildPayload(
@@ -1514,6 +1580,8 @@ class _VSController extends StateNotifier<_ViewState> {
     int subServiceId,
     Map<String, dynamic> values,
   ) {
+    final phone = values['phone']?.toString() ?? '';
+
     return {
       /// ⭐ SERVICE
       "service_id": serviceId,
@@ -1526,13 +1594,16 @@ class _VSController extends StateNotifier<_ViewState> {
 
       /// ⭐ COMPANY
       "company_name": values['company_name'] ?? "",
+      "company_phone_number": phone,
+      "phone": phone,
+      "notes": values['notes'] ?? "",
 
       /// ⭐ DATE + CONTACT
       "date_of_submission": values['date_of_submission'] ?? "",
-      "phone": values['phone'] ?? "",
 
-      /// ⭐ ATTACHMENTS
-      "attachments": _buildAttachments(values),
+      /// ⭐ CONTRACT DOCUMENTS + ATTACHMENTS
+      "contract_documents": _buildContractDocuments(values),
+      "attachments": _mergeAttachmentsWithContractDocuments(values),
     };
   }
 

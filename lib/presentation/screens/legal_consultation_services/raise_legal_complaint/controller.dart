@@ -303,6 +303,7 @@ class _VSController extends StateNotifier<_ViewState> {
     titleController = TextEditingController();
     searchController = TextEditingController();
     fetchKpi();
+    fetchApprovalKpi();
     fetchRequests();
     fetchStatusBreakdown('weekly');
     fetchTrendBreakDown(DateTime.now().year.toString());
@@ -453,19 +454,135 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Map<String, String> buildRequestInformationData() {
-    final request = state.requestDetails.request;
-    final risk = state.requestDetails.risk;
-    return {
-      /// ───── RIGHT COLUMN ─────
-      "Service Type": request?.service?.name ?? 'N/A',
+    // Title/description are rendered in the custom request sections so the
+    // order matches web (title → description → subsections).
+    return const {};
+  }
 
-      /// ───── LEFT COLUMN ─────
-      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      'Request Classification': request?.requestClassification ?? '-',
-      'Date of Submission': request?.submissionDate.toString() ?? '-',
-      'Request Title': request?.requestTitle ?? '-',
-      'Request Type': request?.requestType ?? '-',
-    };
+  Map<String, dynamic> _legalComplaintRawData() {
+    final requestRaw = state.requestDetails.request?.rawJson ?? const {};
+    if (requestRaw.isNotEmpty) return requestRaw;
+    return state.requestDetails.rawJson;
+  }
+
+  String _displayValue(dynamic value) {
+    final text = value?.toString().trim() ?? '';
+    if (text.isEmpty || text.toLowerCase() == 'null') return 'N/A';
+    return text;
+  }
+
+  String _displayDate(dynamic value) {
+    final raw = value?.toString().trim() ?? '';
+    if (raw.isEmpty || raw.toLowerCase() == 'null') return 'N/A';
+    final formatted = formatDate(raw).trim();
+    return formatted.isEmpty ? raw : formatted;
+  }
+
+  ({String title, String description}) buildLegalComplaintHeaderFields() {
+    final data = _legalComplaintRawData();
+    return (
+      title: _displayValue(data['title']),
+      description: _displayValue(data['description']),
+    );
+  }
+
+  List<({String label, String value})> buildComplaintDetailsFields(
+    DashboardL10n l10n,
+  ) {
+    final data = _legalComplaintRawData();
+    return [
+      (
+        label: l10n.personEntity,
+        value: _displayValue(
+          data['person_entity'] ?? data['person_name_or_entity'],
+        ),
+      ),
+      (label: l10n.incidentTime, value: _displayValue(data['incident_time'])),
+      (
+        label: l10n.requestDetailsLabel('Incident date'),
+        value: _displayDate(data['incident_date']),
+      ),
+      (
+        label: l10n.incidentLocation,
+        value: _displayValue(data['incident_location']),
+      ),
+      (
+        label: l10n.individualsInvolved,
+        value: _displayValue(data['individuals_involved']),
+      ),
+      (
+        label: l10n.incidentEvents,
+        value: _displayValue(data['incident_events']),
+      ),
+      (
+        label: l10n.otherDetailsRelatedToComplaint,
+        value: _displayValue(data['incident_other_details']),
+      ),
+    ];
+  }
+
+  List<({String label, String value})> buildComplainantDetailsFields(
+    DashboardL10n l10n,
+  ) {
+    final data = _legalComplaintRawData();
+    return [
+      (
+        label: l10n.requestDetailsLabel('Name'),
+        value: _displayValue(data['complainant_name']),
+      ),
+      (
+        label: l10n.positionLabel,
+        value: _displayValue(data['complainant_position']),
+      ),
+      (
+        label: l10n.requestDetailsLabel('Employee ID'),
+        value: _displayValue(data['complainant_employee_id']),
+      ),
+      (
+        label: l10n.directorateLabel,
+        value: _displayValue(data['complainant_directorate']),
+      ),
+      (
+        label: l10n.department,
+        value: _displayValue(data['complainant_department_name']),
+      ),
+      (
+        label: l10n.section,
+        value: _displayValue(data['complainant_section_name']),
+      ),
+    ];
+  }
+
+  List<({String label, String value})> buildComplainedEmployeeDetailsFields(
+    DashboardL10n l10n,
+  ) {
+    final data = _legalComplaintRawData();
+    return [
+      (
+        label: l10n.requestDetailsLabel('Name'),
+        value: _displayValue(data['complained_employee_name']),
+      ),
+      (
+        label: l10n.positionLabel,
+        value: _displayValue(data['complained_employee_position']),
+      ),
+      (
+        label: l10n.salaryGrade,
+        value: _displayValue(data['complained_employee_salary_grade']),
+      ),
+      (
+        label: l10n.directorateLabel,
+        value: _displayValue(data['complained_employee_directorate']),
+      ),
+      (
+        label: l10n.department,
+        value: _displayValue(data['complained_employee_department_name']),
+      ),
+      (
+        label: l10n.section,
+        value: _displayValue(data['complained_employee_section_name']),
+      ),
+    ];
   }
 
   Map<String, String> buildStatusInformation() {
@@ -474,7 +591,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final nextApprover = resolveApproverMap(approvals);
     return {
       "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": request?.createdAt ?? 'N/A',
+      "Requested Date": formatDate(request?.createdAt) ?? 'N/A',
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))
@@ -604,59 +721,13 @@ class _VSController extends StateNotifier<_ViewState> {
   ];
 
   List<DynamicField> buildLegalComplaintStepTwoFields(DashboardL10n l10n) => [
+    // Complainant fields live in step 3 (aligned with web complainant object).
     DynamicField(
-      name: 'complainant_name',
-      label: l10n.complainantName,
-      type: FieldType.select,
+      name: 'person_entity',
+      label: l10n.personEntity,
+      type: FieldType.text,
+      placeholder: l10n.enter,
       required: true,
-      placeholder: l10n.selectEmployee,
-      optionsBuilder: (ref) {
-        final formL10n = DashboardL10n.of(ref.context);
-        final vsState = ref.watch(_vsProvider(params));
-        return vsState.usersList
-            .map(
-              (user) => DropdownOption(
-                label: user.displayName(isArabic: formL10n.isArabic),
-                value: user.id.toString(),
-              ),
-            )
-            .toList();
-      },
-
-      // onChanged: (value, ref) async {
-      //   final selectedUser = _findUser(value);
-      //   if (selectedUser == null) return;
-
-      //   final formL10n = DashboardL10n.of(ref.context);
-      //   final formNotifier = ref.read(dynamicFormProvider.notifier);
-      //   formNotifier.autoPopulate({
-      //     'complainant_name_display': selectedUser.displayName(
-      //       isArabic: formL10n.isArabic,
-      //     ),
-      //     'complainant_position': _userPositionLabel(
-      //       selectedUser,
-      //       formL10n.isArabic,
-      //     ),
-      //     'complainant_employee_id': selectedUser.employeeId,
-      //     'complainant_directorate': selectedUser.directorate,
-      //     'complainant_department': selectedUser.department?.id?.toString(),
-      //     'complainant_section': '',
-      //   });
-
-      //   final departmentId = selectedUser.department?.id;
-      //   if (departmentId != null && departmentId > 0) {
-      //     await ref
-      //         .read(_vsProvider(params).notifier)
-      //         .fetchComplainantSections(departmentId);
-      //     final sectionId = selectedUser.section?.id;
-      //     if (sectionId != null) {
-      //       formNotifier.updateValue(
-      //         'complainant_section',
-      //         sectionId.toString(),
-      //       );
-      //     }
-      //   }
-      // },
     ),
     DynamicField(
       name: 'individuals_involved',
@@ -722,11 +793,22 @@ class _VSController extends StateNotifier<_ViewState> {
             .toList();
       },
       onChanged: (value, ref) async {
-        final selectedUser = _findUser(value);
-        if (selectedUser == null) return;
+        final userId = int.tryParse(value?.toString() ?? '') ?? 0;
+        if (userId <= 0) return;
 
         final formL10n = DashboardL10n.of(ref.context);
         final formNotifier = ref.read(dynamicFormProvider.notifier);
+        final controller = ref.read(_vsProvider(params).notifier);
+
+        EmployeeList? selectedUser;
+        try {
+          selectedUser = await controller.fetchUserById(userId);
+        } catch (e) {
+          debugPrint('fetchUserById error: $e');
+        }
+        selectedUser ??= _findUser(value);
+        if (selectedUser == null) return;
+
         formNotifier.autoPopulate({
           'complainant_name_display': selectedUser.displayName(
             isArabic: formL10n.isArabic,
@@ -738,14 +820,13 @@ class _VSController extends StateNotifier<_ViewState> {
           'complainant_employee_id': selectedUser.employeeId,
           'complainant_directorate': selectedUser.directorate,
           'complainant_department': selectedUser.department?.id?.toString(),
+          'complained_employee_salary_grade': selectedUser.grade.toString(),
           'complainant_section': '',
         });
 
         final departmentId = selectedUser.department?.id;
         if (departmentId != null && departmentId > 0) {
-          await ref
-              .read(_vsProvider(params).notifier)
-              .fetchComplainantSections(departmentId);
+          await controller.fetchComplainantSections(departmentId);
           final sectionId = selectedUser.section?.id;
           if (sectionId != null) {
             formNotifier.updateValue(
@@ -764,8 +845,8 @@ class _VSController extends StateNotifier<_ViewState> {
       placeholder: l10n.enter,
     ),
     DynamicField(
-      name: 'complainant_employee_id',
-      label: l10n.employeeId,
+      name: 'complained_employee_salary_grade',
+      label: l10n.salaryGrade,
       type: FieldType.text,
       required: true,
       placeholder: l10n.enter,
@@ -828,139 +909,8 @@ class _VSController extends StateNotifier<_ViewState> {
             .toList();
       },
     ),
-  ];
-
-  List<DynamicField> buildLegalComplaintStepFourFields(DashboardL10n l10n) => [
     DynamicField(
-      name: 'complained_employee_name',
-      label: l10n.complainantName,
-      type: FieldType.select,
-      required: true,
-      placeholder: l10n.selectEmployee,
-      optionsBuilder: (ref) {
-        final formL10n = DashboardL10n.of(ref.context);
-        final vsState = ref.watch(_vsProvider(params));
-        return vsState.usersList
-            .map(
-              (user) => DropdownOption(
-                label: user.displayName(isArabic: formL10n.isArabic),
-                value: user.id.toString(),
-              ),
-            )
-            .toList();
-      },
-      onChanged: (value, ref) async {
-        final selectedUser = _findUser(value);
-        if (selectedUser == null) return;
-
-        final formL10n = DashboardL10n.of(ref.context);
-        final formNotifier = ref.read(dynamicFormProvider.notifier);
-        formNotifier.autoPopulate({
-          'complained_employee_name_display': selectedUser.displayName(
-            isArabic: formL10n.isArabic,
-          ),
-          'complained_employee_position': _userPositionLabel(
-            selectedUser,
-            formL10n.isArabic,
-          ),
-          'complained_employee_salary_grade': selectedUser.grade.toString(),
-          'complained_employee_directorate': selectedUser.directorate,
-          'complained_employee_department': selectedUser.department?.id
-              ?.toString(),
-          'complained_employee_section': '',
-        });
-
-        final departmentId = selectedUser.department?.id;
-        if (departmentId != null && departmentId > 0) {
-          await ref
-              .read(_vsProvider(params).notifier)
-              .fetchComplainedEmployeeSections(departmentId);
-          final sectionId = selectedUser.section?.id;
-          if (sectionId != null) {
-            formNotifier.updateValue(
-              'complained_employee_section',
-              sectionId.toString(),
-            );
-          }
-        }
-      },
-    ),
-    DynamicField(
-      name: 'complained_employee_position',
-      label: l10n.positionLabel,
-      type: FieldType.text,
-      required: true,
-      placeholder: l10n.enter,
-    ),
-    DynamicField(
-      name: 'complained_employee_salary_grade',
-      label: l10n.salaryGrade,
-      type: FieldType.text,
-      required: true,
-      placeholder: l10n.enter,
-    ),
-    DynamicField(
-      name: 'complained_employee_directorate',
-      label: l10n.directorateLabel,
-      type: FieldType.text,
-      required: true,
-      placeholder: l10n.enter,
-    ),
-    DynamicField(
-      name: 'complained_employee_department',
-      label: l10n.department,
-      type: FieldType.select,
-      required: true,
-      placeholder: l10n.selectDepartment,
-      optionsBuilder: (ref) {
-        final formL10n = DashboardL10n.of(ref.context);
-        final vsState = ref.watch(_vsProvider(params));
-        return vsState.departments
-            .map(
-              (department) => DropdownOption(
-                value: department.id.toString(),
-                label: department.displayName(isArabic: formL10n.isArabic),
-              ),
-            )
-            .toList();
-      },
-      onChanged: (value, ref) async {
-        ref
-            .read(dynamicFormProvider.notifier)
-            .updateValue('complained_employee_section', '');
-        final departmentId = int.tryParse(value.toString()) ?? 0;
-        if (departmentId > 0) {
-          await ref
-              .read(_vsProvider(params).notifier)
-              .fetchComplainedEmployeeSections(departmentId);
-        } else {
-          ref
-              .read(_vsProvider(params).notifier)
-              .clearComplainedEmployeeSections();
-        }
-      },
-    ),
-    DynamicField(
-      name: 'complained_employee_section',
-      label: l10n.section,
-      type: FieldType.select,
-      required: true,
-      placeholder: l10n.selectSection,
-      optionsBuilder: (ref) {
-        final formL10n = DashboardL10n.of(ref.context);
-        final vsState = ref.watch(_vsProvider(params));
-        return vsState.sections
-            .map(
-              (section) => DropdownOption(
-                value: section.id.toString(),
-                label: section.displayName(isArabic: formL10n.isArabic),
-              ),
-            )
-            .toList();
-      },
-    ),
-    DynamicField(
-      name: 'attachments',
+      name: 'attachments2',
       label: l10n.attachmentsTabLabel,
       type: FieldType.file,
       required: false,
@@ -969,6 +919,146 @@ class _VSController extends StateNotifier<_ViewState> {
       allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'],
     ),
   ];
+
+  // List<DynamicField> buildLegalComplaintStepFourFields(DashboardL10n l10n) => [
+  //   DynamicField(
+  //     name: 'complained_employee_name',
+  //     label: l10n.complainantName,
+  //     type: FieldType.select,
+  //     required: true,
+  //     placeholder: l10n.selectEmployee,
+  //     optionsBuilder: (ref) {
+  //       final formL10n = DashboardL10n.of(ref.context);
+  //       final vsState = ref.watch(_vsProvider(params));
+  //       return vsState.usersList
+  //           .map(
+  //             (user) => DropdownOption(
+  //               label: user.displayName(isArabic: formL10n.isArabic),
+  //               value: user.id.toString(),
+  //             ),
+  //           )
+  //           .toList();
+  //     },
+  //     onChanged: (value, ref) async {
+  //       final selectedUser = _findUser(value);
+  //       if (selectedUser == null) return;
+
+  //       final formL10n = DashboardL10n.of(ref.context);
+  //       final formNotifier = ref.read(dynamicFormProvider.notifier);
+  //       formNotifier.autoPopulate({
+  //         'complained_employee_name_display': selectedUser.displayName(
+  //           isArabic: formL10n.isArabic,
+  //         ),
+  //         'complained_employee_position': _userPositionLabel(
+  //           selectedUser,
+  //           formL10n.isArabic,
+  //         ),
+  //         'complained_employee_salary_grade': selectedUser.grade.toString(),
+  //         'complained_employee_directorate': selectedUser.directorate,
+  //         'complained_employee_department': selectedUser.department?.id
+  //             ?.toString(),
+  //         'complained_employee_section': '',
+  //       });
+
+  //       final departmentId = selectedUser.department?.id;
+  //       if (departmentId != null && departmentId > 0) {
+  //         await ref
+  //             .read(_vsProvider(params).notifier)
+  //             .fetchComplainedEmployeeSections(departmentId);
+  //         final sectionId = selectedUser.section?.id;
+  //         if (sectionId != null) {
+  //           formNotifier.updateValue(
+  //             'complained_employee_section',
+  //             sectionId.toString(),
+  //           );
+  //         }
+  //       }
+  //     },
+  //   ),
+  //   DynamicField(
+  //     name: 'complained_employee_position',
+  //     label: l10n.positionLabel,
+  //     type: FieldType.text,
+  //     required: true,
+  //     placeholder: l10n.enter,
+  //   ),
+  //   DynamicField(
+  //     name: 'complained_employee_salary_grade',
+  //     label: l10n.salaryGrade,
+  //     type: FieldType.text,
+  //     required: true,
+  //     placeholder: l10n.enter,
+  //   ),
+  //   DynamicField(
+  //     name: 'complained_employee_directorate',
+  //     label: l10n.directorateLabel,
+  //     type: FieldType.text,
+  //     required: true,
+  //     placeholder: l10n.enter,
+  //   ),
+  //   DynamicField(
+  //     name: 'complained_employee_department',
+  //     label: l10n.department,
+  //     type: FieldType.select,
+  //     required: true,
+  //     placeholder: l10n.selectDepartment,
+  //     optionsBuilder: (ref) {
+  //       final formL10n = DashboardL10n.of(ref.context);
+  //       final vsState = ref.watch(_vsProvider(params));
+  //       return vsState.departments
+  //           .map(
+  //             (department) => DropdownOption(
+  //               value: department.id.toString(),
+  //               label: department.displayName(isArabic: formL10n.isArabic),
+  //             ),
+  //           )
+  //           .toList();
+  //     },
+  //     onChanged: (value, ref) async {
+  //       ref
+  //           .read(dynamicFormProvider.notifier)
+  //           .updateValue('complained_employee_section', '');
+  //       final departmentId = int.tryParse(value.toString()) ?? 0;
+  //       if (departmentId > 0) {
+  //         await ref
+  //             .read(_vsProvider(params).notifier)
+  //             .fetchComplainedEmployeeSections(departmentId);
+  //       } else {
+  //         ref
+  //             .read(_vsProvider(params).notifier)
+  //             .clearComplainedEmployeeSections();
+  //       }
+  //     },
+  //   ),
+  //   DynamicField(
+  //     name: 'complained_employee_section',
+  //     label: l10n.section,
+  //     type: FieldType.select,
+  //     required: true,
+  //     placeholder: l10n.selectSection,
+  //     optionsBuilder: (ref) {
+  //       final formL10n = DashboardL10n.of(ref.context);
+  //       final vsState = ref.watch(_vsProvider(params));
+  //       return vsState.sections
+  //           .map(
+  //             (section) => DropdownOption(
+  //               value: section.id.toString(),
+  //               label: section.displayName(isArabic: formL10n.isArabic),
+  //             ),
+  //           )
+  //           .toList();
+  //     },
+  //   ),
+  //   DynamicField(
+  //     name: 'attachments',
+  //     label: l10n.attachmentsTabLabel,
+  //     type: FieldType.file,
+  //     required: false,
+  //     maxFiles: 5,
+  //     maxFileSizeInMB: 10,
+  //     allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'],
+  //   ),
+  // ];
 
   EmployeeList? _findUser(dynamic value) {
     final userId = int.tryParse(value?.toString() ?? '');
@@ -1083,6 +1173,18 @@ class _VSController extends StateNotifier<_ViewState> {
     }
   }
 
+  Future<EmployeeList?> fetchUserById(int userId) async {
+    try {
+      return await raiseLegalComplaintInstance.getUserById(userId);
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+      return null;
+    } catch (e) {
+      debugPrint('fetchUserById error: $e');
+      return null;
+    }
+  }
+
   Future<void> onSectionChanged({
     required int sectionId,
     required int departmentId,
@@ -1147,6 +1249,7 @@ class _VSController extends StateNotifier<_ViewState> {
     int sectionId,
     int userId,
     int departmentId,
+    String comment,
   ) async {
     try {
       state = state.copyWith(isLoading: true);
@@ -1163,7 +1266,7 @@ class _VSController extends StateNotifier<_ViewState> {
         'request_id': requestId,
         'approval_id': approvalId,
         'status': 'Approved',
-        'comment': '',
+        'comment': comment,
         'reassign_approver_user_id': userId,
         'reassign_delegate_user_id': null,
         'reassign_department_id': userData?.data?.department?.id,
@@ -2167,7 +2270,9 @@ class _VSController extends StateNotifier<_ViewState> {
     final List<FileUploadItem> allFiles = [];
 
     for (final entry in values.entries) {
-      if ((entry.key == 'attachments' || entry.key == 'attachments1') &&
+      if ((entry.key == 'attachments' ||
+              entry.key == 'attachments1' ||
+              entry.key == 'attachments2') &&
           entry.value is List<FileUploadItem>) {
         allFiles.addAll(entry.value as List<FileUploadItem>);
       }
@@ -2181,85 +2286,72 @@ class _VSController extends StateNotifier<_ViewState> {
     int subServiceId,
     Map<String, dynamic> values,
   ) {
+    final selectedRole = KAppX.globalProvider.read(rolesProvider);
     final userInfo = KAppX.globalProvider.read(userInfoProvider);
 
-    final complainantDepartmentId =
-        int.tryParse(values['complainant_department']?.toString() ?? '') ?? 0;
-    final complainantSectionId =
-        int.tryParse(values['complainant_section']?.toString() ?? '') ?? 0;
-    final complainedDepartmentId =
-        int.tryParse(
-          values['complained_employee_department']?.toString() ?? '',
-        ) ??
-        0;
-    final complainedSectionId =
-        int.tryParse(values['complained_employee_section']?.toString() ?? '') ??
-        0;
+    // Step 3 collects the complained employee (aligned with web create payload).
+    final complainedDepartmentId = int.tryParse(
+      values['complainant_department']?.toString() ?? '',
+    );
+    final complainedSectionId = int.tryParse(
+      values['complainant_section']?.toString() ?? '',
+    );
 
-    final complainantDepartmentName = _departmentLabel(
+    final complainedDepartmentName = _departmentLabel(
       values['complainant_department']?.toString(),
       state.departments,
       false,
     );
-    final complainantSectionName = _sectionLabel(
+    final complainedSectionName = _sectionLabel(
       values['complainant_section']?.toString(),
       state.complainantSections.isNotEmpty
           ? state.complainantSections
           : state.sections,
       false,
     );
-    final complainedDepartmentName = _departmentLabel(
-      values['complained_employee_department']?.toString(),
-      state.departments,
-      false,
-    );
-    final complainedSectionName = _sectionLabel(
-      values['complained_employee_section']?.toString(),
-      state.sections,
-      false,
-    );
+
+    final complainedEmployeeName =
+        values['complainant_name_display']?.toString().trim().isNotEmpty == true
+        ? values['complainant_name_display'].toString()
+        : _userNameLabel(values['complainant_name']?.toString(), false);
 
     return {
-      'req_user_department_id': userInfo?.data?.department?.id ?? 0,
-      'req_user_section_id': userInfo?.data?.section?.id ?? 0,
+      'req_user_department_id':
+          selectedRole?.departmentId ?? userInfo?.data?.department?.id ?? 0,
+      'req_user_section_id':
+          selectedRole?.sectionId ?? userInfo?.data?.section?.id ?? 0,
       'service_id': serviceId,
       'sub_service_id': subServiceId,
-      'request_date': values['request_date'],
-      'title': values['title'] ?? '',
+      'title': values['title'] ?? values['title_of_complaint'] ?? '',
       'description': values['description'] ?? '',
       'complaint_incident': {
         'individuals_involved': values['individuals_involved'] ?? '',
-        'incident_time': values['incident_time'] ?? '',
-        'incident_date': values['incident_date'],
-        'incident_location': values['incident_location'] ?? '',
-        'incident_events': values['incident_events'] ?? '',
-        'incident_other_details': values['incident_other_details'] ?? '',
+        'incident_time':
+            values['incident_time'] ?? values['complaint_time'] ?? '',
+        'incident_date': values['incident_date'] ?? values['complaint_date'],
+        'incident_location':
+            values['incident_location'] ?? values['complaint_location'] ?? '',
+        'incident_events':
+            values['incident_events'] ?? values['complaint_events'] ?? '',
+        'incident_other_details':
+            values['incident_other_details'] ??
+            values['other_details_related_to_complaint'] ??
+            '',
       },
-      // 'complainant': {
-      //   'name':
-      //       values['complainant_name_display']?.toString() ??
-      //       _userNameLabel(values['complainant_name']?.toString(), false),
-      //   'position': values['complainant_position'] ?? '',
-      //   'employee_id': values['complainant_employee_id']?.toString() ?? '',
-      //   'directorate': values['complainant_directorate'] ?? '',
-      //   'department_id': complainantDepartmentId,
-      //   'department_name': complainantDepartmentName,
-      //   'section_id': complainantSectionId,
-      //   'section_name': complainantSectionName,
-      //   'department': complainantDepartmentName,
-      //   'section': complainantSectionName,
-      // },
+      'complainant': {
+        'department_id': null,
+        'department_name': '',
+        'section_id': null,
+        'section_name': '',
+        'department': '',
+        'section': '',
+      },
       'complained_employee': {
-        'name':
-            values['complained_employee_name_display']?.toString() ??
-            _userNameLabel(
-              values['complained_employee_name']?.toString(),
-              false,
-            ),
-        'position': values['complained_employee_position'] ?? '',
+        'name': complainedEmployeeName,
+        'position': values['complainant_position'] ?? '',
         'salary_grade':
             values['complained_employee_salary_grade']?.toString() ?? '',
-        'directorate': values['complained_employee_directorate'] ?? '',
+        'directorate': values['complainant_directorate'] ?? '',
         'department_id': complainedDepartmentId,
         'department_name': complainedDepartmentName,
         'section_id': complainedSectionId,

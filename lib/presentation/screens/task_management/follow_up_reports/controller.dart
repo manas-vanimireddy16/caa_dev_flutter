@@ -423,23 +423,40 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails.request;
-    return {
-      /// ───── RIGHT COLUMN ─────
-      "Service Type": request?.service?.name ?? 'N/A',
+    final data = request?.rawJson ?? const <String, dynamic>{};
 
-      /// ───── LEFT COLUMN ─────
-      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      // 'Request Submission Date':
-      //     formatDate(request?.createdAt.toString()) ?? '-',
-      'Purpose of Event': request?.purposeOfEvent ?? 'NA',
-      'Hall Name': request?.typeOfHall ?? 'NA',
-      'Expected Number of Attendees':
-          request?.noOfAttendees?.toString() ?? 'N/A',
-      'Start Date': request?.startDate ?? 'N/A',
-      'End Date': request?.endDate ?? 'N/A',
-      'Start Time': request?.startTime ?? 'N/A',
-      'End Time': request?.endTime ?? 'N/A',
+    return {
+      'Topic': data['topic']?.toString() ?? 'N/A',
+      'Concerned Department': data['concerned_department']?.toString() ?? 'N/A',
+      'Relevant Department': data['relevant_department']?.toString() ?? 'N/A',
+      'Date From': data['date_from']?.toString() ?? 'N/A',
+      'Date To': data['date_to']?.toString() ?? 'N/A',
     };
+  }
+
+  List<Map<String, dynamic>> buildFollowUpReportItems() {
+    final detailsData = state.requestDetails.rawJson;
+    final requestData =
+        state.requestDetails.request?.rawJson ?? const <String, dynamic>{};
+    final rawItems =
+        detailsData['report_items'] ??
+        detailsData['follow_up_reports'] ??
+        requestData['report_items'];
+
+    if (rawItems is List) {
+      return rawItems
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+    }
+
+    // Some API versions return the single report item on the request itself.
+    if (requestData['sent_by'] != null ||
+        requestData['reference_type'] != null) {
+      return [Map<String, dynamic>.from(requestData)];
+    }
+
+    return const [];
   }
 
   Map<String, String> buildStatusInformation() {
@@ -657,36 +674,39 @@ class _VSController extends StateNotifier<_ViewState> {
     ),
 
     /// ================= ATTACHMENTS =================
-    DynamicField(
-      name: 'attachments',
-      label: l10n.requestDetailsLabel('Attachments'),
-      type: FieldType.file,
-      required: !isEditMode,
+    if (!isEditMode)
+      DynamicField(
+        name: 'attachments',
+        label: l10n.requestDetailsLabel('Attachments'),
+        type: FieldType.file,
+        required: true,
 
-      validator: (value, values) {
-        if (isEditMode) return null;
+        validator: (value, values) {
+          if (value == null) {
+            return l10n.followUpAttachmentRequired;
+          }
 
-        if (value == null) {
-          return l10n.followUpAttachmentRequired;
-        }
+          if (value is List && value.isEmpty) {
+            return l10n.followUpUploadAttachmentRequired;
+          }
 
-        if (value is List && value.isEmpty) {
-          return l10n.followUpUploadAttachmentRequired;
-        }
-
-        return null;
-      },
-    ),
+          return null;
+        },
+      ),
   ];
 
   /// ================= ACTION CARDS (STEP 2) =================
-  List<DynamicField> buildFollowUpActionFields(DashboardL10n l10n) => [
+  List<DynamicField> buildFollowUpActionFields(
+    DashboardL10n l10n, {
+    bool isEditMode = false,
+  }) => [
     DynamicField(
       name: kFollowUpActionsKey,
       label: l10n.followUpActionsStepTitle,
       type: FieldType.custom,
       required: true,
-      builder: (context, ref) => const FollowUpActionCards(),
+      builder: (context, ref) =>
+          FollowUpActionCards(showAttachment: !isEditMode),
       validator: (value, values) {
         final list = value is List ? value : const [];
 
@@ -1338,43 +1358,42 @@ class _VSController extends StateNotifier<_ViewState> {
     List<ApprovalDetailModel> approvals,
   ) {
     final selectedRole = KAppX.globalProvider.read(rolesProvider);
-    final user = KAppX.globalProvider.read(userInfoProvider);
-    print(user?.data?.section?.id);
 
     if (selectedRole == null) return ActionButtonsType.none;
 
-    final int userId = int.parse(user?.data?.id ?? "0");
+    final requestStatus = (request?.request?.status ?? request?.status ?? '')
+        .toLowerCase()
+        .trim()
+        .replaceAll('_', ' ');
+    final canEdit = selectedRole.roleId == 39;
+    final isEditableStatus =
+        requestStatus == 'completed' ||
+        requestStatus == 'approved' ||
+        requestStatus == 'in progress' ||
+        requestStatus == 'inprogress' ||
+        requestStatus == 'pending';
 
     // Get active approval level
     final level = getActiveApprovalLevel(approvals);
+    final canAct =
+        level != null && canUserActOnLevel(approval: level);
 
-    if (level == null) return ActionButtonsType.none;
-
-    // Check user permission
-    final canAct = canUserActOnLevel(approval: level);
-
-    if (!canAct) return ActionButtonsType.none;
-
-    if (!state.isButtonDisabled && !canUserActOnLevel(approval: level)) {
-      return ActionButtonsType.none;
-    }
-
-    final bool? isManager = level.isManager;
-    final bool? isPresident = level.isPresident;
-    final int approvalLevel = level.level ?? 0;
-    final bool ishasReplace = level.isReplace ?? false;
-    final bool canEdit = selectedRole.roleId == 39;
-
-    if (isManager == true) {
-      debugPrint('this user can only approve');
-      return canEdit
-          ? ActionButtonsType.approveRejectUpdate
-          : ActionButtonsType.assignReject;
-    } else if (level != null) {
-      debugPrint('this user can approve and reject');
+    if (canAct) {
+      final bool? isManager = level.isManager;
+      if (isManager == true) {
+        return canEdit
+            ? ActionButtonsType.approveRejectUpdate
+            : ActionButtonsType.assignReject;
+      }
       return canEdit
           ? ActionButtonsType.approveRejectUpdate
           : ActionButtonsType.approveReject;
+    }
+
+    // Role 39 can still Edit while In Progress / Completed / Approved
+    // even when there is no active approval action.
+    if (canEdit && isEditableStatus) {
+      return ActionButtonsType.update;
     }
 
     return ActionButtonsType.none;
@@ -1691,11 +1710,7 @@ class _VSController extends StateNotifier<_ViewState> {
       if (isEditMode) {
         payload = _buildUpdatePayload(values);
       } else {
-        payload = _buildPayload(
-          serviceId,
-          subServiceId,
-          values,
-        );
+        payload = _buildPayload(serviceId, subServiceId, values);
       }
 
       debugPrint("✅ Final Payload: $payload");
@@ -1798,9 +1813,7 @@ class _VSController extends StateNotifier<_ViewState> {
   Map<String, dynamic> _mapReportItemToActionCard(Map<dynamic, dynamic> item) {
     return {
       'sent_by': item['reference_type'] ?? item['sent_by'] ?? '',
-      'letter_date': _normalizeDateForForm(
-        item['letter_date']?.toString(),
-      ),
+      'letter_date': _normalizeDateForForm(item['letter_date']?.toString()),
       'subject': item['subject'] ?? '',
       'subject_classification': item['subject_classification'] ?? '',
       'general_manager_comment': item['general_manager_comment'] ?? '',
@@ -1866,7 +1879,11 @@ class _VSController extends StateNotifier<_ViewState> {
           )
         : <Map<dynamic, dynamic>>[];
 
-    final reportItems = actionCards.map(_buildReportItem).toList();
+    final reportItems = actionCards.map((card) {
+      final item = _buildReportItem(card);
+      item.remove('attachment');
+      return item;
+    }).toList();
     final firstCard = actionCards.isNotEmpty
         ? actionCards.first
         : <dynamic, dynamic>{};
