@@ -565,7 +565,10 @@ class _VSController extends StateNotifier<_ViewState> {
 
   /// ========================= API CALLS =========================
 
-  Future<void> fetchRequestDetailsById(int id, {bool showLoading = true}) async {
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
     if (showLoading) {
       state = state.copyWith(isLoading: true);
     }
@@ -781,6 +784,8 @@ class _VSController extends StateNotifier<_ViewState> {
       await shiftAllowanceInstance.onAssignEmployee(payload);
       KAppX.router.pop();
 
+      await _refreshDashboard();
+      fetchApprovalKpi();
       // Refresh details after assigning
       // await fetchRequestDetailsById(state.requestDetails.request?.id ?? 0);
     } catch (e) {

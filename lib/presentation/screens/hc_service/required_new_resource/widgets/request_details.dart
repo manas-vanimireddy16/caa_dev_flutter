@@ -53,7 +53,9 @@ class _RequiredNewResourceDetailsScreenState
 
     return KScaffold(
       backgroundColor: Colors.white,
-      appBar: KAppBar(title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle)),
+      appBar: KAppBar(
+        title: KAppBar.requestDetailsTitle(l10n.requestDetailScreenTitle),
+      ),
       body: Consumer(
         builder: (context, ref, _) {
           final state = ref.watch(_vsProvider(_providerArgs));
@@ -115,7 +117,7 @@ class _RequiredNewResourceDetailsScreenState
                     requestDetailsLabelBuilder: l10n.requestDetailsLabel,
                     statusInfo: {
                       "Approval Status": request?.status ?? 'N/A',
-                      "Requested Date": request?.createdAt ?? 'N/A',
+                      "Requested Date": formatDate(request?.createdAt) ?? 'N/A',
                       if (nextApprover.containsKey('department'))
                         'Department': nextApprover['department']!,
                       if (nextApprover.containsKey('section'))

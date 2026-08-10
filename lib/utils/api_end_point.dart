@@ -1608,7 +1608,7 @@ class ApiEndPoint {
 
   /// Send chat message (POST)
   static String paymentForShiftAllowanceSendChatById(int requestId) =>
-      '/v1/hr-service/shift-allowance-leave/requests/$requestId/chat';
+      '/v1/hr-service/shift-allowance/requests/$requestId/chat';
 
   /// Get chats (GET)
   static String paymentForShiftAllowanceChatsById(int requestId) =>

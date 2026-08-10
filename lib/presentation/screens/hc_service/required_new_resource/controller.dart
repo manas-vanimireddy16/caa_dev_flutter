@@ -745,7 +745,10 @@ class _VSController extends StateNotifier<_ViewState> {
     } catch (e) {}
   }
 
-  Future<void> fetchRequestDetailsById(int id, {bool showLoading = true}) async {
+  Future<void> fetchRequestDetailsById(
+    int id, {
+    bool showLoading = true,
+  }) async {
     if (showLoading) {
       state = state.copyWith(isLoading: true);
     }
@@ -757,7 +760,7 @@ class _VSController extends StateNotifier<_ViewState> {
       );
 
       if (requests != null) {
-        state = state.copyWith(requestDetails: requests);
+        state = state.copyWith(requestDetails: requests, isLoading: false);
 
         fetchChatById(id);
         fetchAttachmentsById(id);
@@ -772,10 +775,14 @@ class _VSController extends StateNotifier<_ViewState> {
         if (actionType == ActionButtonsType.assignReject) {
           fetchAssignEmployeesList();
         }
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } on ApiException catch (apiError) {
+      state = state.copyWith(isLoading: false);
       Fluttertoast.showToast(msg: apiError.message);
     } catch (e) {
+      state = state.copyWith(isLoading: false);
       debugPrint(e.toString());
     }
   }
@@ -1320,6 +1327,7 @@ class _VSController extends StateNotifier<_ViewState> {
       // KAppX.router.pop();
       // }
       refreshRequestLists();
+      fetchApprovalKpi();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1377,6 +1385,8 @@ class _VSController extends StateNotifier<_ViewState> {
       };
 
       await requiredNewResourceInstance.onAssignEmployee(payload);
+      refreshRequestLists();
+      fetchApprovalKpi();
       return true;
     } catch (e) {
       debugPrint("Error assigning user: $e");
