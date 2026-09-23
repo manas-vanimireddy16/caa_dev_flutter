@@ -17,48 +17,44 @@ class SecurityAreaTableWidget extends pw.StatelessWidget {
 
   @override
   pw.Widget build(pw.Context context) {
-    // Column widths: Task 28% | Arabic Name 57% | Code 15%
-    // In RTL visual order: Code | Arabic | Task
-    return pw.Directionality(
-      textDirection: pw.TextDirection.rtl,
-      child: pw.Table(
-        border: pw.TableBorder.all(
-          color: AirportPermitPdfColors.black,
-          width: 1,
+    // pw.Table is LTR; order Task | Area | Code → Code on the right (web RTL).
+    return pw.Table(
+      border: pw.TableBorder.all(
+        color: AirportPermitPdfColors.black,
+        width: 1,
+      ),
+      columnWidths: const {
+        0: pw.FlexColumnWidth(0.28),
+        1: pw.FlexColumnWidth(0.57),
+        2: pw.FlexColumnWidth(0.15),
+      },
+      defaultVerticalAlignment: pw.TableCellVerticalAlignment.middle,
+      children: [
+        pw.TableRow(
+          decoration: const pw.BoxDecoration(
+            color: AirportPermitPdfColors.headerGray,
+          ),
+          children: [
+            _headerCell(AirportPermitPdfConstants.tableTaskHeader),
+            _headerCell(AirportPermitPdfConstants.tableAreaHeader),
+            _headerCell(AirportPermitPdfConstants.tableCodeHeader),
+          ],
         ),
-        columnWidths: const {
-          0: pw.FlexColumnWidth(0.15),
-          1: pw.FlexColumnWidth(0.57),
-          2: pw.FlexColumnWidth(0.28),
-        },
-        defaultVerticalAlignment: pw.TableCellVerticalAlignment.middle,
-        children: [
+        for (final row in rows)
           pw.TableRow(
-            decoration: const pw.BoxDecoration(
-              color: AirportPermitPdfColors.headerGray,
-            ),
             children: [
-              _headerCell(AirportPermitPdfConstants.tableCodeHeader),
-              _headerCell(AirportPermitPdfConstants.tableAreaHeader),
-              _headerCell(AirportPermitPdfConstants.tableTaskHeader),
+              _taskCell(row.workTask),
+              _areaCell(row),
+              _codeCell(row),
             ],
           ),
-          for (final row in rows)
-            pw.TableRow(
-              children: [
-                _codeCell(row),
-                _areaCell(row),
-                _taskCell(row.workTask),
-              ],
-            ),
-        ],
-      ),
+      ],
     );
   }
 
   pw.Widget _headerCell(String text) {
     return pw.Container(
-      padding: pw.EdgeInsets.all(AirportPermitPdfConstants.pt(10)),
+      padding: pw.EdgeInsets.all(AirportPermitPdfConstants.tableCellPadding),
       alignment: pw.Alignment.center,
       child: pw.Text(
         text,
@@ -80,7 +76,7 @@ class SecurityAreaTableWidget extends pw.StatelessWidget {
         minHeight: AirportPermitPdfConstants.tableRowMinHeight,
       ),
       color: row.color,
-      padding: pw.EdgeInsets.all(AirportPermitPdfConstants.pt(8)),
+      padding: pw.EdgeInsets.all(AirportPermitPdfConstants.tableCellPadding),
       alignment: pw.Alignment.center,
       child: pw.Directionality(
         textDirection: pw.TextDirection.ltr,
@@ -104,16 +100,18 @@ class SecurityAreaTableWidget extends pw.StatelessWidget {
         minHeight: AirportPermitPdfConstants.tableRowMinHeight,
       ),
       color: row.color,
-      padding: pw.EdgeInsets.all(AirportPermitPdfConstants.pt(8)),
+      padding: pw.EdgeInsets.all(AirportPermitPdfConstants.tableCellPadding),
       alignment: pw.Alignment.centerRight,
       child: pw.Text(
         row.arabic,
         textAlign: pw.TextAlign.right,
+        maxLines: 3,
         style: pw.TextStyle(
           font: boldFont,
           fontSize: AirportPermitPdfConstants.tableBodyFontSize,
           fontWeight: pw.FontWeight.bold,
           color: AirportPermitPdfColors.black,
+          lineSpacing: 1,
         ),
         textDirection: pw.TextDirection.rtl,
       ),
@@ -126,15 +124,17 @@ class SecurityAreaTableWidget extends pw.StatelessWidget {
         minHeight: AirportPermitPdfConstants.tableRowMinHeight,
       ),
       color: AirportPermitPdfColors.white,
-      padding: pw.EdgeInsets.all(AirportPermitPdfConstants.pt(8)),
+      padding: pw.EdgeInsets.all(AirportPermitPdfConstants.tableCellPadding),
       alignment: pw.Alignment.centerRight,
       child: pw.Text(
         task,
         textAlign: pw.TextAlign.right,
+        maxLines: 3,
         style: pw.TextStyle(
           font: regularFont,
           fontSize: AirportPermitPdfConstants.tableBodyFontSize,
           color: AirportPermitPdfColors.black,
+          lineSpacing: 1,
         ),
         textDirection: pw.TextDirection.rtl,
       ),

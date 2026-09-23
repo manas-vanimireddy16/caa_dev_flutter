@@ -42,7 +42,7 @@ class PermitDurationWidget extends pw.StatelessWidget {
               ),
               pw.SizedBox(width: AirportPermitPdfConstants.durationGap),
               airportPermitCheckboxItem(
-                checked: !data.isPermanent,
+                checked: data.isTemporary,
                 label: 'مؤقت',
                 regularFont: regularFont,
               ),

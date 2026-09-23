@@ -486,17 +486,17 @@ class _VSController extends StateNotifier<_ViewState> {
     final request = state.requestDetails;
     return {
       /// ───── RIGHT COLUMN ─────
-      "Service Type": request?.service?.name ?? 'N/A',
+      "Service Type": request.service?.name ?? 'N/A',
 
       /// ───── LEFT COLUMN ─────
-      "Sub Service Type": request?.subService?.subServiceName ?? 'N/A',
-      "Position to be Filled": request?.positionToBeFilled ?? 'N/A',
-      "Grade": request?.grade ?? 'N/A',
-      "Role / Title of Resource": request?.roleTitle ?? 'N/A',
-      "Education Requirements": request?.educationRequirements ?? 'N/A',
-      "Required Skills / Expertise": request?.requiredSkills ?? 'N/A',
-      "Number of Years of Experience": request?.yearsOfExperience ?? 'N/A',
-      "Job Description": request?.jobDescription ?? 'N/A',
+      "Sub Service Type": request.subService?.subServiceName ?? 'N/A',
+      "Position to be Filled": request.positionToBeFilled ?? 'N/A',
+      "Grade": request.grade ?? 'N/A',
+      "Role / Title of Resource": request.roleTitle ?? 'N/A',
+      "Education Requirements": request.educationRequirements ?? 'N/A',
+      "Required Skills / Expertise": request.requiredSkills ?? 'N/A',
+      "Number of Years of Experience": request.yearsOfExperience ?? 'N/A',
+      "Job Description": request.jobDescription ?? 'N/A',
     };
   }
 
@@ -505,8 +505,8 @@ class _VSController extends StateNotifier<_ViewState> {
     final approvals = request.approvalDetails;
     final nextApprover = resolveApproverMap(approvals);
     return {
-      "Approval Status": request?.status ?? 'N/A',
-      "Requested Date": formatDate(request?.createdAt) ?? 'N/A',
+      "Approval Status": request.status ?? 'N/A',
+      "Requested Date": formatDate(request.createdAt),
       // "Last Updated":
       //     request?.updatedAt?.split('T').first ?? 'N/A',
       if (nextApprover.containsKey('department'))
@@ -525,7 +525,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final request = state.requestDetails;
     return {
       'Extension Number':
-          request?.createdByUser?.extensionNumber.toString() ?? '0',
+          request.createdByUser?.extensionNumber.toString() ?? '0',
     };
   }
 

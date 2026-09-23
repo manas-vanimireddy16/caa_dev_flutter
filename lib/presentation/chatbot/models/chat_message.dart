@@ -10,6 +10,10 @@ class ChatMessage extends Equatable {
   final String text;
   final DateTime createdAt;
 
+  /// Optional bilingual payload so UI can follow the selected app language.
+  final String? textEn;
+  final String? textAr;
+
   /// True for AI answers that should show feedback + navigation actions.
   final bool isAnswer;
 
@@ -24,6 +28,8 @@ class ChatMessage extends Equatable {
     required this.role,
     required this.text,
     required this.createdAt,
+    this.textEn,
+    this.textAr,
     this.isAnswer = false,
     this.isError = false,
     this.feedback,
@@ -33,11 +39,27 @@ class ChatMessage extends Equatable {
   bool get isAssistant => role == ChatMessageRole.assistant;
   bool get hasFeedback => feedback != null;
 
+  String displayText({required bool isArabic}) {
+    final primary = isArabic ? textAr : textEn;
+    final fallback = isArabic ? textEn : textAr;
+    final primaryTrimmed = primary?.trim();
+    if (primaryTrimmed != null && primaryTrimmed.isNotEmpty) {
+      return primaryTrimmed;
+    }
+    final fallbackTrimmed = fallback?.trim();
+    if (fallbackTrimmed != null && fallbackTrimmed.isNotEmpty) {
+      return fallbackTrimmed;
+    }
+    return text;
+  }
+
   ChatMessage copyWith({
     String? id,
     ChatMessageRole? role,
     String? text,
     DateTime? createdAt,
+    String? textEn,
+    String? textAr,
     bool? isAnswer,
     bool? isError,
     ChatbotFeedbackChoice? feedback,
@@ -48,6 +70,8 @@ class ChatMessage extends Equatable {
       role: role ?? this.role,
       text: text ?? this.text,
       createdAt: createdAt ?? this.createdAt,
+      textEn: textEn ?? this.textEn,
+      textAr: textAr ?? this.textAr,
       isAnswer: isAnswer ?? this.isAnswer,
       isError: isError ?? this.isError,
       feedback: clearFeedback ? null : feedback ?? this.feedback,
@@ -56,5 +80,5 @@ class ChatMessage extends Equatable {
 
   @override
   List<Object?> get props =>
-      [id, role, text, createdAt, isAnswer, isError, feedback];
+      [id, role, text, createdAt, textEn, textAr, isAnswer, isError, feedback];
 }

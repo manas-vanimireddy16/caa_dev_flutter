@@ -28,8 +28,11 @@ class ChatbotConversationNotifier
   bool _didStart = false;
   bool _servicesLoaded = false;
 
-  /// Cached questions keyed by sub-service code.
+  /// Cached questions keyed by `serviceId_subServiceId`.
   final Map<String, List<ChatbotQuestion>> _questionsCache = {};
+
+  // Legacy cache key (sub-service code) kept for old flow reference.
+  // final Map<String, List<ChatbotQuestion>> _legacyQuestionsCache = {};
 
   @override
   ChatbotConversationState build() {
@@ -50,7 +53,7 @@ class ChatbotConversationNotifier
     return initialState;
   }
 
-  /// Loads role-services once and shows the services option panel.
+  /// Loads services for the currently logged-in role and shows the services panel.
   Future<void> loadServices({bool forceRefresh = false}) async {
     if (state.isLoading) return;
 
@@ -69,14 +72,28 @@ class ChatbotConversationNotifier
     );
 
     try {
-      final userId = _resolveUserId();
-      if (userId == null) {
-        throw ApiException('Unable to identify your user account.');
+      // Current flow: use services from the logged-in/selected role.
+      final selectedRole = ref.read(rolesProvider);
+      if (selectedRole == null) {
+        throw ApiException('Unable to identify your user role.');
       }
 
-      final response = await _dashboardRepository.getUserRoles(userId);
-      final services = _uniqueMobileServices(response.data?.roleDetails ?? []);
+      final services = MobileServiceScope.filterServices(selectedRole.services);
+      services.sort(
+        (a, b) => _serviceLabel(
+          a,
+        ).toLowerCase().compareTo(_serviceLabel(b).toLowerCase()),
+      );
       _servicesLoaded = true;
+
+      // Previous flow: load all role-services from user-service API, then merge.
+      // final userId = _resolveUserId();
+      // if (userId == null) {
+      //   throw ApiException('Unable to identify your user account.');
+      // }
+      // final response = await _dashboardRepository.getUserRoles(userId);
+      // final services = _uniqueMobileServices(response.data?.roleDetails ?? []);
+      // _servicesLoaded = true;
 
       state = state.copyWith(
         services: services,
@@ -132,11 +149,19 @@ class ChatbotConversationNotifier
   /// Re-show predefined questions for the current sub-service (uses cache).
   Future<void> showQuestions() async {
     if (state.isLoading) return;
+    final service = state.selectedService;
     final subService = state.selectedSubService;
-    final code = state.selectedSubServiceCode?.trim();
-    if (subService == null || code == null || code.isEmpty) return;
+    if (service == null || subService == null) return;
 
-    final cached = _questionsCache[code];
+    final serviceId = service.id;
+    final subServiceId = subService.id;
+    if (serviceId == null || subServiceId == null) {
+      _showError(keepInputEnabled: true);
+      return;
+    }
+
+    final cacheKey = _mappingCacheKey(serviceId, subServiceId);
+    final cached = _questionsCache[cacheKey];
     if (cached != null) {
       state = state.copyWith(
         questions: cached,
@@ -151,7 +176,18 @@ class ChatbotConversationNotifier
       return;
     }
 
-    await _loadQuestionsForSubService(code, announce: false);
+    await _loadQnAMapping(
+      serviceId: serviceId,
+      subServiceId: subServiceId,
+      announce: false,
+    );
+
+    // Previous flow (questions by sub-service code):
+    // final code = state.selectedSubServiceCode?.trim();
+    // if (subService == null || code == null || code.isEmpty) return;
+    // final cached = _questionsCache[code];
+    // ...
+    // await _loadQuestionsForSubService(code, announce: false);
   }
 
   Future<void> selectService(Service service) async {
@@ -188,8 +224,12 @@ class ChatbotConversationNotifier
   Future<void> selectSubService(SubService subService) async {
     if (state.isLoading) return;
 
+    final service = state.selectedService;
+    final serviceId = service?.id;
+    final subServiceId = subService.id;
     final subServiceCode = (subService.code ?? '').trim();
-    if (subServiceCode.isEmpty) {
+
+    if (serviceId == null || subServiceId == null) {
       _showError();
       return;
     }
@@ -209,22 +249,49 @@ class ChatbotConversationNotifier
       clearErrorMessage: true,
     );
 
-    final cached = _questionsCache[subServiceCode];
+    final cacheKey = _mappingCacheKey(serviceId, subServiceId);
+    final cached = _questionsCache[cacheKey];
     if (cached != null) {
       _applyQuestions(cached, announce: true);
       return;
     }
 
-    await _loadQuestionsForSubService(subServiceCode, announce: true);
+    await _loadQnAMapping(
+      serviceId: serviceId,
+      subServiceId: subServiceId,
+      announce: true,
+    );
+
+    // Previous flow:
+    // if (subServiceCode.isEmpty) {
+    //   _showError();
+    //   return;
+    // }
+    // final cached = _questionsCache[subServiceCode];
+    // if (cached != null) {
+    //   _applyQuestions(cached, announce: true);
+    //   return;
+    // }
+    // await _loadQuestionsForSubService(subServiceCode, announce: true);
   }
 
   Future<void> selectQuestion(ChatbotQuestion question) async {
     if (state.isLoading) return;
 
+    final questionEn = question.localizedQuestion(isArabic: false);
+    final questionAr = question.localizedQuestion(isArabic: true);
+    final answerEn = question.localizedAnswer(isArabic: false);
+    final answerAr = question.localizedAnswer(isArabic: true);
+
     state = state.copyWith(
       messages: [
         ...state.messages,
-        _createMessage(role: ChatMessageRole.user, text: question.question),
+        _createMessage(
+          role: ChatMessageRole.user,
+          text: questionEn.isNotEmpty ? questionEn : question.question,
+          textEn: questionEn,
+          textAr: questionAr,
+        ),
       ],
       selectedQuestion: question,
       isLoading: true,
@@ -235,15 +302,29 @@ class ChatbotConversationNotifier
     );
 
     try {
-      final userId = _requireUserId();
-      final role = await _resolveRoleName(userId);
-      final response = await _chatbotRepository.getAnswer(
-        questionId: question.questionId,
-        userId: userId,
-        role: role,
+      // Current flow: answer is already returned with the mapping list.
+      final resolvedAnswer = (answerEn != null && answerEn.isNotEmpty)
+          ? answerEn
+          : answerAr;
+      if (resolvedAnswer == null || resolvedAnswer.trim().isEmpty) {
+        throw ApiException('Empty chatbot response');
+      }
+
+      _appendLocalizedAnswer(
+        answerEn: answerEn,
+        answerAr: answerAr,
+        keepInputEnabled: false,
       );
-      // Keep input hidden until the user taps Not Helpful.
-      _appendAnswer(response, keepInputEnabled: false);
+
+      // Previous flow: fetch answer by question id from chatbot-service.
+      // final userId = _requireUserId();
+      // final role = await _resolveRoleName(userId);
+      // final response = await _chatbotRepository.getAnswer(
+      //   questionId: question.questionId,
+      //   userId: userId,
+      //   role: role,
+      // );
+      // _appendAnswer(response, keepInputEnabled: false);
     } catch (_) {
       _showError(keepInputEnabled: false);
     }
@@ -320,28 +401,50 @@ class ChatbotConversationNotifier
     );
   }
 
-  Future<void> _loadQuestionsForSubService(
-    String subServiceCode, {
+  Future<void> _loadQnAMapping({
+    required int serviceId,
+    required int subServiceId,
     required bool announce,
   }) async {
     state = state.copyWith(isLoading: true, clearErrorMessage: true);
 
     try {
-      final userId = _requireUserId();
-      final role = await _resolveRoleName(userId);
-      final response = await _chatbotRepository.getQuestions(
-        subServiceCode: subServiceCode,
-        userId: userId,
-        role: role,
+      final response = await _chatbotRepository.getQnAMappingList(
+        serviceId: serviceId,
+        subServiceId: subServiceId,
       );
 
-      final questions = response.questions;
-      _questionsCache[subServiceCode] = questions;
+      final questions = response.toQuestions();
+      _questionsCache[_mappingCacheKey(serviceId, subServiceId)] = questions;
       _applyQuestions(questions, announce: announce);
     } catch (_) {
       _showError(keepInputEnabled: true);
     }
   }
+
+  // Previous flow: load questions only, then fetch answer separately.
+  // Future<void> _loadQuestionsForSubService(
+  //   String subServiceCode, {
+  //   required bool announce,
+  // }) async {
+  //   state = state.copyWith(isLoading: true, clearErrorMessage: true);
+  //
+  //   try {
+  //     final userId = _requireUserId();
+  //     final role = await _resolveRoleName(userId);
+  //     final response = await _chatbotRepository.getQuestions(
+  //       subServiceCode: subServiceCode,
+  //       userId: userId,
+  //       role: role,
+  //     );
+  //
+  //     final questions = response.questions;
+  //     _questionsCache[subServiceCode] = questions;
+  //     _applyQuestions(questions, announce: announce);
+  //   } catch (_) {
+  //     _showError(keepInputEnabled: true);
+  //   }
+  // }
 
   void _applyQuestions(List<ChatbotQuestion> questions, {required bool announce}) {
     if (questions.isEmpty) {
@@ -404,6 +507,42 @@ class ChatbotConversationNotifier
     );
   }
 
+  void _appendLocalizedAnswer({
+    required String? answerEn,
+    required String? answerAr,
+    required bool keepInputEnabled,
+  }) {
+    final en = answerEn?.trim();
+    final ar = answerAr?.trim();
+    final fallback = (en != null && en.isNotEmpty)
+        ? en
+        : (ar != null && ar.isNotEmpty ? ar : null);
+    if (fallback == null) {
+      throw ApiException('Empty chatbot response');
+    }
+
+    state = state.copyWith(
+      messages: [
+        ...state.messages,
+        _createMessage(
+          role: ChatMessageRole.assistant,
+          text: fallback,
+          textEn: en,
+          textAr: ar,
+          isAnswer: true,
+        ),
+      ],
+      currentAnswer: ChatbotAnswerResponse(
+        questionId: state.selectedQuestion?.questionId,
+        question: state.selectedQuestion?.question,
+        answer: fallback,
+      ),
+      isLoading: false,
+      isInputEnabled: keepInputEnabled,
+      optionsPanel: ChatbotOptionsPanel.none,
+    );
+  }
+
   void _appendAnswer(
     ChatbotAnswerResponse response, {
     required bool keepInputEnabled,
@@ -447,6 +586,9 @@ class ChatbotConversationNotifier
       optionsPanel: ChatbotOptionsPanel.none,
     );
   }
+
+  String _mappingCacheKey(int serviceId, int subServiceId) =>
+      '${serviceId}_$subServiceId';
 
   int? _resolveUserId() {
     final userInfoId = ref.read(userInfoProvider)?.data?.id;
@@ -492,75 +634,76 @@ class ChatbotConversationNotifier
     return 'Employee';
   }
 
-  List<Service> _uniqueMobileServices(List<RoleDetail> roleDetails) {
-    final byKey = <String, Service>{};
+  // Previous helper used when merging services across all roles.
+  // List<Service> _uniqueMobileServices(List<RoleDetail> roleDetails) {
+  //   final byKey = <String, Service>{};
+  //
+  //   for (final roleDetail in roleDetails) {
+  //     for (final service in roleDetail.services ?? const <Service>[]) {
+  //       final serviceKey = _serviceKey(service);
+  //       if (serviceKey.isEmpty) continue;
+  //
+  //       final existing = byKey[serviceKey];
+  //       if (existing == null) {
+  //         byKey[serviceKey] = service;
+  //         continue;
+  //       }
+  //
+  //       byKey[serviceKey] = _mergeServices(existing, service);
+  //     }
+  //   }
+  //
+  //   final filtered = MobileServiceScope.filterServices(byKey.values);
+  //   filtered.sort(
+  //     (a, b) => _serviceLabel(
+  //       a,
+  //     ).toLowerCase().compareTo(_serviceLabel(b).toLowerCase()),
+  //   );
+  //   return filtered;
+  // }
+  //
+  // Service _mergeServices(Service existing, Service incoming) {
+  //   final subServicesByKey = <String, SubService>{};
+  //   for (final subService in [
+  //     ...(existing.subservices ?? const <SubService>[]),
+  //     ...(incoming.subservices ?? const <SubService>[]),
+  //   ]) {
+  //     final key = _subServiceKey(subService);
+  //     if (key.isEmpty) continue;
+  //     subServicesByKey[key] = subService;
+  //   }
+  //
+  //   final subServices = subServicesByKey.values.toList()
+  //     ..sort(
+  //       (a, b) => _subServiceLabel(
+  //         a,
+  //       ).toLowerCase().compareTo(_subServiceLabel(b).toLowerCase()),
+  //     );
+  //
+  //   return Service(
+  //     id: existing.id ?? incoming.id,
+  //     code: existing.code ?? incoming.code,
+  //     name: existing.name ?? incoming.name,
+  //     description: existing.description ?? incoming.description,
+  //     logoUrl: existing.logoUrl ?? incoming.logoUrl,
+  //     subservices: subServices,
+  //     arabicName: existing.arabicName ?? incoming.arabicName,
+  //     arabicDescription:
+  //         existing.arabicDescription ?? incoming.arabicDescription,
+  //   );
+  // }
 
-    for (final roleDetail in roleDetails) {
-      for (final service in roleDetail.services ?? const <Service>[]) {
-        final serviceKey = _serviceKey(service);
-        if (serviceKey.isEmpty) continue;
-
-        final existing = byKey[serviceKey];
-        if (existing == null) {
-          byKey[serviceKey] = service;
-          continue;
-        }
-
-        byKey[serviceKey] = _mergeServices(existing, service);
-      }
-    }
-
-    final filtered = MobileServiceScope.filterServices(byKey.values);
-    filtered.sort(
-      (a, b) => _serviceLabel(
-        a,
-      ).toLowerCase().compareTo(_serviceLabel(b).toLowerCase()),
-    );
-    return filtered;
-  }
-
-  Service _mergeServices(Service existing, Service incoming) {
-    final subServicesByKey = <String, SubService>{};
-    for (final subService in [
-      ...(existing.subservices ?? const <SubService>[]),
-      ...(incoming.subservices ?? const <SubService>[]),
-    ]) {
-      final key = _subServiceKey(subService);
-      if (key.isEmpty) continue;
-      subServicesByKey[key] = subService;
-    }
-
-    final subServices = subServicesByKey.values.toList()
-      ..sort(
-        (a, b) => _subServiceLabel(
-          a,
-        ).toLowerCase().compareTo(_subServiceLabel(b).toLowerCase()),
-      );
-
-    return Service(
-      id: existing.id ?? incoming.id,
-      code: existing.code ?? incoming.code,
-      name: existing.name ?? incoming.name,
-      description: existing.description ?? incoming.description,
-      logoUrl: existing.logoUrl ?? incoming.logoUrl,
-      subservices: subServices,
-      arabicName: existing.arabicName ?? incoming.arabicName,
-      arabicDescription:
-          existing.arabicDescription ?? incoming.arabicDescription,
-    );
-  }
-
-  String _serviceKey(Service service) {
-    final code = service.code?.trim();
-    if (code != null && code.isNotEmpty) return code;
-    return service.id?.toString() ?? '';
-  }
-
-  String _subServiceKey(SubService subService) {
-    final code = subService.code?.trim();
-    if (code != null && code.isNotEmpty) return code;
-    return subService.id?.toString() ?? '';
-  }
+  // String _serviceKey(Service service) {
+  //   final code = service.code?.trim();
+  //   if (code != null && code.isNotEmpty) return code;
+  //   return service.id?.toString() ?? '';
+  // }
+  //
+  // String _subServiceKey(SubService subService) {
+  //   final code = subService.code?.trim();
+  //   if (code != null && code.isNotEmpty) return code;
+  //   return subService.id?.toString() ?? '';
+  // }
 
   String _serviceLabel(Service service) {
     final name = service.name?.trim();
@@ -581,6 +724,8 @@ class ChatbotConversationNotifier
   ChatMessage _createMessage({
     required ChatMessageRole role,
     required String text,
+    String? textEn,
+    String? textAr,
     bool isAnswer = false,
     bool isError = false,
   }) {
@@ -589,6 +734,8 @@ class ChatbotConversationNotifier
       id: 'msg_$_messageCounter',
       role: role,
       text: text,
+      textEn: textEn,
+      textAr: textAr,
       createdAt: DateTime.now(),
       isAnswer: isAnswer,
       isError: isError,

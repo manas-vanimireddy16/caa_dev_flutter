@@ -32,19 +32,17 @@ class AdditionalServicesWidget extends pw.StatelessWidget {
             runSpacing: AirportPermitPdfConstants.pt(8),
             children: [
               airportPermitCheckboxItem(
-                checked: data.hasAdditionalService('Laptop / Tablet'),
+                checked: data.hasLaptopTablet,
                 label: 'لاب توب / جهاز لوحي',
                 regularFont: regularFont,
               ),
               airportPermitCheckboxItem(
-                checked: data.hasAdditionalService('Boarding the Aircraft'),
+                checked: data.hasBoardingAssistance,
                 label: 'صعود الطائرة',
                 regularFont: regularFont,
               ),
               airportPermitCheckboxItem(
-                checked: data.hasAdditionalService(
-                  'Employee Assisting People with Special Needs',
-                ),
+                checked: data.hasSpecialNeedsAssistance,
                 label: 'الموظف المساعد لذوي الاحتياجات الخاصة',
                 regularFont: regularFont,
               ),

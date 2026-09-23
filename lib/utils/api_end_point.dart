@@ -219,6 +219,8 @@ class ApiEndPoint {
       '/v1/chatbot-service/chatbot/questions';
   static const String chatbotAnswer = '/v1/chatbot-service/chatbot/answer';
   static const String chatbotAskFaq = '/v1/chatbot-service/chatbot/ask_FAQ';
+  static const String chatbotQnAMappingList =
+      '/v1/user-service/chatbot-qns-ans-mapping/list';
 
   /// ===================== VPN APIs =====================
 

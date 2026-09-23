@@ -339,6 +339,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class RequestTrendBreakdownCard extends StatelessWidget {
+  static const double _wideLayoutBreakpoint = 560;
+  static const double _narrowChartAspectRatio = 1.8;
+  static const double _wideChartAspectRatio = 2.4;
+  static const double _minChartHeight = 180;
+  static const double _maxChartHeight = 320;
+
   final List<int> monthlyData; // 12 values for Jan–Dec
   final List<String> monthLabels; // ["Jan", "Feb", ...]
   final String selectedYear;
@@ -397,36 +403,77 @@ class RequestTrendBreakdownCard extends StatelessWidget {
             const SizedBox(height: 16),
             Divider(thickness: 1, color: const Color(0xFFE5E7EB)),
             const SizedBox(height: 6),
-            // Legend Row
-            Row(
-              children: [
-                Container(
-                  width: 18,
-                  height: 18,
-                  margin: const EdgeInsetsDirectional.only(end: 8),
-                  decoration: BoxDecoration(
-                    color: AppColors.trendBarColor,
-                    borderRadius: BorderRadius.circular(4),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide =
+                    constraints.maxWidth >= _wideLayoutBreakpoint;
+                final aspectRatio =
+                    isWide ? _wideChartAspectRatio : _narrowChartAspectRatio;
+                final chartHeight = (constraints.maxWidth / aspectRatio)
+                    .clamp(_minChartHeight, _maxChartHeight);
+
+                final legend = _TrendMetricLegend(metric: metric);
+                final chart = SizedBox(
+                  height: chartHeight,
+                  width: double.infinity,
+                  child: _RequestTrendBarChart(
+                    data: monthlyData,
+                    labels: monthLabels,
                   ),
-                ),
-                Text(
-                  metric,
-                  style: AppTextStyles.requestTrendBreakdownMetricLabel(),
-                ),
-              ],
-            ),
-            16.toVerticalSizedBox,
-            // Bar Chart Section — scroll horizontally when bars don't fit
-            AspectRatio(
-              aspectRatio: 1.8,
-              child: _RequestTrendBarChart(
-                data: monthlyData,
-                labels: monthLabels,
-              ),
+                );
+
+                if (isWide) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      legend,
+                      const SizedBox(width: 24),
+                      Expanded(child: chart),
+                    ],
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    legend,
+                    16.toVerticalSizedBox,
+                    chart,
+                  ],
+                );
+              },
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TrendMetricLegend extends StatelessWidget {
+  final String metric;
+
+  const _TrendMetricLegend({required this.metric});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 18,
+          height: 18,
+          margin: const EdgeInsetsDirectional.only(end: 8),
+          decoration: BoxDecoration(
+            color: AppColors.trendBarColor,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        Text(
+          metric,
+          style: AppTextStyles.requestTrendBreakdownMetricLabel(),
+        ),
+      ],
     );
   }
 }

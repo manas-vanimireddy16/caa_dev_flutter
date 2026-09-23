@@ -83,8 +83,9 @@ abstract final class MobileServiceScope {
           final approvedSubServices = filterSubServices(
             service.subservices ?? const [],
           );
-          if (approvedSubServices.isEmpty) return null;
 
+          // Keep the service even when subservices is null/empty so its
+          // dashboard remains visible. Still attach only approved sub-services.
           return Service(
             id: service.id,
             code: service.code,
@@ -96,7 +97,6 @@ abstract final class MobileServiceScope {
             arabicDescription: service.arabicDescription,
           );
         })
-        .whereType<Service>()
         .toList(growable: false);
   }
 

@@ -4,6 +4,7 @@ import 'package:code_setup/modules/router/app_router.dart';
 import 'package:code_setup/presentation/app.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -13,6 +14,9 @@ import 'package:code_setup/utils/localization_provider/localization_provider.dar
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   KAppX.connectivity.onBootUp();
   await Hive.initFlutter();
   await Hive.openBox('Bookmarks');

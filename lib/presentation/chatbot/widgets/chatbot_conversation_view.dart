@@ -8,6 +8,7 @@ import 'package:code_setup/presentation/chatbot/widgets/chatbot_icon.dart';
 import 'package:code_setup/presentation/chatbot/widgets/chatbot_input_bar.dart';
 import 'package:code_setup/presentation/chatbot/widgets/chatbot_message_bubble.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
+import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -60,6 +61,7 @@ class _ChatbotConversationViewState
 
     final conversation = ref.watch(chatbotConversationProvider);
     final notifier = ref.read(chatbotConversationProvider.notifier);
+    final isArabic = DashboardL10n.of(context).isArabic;
 
     return ColoredBox(
       color: ChatbotTheme.surface,
@@ -78,7 +80,7 @@ class _ChatbotConversationViewState
                         Padding(
                           padding: const EdgeInsets.only(bottom: 4),
                           child: ChatbotMessageBubble(
-                            text: message.text,
+                            text: message.displayText(isArabic: isArabic),
                             isUser: message.isUser,
                           ),
                         ),
@@ -126,6 +128,7 @@ class _ChatbotConversationViewState
                         ),
                       _ChatbotOptionsPanel(
                         conversation: conversation,
+                        isArabic: isArabic,
                         onRetry: () =>
                             notifier.loadServices(forceRefresh: true),
                         onServiceSelected: notifier.selectService,
@@ -282,6 +285,7 @@ class _EmptyChatState extends StatelessWidget {
 
 class _ChatbotOptionsPanel extends StatelessWidget {
   final ChatbotConversationState conversation;
+  final bool isArabic;
   final VoidCallback onRetry;
   final ValueChanged<Service> onServiceSelected;
   final ValueChanged<SubService> onSubServiceSelected;
@@ -289,6 +293,7 @@ class _ChatbotOptionsPanel extends StatelessWidget {
 
   const _ChatbotOptionsPanel({
     required this.conversation,
+    required this.isArabic,
     required this.onRetry,
     required this.onServiceSelected,
     required this.onSubServiceSelected,
@@ -369,7 +374,7 @@ class _ChatbotOptionsPanel extends StatelessWidget {
       ChatbotOptionsPanel.questions => conversation.questions
           .map(
             (question) => ChatbotActionChip(
-              label: question.question,
+              label: question.localizedQuestion(isArabic: isArabic),
               icon: Icons.help_outline_rounded,
               selected:
                   conversation.selectedQuestion?.questionId ==

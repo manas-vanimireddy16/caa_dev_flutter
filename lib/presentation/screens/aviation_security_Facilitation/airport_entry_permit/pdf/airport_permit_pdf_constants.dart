@@ -1,5 +1,5 @@
 /// Layout constants for the Airport Entry Permit A4 PDF.
-/// Pixel values from the React 794px-wide layout; PDF uses pt (px × 0.75).
+/// Tuned to fit the full form on a single A4 page.
 abstract final class AirportPermitPdfConstants {
   AirportPermitPdfConstants._();
 
@@ -7,29 +7,30 @@ abstract final class AirportPermitPdfConstants {
 
   static double pt(double pixels) => pixels * pxToPt;
 
-  static final margin = pt(18);
+  static final margin = pt(14);
 
-  static final logoMaxWidth = pt(100);
-  static final logoMaxHeight = pt(80);
-  static final logoGap = pt(12);
+  static final logoMaxWidth = pt(72);
+  static final logoMaxHeight = pt(56);
+  static final logoGap = pt(10);
 
-  static final titleFontSize = pt(18);
-  static final sectionTitleFontSize = pt(13);
-  static final bodyFontSize = pt(11);
-  static final tableHeaderFontSize = pt(10);
-  static final tableBodyFontSize = pt(9);
-  static final footerFontSize = pt(8);
-  static final checkboxMarkFontSize = pt(10);
+  static final titleFontSize = pt(15);
+  static final sectionTitleFontSize = pt(11);
+  static final bodyFontSize = pt(9);
+  static final tableHeaderFontSize = pt(8);
+  static final tableBodyFontSize = pt(7.5);
+  static final footerFontSize = pt(7);
+  static final checkboxMarkFontSize = pt(9);
 
-  static final checkboxSize = pt(16);
-  static final sectionGap = pt(12);
-  static final titleTopGap = pt(14);
-  static final titleBottomGap = pt(14);
-  static final detailsRowGap = pt(12);
-  static final checkboxGap = pt(18);
-  static final durationGap = pt(28);
-  static final tableRowMinHeight = pt(42);
-  static final codeColumnWidth = pt(90);
+  static final checkboxSize = pt(15);
+  static final sectionGap = pt(7);
+  static final titleTopGap = pt(8);
+  static final titleBottomGap = pt(8);
+  static final detailsRowGap = pt(7);
+  static final checkboxGap = pt(12);
+  static final durationGap = pt(18);
+  static final tableRowMinHeight = pt(22);
+  static final codeColumnWidth = pt(70);
+  static final tableCellPadding = pt(4);
 
   static const String arabicTitle = 'استمارة طلب تصريح أمني لدخول المطار';
   static const String applicantSectionTitle = 'بيانات مقدم الطلب';
@@ -52,10 +53,13 @@ abstract final class AirportPermitPdfConstants {
   static const String aviationSecurityHeader =
       'اعتماد مدير دائرة أمن الطيران والتسهيلات';
 
+  /// Web footer line 1: Arabic | English
   static const String footerLine1Ar =
       'ص.ب: 1، الرمز البريدي: 111، مسقط - سلطنة عمان';
   static const String footerLine1En =
       'P.O. Box: 1, P.C. 111, Muscat - Sultanate of Oman';
+
+  /// Web footer line 2
   static const String footerLine2 =
       'Fax: +968 24354544 | www.caa.gov.om | +968 24354441/2';
 

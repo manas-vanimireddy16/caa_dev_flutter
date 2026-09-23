@@ -12,8 +12,10 @@ class RequestStatusBreakdownCard extends StatelessWidget {
   static const double _cardBorderRadius = 8;
   static const double _cardPadding = 16;
   static const double _sectionGap = 16;
-  static const double _chartSize = 174;
   static const double _chartToBreakdownGap = 12;
+  static const double _wideLayoutBreakpoint = 560;
+  static const double _wideChartSize = 200;
+  static const double _wideChartLegendGap = 24;
 
   // Dynamic, fully flexible input
   final StatusData? breakdown;
@@ -212,10 +214,6 @@ class RequestStatusBreakdownCard extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context, List<ChartData> chartSections) {
-    final currentTheme = KAppX.globalProvider
-        .read(KAppX.theme.current)
-        .themeBox;
-
     // ✅ Check if closed exists
     final hasClosed = chartSections.any(
       (e) => e.status?.toLowerCase() == 'closed',
@@ -234,46 +232,115 @@ class RequestStatusBreakdownCard extends StatelessWidget {
         .where((section) => !_isTotalStatus(section.status))
         .toList();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Center(
-          child: SizedBox(
-            height: _chartSize,
-            width: _chartSize,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                PieChart(
-                  PieChartData(
-                    sectionsSpace: 3,
-                    centerSpaceRadius: 50,
-                    sections: pieSections.map((section) {
-                          final value =
-                              (section.count?.toDouble() ?? 0) > 0
-                              ? section.count!.toDouble()
-                              : (section.percentage ?? 0);
-                          return PieChartSectionData(
-                            color: getStatusColor(section.status),
-                            value: value,
-                            title: '',
-                            radius: 26,
-                            borderSide: const BorderSide(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                          );
-                        })
-                        .toList(),
-                  ),
-                  swapAnimationDuration: const Duration(milliseconds: 800),
-                  swapAnimationCurve: Curves.easeInOut,
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
+    final legend = _BreakdownLegend(
+      sections: sectionsWithTotal,
+      legendHeading: legendHeading,
+      centerMetricLabel: centerMetricLabel,
+      statusLabelBuilder: statusLabelBuilder,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= _wideLayoutBreakpoint;
+        final chartSize = isWide
+            ? _wideChartSize
+            : (constraints.maxWidth * 0.46).clamp(150.0, 190.0);
+
+        final chart = _StatusDonutChart(
+          chartSize: chartSize,
+          centerTotal: centerTotal,
+          centerMetricLabel: centerMetricLabel,
+          pieSections: pieSections,
+        );
+
+        if (isWide) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: chart),
+              const SizedBox(width: _wideChartLegendGap),
+              Expanded(child: legend),
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            chart,
+            const SizedBox(height: _chartToBreakdownGap),
+            legend,
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _StatusDonutChart extends StatelessWidget {
+  final double chartSize;
+  final int centerTotal;
+  final String centerMetricLabel;
+  final List<ChartData> pieSections;
+
+  const _StatusDonutChart({
+    required this.chartSize,
+    required this.centerTotal,
+    required this.centerMetricLabel,
+    required this.pieSections,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final currentTheme = KAppX.globalProvider
+        .read(KAppX.theme.current)
+        .themeBox;
+
+    final centerSpaceRadius = chartSize * 0.36;
+    final sectionRadius = chartSize * 0.13;
+    final centerBoxSize = centerSpaceRadius * 1.85;
+
+    return Center(
+      child: SizedBox(
+        height: chartSize,
+        width: chartSize,
+        child: Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            PieChart(
+              PieChartData(
+                sectionsSpace: 3,
+                centerSpaceRadius: centerSpaceRadius,
+                centerSpaceColor: Colors.white,
+                sections: pieSections.map((section) {
+                  final rawValue = (section.count?.toDouble() ?? 0) > 0
+                      ? section.count!.toDouble()
+                      : (section.percentage ?? 0);
+                  return PieChartSectionData(
+                    color: getStatusColor(section.status),
+                    value: rawValue > 0 ? rawValue : 0.001,
+                    title: '',
+                    radius: sectionRadius,
+                    borderSide: const BorderSide(
+                      color: Colors.white,
+                      width: 2,
+                    ),
+                  );
+                }).toList(),
+              ),
+              swapAnimationDuration: const Duration(milliseconds: 800),
+              swapAnimationCurve: Curves.easeInOut,
+            ),
+            SizedBox(
+              width: centerBoxSize,
+              height: centerBoxSize,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
                       '$centerTotal',
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(
@@ -283,27 +350,22 @@ class RequestStatusBreakdownCard extends StatelessWidget {
                             height: 1,
                           ),
                     ),
-                    4.toVerticalSizedBox,
-                    Text(
-                      centerMetricLabel,
-                      textAlign: TextAlign.center,
-                      style:
-                          AppTextStyles.requestStatusBreakdownDescriptionLabel(),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                  4.toVerticalSizedBox,
+                  Text(
+                    centerMetricLabel,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style:
+                        AppTextStyles.requestStatusBreakdownDescriptionLabel(),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
-        const SizedBox(height: _chartToBreakdownGap),
-        _BreakdownLegend(
-          sections: sectionsWithTotal,
-          legendHeading: legendHeading,
-          centerMetricLabel: centerMetricLabel,
-          statusLabelBuilder: statusLabelBuilder,
-        ),
-      ],
+      ),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:code_setup/presentation/chatbot/models/chatbot_ask_response.dart';
 import 'package:code_setup/presentation/chatbot/models/chatbot_answer_response.dart';
+import 'package:code_setup/presentation/chatbot/models/chatbot_qna_mapping_response.dart';
 import 'package:code_setup/presentation/chatbot/models/chatbot_question_response.dart';
 import 'package:code_setup/repository/chatbot/domain/domain.dart';
 import 'package:code_setup/utils/api_end_point.dart';
@@ -117,6 +118,27 @@ class ChatbotRepositoryImpl implements ChatbotRepository {
       return ChatbotAnswerResponse.fromJson(data);
     } catch (e, stack) {
       log('Chatbot ask FAQ error: $e', stackTrace: stack);
+      if (e is ApiException) rethrow;
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<ChatbotQnAMappingResponse> getQnAMappingList({
+    required int serviceId,
+    required int subServiceId,
+  }) async {
+    try {
+      final data = await _getJson(
+        ApiEndPoint.chatbotQnAMappingList,
+        queryParameters: {
+          'service_id': serviceId,
+          'sub_service_id': subServiceId,
+        },
+      );
+      return ChatbotQnAMappingResponse.fromJson(data);
+    } catch (e, stack) {
+      log('Chatbot QnA mapping error: $e', stackTrace: stack);
       if (e is ApiException) rethrow;
       throw ApiException(e.toString());
     }

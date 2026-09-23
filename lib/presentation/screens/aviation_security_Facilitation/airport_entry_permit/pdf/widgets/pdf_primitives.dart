@@ -1,10 +1,18 @@
-import 'package:pdf/pdf.dart';
+import 'dart:convert';
+
 import 'package:pdf/widgets.dart' as pw;
 
 import '../airport_permit_pdf_colors.dart';
 import '../airport_permit_pdf_constants.dart';
 
-/// 16×16 checkbox matching the React PDF markup.
+/// Pre-rendered checkmark image — does not depend on fonts or CustomPaint.
+final pw.MemoryImage airportPermitCheckMarkImage = pw.MemoryImage(
+  base64Decode(
+    'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAgklEQVR4nO3W0QqAMAiFYd//pesuYqQ7TqeDjrC7tf8bFCRX8wgBBBBQEhF5VjngHS8HjPFSABLfBkDjWwBf8XaAub8zrgI8B0TiEAC6xWIcBpgvUSCuAtCDo3ETMAt4P7clgIXIiEMALZYRhwEzRGRcT2fH3YARkTH/+CUjgICjATcbeYo7QMXckgAAAABJRU5ErkJggg==',
+  ),
+);
+
+/// Checkbox matching the web `renderCheckbox` look.
 pw.Widget airportPermitCheckbox({required bool checked}) {
   final size = AirportPermitPdfConstants.checkboxSize;
   return pw.Container(
@@ -12,22 +20,18 @@ pw.Widget airportPermitCheckbox({required bool checked}) {
     height: size,
     alignment: pw.Alignment.center,
     decoration: pw.BoxDecoration(
-      border: pw.Border.all(color: AirportPermitPdfColors.black, width: 1),
+      border: pw.Border.all(
+        color: AirportPermitPdfColors.black,
+        width: 1.2,
+      ),
       color: AirportPermitPdfColors.white,
     ),
     child: checked
-        ? pw.CustomPaint(
-            size: PdfPoint(size, size),
-            painter: (PdfGraphics canvas, PdfPoint size) {
-              final w = size.x;
-              final h = size.y;
-              canvas
-                ..setStrokeColor(AirportPermitPdfColors.black)
-                ..setLineWidth(1.4)
-                ..setLineCap(PdfLineCap.round)
-                ..drawLine(w * 0.22, h * 0.52, w * 0.42, h * 0.72)
-                ..drawLine(w * 0.42, h * 0.72, w * 0.78, h * 0.28);
-            },
+        ? pw.Image(
+            airportPermitCheckMarkImage,
+            width: size * 0.78,
+            height: size * 0.78,
+            fit: pw.BoxFit.contain,
           )
         : null,
   );
@@ -45,7 +49,7 @@ pw.Widget airportPermitCheckboxItem({
       crossAxisAlignment: pw.CrossAxisAlignment.center,
       children: [
         airportPermitCheckbox(checked: checked),
-        pw.SizedBox(width: AirportPermitPdfConstants.pt(8)),
+        pw.SizedBox(width: AirportPermitPdfConstants.pt(6)),
         pw.Text(
           label,
           style: pw.TextStyle(
@@ -68,7 +72,7 @@ pw.Widget airportPermitDottedValue({
 }) {
   return pw.Container(
     constraints: pw.BoxConstraints(
-      minHeight: minHeight ?? AirportPermitPdfConstants.pt(18),
+      minHeight: minHeight ?? AirportPermitPdfConstants.pt(14),
     ),
     alignment: align == pw.TextAlign.right
         ? pw.Alignment.centerRight
@@ -82,7 +86,7 @@ pw.Widget airportPermitDottedValue({
         ),
       ),
     ),
-    padding: pw.EdgeInsets.only(bottom: AirportPermitPdfConstants.pt(4)),
+    padding: pw.EdgeInsets.only(bottom: AirportPermitPdfConstants.pt(2)),
     child: pw.Text(
       value,
       maxLines: 2,

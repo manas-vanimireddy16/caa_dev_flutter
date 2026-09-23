@@ -23,6 +23,10 @@ class StatSummaryData {
 }
 
 class StatSummaryRow extends StatelessWidget {
+  static const double _wideLayoutBreakpoint = 560;
+  static const int _phoneColumnsPerRow = 2;
+  static const int _wideColumnsPerRow = 4;
+
   final List<StatSummaryData> stats;
   final double spacing;
   final double runSpacing;
@@ -34,33 +38,54 @@ class StatSummaryRow extends StatelessWidget {
     this.runSpacing = 16,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    final rows = <Widget>[];
-
-    for (var i = 0; i < stats.length; i += 2) {
-      if (i > 0) {
-        rows.add(SizedBox(height: runSpacing));
-      }
-
-      rows.add(
-        Row(
-          children: [
-            Expanded(child: StatSummaryCard(data: stats[i])),
-            SizedBox(width: spacing),
-            Expanded(
-              child: i + 1 < stats.length
-                  ? StatSummaryCard(data: stats[i + 1])
-                  : const SizedBox(),
-            ),
-          ],
-        ),
-      );
+  int _columnsPerRow(double maxWidth) {
+    if (maxWidth < _wideLayoutBreakpoint) {
+      return _phoneColumnsPerRow;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: rows,
+    return stats.length <= _phoneColumnsPerRow
+        ? stats.length
+        : _wideColumnsPerRow;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (stats.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columnsPerRow = _columnsPerRow(constraints.maxWidth)
+            .clamp(1, stats.length);
+        final rows = <Widget>[];
+
+        for (var i = 0; i < stats.length; i += columnsPerRow) {
+          if (i > 0) {
+            rows.add(SizedBox(height: runSpacing));
+          }
+
+          rows.add(
+            Row(
+              children: [
+                for (var column = 0; column < columnsPerRow; column++) ...[
+                  if (column > 0) SizedBox(width: spacing),
+                  Expanded(
+                    child: i + column < stats.length
+                        ? StatSummaryCard(data: stats[i + column])
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ],
+            ),
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: rows,
+        );
+      },
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -15,7 +16,7 @@ import 'widgets/permit_duration_widget.dart';
 import 'widgets/permit_type_widget.dart';
 import 'widgets/security_area_table_widget.dart';
 
-/// Builds the Airport Entry Permit Arabic A4 PDF with dart_pdf widgets only.
+/// Builds the Airport Entry Permit Arabic A4 PDF on a **single page**.
 abstract final class AirportPermitPdfGenerator {
   AirportPermitPdfGenerator._();
 
@@ -29,6 +30,19 @@ abstract final class AirportPermitPdfGenerator {
 
     final arabicRegular = await PdfGoogleFonts.notoNaskhArabicRegular();
     final arabicBold = await PdfGoogleFonts.notoNaskhArabicBold();
+
+    debugPrint(
+      'AirportPermitPDF checks: '
+      'category="${data.categoryOfPermit}" '
+      'type="${data.typeOfPermit}" '
+      'services=${data.additionalServices} '
+      'issuing=${data.isIssuing} renewal=${data.isRenewal} '
+      'replacement=${data.isReplacement} adding=${data.isAddingAreas} '
+      'change=${data.isChangeProfession} '
+      'permanent=${data.isPermanent} temporary=${data.isTemporary} '
+      'laptop=${data.hasLaptopTablet} boarding=${data.hasBoardingAssistance} '
+      'specialNeeds=${data.hasSpecialNeedsAssistance}',
+    );
 
     final pdf = pw.Document();
 
@@ -86,13 +100,13 @@ abstract final class AirportPermitPdfGenerator {
                 regularFont: arabicRegular,
                 boldFont: arabicBold,
               ),
-              pw.SizedBox(height: AirportPermitPdfConstants.pt(16)),
+              pw.SizedBox(height: AirportPermitPdfConstants.pt(8)),
               SecurityAreaTableWidget(
                 rows: data.areaRows,
                 regularFont: arabicRegular,
                 boldFont: arabicBold,
               ),
-              pw.SizedBox(height: AirportPermitPdfConstants.pt(14)),
+              pw.SizedBox(height: AirportPermitPdfConstants.pt(8)),
               ApprovalSectionWidget(
                 departmentDirectorName: data.departmentDirectorName,
                 regularFont: arabicRegular,
@@ -109,8 +123,10 @@ abstract final class AirportPermitPdfGenerator {
     return pdf.save();
   }
 
-  static String fileNameFor(int? requestId) {
-    final id = requestId?.toString() ?? 'request';
+  static String fileNameFor(int? requestId, {String? businessRequestId}) {
+    final id = (businessRequestId != null && businessRequestId.isNotEmpty)
+        ? businessRequestId
+        : (requestId?.toString() ?? 'request');
     final stamp = DateTime.now().millisecondsSinceEpoch;
     return 'Airport_Entry_Permit_${id}_$stamp.pdf';
   }

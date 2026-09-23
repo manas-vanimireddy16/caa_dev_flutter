@@ -3,10 +3,20 @@ class ChatbotQuestion {
   final String question;
   final String? sourceSection;
 
+  /// Bilingual fields from chatbot-qns-ans-mapping (optional for legacy APIs).
+  final String? questionEn;
+  final String? questionAr;
+  final String? answerEn;
+  final String? answerAr;
+
   const ChatbotQuestion({
     required this.questionId,
     required this.question,
     this.sourceSection,
+    this.questionEn,
+    this.questionAr,
+    this.answerEn,
+    this.answerAr,
   });
 
   factory ChatbotQuestion.fromJson(Map<String, dynamic> json) {
@@ -15,6 +25,34 @@ class ChatbotQuestion {
       question: json['question']?.toString() ?? '',
       sourceSection: json['source_section']?.toString(),
     );
+  }
+
+  String localizedQuestion({required bool isArabic}) {
+    final primary = isArabic ? questionAr : questionEn;
+    final fallback = isArabic ? questionEn : questionAr;
+    final primaryTrimmed = primary?.trim();
+    if (primaryTrimmed != null && primaryTrimmed.isNotEmpty) {
+      return primaryTrimmed;
+    }
+    final fallbackTrimmed = fallback?.trim();
+    if (fallbackTrimmed != null && fallbackTrimmed.isNotEmpty) {
+      return fallbackTrimmed;
+    }
+    return question.trim();
+  }
+
+  String? localizedAnswer({required bool isArabic}) {
+    final primary = isArabic ? answerAr : answerEn;
+    final fallback = isArabic ? answerEn : answerAr;
+    final primaryTrimmed = primary?.trim();
+    if (primaryTrimmed != null && primaryTrimmed.isNotEmpty) {
+      return primaryTrimmed;
+    }
+    final fallbackTrimmed = fallback?.trim();
+    if (fallbackTrimmed != null && fallbackTrimmed.isNotEmpty) {
+      return fallbackTrimmed;
+    }
+    return null;
   }
 }
 

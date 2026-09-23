@@ -25,7 +25,7 @@ class ApplicantDetailsWidget extends pw.StatelessWidget {
           title: AirportPermitPdfConstants.applicantSectionTitle,
           boldFont: boldFont,
         ),
-        pw.SizedBox(height: AirportPermitPdfConstants.pt(8)),
+        pw.SizedBox(height: AirportPermitPdfConstants.pt(4)),
         pw.Directionality(
           textDirection: pw.TextDirection.rtl,
           child: pw.Column(
