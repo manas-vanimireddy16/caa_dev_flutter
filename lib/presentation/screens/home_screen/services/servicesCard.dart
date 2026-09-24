@@ -1,10 +1,11 @@
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+import 'package:code_setup/responsive/app_page_layout.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/dashboard_l10n.dart';
 import 'package:flutter/material.dart';
 
 enum ServicesListFilter { all, myServices }
 
+/// Search field — fixed sizes (no width auto-scaling) so iPad stays compact.
 class ServicesSearchField extends StatefulWidget {
   final String initialValue;
   final ValueChanged<String> onChanged;
@@ -56,41 +57,35 @@ class _ServicesSearchFieldState extends State<ServicesSearchField> {
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: AppTextStyles.cairo(
-          fontSize: 14.toAutoScaledWidth,
+          fontSize: 14,
           fontWeight: FontWeight.w400,
           color: _hintColor,
         ),
-        prefixIcon: Icon(
-          Icons.search,
-          color: _hintColor,
-          size: 22.toAutoScaledWidth,
-        ),
-        contentPadding: EdgeInsets.symmetric(
-          vertical: 12.toAutoScaledHeight,
-          horizontal: 12.toAutoScaledWidth,
+        prefixIcon: const Icon(Icons.search, color: _hintColor, size: 22),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 12,
         ),
         filled: true,
         fillColor: Colors.white,
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: _borderColor, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.toAutoScaledWidth),
+          borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
             color: Colors.black.withValues(alpha: 0.35),
             width: 1,
           ),
         ),
       ),
-      style: AppTextStyles.cairo(
-        fontSize: 14.toAutoScaledWidth,
-        color: Colors.black87,
-      ),
+      style: AppTextStyles.cairo(fontSize: 14, color: Colors.black87),
     );
   }
 }
 
+/// Filter tabs — fixed height/fonts like FM HRMS (no auto-scale).
 class ServicesFilterToggle extends StatelessWidget {
   final ServicesListFilter selected;
   final ValueChanged<ServicesListFilter> onChanged;
@@ -108,42 +103,25 @@ class ServicesFilterToggle extends StatelessWidget {
   static const _activeBackground = Colors.black;
   static const _inactiveBorder = Color(0xFFE5E7EB);
   static const _inactiveText = Colors.black87;
-
-  static const _barHeight = 38.0;
-  static const _buttonHeight = 38.0;
-  static const _gap = 8.0;
-  static const _buttonRadius = 4.0;
-  static const _buttonPaddingH = 10.0;
-  static const _buttonPaddingV = 7.0;
-  static const _iconGap = 6.0;
+  static const _barHeight = 44.0;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: _barHeight.toAutoScaledHeight,
+      height: _barHeight,
       child: Row(
         children: [
           Expanded(
             child: _SegmentButton(
-              height: _buttonHeight.toAutoScaledHeight,
-              radius: _buttonRadius.toAutoScaledWidth,
-              paddingH: _buttonPaddingH.toAutoScaledWidth,
-              paddingV: _buttonPaddingV.toAutoScaledHeight,
-              iconGap: _iconGap.toAutoScaledWidth,
               label: allServicesLabel,
-              icon: Icons.grid_view_rounded,
+              icon: Icons.list_alt_outlined,
               isSelected: selected == ServicesListFilter.all,
               onTap: () => onChanged(ServicesListFilter.all),
             ),
           ),
-          SizedBox(width: _gap.toAutoScaledWidth),
+          const SizedBox(width: AppPageLayout.itemGap),
           Expanded(
             child: _SegmentButton(
-              height: _buttonHeight.toAutoScaledHeight,
-              radius: _buttonRadius.toAutoScaledWidth,
-              paddingH: _buttonPaddingH.toAutoScaledWidth,
-              paddingV: _buttonPaddingV.toAutoScaledHeight,
-              iconGap: _iconGap.toAutoScaledWidth,
               label: myServicesLabel,
               icon: Icons.bookmark_border,
               isSelected: selected == ServicesListFilter.myServices,
@@ -157,22 +135,12 @@ class ServicesFilterToggle extends StatelessWidget {
 }
 
 class _SegmentButton extends StatelessWidget {
-  final double height;
-  final double radius;
-  final double paddingH;
-  final double paddingV;
-  final double iconGap;
   final String label;
   final IconData icon;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _SegmentButton({
-    required this.height,
-    required this.radius,
-    required this.paddingH,
-    required this.paddingV,
-    required this.iconGap,
     required this.label,
     required this.icon,
     required this.isSelected,
@@ -192,41 +160,33 @@ class _SegmentButton extends StatelessWidget {
     return Material(
       color: bg,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: BorderRadius.circular(10),
         side: BorderSide(color: border, width: 1),
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: SizedBox(
-          height: height,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              paddingH,
-              paddingV,
-              paddingH,
-              paddingV,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, size: 18.toAutoScaledWidth, color: fg),
-                SizedBox(width: iconGap),
-                Flexible(
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.cairo(
-                      fontSize: 13.toAutoScaledWidth,
-                      fontWeight: FontWeight.w600,
-                      color: fg,
-                      height: 1.2,
-                    ),
+          height: ServicesFilterToggle._barHeight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 18, color: fg),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.cairo(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: fg,
+                    height: 1.2,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -234,6 +194,7 @@ class _SegmentButton extends StatelessWidget {
   }
 }
 
+/// Service info card — fixed metrics (no width auto-scaling on iPad).
 class CustomInfoCard extends StatefulWidget {
   final String title;
   final String subtitle;
@@ -273,50 +234,49 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
     final l10n = DashboardL10n.of(context);
 
     return Padding(
-      padding: EdgeInsets.only(bottom: 12.toAutoScaledHeight),
+      padding: const EdgeInsets.only(bottom: AppPageLayout.itemGap),
       child: Material(
         color: Colors.white,
         elevation: 0,
         shadowColor: Colors.black.withValues(alpha: 0.04),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14.toAutoScaledWidth),
+          borderRadius: BorderRadius.circular(AppPageLayout.cardRadius),
           side: const BorderSide(color: _borderColor, width: 1),
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: widget.onCardTap,
           child: Padding(
-            padding: EdgeInsets.all(16.toAutoScaledWidth),
+            padding: const EdgeInsets.all(AppPageLayout.cardPad),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
-                      width: 40.toAutoScaledWidth,
-                      height: 40.toAutoScaledHeight,
+                      width: AppPageLayout.cardIconSize,
+                      height: AppPageLayout.cardIconSize,
                       decoration: BoxDecoration(
                         color: widget.iconBackgroundColor,
-                        borderRadius: BorderRadius.circular(
-                          8.toAutoScaledWidth,
-                        ),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       alignment: Alignment.center,
-                      child: Icon(
+                      child: const Icon(
                         Icons.grid_view_rounded,
                         color: Colors.white,
-                        size: 22.toAutoScaledWidth,
+                        size: 22,
                       ),
                     ),
-                    SizedBox(width: 12.toAutoScaledWidth),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         widget.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.cairo(
-                          fontSize: 16.toAutoScaledWidth,
+                          fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: Colors.black,
                           height: 1.25,
@@ -329,44 +289,40 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10.toAutoScaledHeight),
+                const SizedBox(height: 10),
                 Text(
                   widget.subtitle,
                   maxLines: _expanded ? null : 3,
                   overflow: _expanded ? null : TextOverflow.ellipsis,
                   style: AppTextStyles.cairo(
-                    fontSize: 13.toAutoScaledWidth,
+                    fontSize: 13,
                     fontWeight: FontWeight.w400,
                     color: _subtitleColor,
                     height: 1.4,
                   ),
                 ),
                 if (_expanded && widget.subServices.isNotEmpty) ...[
-                  SizedBox(height: 12.toAutoScaledHeight),
+                  const SizedBox(height: 12),
                   Wrap(
-                    spacing: 8.toAutoScaledWidth,
-                    runSpacing: 8.toAutoScaledHeight,
+                    spacing: 8,
+                    runSpacing: 8,
                     children: widget.subServices.map((tag) {
                       return InkWell(
                         onTap: () => widget.onSubServiceTap?.call(tag),
-                        borderRadius: BorderRadius.circular(
-                          20.toAutoScaledWidth,
-                        ),
+                        borderRadius: BorderRadius.circular(20),
                         child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12.toAutoScaledWidth,
-                            vertical: 6.toAutoScaledHeight,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
                           ),
                           decoration: BoxDecoration(
                             color: _chipBackground,
-                            borderRadius: BorderRadius.circular(
-                              20.toAutoScaledWidth,
-                            ),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             tag,
                             style: AppTextStyles.cairo(
-                              fontSize: 12.toAutoScaledWidth,
+                              fontSize: 12,
                               fontWeight: FontWeight.w500,
                               color: _chipTextColor,
                             ),
@@ -376,14 +332,14 @@ class _CustomInfoCardState extends State<CustomInfoCard> {
                     }).toList(),
                   ),
                 ],
-                SizedBox(height: 12.toAutoScaledHeight),
+                const SizedBox(height: 12),
                 GestureDetector(
                   onTap: () => setState(() => _expanded = !_expanded),
                   behavior: HitTestBehavior.opaque,
                   child: Text(
                     _expanded ? l10n.servicesLessInfo : l10n.servicesMoreInfo,
                     style: AppTextStyles.cairo(
-                      fontSize: 13.toAutoScaledWidth,
+                      fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: Colors.black,
                       decoration: TextDecoration.underline,
@@ -449,10 +405,7 @@ class _BookmarkToggleButtonState extends State<_BookmarkToggleButton>
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Padding(
-          padding: EdgeInsets.only(
-            left: 4.toAutoScaledWidth,
-            top: 2.toAutoScaledHeight,
-          ),
+          padding: const EdgeInsets.only(left: 4, top: 2),
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 180),
             transitionBuilder: (child, animation) {
@@ -462,7 +415,7 @@ class _BookmarkToggleButtonState extends State<_BookmarkToggleButton>
               widget.isBookmarked ? Icons.bookmark : Icons.bookmark_border,
               key: ValueKey(widget.isBookmarked),
               color: Colors.black87,
-              size: 22.toAutoScaledWidth,
+              size: 22,
             ),
           ),
         ),

@@ -196,7 +196,6 @@ class _VpnDashboardState extends ConsumerState<VpnDashboard> {
             title: l10n.requestTrendBreakdown,
             metric: totalMetricLabel,
             selectedYear: controller.currentYear.toString(),
-            barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),

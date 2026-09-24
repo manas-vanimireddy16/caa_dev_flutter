@@ -168,7 +168,6 @@ class _RaiseLegalComplaintScreenState
             title: l10n.requestTrendBreakdown,
             metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
-            barColor: const Color(0xFF283593),
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),

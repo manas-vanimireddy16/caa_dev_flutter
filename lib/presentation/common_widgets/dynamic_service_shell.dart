@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/common_widgets/drawer_component.dart';
 import 'package:code_setup/presentation/core/providers/selected_service_provider.dart';
 import 'package:code_setup/presentation/core_widgets/app_bar/app_bar.dart';
@@ -8,6 +7,7 @@ import 'package:code_setup/presentation/core_widgets/buttons/back_button.dart';
 import 'package:code_setup/presentation/core_widgets/drawer/drawer.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
 import 'package:code_setup/presentation/core_widgets/list_tile_divider.dart';
+import 'package:code_setup/responsive/drawer_metrics.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/assets/icons.dart';
 import 'package:code_setup/utils/helper/drawer_service_icon.dart';
@@ -205,110 +205,121 @@ class _DynamicServiceShellState extends ConsumerState<DynamicServiceShell> {
             ],
           ),
           drawer: KDrawer(
-            child: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 12.toAutoScaledHeight),
-                    child: KDrawerHeader(
-                      onClose: () => _closeDrawer(tabsContext),
-                    ),
-                  ),
-                  20.toVerticalSizedBox,
-                  KDivider(color: Colors.grey, padding: EdgeInsets.zero),
-                  20.toVerticalSizedBox,
-                  Padding(
-                    padding: EdgeInsets.only(left: 10.toAutoScaledWidth),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        KImageProvider(
-                          image: KIcons.security,
-                          height: 20.toAutoScaledHeight,
-                          width: 20.toAutoScaledWidth,
-                          tintColor: Colors.black,
+            child: Builder(
+              builder: (drawerContext) {
+                final metrics = DrawerMetrics.of(drawerContext);
+                return SafeArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: metrics.itemVPad),
+                        child: KDrawerHeader(
+                          onClose: () => _closeDrawer(tabsContext),
                         ),
-                        16.toHorizontalSizedBox,
-                        Expanded(
-                          child: SizedBox(
-                            height: 20.toAutoScaledHeight,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                widget.service.name ?? '',
-                                style: AppTextStyles.serviceScreenTitle(),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: metrics.itemHPad + 8),
+                      KDivider(color: Colors.grey, padding: EdgeInsets.zero),
+                      SizedBox(height: metrics.itemHPad + 8),
+                      Padding(
+                        padding: EdgeInsets.only(left: metrics.itemMarginH),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            KImageProvider(
+                              image: KIcons.security,
+                              height: metrics.sectionIcon,
+                              width: metrics.sectionIcon,
+                              tintColor: Colors.black,
+                            ),
+                            SizedBox(width: metrics.itemHPad + 4),
+                            Expanded(
+                              child: SizedBox(
+                                height: metrics.sectionIcon + 4,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    widget.service.name ?? '',
+                                    style: TextStyle(
+                                      fontSize: metrics.sectionTitle,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  10.toVerticalSizedBox,
-                  Expanded(
-                    child: ListView.separated(
-                      padding: EdgeInsets.zero,
-                      itemCount: destinations.length + 1,
-                      separatorBuilder: (_, __) => const SizedBox(height: 4),
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return DrawerMenuItem(
-                            data: DrawerItemData(
-                              index: 0,
-                              icon: KImageProvider(image: KIcons.dashboard),
-                              label: l10n.dashboard,
-                            ),
-                            isSelected: activeIndex == 0,
-                            currentTheme: theme,
-                            onTap: () {
-                              _activateTab(tabsRouter, 0);
-                              _closeDrawer(context);
-                            },
-                          );
-                        }
+                      ),
+                      SizedBox(height: metrics.itemVPad),
+                      Expanded(
+                        child: ListView.separated(
+                          padding: EdgeInsets.zero,
+                          itemCount: destinations.length + 1,
+                          separatorBuilder: (_, __) =>
+                              SizedBox(height: metrics.itemMarginV),
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return DrawerMenuItem(
+                                data: DrawerItemData(
+                                  index: 0,
+                                  icon: KImageProvider(
+                                    image: KIcons.dashboard,
+                                  ),
+                                  label: l10n.dashboard,
+                                ),
+                                isSelected: activeIndex == 0,
+                                currentTheme: theme,
+                                onTap: () {
+                                  _activateTab(tabsRouter, 0);
+                                  _closeDrawer(context);
+                                },
+                              );
+                            }
 
-                        final destination = destinations[index - 1];
-                        final subService = destination.subService;
+                            final destination = destinations[index - 1];
+                            final subService = destination.subService;
 
-                        return DrawerMenuItem(
-                          data: DrawerItemData(
-                            index: index,
-                            icon: KImageProvider(
-                              image: DrawerServiceIcon.pathForSubService(
-                                subServiceCode: subService.code,
-                                serviceCode: widget.service.code,
-                                serviceName: subService.subServiceName,
+                            return DrawerMenuItem(
+                              data: DrawerItemData(
+                                index: index,
+                                icon: KImageProvider(
+                                  image: DrawerServiceIcon.pathForSubService(
+                                    subServiceCode: subService.code,
+                                    serviceCode: widget.service.code,
+                                    serviceName: subService.subServiceName,
+                                  ),
+                                  height: metrics.itemIcon,
+                                  width: metrics.itemIcon,
+                                ),
+                                label: l10n.subServiceDisplayName(
+                                  englishName: subService.subServiceName,
+                                  arabicName: subService.arabicsubServiceName,
+                                ),
+                                code: subService.code,
                               ),
-                              height: 22.toAutoScaledHeight,
-                              width: 22.toAutoScaledWidth,
-                            ),
-                            label: l10n.subServiceDisplayName(
-                              englishName: subService.subServiceName,
-                              arabicName: subService.arabicsubServiceName,
-                            ),
-                            code: subService.code,
-                          ),
-                          isSelected: activeIndex == index,
-                          currentTheme: theme,
-                          onTap: () {
-                            ref
-                                .read(selectedServiceProvider.notifier)
-                                .state = SelectedServiceState(
-                              service: widget.service,
-                              subService: subService,
+                              isSelected: activeIndex == index,
+                              currentTheme: theme,
+                              onTap: () {
+                                ref
+                                    .read(selectedServiceProvider.notifier)
+                                    .state = SelectedServiceState(
+                                  service: widget.service,
+                                  subService: subService,
+                                );
+                                _activateTab(tabsRouter, index);
+                                _closeDrawer(context);
+                              },
                             );
-                            _activateTab(tabsRouter, index);
-                            _closeDrawer(context);
                           },
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ),
           body: _buildLazyTabBody(children, bodyIndex),

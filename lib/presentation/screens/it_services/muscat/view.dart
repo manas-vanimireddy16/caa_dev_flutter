@@ -198,7 +198,6 @@ class _MuscatDashboardState extends ConsumerState<MuscatDashboard>
             title: l10n.requestTrendBreakdown,
             metric: totalMetricLabel,
             selectedYear: controller.currentYear.toString(),
-            barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),

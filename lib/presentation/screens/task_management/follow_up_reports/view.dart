@@ -175,7 +175,6 @@ class _FollowUpReportScreenState extends ConsumerState<FollowUpReportScreen> {
             title: l10n.requestTrendBreakdown,
             metric: l10n.totalRequests,
             selectedYear: controller.currentYear.toString(),
-            barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),

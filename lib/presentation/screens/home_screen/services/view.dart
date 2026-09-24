@@ -11,6 +11,7 @@ import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/bookmarksModel.dart';
 import 'package:code_setup/presentation/screens/home_screen/services/servicesCard.dart';
 import 'package:code_setup/repository/dashboard/domain/dashboard.dart';
+import 'package:code_setup/responsive/app_page_layout.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:code_setup/utils/helper/colors.dart';
@@ -113,7 +114,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
           l10n.services,
           style: AppTextStyles.cairo(
             fontWeight: FontWeight.w700,
-            fontSize: 22,
+            fontSize: AppPageLayout.pageTitleSize,
             color: Colors.black87,
           ),
         ),
@@ -147,7 +148,12 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppPageLayout.pagePad,
+                    8,
+                    AppPageLayout.pagePad,
+                    0,
+                  ),
                   sliver: SliverToBoxAdapter(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -157,14 +163,14 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
                           hintText: l10n.servicesSearchPlaceholder,
                           onChanged: controller.setSearchQuery,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppPageLayout.itemGap),
                         ServicesFilterToggle(
                           selected: listFilter,
                           onChanged: controller.setListFilter,
                           allServicesLabel: l10n.servicesAllServices,
                           myServicesLabel: l10n.servicesMyServices,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppPageLayout.itemGap),
                       ],
                     ),
                   ),
@@ -188,7 +194,12 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
                   )
                 else
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppPageLayout.pagePad,
+                      0,
+                      AppPageLayout.pagePad,
+                      AppPageLayout.pagePad,
+                    ),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final data = services[index];

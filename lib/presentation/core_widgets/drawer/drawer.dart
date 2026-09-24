@@ -1,8 +1,10 @@
+import 'package:code_setup/responsive/drawer_metrics.dart';
+import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import '../../../utils/app_extensions/app_extension.dart';
 
+/// App drawer shell. Width and chrome use [DrawerMetrics] (fixed phone/tablet
+/// sizes) — do not width-auto-scale drawer chrome on iPad.
 class KDrawer extends ConsumerWidget {
   final Color? backgroundColor;
   final double? elevation;
@@ -24,6 +26,9 @@ class KDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentTheme = ref.watch(KAppX.theme.current);
+    final metrics = DrawerMetrics.of(context);
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final resolvedWidth = width ?? metrics.drawerWidthFor(screenWidth);
 
     return Drawer(
       backgroundColor:
@@ -33,12 +38,11 @@ class KDrawer extends ConsumerWidget {
           shape ??
           RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
-              topRight: Radius.circular(20.toAutoScaledHeight),
-              bottomRight: Radius.circular(20.toAutoScaledHeight),
+              topRight: Radius.circular(metrics.radius),
+              bottomRight: Radius.circular(metrics.radius),
             ),
           ),
-      width:
-          width ?? (MediaQuery.of(context).size.width - 73.toAutoScaledWidth),
+      width: resolvedWidth,
       semanticLabel: semanticLabel,
       shadowColor: currentTheme.themeBox.colors.onBackground.withOpacity(0.7),
       child: child,

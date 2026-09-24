@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/core/theme/theme.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/core_widgets/image/image_provider.dart';
+import 'package:code_setup/responsive/app_page_layout.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:code_setup/utils/assets/icons.dart';
 import 'package:flutter/material.dart';
@@ -71,12 +71,20 @@ class _KBottomNavigatorScreenState
         routes: routes,
         bottomNavigationBuilder: (_, tabsRouter) {
           return Container(
-            height: 71,
+            height: () {
+              final size = MediaQuery.sizeOf(context);
+              final isTablet =
+                  size.shortestSide >= 600 || size.width >= 700;
+              final heightScale = (size.height / 903.0).clamp(
+                1.0,
+                isTablet ? 1.12 : 1.35,
+              );
+              return (isTablet ? 76.0 : 72.0) * heightScale;
+            }(),
             decoration: BoxDecoration(
               color: currentTheme.colors.onPrimary,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(16.toAutoScaledWidth),
-                topRight: Radius.circular(16.toAutoScaledWidth),
+              border: const Border(
+                top: BorderSide(color: Color(0xFFE5E7EB), width: 1),
               ),
               boxShadow: [
                 BoxShadow(
@@ -86,25 +94,28 @@ class _KBottomNavigatorScreenState
                 ),
               ],
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(routes.length, (index) {
-                return _buildNavItem(
-                  icon: icons[index],
-                  label: labels[index],
-                  isActive: tabsRouter.activeIndex == index,
-                  onTap: () => tabsRouter.setActiveIndex(index),
-                  currentTheme: currentTheme,
-                );
-              }),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: AppPageLayout.pageInsets,
+                child: Row(
+                  children: List.generate(routes.length, (index) {
+                    return _buildNavItem(
+                      icon: icons[index],
+                      label: labels[index],
+                      isActive: tabsRouter.activeIndex == index,
+                      onTap: () => tabsRouter.setActiveIndex(index),
+                      currentTheme: currentTheme,
+                    );
+                  }),
+                ),
+              ),
             ),
           );
         },
       ),
     );
   }
-
-  /// ---------- UI Builders ----------
 
   Widget _buildNavItem({
     required String icon,
@@ -113,96 +124,55 @@ class _KBottomNavigatorScreenState
     required VoidCallback onTap,
     required KThemeBox currentTheme,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        clipBehavior: Clip.antiAlias,
-        width: 76.toAutoScaledWidth,
-        padding: EdgeInsets.symmetric(vertical: 4.toAutoScaledHeight),
-        decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFF2EBE6) : null,
-          borderRadius: BorderRadius.circular(16.toAutoScaledWidth),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            KImageProvider(
-              image: icon,
-              tintColor: currentTheme.colors.primary,
-              width: 24.toAutoScaledWidth,
-              height: 24.toAutoScaledHeight,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: currentTheme.fontSizes.s10,
-                fontWeight: currentTheme.fontWeights.wRegular,
-                height: 15.7.toAutoScaledFont / currentTheme.fontSizes.s10,
-                letterSpacing: 0.5,
-                color: currentTheme.colors.primary,
-                fontFamily: GoogleFonts.mitr().fontFamily,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+    return Expanded(
+      child: Builder(
+        builder: (context) {
+          final isTablet = AppPageLayout.isTablet(context);
+          final iconSize = isTablet ? 26.0 : 24.0;
+          final fontSize = isTablet ? 12.0 : 11.0;
 
-  Widget _buildNavigatorIcon(
-    String asset,
-    bool isActive,
-    KThemeBox currentTheme,
-    String iconName, {
-    Color? color,
-  }) {
-    return Container(
-      width: 76.toAutoScaledWidth,
-      height: 50.toAutoScaledHeight,
-      padding: EdgeInsets.only(
-        top: 4.toAutoScaledHeight,
-        bottom: 4.toAutoScaledHeight,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16.toAutoScaledWidth),
-        color: isActive ? const Color(0XFFF2EBE6) : null,
-      ),
-      child: Center(
-        child: Column(
-          children: [
-            KImageProvider(
-              image: asset,
-              tintColor: color,
-              width: 24.toAutoScaledWidth,
-              height: 24.toAutoScaledHeight,
+          return InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isTablet ? 10 : 8,
+                    vertical: isTablet ? 6 : 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isActive ? const Color(0xFFF2EBE6) : null,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: KImageProvider(
+                    image: icon,
+                    tintColor: currentTheme.colors.primary,
+                    width: iconSize,
+                    height: iconSize,
+                  ),
+                ),
+                SizedBox(height: isTablet ? 5 : 4),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight:
+                        isActive ? FontWeight.w600 : FontWeight.w500,
+                    letterSpacing: 0.5,
+                    color: currentTheme.colors.primary,
+                    fontFamily: GoogleFonts.mitr().fontFamily,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              iconName,
-              style: TextStyle(
-                fontSize: currentTheme.fontSizes.s10,
-                fontWeight: currentTheme.fontWeights.wRegular,
-                height: 15.7.toAutoScaledFont / currentTheme.fontSizes.s10,
-                letterSpacing: 0.5,
-                fontFamily: GoogleFonts.mitr().fontFamily,
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
-    );
-  }
-
-  TextStyle _buildLabelTextStyle() {
-    final currentTheme = KAppX.globalProvider.read(KAppX.theme.current);
-
-    return TextStyle(
-      fontSize: currentTheme.themeBox.fontSizes.s10,
-      fontWeight: currentTheme.themeBox.fontWeights.wRegular,
-      height: 15.7.toAutoScaledFont / currentTheme.themeBox.fontSizes.s10,
-      letterSpacing: 0.5,
-      fontFamily: GoogleFonts.mitr().fontFamily,
     );
   }
 }

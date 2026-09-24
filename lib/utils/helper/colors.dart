@@ -78,7 +78,7 @@ class AppColors {
 
   /// Trend Breakdown
   static const Color trendLabelColor = Color(0xFF5A607F);
-  static const Color trendBarColor = Color(0xFF283593);
+  static const Color trendBarColor = Color(0xFFBD8A52);
 
   /// My Requests / Action Items tabs
   static const Color selectedTabColor = Color(0xFF26285F);

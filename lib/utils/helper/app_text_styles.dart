@@ -156,10 +156,10 @@ abstract final class AppTextStyles {
   /// Trend Breakdown chart axis labels (X-axis & Y-axis).
   static TextStyle requestTrendBreakdownAxisLabel({double? fontSize}) {
     return cairo(
-      fontSize: fontSize ?? 8,
+      fontSize: fontSize ?? 12,
       fontWeight: FontWeight.w400,
       color: AppColors.grey50,
-      height: 9.89 / 8,
+      height: 1.1,
     );
   }
 

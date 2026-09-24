@@ -171,7 +171,6 @@ class _PerformanceManagementScreenState
             monthLabels: state.months,
             title: l10n.requestTrendBreakdown,
             metric: l10n.totalRequests,
-            barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),

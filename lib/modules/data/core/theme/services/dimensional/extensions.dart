@@ -22,7 +22,7 @@ extension AutoScaledDimensionX on num {
 
   double toAutoScaledHeightByContext(BuildContext context) {
     final autoScaledDimension =
-        this * DimensionalPolicies.getPolicyRatioForWidthWithContext(context);
+        this * DimensionalPolicies.getPolicyRatioForHeightWithContext(context);
 
     return autoScaledDimension;
   }

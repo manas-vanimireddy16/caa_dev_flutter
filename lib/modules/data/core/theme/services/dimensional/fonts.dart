@@ -1,16 +1,18 @@
 part of 'dimensional.dart';
 
 class _DimensionalFontSizes implements KThemeFontSizes {
-  final context = KAppX.currentContext;
   double get _baseFontSize {
-    // if (Responsive.isMobile(context!)) {
-    //   return 1; // Adjust the base font size for mobile
-    // } else if (Responsive.isTablet(context!)) {
-    //   return 0.6; // Adjust the base font size for tablet
-    // } else {
-    //   return 0.3; // Default font size for desktop
-    // }
-    return 1.0;
+    final context = KAppX.currentContext;
+    if (context == null) return 1.0;
+
+    if (Responsive.isMobile(context)) {
+      return 1.0;
+    }
+    if (Responsive.isTablet(context)) {
+      return 0.6;
+    }
+    // Desktop / large tablets
+    return 0.3;
   }
 
   @override

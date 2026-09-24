@@ -1,6 +1,5 @@
+import 'package:code_setup/responsive/responsive.dart';
 import 'package:flutter/material.dart';
-
-//import '../../../../../../responsive/responsive.dart';
 import '../../../../../../utils/app_extensions/app_extension.dart';
 import '../../../../../domain/core/theme/theme.dart';
 import '../../theme.dart';
@@ -27,62 +26,34 @@ class DimensionalThemeService implements KThemeService {
   KThemePaddings get paddings => _DimensionalPaddings();
 }
 
+/// Design baseline: width 440, height 903 (FM HRMS shared scaling).
 abstract class DimensionalPolicies {
   DimensionalPolicies._();
 
+  static const double designWidth = 440.0;
+  static const double designHeight = 903.0;
+
   static double get policyRatioForWidth {
-    const designWidth = 360.0;
-
-    final deviceWidth = () {
-      late double width;
-
-      final context = KAppX.currentContext;
-
-      if (context != null) {
-        width = MediaQuery.of(context).size.width;
-      } else {
-        width = designWidth;
-      }
-
-      return width;
-    }();
-
-    final widthScaleRatio = deviceWidth / designWidth;
-
-    return widthScaleRatio;
+    final context = KAppX.currentContext;
+    final deviceWidth = context != null
+        ? MediaQuery.of(context).size.width
+        : designWidth;
+    return deviceWidth / designWidth;
   }
 
   static double getPolicyRatioForWidthWithContext(BuildContext context) {
-    const designWidth = 360.0;
-    final widthScaleRatio = MediaQuery.of(context).size.width / designWidth;
-    return widthScaleRatio;
+    return MediaQuery.of(context).size.width / designWidth;
   }
 
   static double get policyRatioForHeight {
-    const designHeight = 800.0;
-
-    final deviceHeight = () {
-      late double height;
-
-      final context = KAppX.currentContext;
-
-      if (context != null) {
-        height = MediaQuery.of(context).size.height;
-      } else {
-        height = designHeight;
-      }
-
-      return height;
-    }();
-
-    final heightScaleRatio = deviceHeight / designHeight;
-
-    return heightScaleRatio;
+    final context = KAppX.currentContext;
+    final deviceHeight = context != null
+        ? MediaQuery.of(context).size.height
+        : designHeight;
+    return deviceHeight / designHeight;
   }
 
   static double getPolicyRatioForHeightWithContext(BuildContext context) {
-    const designHeight = 800.0;
-    final heightScaleRatio = MediaQuery.of(context).size.height / designHeight;
-    return heightScaleRatio;
+    return MediaQuery.of(context).size.height / designHeight;
   }
 }

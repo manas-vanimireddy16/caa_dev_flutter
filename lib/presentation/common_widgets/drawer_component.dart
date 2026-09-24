@@ -1,10 +1,11 @@
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/core/theme/theme.dart';
+import 'package:code_setup/responsive/drawer_metrics.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Drawer header — fixed [DrawerMetrics] sizes (no width auto-scaling).
 class KDrawerHeader extends ConsumerWidget {
   final VoidCallback? onClose;
 
@@ -13,20 +14,27 @@ class KDrawerHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentTheme = ref.watch(KAppX.theme.current).themeBox;
+    final metrics = DrawerMetrics.of(context);
     final user = KAppX.globalProvider.read(userProvider);
     final name = user?.employeeName?.trim() ?? '';
     final email = user?.email?.trim() ?? '';
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.toAutoScaledWidth),
+      padding: EdgeInsets.fromLTRB(
+        metrics.itemMarginH,
+        metrics.topInset / 4,
+        metrics.itemMarginH,
+        0,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CircularTextAvatar(
             text: name,
-            width: 32.toAutoScaledWidth,
+            width: metrics.avatar,
+            fontSize: metrics.nameSize,
           ),
-          12.toHorizontalSizedBox,
+          SizedBox(width: metrics.itemHPad),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,7 +44,7 @@ class KDrawerHeader extends ConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: currentTheme.fontSizes.s18,
+                    fontSize: metrics.nameSize,
                     fontWeight: currentTheme.fontWeights.wBolder,
                     color: currentTheme.colors.onBackground,
                   ),
@@ -47,7 +55,7 @@ class KDrawerHeader extends ConsumerWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: currentTheme.fontSizes.s12,
+                      fontSize: metrics.emailSize,
                       fontWeight: currentTheme.fontWeights.wRegular,
                       color: currentTheme.colors.onBackground,
                     ),
@@ -72,14 +80,20 @@ class KDrawerHeader extends ConsumerWidget {
 
 class CircularTextAvatar extends ConsumerWidget {
   final String text;
-
   final double width;
+  final double? fontSize;
 
-  CircularTextAvatar({required this.text, required this.width});
+  const CircularTextAvatar({
+    super.key,
+    required this.text,
+    required this.width,
+    this.fontSize,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentTheme = ref.watch(KAppX.theme.current).themeBox;
+    final letter = text.isNotEmpty ? text.substring(0, 1).toUpperCase() : '';
 
     return Container(
       width: width,
@@ -89,25 +103,13 @@ class CircularTextAvatar extends ConsumerWidget {
         color: currentTheme.colors.primary,
         shape: BoxShape.circle,
       ),
-      child: text != ''
-          ? Text(
-              text.substring(0, 1).toUpperCase() ?? '',
-
-              // state.activityList[index].username!.substring(0, 1).toUpperCase(),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: currentTheme.fontSizes.s16,
-              ),
-            )
-          : Text(
-              '',
-
-              // state.activityList[index].username!.substring(0, 1).toUpperCase(),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: currentTheme.fontSizes.s16,
-              ),
-            ),
+      child: Text(
+        letter,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: fontSize ?? currentTheme.fontSizes.s16,
+        ),
+      ),
     );
   }
 }
@@ -133,6 +135,7 @@ class DrawerMenuItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const DrawerMenuItem({
+    super.key,
     required this.data,
     required this.isSelected,
     required this.currentTheme,
@@ -141,6 +144,7 @@ class DrawerMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final metrics = DrawerMetrics.of(context);
     final bgColor = isSelected
         ? currentTheme.colors.primary.withOpacity(0.08)
         : Colors.transparent;
@@ -153,47 +157,43 @@ class DrawerMenuItem extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12.toAutoScaledWidth),
+      borderRadius: BorderRadius.circular(metrics.radius),
       child: Container(
         margin: EdgeInsets.symmetric(
-          horizontal: 16.toAutoScaledWidth,
-          vertical: 4.toAutoScaledHeight,
+          horizontal: metrics.itemMarginH,
+          vertical: metrics.itemMarginV,
         ),
         padding: EdgeInsets.symmetric(
-          horizontal: 12.toAutoScaledWidth,
-          vertical: 10.toAutoScaledHeight,
+          horizontal: metrics.itemHPad,
+          vertical: metrics.itemVPad,
         ),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(12.toAutoScaledWidth),
+          borderRadius: BorderRadius.circular(metrics.radius),
         ),
         child: Row(
           children: [
             SizedBox(
-              width: 22.toAutoScaledWidth,
-              height: 22.toAutoScaledWidth,
-
-              // child: data.icon,
+              width: metrics.itemIcon,
+              height: metrics.itemIcon,
               child: ColorFiltered(
                 colorFilter: ColorFilter.mode(
                   iconColor,
-                  BlendMode.srcIn, // allows tinting
+                  BlendMode.srcIn,
                 ),
                 child: data.icon,
               ),
             ),
-
-            12.toHorizontalSizedBox,
+            SizedBox(width: metrics.itemHPad),
             Expanded(
               child: Text(
                 data.label,
                 style: TextStyle(
-                  fontSize: currentTheme.fontSizes.s14,
+                  fontSize: metrics.itemText,
                   fontWeight: isSelected
                       ? currentTheme.fontWeights.wBold
                       : currentTheme.fontWeights.wRegular,
                   color: textColor,
-                  // fontFamily: GoogleFonts.mitr().fontFamily,
                 ),
               ),
             ),

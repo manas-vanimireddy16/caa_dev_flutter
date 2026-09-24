@@ -160,7 +160,6 @@ class _CancelHousingContractScreenState
             monthLabels: state.months,
             metric: "Total Tickets",
             selectedYear: controller.currentYear.toString(),
-            barColor: Colors.blue,
             filterLabelList: controller.filterLabelList,
             onChanged: controller.onTrendFilterChanged,
           ),

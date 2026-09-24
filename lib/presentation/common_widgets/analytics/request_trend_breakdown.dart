@@ -1,352 +1,21 @@
-// import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-// import 'package:code_setup/presentation/core_widgets/input_field/dropdown_field.dart';
-// import 'package:code_setup/utils/app_extensions/app_extension.dart';
-// import 'package:fl_chart/fl_chart.dart';
-// import 'package:flutter/material.dart';
-
-// class RequestTrendBreakdownCard extends StatelessWidget {
-//   final List<int> monthlyData; // 12 values for Jan–Dec
-//   final List<String> monthLabels; // ["Jan", "Feb", ...]
-//   final String selectedYear;
-//   final String metric;
-//   final Color barColor;
-//   final void Function()? onYearTap;
-//   final Function(String?) onChanged;
-//   final List<String> filterLabelList;
-
-//   const RequestTrendBreakdownCard({
-//     super.key,
-//     required this.monthlyData,
-//     required this.monthLabels,
-//     this.metric = 'Total Tickets',
-//     this.selectedYear = "2025",
-//     this.barColor = const Color(0xFFBD8A52),
-//     this.onYearTap,
-//     required this.onChanged,
-//     required this.filterLabelList,
-//   });
-//   // : assert(monthlyData.length == 12),
-//   //      assert(monthLabels.length == 12);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final textTheme = Theme.of(context).textTheme;
-//     final currentTheme = KAppX.globalProvider
-//         .read(KAppX.theme.current)
-//         .themeBox;
-//     return Card(
-//       color: currentTheme.colors.onPrimary,
-//       elevation: 0,
-//       shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.circular(14),
-//         side: BorderSide(color: const Color(0xFFE5E7EB), width: 1),
-//       ),
-//       child: Padding(
-//         padding: const EdgeInsets.all(20),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             // Header Row
-//             Row(
-//               children: [
-//                 Container(
-//                   decoration: BoxDecoration(
-//                     color: const Color(0xFFDCE7F6),
-//                     borderRadius: BorderRadius.circular(10),
-//                   ),
-//                   padding: const EdgeInsets.all(8),
-//                   child: const Icon(
-//                     Icons.insert_chart_outlined,
-//                     color: Colors.black87,
-//                   ),
-//                 ),
-//                 12.toHorizontalSizedBox,
-//                 Expanded(
-//                   child: Text(
-//                     "Request Trend  Breakdown",
-//                     style: textTheme.labelLarge?.copyWith(
-//                       fontWeight: FontWeight.w600,
-//                       fontSize: currentTheme.fontSizes.s16,
-//                     ),
-//                   ),
-//                 ),
-//                 // _YearDropdown(label: selectedYear.toString(), onTap: onYearTap),
-//                 SizedBox(
-//                   width: 120.toAutoScaledWidth,
-//                   child: KDropdownField<dynamic>(
-//                     value: selectedYear,
-//                     // fieldHeadingText: 'New Bank Name *',
-//                     hintText: 'Select',
-
-//                     items:
-//                         filterLabelList
-//                             ?.map<KDropdownItem<dynamic>>(
-//                               (opt) => KDropdownItem<dynamic>(
-//                                 value: opt,
-//                                 child: Text(opt),
-//                               ),
-//                             )
-//                             .toList() ??
-//                         [],
-
-//                     onChanged: (v) {
-//                       onChanged(v);
-//                     },
-//                   ),
-//                 ),
-//               ],
-//             ),
-//             const SizedBox(height: 16),
-//             Divider(thickness: 1, color: const Color(0xFFE5E7EB)),
-//             const SizedBox(height: 6),
-//             // Legend Row
-//             Row(
-//               children: [
-//                 Container(
-//                   width: 18,
-//                   height: 18,
-//                   margin: const EdgeInsets.only(right: 8),
-//                   decoration: BoxDecoration(
-//                     color: barColor,
-//                     borderRadius: BorderRadius.circular(4),
-//                   ),
-//                 ),
-//                 Text(
-//                   metric,
-//                   style: textTheme.bodyMedium?.copyWith(
-//                     color: currentTheme.colors.secondary,
-//                     fontWeight: currentTheme.fontWeights.wRegular,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//             16.toVerticalSizedBox,
-//             // Bar Chart Section
-//             AspectRatio(
-//               aspectRatio: 1.8,
-//               child: _RequestTrendBarChart(
-//                 data: monthlyData,
-//                 barColor: barColor,
-//                 labels: monthLabels,
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// // Bar Chart Implementation with interactive tooltip (hover/tap)
-// class _RequestTrendBarChart extends StatefulWidget {
-//   final List<int> data;
-//   final Color barColor;
-//   final List<String> labels;
-
-//   const _RequestTrendBarChart({
-//     required this.data,
-//     required this.barColor,
-//     required this.labels,
-//   });
-
-//   @override
-//   State<_RequestTrendBarChart> createState() => _RequestTrendBarChartState();
-// }
-
-// class _RequestTrendBarChartState extends State<_RequestTrendBarChart> {
-//   int? touchedIndex;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     int maxValue = 0;
-//     if (widget.data.isNotEmpty) {
-//       maxValue = (widget.data.reduce((a, b) => a > b ? a : b) * 1.2).ceil();
-//     }
-//     final currentTheme = KAppX.globalProvider
-//         .read(KAppX.theme.current)
-//         .themeBox;
-//     final maxDataValue = widget.data.reduce((a, b) => a > b ? a : b);
-//     final maxY = (maxDataValue * 1.2).ceilToDouble();
-
-//     double calculateInterval(double maxY) {
-//       if (maxY <= 10) return 2;
-//       if (maxY <= 50) return 10;
-//       if (maxY <= 200) return 20;
-//       if (maxY <= 500) return 50;
-//       if (maxY > 500) return 100;
-//       return (maxY / 5).ceilToDouble();
-//     }
-
-//     return BarChart(
-//       BarChartData(
-//         minY: 0,
-//         maxY: maxValue.toDouble(),
-//         barGroups: List.generate(
-//           12,
-//           (i) => BarChartGroupData(
-//             x: i,
-//             barRods: [
-//               BarChartRodData(
-//                 toY: widget.data.isNotEmpty ? widget.data[i].toDouble() : 0.0,
-//                 color: widget.barColor,
-//                 width: 20.toAutoScaledWidth,
-//                 borderRadius: BorderRadius.circular(0),
-//                 borderSide: BorderSide.none,
-//                 // Optional - subtle elevation on touch
-//                 rodStackItems: [],
-//               ),
-//             ],
-//           ),
-//         ),
-//         borderData: FlBorderData(show: false),
-//         gridData: FlGridData(show: false),
-//         titlesData: FlTitlesData(
-//           leftTitles: AxisTitles(
-//             sideTitles: SideTitles(
-//               showTitles: true,
-//               reservedSize: 36,
-//               interval: calculateInterval(maxY),
-//               minIncluded: true, // ⭐ ensures 0 is shown
-//               getTitlesWidget: (value, meta) {
-//                 return SideTitleWidget(
-//                   meta: meta,
-//                   child: Text(
-//                     value.toInt().toString(),
-//                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-//                       fontSize: 10,
-//                       color: const Color(0xFF9CA3AF),
-//                     ),
-//                   ),
-//                 );
-//               },
-//             ),
-//           ),
-
-//           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-//           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-
-//           bottomTitles: AxisTitles(
-//             sideTitles: SideTitles(
-//               showTitles: true,
-//               reservedSize: 28,
-//               interval: 1, // ⭐ show EVERY month
-//               getTitlesWidget: (value, meta) {
-//                 final index = value.toInt();
-
-//                 final month = widget.labels[index];
-
-//                 /// ⭐ force short name (Jan Feb Mar)
-//                 final shortMonth = month.length >= 3
-//                     ? month.substring(0, 3)
-//                     : month;
-
-//                 return SideTitleWidget(
-//                   meta: meta,
-//                   child: Text(
-//                     shortMonth,
-//                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-//                       fontSize: 10, // ⭐ keep small
-//                       color: const Color(0xFF9CA3AF),
-//                     ),
-//                   ),
-//                 );
-//               },
-//             ),
-//           ),
-//         ),
-//         barTouchData: BarTouchData(
-//           enabled: true,
-//           touchTooltipData: BarTouchTooltipData(
-//             getTooltipColor: (group) =>
-//                 Colors.white, // custom tooltip background color
-//             tooltipBorderRadius: BorderRadius.circular(8.toAutoScaledWidth),
-//             fitInsideVertically: true,
-//             fitInsideHorizontally: true,
-//             tooltipPadding: const EdgeInsets.symmetric(
-//               horizontal: 12,
-//               vertical: 8,
-//             ),
-//             getTooltipItem: (group, groupIndex, rod, rodIndex) {
-//               final month = widget.labels[groupIndex];
-//               final value = widget.data[groupIndex];
-//               return BarTooltipItem(
-//                 '$month, ${DateTime.now().year} : $value',
-//                 const TextStyle(
-//                   color: Color(0xFF282357),
-//                   fontWeight: FontWeight.w600,
-//                   fontSize: 13,
-//                 ),
-//               );
-//             },
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class _YearDropdown extends StatelessWidget {
-//   final String label;
-//   final VoidCallback? onTap;
-//   const _YearDropdown({required this.label, this.onTap});
-//   @override
-//   Widget build(BuildContext context) {
-//     final currentTheme = KAppX.globalProvider
-//         .read(KAppX.theme.current)
-//         .themeBox;
-//     return GestureDetector(
-//       onTap: onTap,
-//       child: Container(
-//         height: 36.toAutoScaledHeight,
-//         decoration: BoxDecoration(
-//           border: Border.all(color: const Color(0xFFC1C7D0)),
-//           borderRadius: BorderRadius.circular(8),
-//         ),
-//         padding: const EdgeInsets.symmetric(horizontal: 10),
-//         child: Row(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             Text(
-//               label,
-//               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-//                 fontWeight: FontWeight.w400,
-//                 color: Colors.black87,
-//                 fontSize: currentTheme.fontSizes.s14,
-//               ),
-//             ),
-//             const Icon(
-//               Icons.keyboard_arrow_down,
-//               size: 20,
-//               color: Colors.black54,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
-import 'package:code_setup/presentation/common_widgets/analytics/analytics_card_header.dart';
 import 'package:code_setup/presentation/common_widgets/analytics/analytics_period_dropdown.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
-import 'package:code_setup/utils/helper/app_text_styles.dart';
-import 'package:code_setup/utils/helper/chart_utils.dart';
 import 'package:code_setup/utils/helper/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+/// Request trend card — matches FM HRMS visual proportions:
+/// compact fixed dropdown, brown bars (width 18), readable axis labels,
+/// finite chart width + horizontal scroll when needed.
 class RequestTrendBreakdownCard extends StatelessWidget {
-  static const double _wideLayoutBreakpoint = 560;
-  static const double _narrowChartAspectRatio = 1.8;
-  static const double _wideChartAspectRatio = 2.4;
-  static const double _minChartHeight = 180;
-  static const double _maxChartHeight = 320;
+  /// Minimum width reserved for each month group when scrolling.
+  static const double _minBarGroupWidth = 52;
 
-  final List<int> monthlyData; // 12 values for Jan–Dec
-  final List<String> monthLabels; // ["Jan", "Feb", ...]
+  final List<int> monthlyData;
+  final List<String> monthLabels;
   final String selectedYear;
   final String metric;
   final Color barColor;
@@ -360,86 +29,120 @@ class RequestTrendBreakdownCard extends StatelessWidget {
     required this.monthlyData,
     required this.monthLabels,
     this.metric = 'Total Tickets',
-    this.selectedYear = "2025",
+    this.selectedYear = '2025',
     this.barColor = AppColors.trendBarColor,
     this.onYearTap,
     required this.onChanged,
     required this.filterLabelList,
     this.title = 'Request Trend Breakdown',
   });
-  // : assert(monthlyData.length == 12),
-  //      assert(monthLabels.length == 12);
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final currentTheme = KAppX.globalProvider
         .read(KAppX.theme.current)
         .themeBox;
+    const borderColor = Color(0xFFE5E7EB);
+
     return Card(
       margin: EdgeInsets.zero,
-      color: currentTheme.colors.onPrimary,
+      color: Colors.white,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
-        side: BorderSide(color: const Color(0xFFE5E7EB), width: 1),
+        borderRadius: BorderRadius.circular(14),
+        side: const BorderSide(color: borderColor, width: 1),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Header Row
-            AnalyticsCardHeader(
-              icon: Icons.insert_chart_outlined,
-              iconBackgroundColor: const Color(0xFFDCE7F6),
-              title: title,
-              titleStyle: AppTextStyles.requestTrendBreakdownTitle(),
-              trailing: AnalyticsPeriodDropdown(
-                value: selectedYear,
-                filterLabelList: filterLabelList,
-                onChanged: (v) => onChanged(v as String?),
-              ),
+            Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F6),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: const Icon(
+                    Icons.insert_chart_outlined,
+                    size: 20,
+                    color: Color(0xFF374151),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.start,
+                    style: textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: const Color(0xFF111827),
+                    ),
+                  ),
+                ),
+                AnalyticsPeriodDropdown(
+                  value: selectedYear,
+                  filterLabelList: filterLabelList,
+                  onChanged: (v) => onChanged(v as String?),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Divider(thickness: 1, color: const Color(0xFFE5E7EB)),
-            const SizedBox(height: 6),
+            const SizedBox(height: 12),
+            const Divider(height: 1, thickness: 1, color: borderColor),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  margin: const EdgeInsetsDirectional.only(end: 8),
+                  decoration: BoxDecoration(
+                    color: barColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Text(
+                  metric,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: const Color(0xFF6B7280),
+                    fontWeight: currentTheme.fontWeights.wRegular,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             LayoutBuilder(
               builder: (context, constraints) {
-                final isWide =
-                    constraints.maxWidth >= _wideLayoutBreakpoint;
-                final aspectRatio =
-                    isWide ? _wideChartAspectRatio : _narrowChartAspectRatio;
-                final chartHeight = (constraints.maxWidth / aspectRatio)
-                    .clamp(_minChartHeight, _maxChartHeight);
-
-                final legend = _TrendMetricLegend(metric: metric);
-                final chart = SizedBox(
-                  height: chartHeight,
-                  width: double.infinity,
-                  child: _RequestTrendBarChart(
-                    data: monthlyData,
-                    labels: monthLabels,
-                  ),
+                final finiteParentWidth = constraints.maxWidth.isFinite
+                    ? constraints.maxWidth
+                    : (12 * _minBarGroupWidth).toDouble();
+                final chartWidth = math.max(
+                  finiteParentWidth,
+                  12 * _minBarGroupWidth,
                 );
+                // Avoid shrinking too much in landscape.
+                final chartHeight = math.max(220.0, 200.toAutoScaledHeight);
 
-                if (isWide) {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      legend,
-                      const SizedBox(width: 24),
-                      Expanded(child: chart),
-                    ],
-                  );
-                }
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    legend,
-                    16.toVerticalSizedBox,
-                    chart,
-                  ],
+                return SizedBox(
+                  height: chartHeight,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    child: SizedBox(
+                      width: chartWidth,
+                      child: _RequestTrendBarChart(
+                        data: monthlyData,
+                        barColor: barColor,
+                        labels: monthLabels,
+                        selectedYear: selectedYear,
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
@@ -450,298 +153,149 @@ class RequestTrendBreakdownCard extends StatelessWidget {
   }
 }
 
-class _TrendMetricLegend extends StatelessWidget {
-  final String metric;
-
-  const _TrendMetricLegend({required this.metric});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 18,
-          height: 18,
-          margin: const EdgeInsetsDirectional.only(end: 8),
-          decoration: BoxDecoration(
-            color: AppColors.trendBarColor,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        Text(
-          metric,
-          style: AppTextStyles.requestTrendBreakdownMetricLabel(),
-        ),
-      ],
-    );
-  }
-}
-
-// Bar Chart Implementation with interactive tooltip (hover/tap)
-class _RequestTrendBarChart extends StatefulWidget {
+class _RequestTrendBarChart extends StatelessWidget {
   final List<int> data;
+  final Color barColor;
   final List<String> labels;
+  final String selectedYear;
 
-  const _RequestTrendBarChart({required this.data, required this.labels});
+  const _RequestTrendBarChart({
+    required this.data,
+    required this.barColor,
+    required this.labels,
+    required this.selectedYear,
+  });
 
-  @override
-  State<_RequestTrendBarChart> createState() => _RequestTrendBarChartState();
-}
-
-class _RequestTrendBarChartState extends State<_RequestTrendBarChart> {
-  static const double _leftAxisReservedSize = 36;
-  static const double _bottomTitlesReservedSize = 28;
-  static const double _groupExtraSpace = 16;
+  double _calculateInterval(double value) {
+    if (value <= 0) return 1;
+    if (value <= 5) return 1;
+    if (value <= 12) return 2;
+    if (value <= 25) return 5;
+    if (value <= 50) return 10;
+    if (value <= 100) return 20;
+    if (value <= 250) return 50;
+    if (value <= 500) return 100;
+    return (value / 5).ceilToDouble();
+  }
 
   @override
   Widget build(BuildContext context) {
-    int maxValue = 0;
-    if (widget.data.isNotEmpty) {
-      maxValue = (widget.data.reduce((a, b) => a > b ? a : b) * 1.2).ceil();
-    }
-    final maxDataValue = widget.data.isEmpty
-        ? 0.0
-        : widget.data.reduce((a, b) => a > b ? a : b).toDouble();
-    final rawMax = maxDataValue * 1.2;
-    final interval = ChartUtils.calculateInterval(rawMax);
-    final maxY = maxValue.toDouble();
-    final axisLabelStyle = AppTextStyles.requestTrendBreakdownAxisLabel();
-    final barWidth = 20.toAutoScaledWidth;
-    final barCount = max(widget.labels.length, widget.data.length);
-    final safeBarCount = barCount == 0 ? 12 : barCount;
+    final isRtl = Localizations.localeOf(context).languageCode == 'ar';
+    final safeData = List<int>.generate(
+      12,
+      (i) => i < data.length ? data[i] : 0,
+    );
+    final maxDataValue = safeData.reduce((a, b) => a > b ? a : b);
+    final maxValue = maxDataValue == 0 ? 2 : maxDataValue;
+    final interval = _calculateInterval(maxValue.toDouble());
+    final lastTick =
+        math.max(interval, (maxValue / interval).ceil() * interval).toDouble();
+    final maxY = lastTick + (interval * 0.35);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final chartHeight = constraints.maxHeight;
-        final scrollableViewportWidth = max(
-          0.0,
-          constraints.maxWidth - _leftAxisReservedSize,
-        );
-        final minBarsWidth = safeBarCount * (barWidth + _groupExtraSpace);
-        final barsWidth = max(scrollableViewportWidth, minBarsWidth);
+    final axisStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+      fontSize: 12,
+      color: const Color(0xFF6B7280),
+      height: 1.1,
+    );
 
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Fixed Y-axis — does not scroll with the bars.
-            SizedBox(
-              width: _leftAxisReservedSize,
-              child: _FixedYAxis(
-                maxY: maxY,
-                interval: interval,
-                bottomReserved: _bottomTitlesReservedSize,
-                labelStyle: axisLabelStyle,
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: SizedBox(
-                  width: barsWidth,
-                  height: chartHeight,
-                  child: BarChart(
-                    BarChartData(
-                      minY: 0,
-                      maxY: maxY,
-                      groupsSpace: _groupExtraSpace,
-                      barGroups: List.generate(
-                        safeBarCount,
-                        (i) => BarChartGroupData(
-                          x: i,
-                          barRods: [
-                            BarChartRodData(
-                              toY: i < widget.data.length
-                                  ? widget.data[i].toDouble()
-                                  : 0.0,
-                              color: AppColors.trendBarColor,
-                              width: barWidth,
-                              borderRadius: BorderRadius.circular(0),
-                              borderSide: BorderSide.none,
-                              rodStackItems: const [],
-                            ),
-                          ],
-                        ),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      gridData: FlGridData(show: false),
-                      titlesData: FlTitlesData(
-                        leftTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: _bottomTitlesReservedSize,
-                            interval: 1,
-                            getTitlesWidget: (value, meta) {
-                              final index = value.toInt();
-                              if (index < 0 ||
-                                  index >= widget.labels.length) {
-                                return const SizedBox.shrink();
-                              }
-
-                              final month = widget.labels[index];
-                              final shortMonth = month.length >= 3
-                                  ? month.substring(0, 3)
-                                  : month;
-
-                              return SideTitleWidget(
-                                meta: meta,
-                                child: Text(
-                                  shortMonth,
-                                  textAlign: TextAlign.center,
-                                  style: axisLabelStyle,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      barTouchData: BarTouchData(
-                        enabled: true,
-                        touchTooltipData: BarTouchTooltipData(
-                          getTooltipColor: (group) => Colors.white,
-                          tooltipBorderRadius: BorderRadius.circular(
-                            8.toAutoScaledWidth,
-                          ),
-                          fitInsideVertically: true,
-                          fitInsideHorizontally: true,
-                          tooltipPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                            if (groupIndex < 0 ||
-                                groupIndex >= widget.labels.length ||
-                                groupIndex >= widget.data.length) {
-                              return null;
-                            }
-                            final month = widget.labels[groupIndex];
-                            final value = widget.data[groupIndex];
-                            return BarTooltipItem(
-                              '$month, ${DateTime.now().year} : $value',
-                              const TextStyle(
-                                color: Color(0xFF282357),
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+    final yTitles = SideTitles(
+      reservedSize: 36,
+      showTitles: true,
+      interval: interval,
+      getTitlesWidget: (value, meta) {
+        if (value > lastTick + 0.001) {
+          return const SizedBox.shrink();
+        }
+        return Padding(
+          padding: const EdgeInsetsDirectional.only(end: 4),
+          child: Text(value.toInt().toString(), style: axisStyle),
         );
       },
     );
-  }
-}
 
-class _FixedYAxis extends StatelessWidget {
-  final double maxY;
-  final double interval;
-  final double bottomReserved;
-  final TextStyle labelStyle;
-
-  const _FixedYAxis({
-    required this.maxY,
-    required this.interval,
-    required this.bottomReserved,
-    required this.labelStyle,
-  });
-
-  List<double> get _tickValues {
-    if (maxY <= 0) return const [0];
-    final safeInterval = interval <= 0 ? maxY : interval;
-    final values = <double>[];
-    for (double value = 0; value <= maxY + 0.0001; value += safeInterval) {
-      values.add(value);
-    }
-    if (values.isEmpty || values.last < maxY) {
-      values.add(maxY);
-    }
-    return values;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ticks = _tickValues;
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottomReserved),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final plotHeight = constraints.maxHeight;
-          return Stack(
-            clipBehavior: Clip.none,
-            children: [
-              for (final value in ticks)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: maxY == 0
-                      ? 0
-                      : (value / maxY) * plotHeight - 6,
-                  child: Text(
-                    value.toInt().toString(),
-                    textAlign: TextAlign.center,
-                    style: labelStyle,
-                  ),
-                ),
+    return BarChart(
+      BarChartData(
+        maxY: maxY,
+        groupsSpace: 18,
+        alignment: BarChartAlignment.spaceAround,
+        barGroups: List.generate(12, (i) {
+          final dataIndex = isRtl ? 11 - i : i;
+          return BarChartGroupData(
+            x: i,
+            barsSpace: 0,
+            barRods: [
+              BarChartRodData(
+                toY: safeData[dataIndex].toDouble(),
+                color: barColor,
+                width: 18,
+                borderRadius: BorderRadius.circular(0),
+                borderSide: BorderSide.none,
+                rodStackItems: const [],
+              ),
             ],
           );
-        },
-      ),
-    );
-  }
-}
-
-class _YearDropdown extends StatelessWidget {
-  final String label;
-  final VoidCallback? onTap;
-  const _YearDropdown({required this.label, this.onTap});
-  @override
-  Widget build(BuildContext context) {
-    final currentTheme = KAppX.globalProvider
-        .read(KAppX.theme.current)
-        .themeBox;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 36.toAutoScaledHeight,
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFC1C7D0)),
-          borderRadius: BorderRadius.circular(8),
+        }),
+        borderData: FlBorderData(show: false),
+        gridData: const FlGridData(show: false),
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: isRtl
+                ? const SideTitles(showTitles: false)
+                : yTitles,
+          ),
+          rightTitles: AxisTitles(
+            sideTitles: isRtl
+                ? yTitles
+                : const SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 36,
+              getTitlesWidget: (value, meta) {
+                final idx = value.toInt().clamp(0, 11);
+                final labelIdx = isRtl ? 11 - idx : idx;
+                final raw = labelIdx < labels.length
+                    ? labels[labelIdx]
+                    : '';
+                final short = raw.length >= 3 ? raw.substring(0, 3) : raw;
+                return SideTitleWidget(
+                  meta: meta,
+                  space: 6,
+                  child: Text(short, style: axisStyle),
+                );
+              },
+            ),
+          ),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w400,
-                color: Colors.black87,
-                fontSize: currentTheme.fontSizes.s14,
-              ),
+        barTouchData: BarTouchData(
+          enabled: true,
+          touchTooltipData: BarTouchTooltipData(
+            getTooltipColor: (group) => Colors.white,
+            tooltipBorderRadius: BorderRadius.circular(8),
+            fitInsideVertically: true,
+            fitInsideHorizontally: true,
+            tooltipPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
             ),
-            const Icon(
-              Icons.keyboard_arrow_down,
-              size: 20,
-              color: Colors.black54,
-            ),
-          ],
+            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+              final idx = isRtl ? 11 - groupIndex : groupIndex;
+              final month = idx < labels.length ? labels[idx] : '';
+              final value = safeData[idx];
+              return BarTooltipItem(
+                '$month, $selectedYear : $value',
+                const TextStyle(
+                  color: Color(0xFF111827),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

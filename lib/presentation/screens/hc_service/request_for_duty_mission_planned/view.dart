@@ -236,7 +236,6 @@ class _RequestforDutyMissionPlannedScreenState
             ],
             metric: "Total Tickets",
             // selectedYear: DateTime.now().year.toString(),
-            barColor: Colors.blue,
             // onYearTap: () => debugPrint("Year dropdown tapped"),
             onChanged: (value) {
               if (value != null) {
