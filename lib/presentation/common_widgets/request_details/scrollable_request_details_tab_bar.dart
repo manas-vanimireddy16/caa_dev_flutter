@@ -132,21 +132,25 @@ class _ScrollableRequestDetailsTabBarState
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      controller: _scrollController,
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: List.generate(widget.labels.length, (index) {
-          return KeyedSubtree(
-            key: _tabKeys[index],
-            child: TabItem(
-              text: widget.labels[index],
-              index: index,
-              selectedIndex: widget.selectedIndex,
-              onTap: () => widget.onTap(index),
-            ),
-          );
-        }),
+    return SizedBox(
+      width: double.infinity,
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: List.generate(widget.labels.length, (index) {
+            return KeyedSubtree(
+              key: _tabKeys[index],
+              child: TabItem(
+                text: widget.labels[index],
+                index: index,
+                selectedIndex: widget.selectedIndex,
+                onTap: () => widget.onTap(index),
+              ),
+            );
+          }),
+        ),
       ),
     );
   }

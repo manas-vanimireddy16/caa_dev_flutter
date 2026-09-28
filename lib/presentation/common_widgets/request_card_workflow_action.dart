@@ -1,4 +1,3 @@
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -17,13 +16,13 @@ class RequestCardWorkflowAction extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(4.toAutoScaledWidth),
+        borderRadius: BorderRadius.circular(4),
         child: Padding(
-          padding: EdgeInsets.all(4.toAutoScaledWidth),
+          padding: const EdgeInsets.all(4),
           child: SvgPicture.asset(
             _iconAsset,
-            width: 20.toAutoScaledWidth,
-            height: 20.toAutoScaledWidth,
+            width: 20,
+            height: 20,
             colorFilter: const ColorFilter.mode(_iconColor, BlendMode.srcIn),
           ),
         ),

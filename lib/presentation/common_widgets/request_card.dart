@@ -1,6 +1,6 @@
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/common_widgets/request_card_workflow_action.dart';
 import 'package:code_setup/presentation/common_widgets/status_widget.dart';
+import 'package:code_setup/responsive/app_page_layout.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,8 +9,8 @@ class RequestCard extends StatelessWidget {
   static const _backgroundColor = Color(0xFFFFFFFF);
   static const _borderColor = Color(0xFFD8D8D8);
   static const _cardRadius = 8.0;
-  static const _cardPadding = 24.0;
-  static const _cardGap = 16.0;
+  static const _cardPadding = 14.0;
+  static const _cardGap = 8.0;
 
   final String from;
   final Map<String, dynamic> data;
@@ -129,19 +129,51 @@ class RequestCard extends StatelessWidget {
           _humanizeKey(key),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.requestCardFieldHeading(
-            fontSize: 12.toAutoScaledWidth,
-          ),
+          style: AppTextStyles.requestCardFieldHeading(fontSize: 12),
         ),
-        SizedBox(height: 4.toAutoScaledHeight),
+        const SizedBox(height: 4),
         Text(
           value,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.requestCardFieldContent(
-            fontSize: 14.toAutoScaledWidth,
-          ),
+          style: AppTextStyles.requestCardFieldContent(fontSize: 14),
         ),
+      ],
+    );
+  }
+
+  Widget _buildInlineRow(String key, String value) {
+    return Text.rich(
+      TextSpan(
+        style: AppTextStyles.cairo(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: const Color(0xFF23272F),
+          height: 1.35,
+        ),
+        children: [
+          TextSpan(
+            text: '${_humanizeKey(key)}: ',
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          TextSpan(text: value),
+        ],
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildCompactList(List<MapEntry<String, dynamic>> entries) {
+    if (entries.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < entries.length; i++) ...[
+          if (i > 0) const SizedBox(height: 6),
+          _buildInlineRow(entries[i].key, _displayValue(entries[i])),
+        ],
       ],
     );
   }
@@ -153,7 +185,7 @@ class RequestCard extends StatelessWidget {
 
     for (var i = 0; i < entries.length; i += 2) {
       if (i > 0) {
-        rows.add(SizedBox(height: _cardGap.toAutoScaledHeight));
+        rows.add(const SizedBox(height: _cardGap));
       }
 
       rows.add(
@@ -163,7 +195,7 @@ class RequestCard extends StatelessWidget {
             Expanded(
               child: _buildFieldCell(entries[i].key, _displayValue(entries[i])),
             ),
-            SizedBox(width: _cardGap.toAutoScaledWidth),
+            const SizedBox(width: _cardGap),
             Expanded(
               child: i + 1 < entries.length
                   ? _buildFieldCell(
@@ -211,28 +243,37 @@ class RequestCard extends StatelessWidget {
     final entries = _contentEntries();
 
     return Padding(
-      padding: EdgeInsets.only(bottom: 12.toAutoScaledHeight),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Material(
         color: _backgroundColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_cardRadius.toAutoScaledWidth),
+          borderRadius: BorderRadius.circular(_cardRadius),
           side: const BorderSide(color: _borderColor, width: 1),
         ),
         clipBehavior: Clip.antiAlias,
         child: Padding(
-          padding: EdgeInsets.all(_cardPadding.toAutoScaledWidth),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              InkWell(
-                onTap: onTap,
-                child: _buildDynamicGrid(entries),
-              ),
-              if (entries.isNotEmpty || _hasStatusKey())
-                SizedBox(height: _cardGap.toAutoScaledHeight),
-              _buildFooter(),
-            ],
+          padding: const EdgeInsets.all(_cardPadding),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final compact =
+                  AppPageLayout.isTablet(context) ||
+                  constraints.maxWidth >= 700;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: onTap,
+                    child: compact
+                        ? _buildCompactList(entries)
+                        : _buildDynamicGrid(entries),
+                  ),
+                  if (entries.isNotEmpty || _hasStatusKey())
+                    const SizedBox(height: 10),
+                  _buildFooter(),
+                ],
+              );
+            },
           ),
         ),
       ),

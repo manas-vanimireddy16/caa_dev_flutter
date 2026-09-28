@@ -54,7 +54,10 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        appBarTheme: const AppBarTheme(centerTitle: false),
+      ),
       locale: locale,
       supportedLocales: const [Locale('en'), Locale('ar')],
       localizationsDelegates: const [

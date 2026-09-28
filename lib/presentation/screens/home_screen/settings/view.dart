@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
 import 'package:code_setup/presentation/screens/home_screen/services/view.dart';
 import 'package:code_setup/presentation/screens/home_screen/view.dart';
+import 'package:code_setup/responsive/app_page_layout.dart';
 import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
@@ -39,10 +40,12 @@ class SettingsScreen extends ConsumerWidget {
     return KScaffold(
       backgroundColor: AppColors.homeSurfaceColor,
       appBar: AppBar(
+        centerTitle: false,
+        titleSpacing: 16,
         title: Text(
           l10n.settings,
           style: AppTextStyles.cairo(
-            fontSize: 20.toAutoScaledFont,
+            fontSize: AppPageLayout.pageTitleSize,
             fontWeight: FontWeight.w700,
           ),
         ),

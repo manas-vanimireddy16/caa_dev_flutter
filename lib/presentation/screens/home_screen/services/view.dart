@@ -105,6 +105,8 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
       backgroundColor: AppColors.homeSurfaceColor,
 
       appBar: AppBar(
+        centerTitle: false,
+        titleSpacing: 16,
         toolbarHeight: 64,
         foregroundColor: AppColors.textHeading,
         backgroundColor: Colors.white,
@@ -118,7 +120,6 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen>
             color: Colors.black87,
           ),
         ),
-        // centerTitle: true,
         actions: const [DashboardAppBarActions()],
       ),
 

@@ -998,12 +998,15 @@ class RequestWorkflowTimeline extends StatelessWidget {
   Widget _statusIndicator(WorkflowStepStatus status, bool isFirst) {
     String icon = KIcons.workflowPending;
     Color color = const Color(0xFFC77700);
+    final completed =
+        isFirst ||
+        status == WorkflowStepStatus.approved ||
+        status == WorkflowStepStatus.submitted;
 
     if (isFirst) {
       icon = KIcons.workflowCompleted;
       color = const Color(0xFF26285F);
-    } else if (status == WorkflowStepStatus.approved ||
-        status == WorkflowStepStatus.submitted) {
+    } else if (completed) {
       icon = KIcons.workflowCompleted;
       color = const Color(0xFF31B480);
     }
@@ -1012,7 +1015,14 @@ class RequestWorkflowTimeline extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      child: Center(child: KImageProvider(width: 22, height: 22, image: icon)),
+      child: Center(
+        child: KImageProvider(
+          width: 22,
+          height: 22,
+          image: icon,
+          tintColor: completed ? Colors.white : null,
+        ),
+      ),
     );
   }
 }

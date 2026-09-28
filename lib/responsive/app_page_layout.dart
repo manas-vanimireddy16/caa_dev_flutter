@@ -12,7 +12,7 @@ class AppPageLayout {
   static const double sectionGap = 12;
   static const double itemGap = 12;
   static const double radius = 16;
-  static const double pageTitleSize = 22;
+  static const double pageTitleSize = 18;
   static const double cardRadius = 14;
   static const double cardIconSize = 40;
 

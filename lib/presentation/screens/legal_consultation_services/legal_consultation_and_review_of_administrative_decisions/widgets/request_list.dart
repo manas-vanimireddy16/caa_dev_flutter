@@ -28,12 +28,14 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
   @override
   void dispose() {
     _disposeCleanup?.call();
-    _pagingController?.dispose();
+    final pagingController = _pagingController;
+    _pagingController = null;
+    pagingController?.dispose();
     super.dispose();
   }
 
   void _refreshList() {
-    if (!mounted) return;
+    if (!mounted || _pagingController == null) return;
     _pagingController?.refresh();
   }
 
@@ -46,7 +48,9 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
         getNextPageKey: (state) => ListPagination.nextPageKey(state),
         fetchPage: (pageKey) => controller.loadActionItemsPage(
           pageKey,
-          searchText: controller.searchController.text.trim(),
+          searchText: controller._resourcesDisposed
+              ? ''
+              : controller.searchController.text.trim(),
           status: controller.currentStatusFilter,
         ),
       );
@@ -57,7 +61,9 @@ class _RequestsPageState extends ConsumerState<RequestsPage>
         getNextPageKey: (state) => ListPagination.nextPageKey(state),
         fetchPage: (pageKey) => controller.loadMyRequestsPage(
           pageKey,
-          searchText: controller.searchController.text.trim(),
+          searchText: controller._resourcesDisposed
+              ? ''
+              : controller.searchController.text.trim(),
           status: controller.currentStatusFilter,
         ),
       );

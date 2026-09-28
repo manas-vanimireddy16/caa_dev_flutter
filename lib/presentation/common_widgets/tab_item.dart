@@ -34,7 +34,7 @@ class TabItem extends StatelessWidget {
         height: _tabHeight,
         padding: const EdgeInsets.fromLTRB(10, 4, 10, 4),
         margin: EdgeInsetsDirectional.only(
-          start: index == 0 ? 16 : 0,
+          start: index == 0 ? 12 : 0,
           end: _tabGap,
         ),
         decoration: BoxDecoration(

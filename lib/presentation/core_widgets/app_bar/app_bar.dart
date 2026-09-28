@@ -1,4 +1,4 @@
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
+import 'package:code_setup/responsive/app_page_layout.dart';
 import 'package:code_setup/utils/helper/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,9 +51,9 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.bottom =
         bottom ??
         PreferredSize(
-          preferredSize: Size.fromHeight(1.toAutoScaledHeight),
+          preferredSize: const Size.fromHeight(1),
           child: Container(
-            height: 1.toAutoScaledHeight,
+            height: 1,
             color: currentTheme.colors.secondary.shade95,
           ),
         );
@@ -62,7 +62,9 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
   static Widget requestDetailsTitle(String title) {
     return Text(
       title,
-      style: AppTextStyles.requestDetailScreenTitle(),
+      style: AppTextStyles.requestDetailScreenTitle(
+        fontSize: AppPageLayout.pageTitleSize,
+      ),
     );
   }
 
@@ -75,8 +77,7 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   double get _appBarHeight =>
-      (appBarHeight ?? 65.toAutoScaledHeight) +
-      (bottom?.preferredSize.height ?? 0.0);
+      (appBarHeight ?? 56) + (bottom?.preferredSize.height ?? 0.0);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,6 +90,8 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final showCloseButton = this.useCloseButton || routeWantsCloseButton;
 
     return SafeArea(
+      left: false,
+      right: false,
       child: AppBar(
         toolbarHeight: _appBarHeight,
         leading: !automaticallyImplyLeading
@@ -129,7 +132,7 @@ class KAppBar extends ConsumerWidget implements PreferredSizeWidget {
           systemNavigationBarColor: Colors.transparent,
         ),
         bottom: bottom,
-        leadingWidth: leadingWidth,
+        leadingWidth: leadingWidth ?? 40,
         automaticallyImplyLeading: automaticallyImplyLeading,
         titleSpacing: titleSpacing,
         shadowColor: Colors.black.withOpacity(0.05),

@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:code_setup/modules/data/core/storage/auth_cred.dart';
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/modules/domain/models/roles_model.dart';
+import 'package:code_setup/responsive/app_page_layout.dart';
 import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/domain/roles_repo.dart';
 import 'package:code_setup/presentation/chatbot/widgets/dashboard_app_bar_actions.dart';
@@ -87,6 +87,7 @@ class _AnnouncementScreenState extends ConsumerState<AnnouncementScreen>
     return KScaffold(
       backgroundColor: AppColors.homeSurfaceColor,
       appBar: AppBar(
+        centerTitle: false,
         toolbarHeight: 64,
         titleSpacing: 16,
         title: _HomeGreetingHeader(
@@ -145,10 +146,12 @@ class ProfileScreen extends ConsumerWidget {
     return KScaffold(
       backgroundColor: AppColors.homeSurfaceColor,
       appBar: AppBar(
+        centerTitle: false,
+        titleSpacing: 16,
         title: Text(
           l10n.myProfile,
           style: AppTextStyles.cairo(
-            fontSize: 20.toAutoScaledFont,
+            fontSize: AppPageLayout.pageTitleSize,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -241,7 +244,6 @@ class _HomeGreetingHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         Stack(
           clipBehavior: Clip.none,
@@ -272,7 +274,7 @@ class _HomeGreetingHeader extends StatelessWidget {
           ],
         ),
         const SizedBox(width: 12),
-        Flexible(
+        Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,7 +352,7 @@ class _HomeSectionTitle extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Text(
         title,
-        style: AppTextStyles.cairo(fontSize: 18, fontWeight: FontWeight.w700),
+        style: AppTextStyles.cairo(fontSize: 16, fontWeight: FontWeight.w700),
       ),
     );
   }

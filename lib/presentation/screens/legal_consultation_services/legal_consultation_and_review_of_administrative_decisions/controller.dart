@@ -23,15 +23,10 @@ class _VSControllerParams extends Equatable {
 
 final _vsProvider = StateNotifierProvider.autoDispose
     .family<_VSController, _ViewState, _VSControllerParams>((ref, params) {
-      final controller = _VSController(
+      return _VSController(
         service: params.service,
         subService: params.subService,
       );
-      ref.onDispose(() {
-        debugPrint('_VSController disposed');
-        controller.disposeResources();
-      });
-      return controller;
     });
 
 class _ViewState {
@@ -323,6 +318,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Timer? _searchDebounce;
   bool _assignInFlight = false;
+  bool _resourcesDisposed = false;
 
   late TextEditingController chatController;
   late TextEditingController titleController;
@@ -347,6 +343,8 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   void disposeResources() {
+    if (_resourcesDisposed) return;
+    _resourcesDisposed = true;
     _searchDebounce?.cancel();
     chatController.dispose();
     titleController.dispose();

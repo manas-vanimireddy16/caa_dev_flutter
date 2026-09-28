@@ -65,7 +65,11 @@ class StatusChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             displayLabel ?? status,
-            style: TextStyle(color: text, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              color: text,
+              fontWeight: FontWeight.w500,
+              fontSize: 12,
+            ),
           ),
         ],
       ),

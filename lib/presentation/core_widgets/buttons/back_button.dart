@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import '../../../utils/app_extensions/app_extension.dart';
 import 'icon_button.dart';
 
@@ -44,11 +43,11 @@ class KBackButton extends ConsumerWidget {
         return Icon(
           icon.icon,
           color: color ?? currentTheme.themeBox.colors.onBackground,
-          size: width ?? 24.toAutoScaledWidth,
+          size: width ?? 22,
         );
       }(),
       onPressed: onPressed,
-      padding: padding,
+      padding: padding ?? EdgeInsets.zero,
     );
   }
 }

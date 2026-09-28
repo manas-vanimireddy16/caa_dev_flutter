@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:code_setup/modules/data/core/theme/services/dimensional/dimensional.dart';
 import 'package:code_setup/presentation/chatbot/widgets/dashboard_app_bar_actions.dart';
+import 'package:code_setup/responsive/app_page_layout.dart';
 import 'package:code_setup/presentation/common_widgets/paginated_list_section.dart';
 import 'package:code_setup/presentation/core_widgets/scaffold/scaffold.dart';
 import 'package:code_setup/presentation/screens/home_screen/dashboard/models/important_links_model.dart';
@@ -69,10 +69,12 @@ class _LinksScreenState extends ConsumerState<LinksScreen> {
     return KScaffold(
       backgroundColor: AppColors.homeSurfaceColor,
       appBar: AppBar(
+        centerTitle: false,
+        titleSpacing: 16,
         title: Text(
           l10n.links,
           style: AppTextStyles.cairo(
-            fontSize: 20.toAutoScaledFont,
+            fontSize: AppPageLayout.pageTitleSize,
             fontWeight: FontWeight.w700,
           ),
         ),
