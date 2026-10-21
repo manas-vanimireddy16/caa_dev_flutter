@@ -311,7 +311,7 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalStatusBreakdown('weekly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-    fetchRelevantDepartments();
+    // fetchRelevantDepartments();
     // fetchbyCycleGoals(cycle: 'Jan-Jun');
   }
 
@@ -428,7 +428,7 @@ class _VSController extends StateNotifier<_ViewState> {
     return {
       'Topic': data['topic']?.toString() ?? 'N/A',
       'Concerned Department': data['concerned_department']?.toString() ?? 'N/A',
-      'Relevant Department': data['relevant_department']?.toString() ?? 'N/A',
+      // 'Relevant Department': data['relevant_department']?.toString() ?? 'N/A',
       'Date From': data['date_from']?.toString() ?? 'N/A',
       'Date To': data['date_to']?.toString() ?? 'N/A',
     };
@@ -617,27 +617,27 @@ class _VSController extends StateNotifier<_ViewState> {
     ),
 
     /// ================= RELEVANT DEPARTMENT =================
-    DynamicField(
-      name: 'relevant_department',
-      label: l10n.followUpRelevantDepartmentLabel,
-      type: FieldType.select,
-      required: false,
-      placeholder: l10n.followUpSelectRelevantDepartment,
-
-      optionsBuilder: (ref) {
-        final formL10n = DashboardL10n.of(ref.context);
-        final formState = ref.watch(_vsProvider(params));
-
-        return formState.relevantDepartments
-            .map(
-              (department) => DropdownOption(
-                value: department.id,
-                label: department.displayName(isArabic: formL10n.isArabic),
-              ),
-            )
-            .toList();
-      },
-    ),
+    // DynamicField(
+    //   name: 'relevant_department',
+    //   label: l10n.followUpRelevantDepartmentLabel,
+    //   type: FieldType.select,
+    //   required: false,
+    //   placeholder: l10n.followUpSelectRelevantDepartment,
+    //
+    //   optionsBuilder: (ref) {
+    //     final formL10n = DashboardL10n.of(ref.context);
+    //     final formState = ref.watch(_vsProvider(params));
+    //
+    //     return formState.relevantDepartments
+    //         .map(
+    //           (department) => DropdownOption(
+    //             value: department.id,
+    //             label: department.displayName(isArabic: formL10n.isArabic),
+    //           ),
+    //         )
+    //         .toList();
+    //   },
+    // ),
 
     /// ================= DATE FROM =================
     DynamicField(
@@ -1662,7 +1662,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
       "concerned_department": values['concerned_department'] ?? "",
 
-      "relevant_department": values['relevant_department'] ?? "",
+      // "relevant_department": values['relevant_department'] ?? "",
 
       /// DATE RANGE
       "date_from": values['date_from'] ?? "",
@@ -1742,7 +1742,7 @@ class _VSController extends StateNotifier<_ViewState> {
   }
 
   Future<void> openEditRequestForm(int requestId) async {
-    await fetchRelevantDepartments();
+    // await fetchRelevantDepartments();
     final result = await KAppX.router.push<bool>(
       FollowUpReportNewRequestRoute(
         serviceId: service.id ?? 0,
@@ -1830,7 +1830,7 @@ class _VSController extends StateNotifier<_ViewState> {
     final raw = await followupReportInstance.getRequestRawById(requestId);
     if (raw == null) return null;
 
-    await fetchRelevantDepartments();
+    // await fetchRelevantDepartments();
 
     final reportItemsRaw = raw['report_items'];
     final List<Map<String, dynamic>> actionCards = [];
@@ -1863,9 +1863,9 @@ class _VSController extends StateNotifier<_ViewState> {
     return {
       'topic': raw['topic'] ?? '',
       'concerned_department': raw['concerned_department'] ?? '',
-      'relevant_department': _resolveRelevantDepartmentId(
-        raw['relevant_department'],
-      ),
+      // 'relevant_department': _resolveRelevantDepartmentId(
+      //   raw['relevant_department'],
+      // ),
       'date_from': _normalizeDateForForm(raw['date_from']?.toString()),
       'date_to': _normalizeDateForForm(raw['date_to']?.toString()),
       kFollowUpActionsKey: actionCards,
@@ -1891,9 +1891,9 @@ class _VSController extends StateNotifier<_ViewState> {
     return {
       'topic': values['topic'] ?? '',
       'concerned_department': values['concerned_department'] ?? '',
-      'relevant_department': _resolveRelevantDepartmentName(
-        values['relevant_department'],
-      ),
+      // 'relevant_department': _resolveRelevantDepartmentName(
+      //   values['relevant_department'],
+      // ),
       'date_from': values['date_from'] ?? '',
       'date_to': values['date_to'] ?? '',
       'sent_by': firstCard['sent_by'] ?? '',
