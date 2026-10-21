@@ -54,6 +54,10 @@ abstract class RequestEventSupportRepository {
     required int subServiceId,
   });
   Future<void> onApprove(Map<String, dynamic> payload);
+  Future<void> updateReminderType({
+    required int requestId,
+    required String reminderType,
+  });
 
   Future<String> sendChat(Map<String, dynamic> payload, int id);
   Future<String> sendAttachment(Map<String, dynamic> payload, int id);

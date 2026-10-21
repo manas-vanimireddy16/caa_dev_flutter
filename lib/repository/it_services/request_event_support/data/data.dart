@@ -628,6 +628,36 @@ class RequestEventSupportRepositoryImpl
   }
 
   @override
+  Future<void> updateReminderType({
+    required int requestId,
+    required String reminderType,
+  }) async {
+    final client = await KAppX.network.secureClient();
+    if (client == null) {
+      throw ApiException(
+        'Client is null - cannot process $_serviceLabel request',
+      );
+    }
+
+    final url = ApiEndPoint.eventSupportReminderType(requestId);
+    try {
+      final response = await client.put(
+        url,
+        data: {'reminder_type': reminderType},
+      );
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw ApiException(
+          response.data?['message'] ??
+              'Failed to update $_serviceLabel reminder type',
+        );
+      }
+    } on DioException catch (error) {
+      final message = error.response?.data['message'] ?? error.message;
+      throw ApiException(message);
+    }
+  }
+
+  @override
   Future<void> onApprove(Map<String, dynamic> payload) async {
     final client = await KAppX.network.secureClient();
     final String url = ApiEndPoint.eventSupportApprove;

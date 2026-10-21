@@ -401,6 +401,7 @@ class _VSController extends StateNotifier<_ViewState> {
 
   Map<String, String> buildRequestInformationData() {
     final request = state.requestDetails.request;
+    final reminder = request?.rawJson['reminder_type']?.toString().trim();
     return {
       /// ───── RIGHT COLUMN ─────
       "Service Type": request?.service?.name ?? 'N/A',
@@ -415,6 +416,7 @@ class _VSController extends StateNotifier<_ViewState> {
       'Date of Event': request?.dateOfEvent ?? '-',
       'Location of Event': request?.locationOfEvent ?? '-',
       'Phone Number': request?.phoneNumber ?? '-',
+      'Reminder': (reminder == null || reminder.isEmpty) ? 'N/A' : reminder,
       'Reason for Request': request?.reasonForRequest?.join(', ') ?? '-',
     };
   }
@@ -957,18 +959,32 @@ class _VSController extends StateNotifier<_ViewState> {
     return false;
   }
 
+  List<(String value, String label)> reminderTypeOptions(DashboardL10n l10n) => [
+    ('1 week before', l10n.reminderOneWeekBefore),
+    ('6 days before', l10n.reminderSixDaysBefore),
+    ('5 days before', l10n.reminderFiveDaysBefore),
+    ('4 days before', l10n.reminderFourDaysBefore),
+    ('3 days before', l10n.reminderThreeDaysBefore),
+    ('2 days before', l10n.reminderTwoDaysBefore),
+    ('1 day before', l10n.reminderOneDayBefore),
+    ('At time of event', l10n.reminderAtTimeOfEvent),
+  ];
+
   void showApprovalCommentDialog({
     required ApprovalDialogType type,
     required int approverId,
     required int requestId,
   }) {
-    // final showDecionNumber = lastApprover(
-    //   state.requestDetails.approvalDetails ?? [],
-    // );
+    final l10n = DashboardL10n.of(KAppX.currentContext!);
+    final requireReminder = type == ApprovalDialogType.approve;
+
     KAppX.extendedRouter.dialog.showKDialog(
       builder: (_) => ApprovalCommentDialog(
         type: type,
-        // showDecisionNumber: showDecionNumber,
+        requireReminderType: requireReminder,
+        reminderTypeLabel: l10n.reminder,
+        reminderTypeHint: l10n.selectReminderType,
+        reminderTypeOptions: reminderTypeOptions(l10n),
         onSubmit: (comment, decisionNo) async {
           final status = type == ApprovalDialogType.approve
               ? ApprovalStatus.approved
@@ -977,11 +993,23 @@ class _VSController extends StateNotifier<_ViewState> {
           await onApprove(
             approverId,
             requestId,
-            comment.trim(), // always safe
+            comment.trim(),
             status.apiValue,
-            decisionNo, // ✅ backend-safe string
+            decisionNo,
           );
         },
+        onSubmitWithTogglePayload: requireReminder
+            ? (comment, decisionNo, extra) async {
+                await onApprove(
+                  approverId,
+                  requestId,
+                  comment.trim(),
+                  ApprovalStatus.approved.apiValue,
+                  decisionNo,
+                  reminderType: extra?['reminder_type']?.toString(),
+                );
+              }
+            : null,
       ),
     );
   }
@@ -1121,19 +1149,28 @@ class _VSController extends StateNotifier<_ViewState> {
     int requestId,
     String comment,
     String status,
-    String? decisionNo,
-  ) async {
+    String? decisionNo, {
+    String? reminderType,
+  }) async {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1️⃣ Upload files
+      if (status == ApprovalStatus.approved.apiValue) {
+        final reminder = reminderType?.trim() ?? '';
+        if (reminder.isEmpty) {
+          throw Exception('Reminder type is required');
+        }
+        await requestEventSupportInstance.updateReminderType(
+          requestId: requestId,
+          reminderType: reminder,
+        );
+      }
 
-      // 2️⃣ Build payload
       final payload = {
         "request_id": requestId,
+        "approval_id": approverId,
         "status": status,
         "comment": comment,
-        "approval_id": approverId,
       };
       if (decisionNo != null) {
         payload['decision_number'] = decisionNo;
@@ -1141,7 +1178,6 @@ class _VSController extends StateNotifier<_ViewState> {
 
       debugPrint("✅ Final Payload: $payload");
 
-      // 3️⃣ Send request
       await requestEventSupportInstance.onApprove(payload);
       await Future.delayed(Duration(seconds: 3));
       KAppX.router.pop();

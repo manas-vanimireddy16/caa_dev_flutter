@@ -12,6 +12,7 @@ class EventSupportModel {
   final String? typeOfEvent;
   final String? phoneNumber;
   final String? reasonForRequest;
+  final String? reminderType;
   final int? eventDepartmentId;
 
   const EventSupportModel({
@@ -23,6 +24,7 @@ class EventSupportModel {
     this.typeOfEvent,
     this.phoneNumber,
     this.reasonForRequest,
+    this.reminderType,
     this.eventDepartmentId,
   });
 
@@ -41,6 +43,7 @@ class EventSupportModel {
       typeOfEvent: json['type_of_event'],
       phoneNumber: json['phone_number'],
       reasonForRequest: json['reason_for_request'],
+      reminderType: json['reminder_type']?.toString(),
       eventDepartmentId: json['event_department_id'],
     );
   }

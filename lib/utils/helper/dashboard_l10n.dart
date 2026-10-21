@@ -1657,6 +1657,31 @@ class DashboardL10n {
 
   String get requestFor => _t('Request For', 'نوع الطلب');
 
+  String get reminder => _t('Reminder', 'تذكير');
+
+  String get selectReminderType =>
+      _t('Select Reminder Type', 'اختر نوع التذكير');
+
+  String get reminderRequired =>
+      _t('Reminder type is required', 'نوع التذكير مطلوب');
+
+  String get reminderAtTimeOfEvent =>
+      _t('At time of event', 'في وقت الفعالية');
+
+  String get reminderOneDayBefore => _t('1 day before', 'قبل يوم واحد');
+
+  String get reminderTwoDaysBefore => _t('2 days before', 'قبل يومين');
+
+  String get reminderThreeDaysBefore => _t('3 days before', 'قبل 3 أيام');
+
+  String get reminderFourDaysBefore => _t('4 days before', 'قبل 4 أيام');
+
+  String get reminderFiveDaysBefore => _t('5 days before', 'قبل 5 أيام');
+
+  String get reminderSixDaysBefore => _t('6 days before', 'قبل 6 أيام');
+
+  String get reminderOneWeekBefore => _t('1 week before', 'قبل أسبوع');
+
   String get attachFile => _t('Attach File', 'إرفاق ملفات');
 
   String get eventSupportSubmitNotePoint1 =>
@@ -3676,6 +3701,22 @@ class DashboardL10n {
 
       case 'Grievant Employee Number':
         return grievantEmployeeNumber;
+
+      case 'Reminder':
+        return reminder;
+
+      case 'Event Title':
+        return eventTitle;
+
+      case 'Event Type':
+      case 'Type of Event':
+        return typeOfEvent;
+
+      case 'Date of Event':
+        return dateOfEvent;
+
+      case 'Location of Event':
+        return locationOfEvent;
 
       default:
         return _formatKey(key);

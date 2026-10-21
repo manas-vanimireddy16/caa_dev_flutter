@@ -3276,7 +3276,10 @@ class ApiEndPoint {
   /// ===================== APPROVE / REJECT =====================
 
   static const String eventSupportApprove =
-      '/v1/it-service/event-support/approve';
+      '/v1/it-service/event-support/request/approve';
+
+  static String eventSupportReminderType(int requestId) =>
+      '/v1/it-service/event-support/requests/$requestId/reminder-type';
 
   /// ===================== CHAT APIs =====================
 

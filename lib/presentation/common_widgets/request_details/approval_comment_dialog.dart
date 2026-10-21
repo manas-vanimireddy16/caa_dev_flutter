@@ -299,6 +299,12 @@ class ApprovalCommentDialog extends StatefulWidget {
   /// dynamic payload key for toggle value
   final String? togglePayloadKey;
 
+  /// Event Support approve flow: required reminder dropdown.
+  final bool requireReminderType;
+  final String? reminderTypeLabel;
+  final String? reminderTypeHint;
+  final List<(String value, String label)> reminderTypeOptions;
+
   const ApprovalCommentDialog({
     super.key,
     required this.type,
@@ -308,6 +314,10 @@ class ApprovalCommentDialog extends StatefulWidget {
     this.isToggle = false,
     this.toggleTitle,
     this.togglePayloadKey,
+    this.requireReminderType = false,
+    this.reminderTypeLabel,
+    this.reminderTypeHint,
+    this.reminderTypeOptions = const [],
   });
 
   @override
@@ -321,6 +331,7 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
 
   bool _isSubmitting = false;
   bool _toggleValue = false;
+  String? _selectedReminderType;
 
   /// =====================================================
   /// TYPES
@@ -333,6 +344,9 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
   bool get _isApprove => widget.type == ApprovalDialogType.approve;
 
   bool get _showToggle => _isApprove && widget.isToggle;
+
+  bool get _showReminderType =>
+      _isApprove && widget.requireReminderType;
 
   /// COMMENT REQUIRED
   bool get _isCommentRequired => _isReject || _isClose;
@@ -361,11 +375,17 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
           /// VALIDATION
           /// =================================================
 
-          final bool canSubmit = _isCommentRequired
-              ? comment.isNotEmpty
-              : widget.showDecisionNumber
-              ? decision.isNotEmpty
-              : true;
+          final bool reminderOk =
+              !_showReminderType ||
+              (_selectedReminderType?.trim().isNotEmpty ?? false);
+
+          final bool canSubmit =
+              reminderOk &&
+              (_isCommentRequired
+                  ? comment.isNotEmpty
+                  : widget.showDecisionNumber
+                  ? decision.isNotEmpty
+                  : true);
 
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -480,6 +500,82 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
                     ),
 
                     20.toVerticalSizedBox,
+
+                    if (_showReminderType) ...[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          '${widget.reminderTypeLabel ?? 'Reminder'}*',
+                          style: AppTextStyles.requestDetailsFieldHeading(
+                            fontSize: 13,
+                          ).copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.errorRed,
+                          ),
+                        ),
+                      ),
+                      6.toVerticalSizedBox,
+                      DropdownButtonFormField<String>(
+                        value: _selectedReminderType,
+                        isExpanded: true,
+                        hint: Text(
+                          widget.reminderTypeHint ?? 'Select Reminder Type',
+                          style: AppTextStyles.requestDetailsFieldHeading(
+                            fontSize: 14,
+                          ),
+                        ),
+                        items: widget.reminderTypeOptions
+                            .map(
+                              (option) => DropdownMenuItem<String>(
+                                value: option.$1,
+                                child: Text(
+                                  option.$2,
+                                  style: AppTextStyles.requestDetailsFieldContent(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: _isSubmitting
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  _selectedReminderType = value;
+                                });
+                              },
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xFFF5F5F7),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF0F7B3B),
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (_selectedReminderType == null) ...[
+                        const SizedBox(height: 4),
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Reminder type is required',
+                            style: TextStyle(color: Colors.red, fontSize: 11),
+                          ),
+                        ),
+                      ],
+                      16.toVerticalSizedBox,
+                    ],
 
                     /// =============================================
                     /// COMMENT LABEL
@@ -680,24 +776,31 @@ class _ApprovalCommentDialogState extends State<ApprovalCommentDialog> {
                                     _isSubmitting = true;
                                   });
 
-                                  Map<String, dynamic>? togglePayload;
+                                  Map<String, dynamic>? extraPayload;
 
                                   if (_showToggle &&
                                       widget.togglePayloadKey != null) {
-                                    togglePayload = {
+                                    extraPayload = {
                                       widget.togglePayloadKey!: _toggleValue
                                           ? 'Yes'
                                           : 'No',
                                     };
                                   }
 
-                                  if (togglePayload != null &&
+                                  if (_showReminderType) {
+                                    extraPayload = {
+                                      ...?extraPayload,
+                                      'reminder_type': _selectedReminderType,
+                                    };
+                                  }
+
+                                  if (extraPayload != null &&
                                       widget.onSubmitWithTogglePayload !=
                                           null) {
                                     await widget.onSubmitWithTogglePayload!(
                                       comment,
                                       decision.isEmpty ? null : decision,
-                                      togglePayload,
+                                      extraPayload,
                                     );
                                   } else {
                                     await widget.onSubmit(
