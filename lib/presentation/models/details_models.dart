@@ -1398,6 +1398,16 @@ class RequestModel {
   final String? vehicleRequired;
   final String? remarks;
 
+  /// Annual plan / cost fields (Duty Mission Nov 2026)
+  final String? month;
+  final String? placeOfMission;
+  final String? allowanceFeesOmr;
+  final String? ticketFee;
+  final String? missionTotal;
+  final String? notes;
+  final String? numberOfEmployees;
+  final LinkedAnnualApprovedMission? linkedAnnualApprovedMission;
+
   // ─────────────────────────────
   // DUTY MISSION NESTED LISTS
   // ─────────────────────────────
@@ -1869,6 +1879,14 @@ class RequestModel {
     this.airTicketRequired,
     this.vehicleRequired,
     this.remarks,
+    this.month,
+    this.placeOfMission,
+    this.allowanceFeesOmr,
+    this.ticketFee,
+    this.missionTotal,
+    this.notes,
+    this.numberOfEmployees,
+    this.linkedAnnualApprovedMission,
     this.employeesDetails,
     this.airTicketDetails,
     this.allowanceValue,
@@ -2343,6 +2361,25 @@ class RequestModel {
       airTicketRequired: json['air_ticket_required'],
       vehicleRequired: json['vehicle_required'],
       remarks: json['remarks'],
+      month: json['month']?.toString(),
+      placeOfMission: json['place_of_mission']?.toString(),
+      allowanceFeesOmr: json['allowance_fees_omr']?.toString(),
+      ticketFee: json['ticket_fee']?.toString(),
+      missionTotal: json['total']?.toString(),
+      notes: json['notes']?.toString(),
+      numberOfEmployees: json['number_of_employees']?.toString(),
+      linkedAnnualApprovedMission:
+          json['linked_annual_approved_mission'] is Map<String, dynamic>
+          ? LinkedAnnualApprovedMission.fromJson(
+              json['linked_annual_approved_mission'] as Map<String, dynamic>,
+            )
+          : (json['linked_annual_approved_mission'] is Map
+                ? LinkedAnnualApprovedMission.fromJson(
+                    Map<String, dynamic>.from(
+                      json['linked_annual_approved_mission'] as Map,
+                    ),
+                  )
+                : null),
       // ───── MEDIA COVERAGE ─────
       eventLocation: json['event_location'],
       eventDetails: json['event_details'],
@@ -4227,6 +4264,43 @@ class ChatMessageModel {
   };
 }
 
+class LinkedAnnualApprovedMission {
+  final int? missionDays;
+  final String? numberOfEmployees;
+  final String? placeOfMission;
+  final String? allowanceFeesOmr;
+  final String? ticketFee;
+  final String? allowancePercentage;
+  final String? total;
+  final String? notes;
+
+  LinkedAnnualApprovedMission({
+    this.missionDays,
+    this.numberOfEmployees,
+    this.placeOfMission,
+    this.allowanceFeesOmr,
+    this.ticketFee,
+    this.allowancePercentage,
+    this.total,
+    this.notes,
+  });
+
+  factory LinkedAnnualApprovedMission.fromJson(Map<String, dynamic> json) {
+    return LinkedAnnualApprovedMission(
+      missionDays: json['mission_days'] is int
+          ? json['mission_days'] as int
+          : int.tryParse('${json['mission_days'] ?? ''}'),
+      numberOfEmployees: json['number_of_employees']?.toString(),
+      placeOfMission: json['place_of_mission']?.toString(),
+      allowanceFeesOmr: json['allowance_fees_omr']?.toString(),
+      ticketFee: json['ticket_fee']?.toString(),
+      allowancePercentage: json['allowance_percentage']?.toString(),
+      total: json['total']?.toString(),
+      notes: json['notes']?.toString(),
+    );
+  }
+}
+
 class EmployeeDutyMission {
   final String? employeeId;
   final String? employeeName;
@@ -4236,6 +4310,7 @@ class EmployeeDutyMission {
   final String? percentage;
   final String? allowancePerDay;
   final String? totalAllowance;
+  final bool? isAllowanceModified;
 
   EmployeeDutyMission({
     this.employeeId,
@@ -4246,18 +4321,22 @@ class EmployeeDutyMission {
     this.percentage,
     this.allowancePerDay,
     this.totalAllowance,
+    this.isAllowanceModified,
   });
 
   factory EmployeeDutyMission.fromJson(Map<String, dynamic> json) {
     return EmployeeDutyMission(
-      employeeId: json['employee_id'],
-      employeeName: json['employee_name'],
-      department: json['department'],
-      grade: json['grade'],
-      position: json['position'],
-      percentage: json['percentage'],
-      allowancePerDay: json['allowance_per_day'],
-      totalAllowance: json['total_allowance'],
+      employeeId: json['employee_id']?.toString(),
+      employeeName: json['employee_name']?.toString(),
+      department: json['department']?.toString(),
+      grade: json['grade']?.toString(),
+      position: json['position']?.toString(),
+      percentage: json['percentage']?.toString(),
+      allowancePerDay: json['allowance_per_day']?.toString(),
+      totalAllowance: json['total_allowance']?.toString(),
+      isAllowanceModified: json['is_allowance_modified'] is bool
+          ? json['is_allowance_modified'] as bool
+          : json['is_allowance_modified']?.toString().toLowerCase() == 'true',
     );
   }
 
@@ -4270,6 +4349,7 @@ class EmployeeDutyMission {
     'percentage': percentage,
     'allowance_per_day': allowancePerDay,
     'total_allowance': totalAllowance,
+    'is_allowance_modified': isAllowanceModified,
   };
 }
 
@@ -4280,6 +4360,10 @@ class AirTicketDetail {
   final String? ticketType;
   final String? departureDate;
   final String? returnDate;
+  final String? decisionDate;
+  final String? decisionNumber;
+  final String? passportIssueDate;
+  final String? passportExpiryDate;
 
   AirTicketDetail({
     this.employeeId,
@@ -4288,16 +4372,24 @@ class AirTicketDetail {
     this.ticketType,
     this.departureDate,
     this.returnDate,
+    this.decisionDate,
+    this.decisionNumber,
+    this.passportIssueDate,
+    this.passportExpiryDate,
   });
 
   factory AirTicketDetail.fromJson(Map<String, dynamic> json) {
     return AirTicketDetail(
-      employeeId: json['employee_id'],
-      employeeName: json['employee_name'],
-      passportNo: json['passport_no'],
-      ticketType: json['ticket_type'],
-      departureDate: json['departure_date'],
-      returnDate: json['return_date'],
+      employeeId: json['employee_id']?.toString(),
+      employeeName: json['employee_name']?.toString(),
+      passportNo: json['passport_no']?.toString(),
+      ticketType: json['ticket_type']?.toString(),
+      departureDate: json['departure_date']?.toString(),
+      returnDate: json['return_date']?.toString(),
+      decisionDate: json['decision_date']?.toString(),
+      decisionNumber: json['decision_number']?.toString(),
+      passportIssueDate: json['passport_issue_date']?.toString(),
+      passportExpiryDate: json['passport_expiry_date']?.toString(),
     );
   }
 
@@ -4308,6 +4400,10 @@ class AirTicketDetail {
     'ticket_type': ticketType,
     'departure_date': departureDate,
     'return_date': returnDate,
+    'decision_date': decisionDate,
+    'decision_number': decisionNumber,
+    'passport_issue_date': passportIssueDate,
+    'passport_expiry_date': passportExpiryDate,
   };
 }
 

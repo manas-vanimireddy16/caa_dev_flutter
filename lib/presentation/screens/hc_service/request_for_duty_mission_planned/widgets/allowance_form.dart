@@ -31,6 +31,7 @@ class _AllowanceFormState extends State<AllowanceForm> {
   int? allowancePercentage;
   late int missionDays;
   late TextEditingController perDayCtrl;
+  double? gradeDefaultAllowancePerDay;
 
   @override
   void initState() {
@@ -42,11 +43,19 @@ class _AllowanceFormState extends State<AllowanceForm> {
 
     missionDays = int.tryParse('${widget.initialValues?['missionDays']}') ?? 0;
 
-    perDayCtrl = TextEditingController(
-      text:
-          widget.initialValues?['allowancePerDay']?.toString() ??
-          missionDays.toString(),
+    gradeDefaultAllowancePerDay = double.tryParse(
+      widget.initialValues?['gradeDefaultAllowancePerDay']?.toString() ?? '',
     );
+
+    final initialPerDay =
+        widget.initialValues?['allowancePerDay']?.toString() ??
+        gradeDefaultAllowancePerDay?.toString() ??
+        missionDays.toString();
+
+    gradeDefaultAllowancePerDay ??=
+        double.tryParse(initialPerDay) ?? missionDays.toDouble();
+
+    perDayCtrl = TextEditingController(text: initialPerDay);
   }
 
   @override
@@ -85,7 +94,14 @@ class _AllowanceFormState extends State<AllowanceForm> {
                     )
                     .toList(),
                 onChanged: (v) {
-                  setState(() => selectedUserId = v);
+                  setState(() {
+                    selectedUserId = v;
+                    // Reset to grade default when employee changes.
+                    // Until a grade-fee master exists, default from mission days.
+                    final defaultPerDay = missionDays.toDouble();
+                    gradeDefaultAllowancePerDay = defaultPerDay;
+                    perDayCtrl.text = defaultPerDay.toString();
+                  });
                 },
               ),
 
@@ -141,6 +157,9 @@ class _AllowanceFormState extends State<AllowanceForm> {
     if (selectedUserId == null || allowancePercentage == null) return;
 
     final employee = widget.users.firstWhere((e) => e.id == selectedUserId);
+    final perDay = double.parse(perDayCtrl.text);
+    final gradeDefault =
+        gradeDefaultAllowancePerDay ?? missionDays.toDouble();
 
     widget.onSubmit({
       'employeeId': employee.id,
@@ -149,7 +168,9 @@ class _AllowanceFormState extends State<AllowanceForm> {
       'position': employee.position?.name,
       'grade': employee.grade,
       'allowancePercentage': allowancePercentage,
-      'allowancePerDay': double.parse(perDayCtrl.text),
+      'allowancePerDay': perDay,
+      'gradeDefaultAllowancePerDay': gradeDefault,
+      'isAllowanceModified': perDay != gradeDefault,
       'missionDays': missionDays,
     });
   }

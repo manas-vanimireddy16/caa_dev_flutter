@@ -1,5 +1,7 @@
+import 'package:code_setup/presentation/screens/hc_service/models/city_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/duty_mission_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/country_model.dart';
 import 'package:code_setup/repository/hr_service/annual_duty_mission/domain/domain.dart';
 import 'package:code_setup/repository/hr_service/service_transfer/domain/domain.dart';
 import 'dart:developer';
@@ -137,6 +139,108 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
   }
 
   @override
+  Future<List<CountryModel>> getCountryList() async {
+    final client = await KAppX.network.secureClient();
+    try {
+      if (client == null) return [];
+      final response = await client.get(ApiEndPoint.countryList);
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final List<dynamic> list = data['data'] ?? [];
+        return list
+            .map((e) => CountryModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+      throw ApiException(
+        'Failed to fetch country list: ${response.statusCode}',
+      );
+    } catch (e) {
+      throw ApiException('Failed to fetch country list');
+    }
+  }
+
+  @override
+  Future<EmployeeList?> getHrUserById(int userId) async {
+    final client = await KAppX.network.secureClient();
+    try {
+      if (client == null) return null;
+      final response = await client.get(ApiEndPoint.hrServiceUserById(userId));
+      if (response.statusCode != 200) return null;
+      final dynamic responseData = response.data;
+      Map<String, dynamic>? userJson;
+      if (responseData is Map) {
+        final data = responseData['data'];
+        if (data is Map<String, dynamic>) {
+          userJson = data;
+        } else if (data is Map) {
+          userJson = Map<String, dynamic>.from(data);
+        } else if (responseData.containsKey('id')) {
+          userJson = Map<String, dynamic>.from(responseData);
+        }
+      }
+      if (userJson == null) return null;
+      return EmployeeList.fromJson(userJson);
+    } catch (e) {
+      debugPrint('getHrUserById error: $e');
+      return null;
+    }
+  }
+
+  @override
+  Future<List<CityModel>> getCitiesByCountryId(int countryId) async {
+    final client = await KAppX.network.secureClient();
+    try {
+      if (client == null) return [];
+      final response = await client.get(
+        ApiEndPoint.cityList,
+        queryParameters: {'country_id': countryId},
+      );
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final List<dynamic> list = data['data'] ?? [];
+        return list
+            .map((e) => CityModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+      throw ApiException(
+        'Failed to fetch city list: ${response.statusCode}',
+      );
+    } catch (e) {
+      // City master may not be available yet — return empty rather than hard-fail.
+      debugPrint('getCitiesByCountryId error: $e');
+      return [];
+    }
+  }
+
+  @override
+  Future<void> updateDutyMissionRequest(
+    int requestId,
+    Map<String, dynamic> payload,
+  ) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.dutyMissionRequestById(requestId);
+    try {
+      if (client != null) {
+        final response = await client.put(url, data: payload);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Request updated successfully',
+          );
+        } else {
+          ShowFlutterToast().showFlutterToastFailure(
+            response.data['message'] ?? 'Failed to update duty mission request',
+          );
+        }
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data['message'] ?? e.message;
+      throw ApiException(message);
+    } catch (e) {
+      throw ApiException('Failed to update $_serviceLabel request');
+    }
+  }
+
+  @override
   Future<void> sendAnnualDutyMissionRequest(
     Map<String, dynamic> payload,
   ) async {
@@ -147,29 +251,95 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
         final response = await client.post(url, data: payload);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          debugPrint('✅ New SecurityAwareness request sent successfully');
+          debugPrint('✅ Duty mission request sent successfully');
           ShowFlutterToast().showFlutterToastSuccess(
             response.data['message'] ?? 'Request sent successfully',
           );
         } else {
           ShowFlutterToast().showFlutterToastFailure(
-            response.data['message'] ??
-                'Failed to send SecurityAwareness request',
+            response.data['message'] ?? 'Failed to send duty mission request',
           );
           debugPrint(
-            '⚠️ Failed to send SecurityAwareness request: ${response.statusCode}',
+            '⚠️ Failed to send duty mission request: ${response.statusCode}',
           );
         }
       } else {
-        debugPrint('❌ Client is null — cannot send SecurityAwareness request');
+        debugPrint('❌ Client is null — cannot send duty mission request');
       }
     } on DioException catch (e) {
       log('Failed to process $_serviceLabel request');
       final message = e.response?.data['message'] ?? e.message;
       throw ApiException(message);
-      throw e;
     } catch (e) {
-      log('error SecurityAwareness request $e');
+      log('error duty mission request $e');
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> sendAnnualDutyMissionBulk(Map<String, dynamic> payload) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.dutyMissionAnnualBulkCreate;
+    try {
+      if (client != null) {
+        final response = await client.post(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Annual plans submitted successfully',
+          );
+        } else {
+          final message =
+              response.data['message'] ?? 'Failed to submit annual plans';
+          // Per-mission errors may look like "Mission N: …"
+          ShowFlutterToast().showFlutterToastFailure(message.toString());
+          throw ApiException(message.toString());
+        }
+      } else {
+        throw ApiException('Client is null - cannot submit annual bulk');
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data['message'] ?? e.message;
+      ShowFlutterToast().showFlutterToastFailure(message.toString());
+      throw ApiException(message.toString());
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> updateAnnualDutyMissionBulk(Map<String, dynamic> payload) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.dutyMissionAnnualBulkUpdate;
+    try {
+      if (client != null) {
+        // Editing must not overwrite requester dept/section.
+        payload.remove('req_user_department_id');
+        payload.remove('req_user_section_id');
+        payload.remove('choose_type');
+        payload.remove('remarks');
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            response.data['message'] ?? 'Annual plan updated successfully',
+          );
+        } else {
+          final message =
+              response.data['message'] ?? 'Failed to update annual plan';
+          ShowFlutterToast().showFlutterToastFailure(message.toString());
+          throw ApiException(message.toString());
+        }
+      } else {
+        throw ApiException('Client is null - cannot update annual bulk');
+      }
+    } on DioException catch (e) {
+      final message = e.response?.data['message'] ?? e.message;
+      ShowFlutterToast().showFlutterToastFailure(message.toString());
+      throw ApiException(message.toString());
+    } catch (e) {
+      if (e is ApiException) rethrow;
       throw ApiException(e.toString());
     }
   }
@@ -920,6 +1090,8 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
 
     try {
       if (client != null) {
+        // Backend rejects request_type on the approve endpoint.
+        payload.remove('request_type');
         final response = await client.post(url, data: payload);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
@@ -974,6 +1146,70 @@ class AnnualDutyMissionRepoistryImple implements AnnualDutyMissionRepoistry {
     } catch (e) {
       debugPrint('❌ Unexpected error: $e');
       throw e;
+    }
+  }
+
+  @override
+  Future<void> onBulkApprove(Map<String, dynamic> payload) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.dutyMissionAnnualBulkApprove;
+
+    try {
+      if (client != null) {
+        // Never send request_type — backend rejects it on approve.
+        payload.remove('request_type');
+        final response = await client.post(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ShowFlutterToast().showFlutterToastSuccess(
+            '${response.data['message'] ?? 'Bulk action completed'}',
+          );
+        } else {
+          ShowFlutterToast().showFlutterToastFailure(
+            '${response.statusMessage}',
+          );
+        }
+      } else {
+        debugPrint('❌ Client is null — cannot bulk approve');
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      rethrow;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> saveAirTicketTypesBulk(
+    int requestId,
+    Map<String, dynamic> payload,
+  ) async {
+    final client = await KAppX.network.secureClient();
+    final String url = ApiEndPoint.dutyMissionAirTicketTypeBulk(requestId);
+
+    try {
+      if (client != null) {
+        final response = await client.put(url, data: payload);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          debugPrint('✅ Air ticket types saved for request $requestId');
+        } else {
+          ShowFlutterToast().showFlutterToastFailure(
+            '${response.statusMessage}',
+          );
+          throw Exception('Failed to save ticket types');
+        }
+      } else {
+        throw Exception('Client is null - cannot save ticket types');
+      }
+    } on DioException catch (e) {
+      debugPrint('❌ Dio error: ${e.response?.data ?? e.message}');
+      rethrow;
+    } catch (e) {
+      debugPrint('❌ Unexpected error: $e');
+      rethrow;
     }
   }
 

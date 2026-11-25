@@ -25,11 +25,18 @@ final requestDeatilsTabSelectedProvider = StateProvider.autoDispose<int>(
 class _VSControllerParams extends Equatable {
   final Service service;
   final SubService subService;
+  final bool isEditMode;
+  final int? requestId;
 
-  const _VSControllerParams({required this.service, required this.subService});
+  const _VSControllerParams({
+    required this.service,
+    required this.subService,
+    this.isEditMode = false,
+    this.requestId,
+  });
 
   @override
-  List<Object?> get props => [service, subService];
+  List<Object?> get props => [service, subService, isEditMode, requestId];
 }
 
 final _vsProvider = StateNotifierProvider.autoDispose
@@ -37,6 +44,8 @@ final _vsProvider = StateNotifierProvider.autoDispose
       final controller = _VSController(
         service: params.service,
         subService: params.subService,
+        isEditMode: params.isEditMode,
+        requestId: params.requestId,
       );
       controller.initState();
       return controller;
@@ -92,6 +101,9 @@ class _ViewState {
   final AllowanceFormMode formMode;
   final List<Map<String, dynamic>> missionIdDropDownOptions;
   final List<DutyMissionModel> missionIdDropDownValues;
+  final List<CountryModel> countries;
+  final List<Map<String, dynamic>> fromCityOptions;
+  final List<Map<String, dynamic>> toCityOptions;
 
   final bool isEdit;
   final Map<String, dynamic>? formInitialValues;
@@ -131,7 +143,6 @@ class _ViewState {
     required this.isStartDateSelected,
     required this.selectedSalaryDetails,
     required this.selectedRequestType,
-
     required this.allowanceEmployees,
     required this.showForm,
     required this.entries,
@@ -141,7 +152,9 @@ class _ViewState {
     required this.formMode,
     required this.missionIdDropDownValues,
     required this.missionIdDropDownOptions,
-
+    required this.countries,
+    required this.fromCityOptions,
+    required this.toCityOptions,
     required this.isEdit,
     required this.formInitialValues,
   });
@@ -179,7 +192,6 @@ class _ViewState {
         isStartDateSelected: false,
         selectedSalaryDetails: '',
         selectedRequestType: '',
-
         allowanceEmployees: [],
         showForm: false,
         entries: [],
@@ -189,6 +201,9 @@ class _ViewState {
         formMode: AllowanceFormMode.add,
         missionIdDropDownValues: [],
         missionIdDropDownOptions: [],
+        countries: [],
+        fromCityOptions: [],
+        toCityOptions: [],
         isEdit: true,
         formInitialValues: {},
       );
@@ -247,7 +262,9 @@ class _ViewState {
     AllowanceFormMode? formMode,
     List<Map<String, dynamic>>? missionIdDropDownOptions,
     List<DutyMissionModel>? missionIdDropDownValues,
-
+    List<CountryModel>? countries,
+    List<Map<String, dynamic>>? fromCityOptions,
+    List<Map<String, dynamic>>? toCityOptions,
     bool? isEdit,
     Map<String, dynamic>? formInitialValues,
   }) {
@@ -289,7 +306,6 @@ class _ViewState {
       selectedSalaryDetails:
           selectedSalaryDetails ?? this.selectedSalaryDetails,
       selectedRequestType: selectedRequestType ?? this.selectedRequestType,
-
       allowanceEmployees: allowanceEmployees ?? this.allowanceEmployees,
       showForm: showForm ?? this.showForm,
       entries: entries ?? this.entries,
@@ -301,7 +317,9 @@ class _ViewState {
           missionIdDropDownValues ?? this.missionIdDropDownValues,
       missionIdDropDownOptions:
           missionIdDropDownOptions ?? this.missionIdDropDownOptions,
-
+      countries: countries ?? this.countries,
+      fromCityOptions: fromCityOptions ?? this.fromCityOptions,
+      toCityOptions: toCityOptions ?? this.toCityOptions,
       isEdit: isEdit ?? this.isEdit,
       formInitialValues: formInitialValues ?? this.formInitialValues,
     );
@@ -311,9 +329,15 @@ class _ViewState {
 class _VSController extends StateNotifier<_ViewState> {
   final Service service;
   final SubService subService;
+  final bool isEditMode;
+  final int? requestId;
 
-  _VSController({required this.service, required this.subService})
-    : super(_ViewState.init());
+  _VSController({
+    required this.service,
+    required this.subService,
+    this.isEditMode = false,
+    this.requestId,
+  }) : super(_ViewState.init());
 
   late TextEditingController chatController;
   late TextEditingController titleController;
@@ -374,13 +398,46 @@ class _VSController extends StateNotifier<_ViewState> {
     // fetchDepartmentName();
     fetchKpi();
     fetchApprovalKpi();
-    // fetchUsers();
+    fetchUsers();
     fetchRequests();
     fetchActionItems();
     fetchStatusBreakdown('monthly');
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalStatusBreakdown('monthly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    fetchCountries();
+    if (isEditMode && requestId != null) {
+      state = state.copyWith(isLoading: true);
+      loadForEdit(requestId!);
+    }
+  }
+
+  Future<void> loadForEdit(int id) async {
+    try {
+      state = state.copyWith(isLoading: true, isEdit: true);
+      await fetchRequestDetailsById(id);
+      final request = state.requestDetails.request;
+      final values = mapDutyMissionToFormValues(request);
+      values['attachments'] = mapAttachmentsToFileUploadItems(
+        state.requestDetails.attachments,
+      );
+      final entries = mapDutyMissionToAllowanceEntries(request);
+      state = state.copyWith(
+        isLoading: false,
+        isEdit: true,
+        formInitialValues: values,
+        entries: entries,
+      );
+      if ((request?.fromCountry ?? '').isNotEmpty) {
+        await fetchCitiesForCountryName(request!.fromCountry, isFrom: true);
+      }
+      if ((request?.toCountry ?? '').isNotEmpty) {
+        await fetchCitiesForCountryName(request!.toCountry, isFrom: false);
+      }
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
+    }
   }
 
   void _validateForm() {
@@ -456,7 +513,18 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Trip Type',
       type: FieldType.text,
       required: false,
-      initialValue: 'Planned',
+      disabled: true,
+      initialValue: 'Unplanned',
+    ),
+
+    /// -------- REQUEST TYPE --------
+    DynamicField(
+      name: 'requestType',
+      label: 'Request Type',
+      type: FieldType.radio,
+      required: true,
+      disabled: isEditMode,
+      options: const ['Old', 'New'],
     ),
 
     /// -------- CHOOSE TYPE --------
@@ -469,25 +537,20 @@ class _VSController extends StateNotifier<_ViewState> {
         DropdownOption(value: 'Inside', label: 'Inside'),
         DropdownOption(value: 'Outside', label: 'Outside'),
       ],
+      onChanged: (value, ref) {
+        if (value == 'Inside') {
+          fetchCitiesForCountryName(kDutyMissionOmanCountry, isFrom: true);
+          fetchCitiesForCountryName(kDutyMissionOmanCountry, isFrom: false);
+        } else {
+          state = state.copyWith(fromCityOptions: [], toCityOptions: []);
+        }
+      },
     ),
 
-    // /// -------- MISSION ID --------
-    // DynamicField(
-    //   name: 'missionId',
-    //   label: 'Mission ID',
-    //   type: FieldType.select,
-    //   required: false,
-    //   options: state.missionIdDropDownOptions
-    //       .map(
-    //         (e) => DropdownOption<String>(value: e['value'], label: e['label']),
-    //       )
-    //       .toList(),
-    // ),
-
-    /// -------- MISSION SPONSORED BY --------
+    /// -------- PAYING ENTITY --------
     DynamicField(
       name: 'missionSponsoredBy',
-      label: 'Mission Sponsored by',
+      label: 'Paying Entity',
       type: FieldType.select,
       required: false,
       options: const [
@@ -570,7 +633,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// -------- MISSION START DATE --------
     DynamicField(
       name: 'missionStartDate',
-      label: 'Mission Start Date',
+      label: 'Actual Mission Start Date',
       type: FieldType.date,
       required: true,
     ),
@@ -578,7 +641,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// -------- MISSION END DATE --------
     DynamicField(
       name: 'missionEndDate',
-      label: 'Mission End Date',
+      label: 'Actual Mission End Date',
       type: FieldType.date,
       required: true,
     ),
@@ -635,58 +698,79 @@ class _VSController extends StateNotifier<_ViewState> {
   ];
 
   List<DynamicField> get travelDetailsForm => [
-    /// -------- TRAVELLING AREA FROM --------
-    DynamicField(
-      name: 'travellingAreaFrom',
-      label: 'Travelling Area From',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter',
-    ),
-
-    /// -------- TRAVELLING AREA TO --------
-    DynamicField(
-      name: 'travellingAreaTo',
-      label: 'Travelling Area To',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter',
-    ),
-
-    /// -------- DISTANCE --------
-    DynamicField(
-      name: 'distance',
-      label: 'Distance',
-      type: FieldType.text,
-      required: false,
-      placeholder: 'Enter',
-    ),
-
-    /// -------- TRAVEL PLACE --------
-    DynamicField(
-      name: 'travelPlace',
-      label: 'Travel Place',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter',
-    ),
-
     /// -------- FROM COUNTRY --------
     DynamicField(
       name: 'fromCountry',
       label: 'From Country',
-      type: FieldType.text,
+      type: FieldType.select,
       required: true,
-      initialValue: 'Oman',
+      disabledWhen: (values) => values['chooseType'] == 'Inside',
+      options: state.countries
+          .where((c) => (c.countryName ?? '').isNotEmpty)
+          .map(
+            (c) => DropdownOption<String>(
+              value: c.countryName!,
+              label: c.countryName!,
+            ),
+          )
+          .toList(),
+      onChanged: (value, ref) {
+        fetchCitiesForCountryName(value?.toString(), isFrom: true);
+        fetchCitiesForCountryName(value?.toString(), isFrom: false);
+      },
     ),
 
     /// -------- TO COUNTRY --------
     DynamicField(
       name: 'toCountry',
       label: 'To Country',
-      type: FieldType.text,
+      type: FieldType.select,
       required: true,
-      initialValue: 'Oman',
+      disabledWhen: (values) => values['chooseType'] == 'Inside',
+      options: state.countries
+          .where((c) => (c.countryName ?? '').isNotEmpty)
+          .map(
+            (c) => DropdownOption<String>(
+              value: c.countryName!,
+              label: c.countryName!,
+            ),
+          )
+          .toList(),
+      onChanged: (value, ref) {
+        fetchCitiesForCountryName(value?.toString(), isFrom: false);
+      },
+    ),
+
+    /// -------- DESTINATION (FROM) --------
+    DynamicField(
+      name: 'travellingAreaFrom',
+      label: 'Destination (From)',
+      type: FieldType.select,
+      required: true,
+      options: state.fromCityOptions
+          .map(
+            (e) => DropdownOption<String>(
+              value: e['value']?.toString() ?? '',
+              label: e['label']?.toString() ?? '',
+            ),
+          )
+          .toList(),
+    ),
+
+    /// -------- DESTINATION (TO) --------
+    DynamicField(
+      name: 'travellingAreaTo',
+      label: 'Destination (To)',
+      type: FieldType.select,
+      required: true,
+      options: state.toCityOptions
+          .map(
+            (e) => DropdownOption<String>(
+              value: e['value']?.toString() ?? '',
+              label: e['label']?.toString() ?? '',
+            ),
+          )
+          .toList(),
     ),
 
     /// -------- TRAVEL START DATE --------
@@ -711,7 +795,11 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Air Ticket Required',
       type: FieldType.radio,
       required: true,
-      options: const ['Yes', 'No', 'Cash Component'],
+      options: const [
+        DropdownOption(value: 'Yes', label: 'Yes'),
+        DropdownOption(value: 'No', label: 'No'),
+        DropdownOption(value: 'Cash Component', label: 'Cash Compensation'),
+      ],
     ),
 
     /// -------- VEHICLE REQUIRED --------
@@ -730,8 +818,9 @@ class _VSController extends StateNotifier<_ViewState> {
     ),
     DynamicField(
       name: 'attachments',
-      label: 'Attachments (Optional)',
+      label: 'Attachments',
       type: FieldType.file,
+      required: true,
     ),
   ];
 
@@ -963,22 +1052,16 @@ class _VSController extends StateNotifier<_ViewState> {
     } catch (e) {}
   }
 
-  // Future<void> fetchUsers() async {
-  //   try {
-  //     final userInfo = KAppX.globalProvider.read(rolesProvider);
-  //     final departmentId = userInfo?.departmentId ?? 0;
-  //     final users = await dutyMissionAnnualInstance.getUsers(departmentId);
-
-  //     state = state.copyWith(usersList: users);
-  //     print('✅ Users fetched: ${users.length}');
-  //   } on ApiException catch (apiError) {
-  //     Fluttertoast.showToast(msg: apiError.message);
-  //     print('❌ API ERROR: ${apiError.message}');
-  //   } catch (e, stack) {
-  //     print('❌ UNKNOWN ERROR: $e');
-  //     print(stack);
-  //   }
-  // }
+  Future<void> fetchUsers() async {
+    try {
+      final users = await dutyMissionAnnualInstance.getUsers();
+      state = state.copyWith(usersList: users);
+    } on ApiException catch (apiError) {
+      Fluttertoast.showToast(msg: apiError.message);
+    } catch (e) {
+      debugPrint('fetchUsers: $e');
+    }
+  }
 
   Future<void> fetchApprovalKpi() async {
     try {
@@ -1009,6 +1092,141 @@ class _VSController extends StateNotifier<_ViewState> {
   //     Fluttertoast.showToast(msg: e.toString());
   //   }
   // }
+
+  Future<void> fetchCountries() async {
+    try {
+      final countries = await dutyMissionAnnualInstance.getCountryList();
+      state = state.copyWith(countries: countries);
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  int? _countryIdByName(String? name) {
+    if (name == null || name.isEmpty) return null;
+    for (final c in state.countries) {
+      if ((c.countryName ?? '').toLowerCase() == name.toLowerCase()) {
+        return c.id;
+      }
+    }
+    return null;
+  }
+
+  /// Resolve employee code → numeric user id, then GET /hr-service/user/:id.
+  Future<Map<String, dynamic>?> fetchPassportForEmployee(
+    dynamic employeeIdOrCode,
+  ) async {
+    if (employeeIdOrCode == null) return null;
+    final raw = employeeIdOrCode.toString().trim();
+    if (raw.isEmpty) return null;
+
+    int? userId = int.tryParse(raw);
+    if (userId == null) {
+      for (final u in state.usersList) {
+        if (u.employeeId == raw || u.id.toString() == raw) {
+          userId = u.id;
+          break;
+        }
+      }
+    } else {
+      for (final u in state.usersList) {
+        if (u.id == userId || u.employeeId == raw) {
+          userId = u.id;
+          break;
+        }
+      }
+    }
+    if (userId == null) return null;
+
+    try {
+      final user = await dutyMissionAnnualInstance.getHrUserById(userId);
+      if (user == null) return null;
+      return {'passportNo': user.passportNumber};
+    } catch (e) {
+      debugPrint('fetchPassportForEmployee: $e');
+      return null;
+    }
+  }
+
+  Future<void> fetchCitiesForCountryName(
+    String? countryName, {
+    required bool isFrom,
+  }) async {
+    final countryId = _countryIdByName(countryName);
+    if (countryId == null) {
+      state = isFrom
+          ? state.copyWith(fromCityOptions: [])
+          : state.copyWith(toCityOptions: []);
+      return;
+    }
+    try {
+      final cities =
+          await dutyMissionAnnualInstance.getCitiesByCountryId(countryId);
+      final options = cities
+          .where((c) => (c.cityName ?? '').isNotEmpty)
+          .map(
+            (c) => {
+              'value': c.cityName,
+              'label': c.cityName,
+            },
+          )
+          .toList();
+      state = isFrom
+          ? state.copyWith(fromCityOptions: options)
+          : state.copyWith(toCityOptions: options);
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  Future<bool> buildDutyMissionPayload(
+    int serviceId,
+    int subServiceId,
+    Map<String, dynamic> values,
+  ) async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      final userData = KAppX.globalProvider.read(rolesProvider);
+      final editing = isEditMode && requestId != null;
+
+      final payload = buildPlannedUnplannedDutyMissionPayload(
+        tripType: tripType,
+        serviceId: serviceId,
+        subServiceId: subServiceId,
+        values: values,
+        entries: state.entries,
+        departmentId: userData?.departmentId ?? 0,
+        sectionId: userData?.sectionId ?? 0,
+        includeMissionId: false,
+      );
+
+      if (editing) {
+        payload.remove('req_user_department_id');
+        payload.remove('req_user_section_id');
+        payload['request_id'] = requestId;
+        await dutyMissionAnnualInstance.updateDutyMissionRequest(
+          requestId!,
+          payload,
+        );
+      } else {
+        await dutyMissionAnnualInstance.sendAnnualDutyMissionRequest(payload);
+      }
+      debugPrint(payload.toString());
+
+      fetchKpi();
+      fetchRequests();
+      fetchActionItems();
+      return true;
+    } catch (e, st) {
+      debugPrint('Submit Error: $e');
+      debugPrintStack(stackTrace: st);
+      Fluttertoast.showToast(msg: e.toString());
+      return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
 
   Future<void> fetchRequests({
     bool isRefresh = false,
@@ -1074,25 +1292,25 @@ class _VSController extends StateNotifier<_ViewState> {
     required int approverId,
     required int requestId,
   }) {
+    final airTickets = type == ApprovalDialogType.approve
+        ? airTicketsNeedingType(state.requestDetails.request)
+        : const <AirTicketDetail>[];
+
     KAppX.extendedRouter.dialog.showKDialog(
-      builder: (_) => ApprovalCommentDialog(
+      builder: (_) => DutyMissionApprovalDialog(
         type: type,
-        onSubmit: (comment, decisionNo) async {
-          if (type == ApprovalDialogType.approve) {
-            await onApprove(
-              approverId,
-              requestId,
-              comment,
-              "Approved", // optional
-            );
-          } else {
-            await onApprove(
-              approverId,
-              requestId,
-              comment,
-              'Rejected', // mandatory
-            );
-          }
+        airTicketEmployees: airTickets,
+        onSubmit: (comment, ticketTypes) async {
+          final status = type == ApprovalDialogType.approve
+              ? 'Approved'
+              : 'Rejected';
+          await onApprove(
+            approverId,
+            requestId,
+            comment,
+            status,
+            ticketTypesByEmployeeId: ticketTypes,
+          );
         },
       ),
     );
@@ -1261,26 +1479,39 @@ class _VSController extends StateNotifier<_ViewState> {
     int approverId,
     int requestId,
     String comment,
-    String status,
-  ) async {
+    String status, {
+    Map<String, String> ticketTypesByEmployeeId = const {},
+  }) async {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1️⃣ Upload files
+      final isApprove = status.toLowerCase() == 'approved';
+      if (isApprove && ticketTypesByEmployeeId.isNotEmpty) {
+        final tickets = ticketTypesByEmployeeId.entries
+            .map(
+              (e) => {
+                'employee_id': e.key,
+                'ticket_type': e.value,
+              },
+            )
+            .toList();
+        await dutyMissionAnnualInstance.saveAirTicketTypesBulk(requestId, {
+          'tickets': tickets,
+        });
+      }
 
-      // 2️⃣ Build payload
+      // Do not send request_type — backend rejects it on approve.
       final payload = {
-        "request_id": requestId,
-        "status": status,
-        "comment": comment,
-        "approval_id": approverId,
+        'request_id': requestId,
+        'status': status,
+        'comment': comment,
+        'approval_id': approverId,
       };
 
-      debugPrint("✅ Final Payload: $payload");
+      debugPrint('✅ Final Payload: $payload');
 
-      // 3️⃣ Send request
       await dutyMissionAnnualInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 2));
       KAppX.router.pop();
       KAppX.router.pop();
       await fetchActionItems();

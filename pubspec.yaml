@@ -55,7 +55,7 @@ dependencies:
   flutter_localization: ^0.3.3
   fl_chart: ^1.1.1
   # http:
-  msal_auth: ^3.3.0
+  msal_auth: ^3.5.3
   webview_flutter: ^4.13.0
   file_picker: ^10.3.3
   intl: ^0.20.2

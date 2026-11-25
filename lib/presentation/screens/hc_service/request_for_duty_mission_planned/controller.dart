@@ -25,11 +25,18 @@ final requestDeatilsTabSelectedProvider = StateProvider.autoDispose<int>(
 class _VSControllerParams extends Equatable {
   final Service service;
   final SubService subService;
+  final bool isEditMode;
+  final int? requestId;
 
-  const _VSControllerParams({required this.service, required this.subService});
+  const _VSControllerParams({
+    required this.service,
+    required this.subService,
+    this.isEditMode = false,
+    this.requestId,
+  });
 
   @override
-  List<Object?> get props => [service, subService];
+  List<Object?> get props => [service, subService, isEditMode, requestId];
 }
 
 final _vsProvider = StateNotifierProvider.autoDispose
@@ -37,6 +44,8 @@ final _vsProvider = StateNotifierProvider.autoDispose
       final controller = _VSController(
         service: params.service,
         subService: params.subService,
+        isEditMode: params.isEditMode,
+        requestId: params.requestId,
       );
       controller.initState();
       return controller;
@@ -92,6 +101,9 @@ class _ViewState {
   final int formVersion;
   final AllowanceFormMode formMode;
   final List<Map<String, dynamic>> missionIdDropDownOptions;
+  final List<CountryModel> countries;
+  final List<Map<String, dynamic>> fromCityOptions;
+  final List<Map<String, dynamic>> toCityOptions;
 
   final bool isEdit;
   final Map<String, dynamic>? formInitialValues;
@@ -140,7 +152,9 @@ class _ViewState {
     required this.formMode,
     required this.missionIdDropDownValues,
     required this.missionIdDropDownOptions,
-
+    required this.countries,
+    required this.fromCityOptions,
+    required this.toCityOptions,
     required this.isEdit,
     required this.formInitialValues,
   });
@@ -187,6 +201,9 @@ class _ViewState {
         formMode: AllowanceFormMode.add,
         missionIdDropDownValues: [],
         missionIdDropDownOptions: [],
+        countries: [],
+        fromCityOptions: [],
+        toCityOptions: [],
         isEdit: true,
         formInitialValues: {},
       );
@@ -244,7 +261,9 @@ class _ViewState {
     int? formVersion,
     AllowanceFormMode? formMode,
     List<Map<String, dynamic>>? missionIdDropDownOptions,
-
+    List<CountryModel>? countries,
+    List<Map<String, dynamic>>? fromCityOptions,
+    List<Map<String, dynamic>>? toCityOptions,
     bool? isEdit,
     Map<String, dynamic>? formInitialValues,
   }) {
@@ -297,7 +316,9 @@ class _ViewState {
           missionIdDropDownValues ?? this.missionIdDropDownValues,
       missionIdDropDownOptions:
           missionIdDropDownOptions ?? this.missionIdDropDownOptions,
-
+      countries: countries ?? this.countries,
+      fromCityOptions: fromCityOptions ?? this.fromCityOptions,
+      toCityOptions: toCityOptions ?? this.toCityOptions,
       isEdit: isEdit ?? this.isEdit,
       formInitialValues: formInitialValues ?? this.formInitialValues,
     );
@@ -307,9 +328,15 @@ class _ViewState {
 class _VSController extends StateNotifier<_ViewState> {
   final Service service;
   final SubService subService;
+  final bool isEditMode;
+  final int? requestId;
 
-  _VSController({required this.service, required this.subService})
-    : super(_ViewState.init());
+  _VSController({
+    required this.service,
+    required this.subService,
+    this.isEditMode = false,
+    this.requestId,
+  }) : super(_ViewState.init());
 
   late TextEditingController chatController;
   late TextEditingController titleController;
@@ -377,7 +404,43 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalStatusBreakdown('monthly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
-    fetchMissionIdDropDown('Annual');
+    fetchCountries();
+    if (isEditMode && requestId != null) {
+      state = state.copyWith(isLoading: true);
+      loadForEdit(requestId!);
+    }
+  }
+
+  Future<void> loadForEdit(int id) async {
+    try {
+      state = state.copyWith(isLoading: true, isEdit: true);
+      await fetchRequestDetailsById(id);
+      final request = state.requestDetails.request;
+      final values = mapDutyMissionToFormValues(request);
+      values['attachments'] = mapAttachmentsToFileUploadItems(
+        state.requestDetails.attachments,
+      );
+      final entries = mapDutyMissionToAllowanceEntries(request);
+      state = state.copyWith(
+        isLoading: false,
+        isEdit: true,
+        formInitialValues: values,
+        entries: entries,
+      );
+      if ((request?.fromCountry ?? '').isNotEmpty) {
+        await fetchCitiesForCountryName(request!.fromCountry, isFrom: true);
+      }
+      if ((request?.toCountry ?? '').isNotEmpty) {
+        await fetchCitiesForCountryName(request!.toCountry, isFrom: false);
+      }
+      final rt = request?.requestType;
+      if (rt == 'Old' || rt == 'New') {
+        await fetchMissionIdDropDown(rt == 'Old' ? 'Planned' : 'Annual');
+      }
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
+    }
   }
 
   void _validateForm() {
@@ -453,7 +516,23 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Trip Type',
       type: FieldType.text,
       required: false,
+      disabled: true,
       initialValue: 'Planned',
+    ),
+
+    /// -------- REQUEST TYPE --------
+    DynamicField(
+      name: 'requestType',
+      label: 'Request Type',
+      type: FieldType.radio,
+      required: true,
+      disabled: isEditMode,
+      options: const ['Old', 'New'],
+      onChanged: (value, ref) {
+        if (isEditMode) return;
+        final trip = value == 'Old' ? 'Planned' : 'Annual';
+        fetchMissionIdDropDown(trip);
+      },
     ),
 
     /// -------- CHOOSE TYPE --------
@@ -466,6 +545,14 @@ class _VSController extends StateNotifier<_ViewState> {
         DropdownOption(value: 'Inside', label: 'Inside'),
         DropdownOption(value: 'Outside', label: 'Outside'),
       ],
+      onChanged: (value, ref) {
+        if (value == 'Inside') {
+          fetchCitiesForCountryName(kDutyMissionOmanCountry, isFrom: true);
+          fetchCitiesForCountryName(kDutyMissionOmanCountry, isFrom: false);
+        } else {
+          state = state.copyWith(fromCityOptions: [], toCityOptions: []);
+        }
+      },
     ),
 
     /// -------- MISSION ID --------
@@ -473,18 +560,45 @@ class _VSController extends StateNotifier<_ViewState> {
       name: 'missionId',
       label: 'Mission ID',
       type: FieldType.select,
-      required: false,
+      required: true,
+      disabled: isEditMode,
+      requiredWhen: (values) => values['requestType'] != null,
+      visibleWhen: (values) => values['requestType'] != null,
       options: state.missionIdDropDownOptions
           .map(
-            (e) => DropdownOption<String>(value: e['value'], label: e['label']),
+            (e) => DropdownOption<String>(
+              value: e['value']?.toString() ?? '',
+              label: e['label']?.toString() ?? '',
+            ),
           )
           .toList(),
+      onChanged: (value, ref) {
+        if (isEditMode) return;
+        DutyMissionModel? mission;
+        for (final m in state.missionIdDropDownValues) {
+          if (m.missionId == value) {
+            mission = m;
+            break;
+          }
+        }
+        if (mission?.chooseType != null) {
+          ref
+              .read(dynamicFormProvider.notifier)
+              .updateValue('chooseType', mission!.chooseType);
+          if (mission.chooseType == 'Inside') {
+            fetchCitiesForCountryName(kDutyMissionOmanCountry, isFrom: true);
+            fetchCitiesForCountryName(kDutyMissionOmanCountry, isFrom: false);
+          } else {
+            state = state.copyWith(fromCityOptions: [], toCityOptions: []);
+          }
+        }
+      },
     ),
 
-    /// -------- MISSION SPONSORED BY --------
+    /// -------- PAYING ENTITY --------
     DynamicField(
       name: 'missionSponsoredBy',
-      label: 'Mission Sponsored by',
+      label: 'Paying Entity',
       type: FieldType.select,
       required: false,
       options: const [
@@ -567,7 +681,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// -------- MISSION START DATE --------
     DynamicField(
       name: 'missionStartDate',
-      label: 'Mission Start Date',
+      label: 'Actual Mission Start Date',
       type: FieldType.date,
       required: true,
     ),
@@ -575,7 +689,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// -------- MISSION END DATE --------
     DynamicField(
       name: 'missionEndDate',
-      label: 'Mission End Date',
+      label: 'Actual Mission End Date',
       type: FieldType.date,
       required: true,
     ),
@@ -632,58 +746,79 @@ class _VSController extends StateNotifier<_ViewState> {
   ];
 
   List<DynamicField> get travelDetailsForm => [
-    /// -------- TRAVELLING AREA FROM --------
-    DynamicField(
-      name: 'travellingAreaFrom',
-      label: 'Travelling Area From',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter',
-    ),
-
-    /// -------- TRAVELLING AREA TO --------
-    DynamicField(
-      name: 'travellingAreaTo',
-      label: 'Travelling Area To',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter',
-    ),
-
-    /// -------- DISTANCE --------
-    DynamicField(
-      name: 'distance',
-      label: 'Distance',
-      type: FieldType.text,
-      required: false,
-      placeholder: 'Enter',
-    ),
-
-    /// -------- TRAVEL PLACE --------
-    DynamicField(
-      name: 'travelPlace',
-      label: 'Travel Place',
-      type: FieldType.text,
-      required: true,
-      placeholder: 'Enter',
-    ),
-
     /// -------- FROM COUNTRY --------
     DynamicField(
       name: 'fromCountry',
       label: 'From Country',
-      type: FieldType.text,
+      type: FieldType.select,
       required: true,
-      initialValue: 'Oman',
+      disabledWhen: (values) => values['chooseType'] == 'Inside',
+      options: state.countries
+          .where((c) => (c.countryName ?? '').isNotEmpty)
+          .map(
+            (c) => DropdownOption<String>(
+              value: c.countryName!,
+              label: c.countryName!,
+            ),
+          )
+          .toList(),
+      onChanged: (value, ref) {
+        fetchCitiesForCountryName(value?.toString(), isFrom: true);
+        fetchCitiesForCountryName(value?.toString(), isFrom: false);
+      },
     ),
 
     /// -------- TO COUNTRY --------
     DynamicField(
       name: 'toCountry',
       label: 'To Country',
-      type: FieldType.text,
+      type: FieldType.select,
       required: true,
-      initialValue: 'Oman',
+      disabledWhen: (values) => values['chooseType'] == 'Inside',
+      options: state.countries
+          .where((c) => (c.countryName ?? '').isNotEmpty)
+          .map(
+            (c) => DropdownOption<String>(
+              value: c.countryName!,
+              label: c.countryName!,
+            ),
+          )
+          .toList(),
+      onChanged: (value, ref) {
+        fetchCitiesForCountryName(value?.toString(), isFrom: false);
+      },
+    ),
+
+    /// -------- DESTINATION (FROM) --------
+    DynamicField(
+      name: 'travellingAreaFrom',
+      label: 'Destination (From)',
+      type: FieldType.select,
+      required: true,
+      options: state.fromCityOptions
+          .map(
+            (e) => DropdownOption<String>(
+              value: e['value']?.toString() ?? '',
+              label: e['label']?.toString() ?? '',
+            ),
+          )
+          .toList(),
+    ),
+
+    /// -------- DESTINATION (TO) --------
+    DynamicField(
+      name: 'travellingAreaTo',
+      label: 'Destination (To)',
+      type: FieldType.select,
+      required: true,
+      options: state.toCityOptions
+          .map(
+            (e) => DropdownOption<String>(
+              value: e['value']?.toString() ?? '',
+              label: e['label']?.toString() ?? '',
+            ),
+          )
+          .toList(),
     ),
 
     /// -------- TRAVEL START DATE --------
@@ -708,7 +843,11 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Air Ticket Required',
       type: FieldType.radio,
       required: true,
-      options: const ['Yes', 'No', 'Cash Component'],
+      options: const [
+        DropdownOption(value: 'Yes', label: 'Yes'),
+        DropdownOption(value: 'No', label: 'No'),
+        DropdownOption(value: 'Cash Component', label: 'Cash Compensation'),
+      ],
     ),
 
     /// -------- VEHICLE REQUIRED --------
@@ -727,8 +866,9 @@ class _VSController extends StateNotifier<_ViewState> {
     ),
     DynamicField(
       name: 'attachments',
-      label: 'Attachments (Optional)',
+      label: 'Attachments',
       type: FieldType.file,
+      required: true,
     ),
   ];
 
@@ -1004,24 +1144,121 @@ class _VSController extends StateNotifier<_ViewState> {
   Future<void> fetchMissionIdDropDown(String tripType) async {
     try {
       final requests = await dutyMissionAnnualInstance
-          .getMissionIdDropDownValues(tripType: tripType);
+          .getMissionIdDropDownValues(
+            tripType: tripType,
+            status: 'Approved',
+          );
 
-      // Filter Approved missions and convert to Map
-      final options = requests
-          .where((e) => e.status == 'Approved')
+      final approved = requests
+          .where((e) => (e.status ?? '').toLowerCase() == 'approved')
+          .toList();
+
+      final options = approved
+          .where((e) => (e.missionId ?? '').isNotEmpty)
           .map(
             (e) => {
               'value': e.missionId,
               'label': e.missionId,
-              'raw': e, // keep full object for later use
+              'raw': e,
             },
           )
           .toList();
 
       state = state.copyWith(
-        missionIdDropDownValues: requests,
+        missionIdDropDownValues: approved,
         missionIdDropDownOptions: options,
       );
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  Future<void> fetchCountries() async {
+    try {
+      final countries = await dutyMissionAnnualInstance.getCountryList();
+      state = state.copyWith(countries: countries);
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  int? _countryIdByName(String? name) {
+    if (name == null || name.isEmpty) return null;
+    for (final c in state.countries) {
+      if ((c.countryName ?? '').toLowerCase() == name.toLowerCase()) {
+        return c.id;
+      }
+    }
+    return null;
+  }
+
+  /// Resolve employee code → numeric user id, then GET /hr-service/user/:id
+  /// for passport autofill. Skips placeholder rows with no employee.
+  Future<Map<String, dynamic>?> fetchPassportForEmployee(
+    dynamic employeeIdOrCode,
+  ) async {
+    if (employeeIdOrCode == null) return null;
+    final raw = employeeIdOrCode.toString().trim();
+    if (raw.isEmpty) return null;
+
+    int? userId = int.tryParse(raw);
+    if (userId == null) {
+      for (final u in state.usersList) {
+        if (u.employeeId == raw || u.id.toString() == raw) {
+          userId = u.id;
+          break;
+        }
+      }
+    } else {
+      // May already be numeric id, or a numeric employee code — prefer usersList match.
+      for (final u in state.usersList) {
+        if (u.id == userId || u.employeeId == raw) {
+          userId = u.id;
+          break;
+        }
+      }
+    }
+    if (userId == null) return null;
+
+    try {
+      final user = await dutyMissionAnnualInstance.getHrUserById(userId);
+      if (user == null) return null;
+      return {
+        'passportNo': user.passportNumber,
+        // Issue/expiry not always on employee profile — keep existing if blank.
+      };
+    } catch (e) {
+      debugPrint('fetchPassportForEmployee: $e');
+      return null;
+    }
+  }
+
+  Future<void> fetchCitiesForCountryName(
+    String? countryName, {
+    required bool isFrom,
+  }) async {
+    final countryId = _countryIdByName(countryName);
+    if (countryId == null) {
+      state = isFrom
+          ? state.copyWith(fromCityOptions: [])
+          : state.copyWith(toCityOptions: []);
+      return;
+    }
+    try {
+      final cities =
+          await dutyMissionAnnualInstance.getCitiesByCountryId(countryId);
+      final options = cities
+          .where((c) => (c.cityName ?? '').isNotEmpty)
+          .map(
+            (c) => {
+              'value': c.cityName,
+              'label': c.cityName,
+            },
+          )
+          .toList();
+      state = isFrom
+          ? state.copyWith(fromCityOptions: options)
+          : state.copyWith(toCityOptions: options);
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString());
     }
@@ -1122,10 +1359,15 @@ class _VSController extends StateNotifier<_ViewState> {
     required int approverId,
     required int requestId,
   }) {
+    final airTickets = type == ApprovalDialogType.approve
+        ? airTicketsNeedingType(state.requestDetails.request)
+        : const <AirTicketDetail>[];
+
     KAppX.extendedRouter.dialog.showKDialog(
-      builder: (_) => ApprovalCommentDialog(
+      builder: (_) => DutyMissionApprovalDialog(
         type: type,
-        onSubmit: (comment, decisionNo) async {
+        airTicketEmployees: airTickets,
+        onSubmit: (comment, ticketTypes) async {
           final status = type == ApprovalDialogType.approve
               ? ApprovalStatus.approved
               : ApprovalStatus.rejected;
@@ -1133,8 +1375,9 @@ class _VSController extends StateNotifier<_ViewState> {
           await onApprove(
             approverId,
             requestId,
-            comment.trim(), // always safe
-            status.apiValue, // ✅ backend-safe string
+            comment.trim(),
+            status.apiValue,
+            ticketTypesByEmployeeId: ticketTypes,
           );
         },
       ),
@@ -1304,30 +1547,43 @@ class _VSController extends StateNotifier<_ViewState> {
     int approverId,
     int requestId,
     String comment,
-    String status,
-  ) async {
+    String status, {
+    Map<String, String> ticketTypesByEmployeeId = const {},
+  }) async {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1️⃣ Upload files
+      final isApprove = status.toLowerCase() == 'approved';
+      if (isApprove && ticketTypesByEmployeeId.isNotEmpty) {
+        final tickets = ticketTypesByEmployeeId.entries
+            .map(
+              (e) => {
+                'employee_id': e.key,
+                'ticket_type': e.value,
+              },
+            )
+            .toList();
+        await dutyMissionAnnualInstance.saveAirTicketTypesBulk(requestId, {
+          'tickets': tickets,
+        });
+      }
 
-      // 2️⃣ Build payload
+      // Do not send request_type — backend rejects it on approve.
       final payload = {
-        "request_id": requestId,
-        "status": status,
-        "comment": comment,
-        "approval_id": approverId,
+        'request_id': requestId,
+        'status': status,
+        'comment': comment,
+        'approval_id': approverId,
       };
 
-      debugPrint("✅ Final Payload: $payload");
+      debugPrint('✅ Final Payload: $payload');
 
-      // 3️⃣ Send request
       await dutyMissionAnnualInstance.onApprove(payload);
-      // await Future.delayed(Duration(seconds: 3));
-      // KAppX.router.pop();
-      // KAppX.router.pop();
-      // await fetchActionItems();
-      // await fetchRequests();
+      await Future.delayed(const Duration(seconds: 2));
+      KAppX.router.pop();
+      KAppX.router.pop();
+      await fetchActionItems();
+      await fetchRequests();
     } catch (e) {
       debugPrint('❌ Error submitting request: $e');
     } finally {
@@ -1811,7 +2067,7 @@ class _VSController extends StateNotifier<_ViewState> {
   //   }
   // }
 
-  Future<void> buildDutyMissionPayload(
+  Future<bool> buildDutyMissionPayload(
     int serviceId,
     int subServiceId,
     Map<String, dynamic> values,
@@ -1820,107 +2076,44 @@ class _VSController extends StateNotifier<_ViewState> {
       state = state.copyWith(isLoading: true);
 
       final userData = KAppX.globalProvider.read(rolesProvider);
-      final userInfo = KAppX.globalProvider.read(userInfoProvider);
+      final editing = isEditMode && requestId != null;
 
-      /// -------- ATTACHMENTS --------
-      final List<Map<String, dynamic>> attachments =
-          (values['attachments'] as List<FileUploadItem>? ?? [])
-              .map((file) => file.toJson())
-              .toList();
+      final payload = buildPlannedUnplannedDutyMissionPayload(
+        tripType: tripType,
+        serviceId: serviceId,
+        subServiceId: subServiceId,
+        values: values,
+        entries: state.entries,
+        departmentId: userData?.departmentId ?? 0,
+        sectionId: userData?.sectionId ?? 0,
+        includeMissionId: true,
+      );
 
-      /// -------- FINAL PAYLOAD --------
-      final payload = {
-        // ================= USER =================
-        "req_user_department_id": userData?.departmentId ?? 0,
-        "req_user_section_id": userData?.sectionId ?? 0,
-        // "req_user_position_id": userInfo?.data?.position?.id,
-
-        // ================= SERVICE =================
-        "service_id": serviceId,
-        "sub_service_id": subServiceId,
-
-        // ================= PLANNED FORM =================
-        "trip_type": tripType,
-        "choose_type": values['chooseType'],
-        "mission_sponsored_by": values['missionSponsoredBy'],
-        "if_sponsored": values['missionSponsoredBy'] == 'Company'
-            ? values['sponsoredCompanyName']
-            : values['missionSponsoredBy'],
-        "mission_purpose": values['missionPurpose'],
-        "mission_number": values['missionNumber'],
-        "mission_start_date": values['missionStartDate'],
-        "mission_end_date": values['missionEndDate'],
-
-        // ================= TRAVEL DETAILS =================
-        "travelling_area_from": values['travellingAreaFrom'],
-        "travelling_area_to": values['travellingAreaTo'],
-        "distance": values['distance'],
-        "travel_place": values['travelPlace'],
-        "from_country": values['fromCountry'],
-        "to_country": values['toCountry'],
-        "travel_start_date": values['travelStartDate'],
-        "travel_return_date": values['travelReturnDate'],
-
-        // ================= FLAGS =================
-        "air_ticket_required": values['airTicketRequired'],
-        "vehicle_required": values['vehicleRequired'],
-        "remarks": values['remarks'] ?? "",
-
-        // ================= EMPLOYEES =================
-        "employees_details": state.entries.map((entry) {
-          final v = entry.values;
-
-          return {
-            "employee_id": v['employeeId'],
-            "employee_name": v['employeeName'],
-            "department": v['department'],
-            "grade": v['grade'].toString(),
-            "position": v['position'],
-            "percentage":
-                int.tryParse(v['allowancePercentage']?.toString() ?? '0') ?? 0,
-            "allowance_per_day":
-                double.tryParse(v['allowancePerDay']?.toString() ?? '0') ?? 0,
-            "total_allowance":
-                double.tryParse(v['totalAllowance']?.toString() ?? '0') ?? 0,
-          };
-        }).toList(),
-
-        // ================= AIR TICKET DETAILS =================
-        "air_ticket_details": state.entries
-            .where((e) => e.values['ticketType'] != null)
-            .map((entry) {
-              final v = entry.values;
-              return {
-                "employee_id": v['employeeId'],
-                "employee_name": v['employeeName'],
-                "ticket_type": v['ticketType'],
-                "decision_date": v['decisionDate'],
-                "departure_date": values['travelStartDate'],
-                "return_date": values['travelReturnDate'],
-                "decision_number": v['decisionNumber'],
-                "mission_number": values['missionNumber'],
-                "passport_no": v['passportNo'],
-                "passport_issue_date": v['passportIssueDate'],
-                "passport_expiry_date": v['passportExpiryDate'],
-
-                // "return_date": values[''],
-                // "departure_date": values[''],
-              };
-            })
-            .toList(),
-
-        // ================= ATTACHMENTS =================
-        "attachments": attachments,
-      };
-
-      /// -------- API CALL --------
-      await dutyMissionAnnualInstance.sendAnnualDutyMissionRequest(payload);
+      if (editing) {
+        // Approver edit: never overwrite requester dept/section.
+        payload.remove('req_user_department_id');
+        payload.remove('req_user_section_id');
+        payload['request_id'] = requestId;
+        await dutyMissionAnnualInstance.updateDutyMissionRequest(
+          requestId!,
+          payload,
+        );
+      } else {
+        await dutyMissionAnnualInstance.sendAnnualDutyMissionRequest(payload);
+      }
       debugPrint(payload.toString());
-      // state = state.copyWith(isLoading: false, isSuccess: true);
+
+      fetchKpi();
+      fetchRequests();
+      fetchActionItems();
+      return true;
     } catch (e, st) {
-      state = state.copyWith(isLoading: false);
-      debugPrint("Submit Error: $e");
+      debugPrint('Submit Error: $e');
       debugPrintStack(stackTrace: st);
+      Fluttertoast.showToast(msg: e.toString());
+      return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 

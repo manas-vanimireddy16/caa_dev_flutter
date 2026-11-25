@@ -108,17 +108,53 @@ class _RequestforDutyMissionPlannedDetailsScreenState
                 5.toHorizontalSizedBox,
                 if (selectedTab == 0) ...[
                   employeeSection(),
+                  if (isFromActionItems &&
+                      actionType != ActionButtonsType.none) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            KAppX.router.push(
+                              RequestforDutyMissionPlannedRequestRoute(
+                                serviceId: widget.serviceId,
+                                subServiceId: widget.subServiceId,
+                                service: widget.service,
+                                subService: widget.subService,
+                                isEditMode: true,
+                                requestId: requestId,
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.edit_outlined, size: 18),
+                          label: Text(
+                            l10n.requestDetailsLabel('Edit Request Details'),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   CommonRequestDetails(
                     allowanceEmployees: allowanceEmployees,
                     showAllowanceSection: true,
+                    coverageInformationTitle: l10n.requestDetailsLabel(
+                      'Mission Summary',
+                    ),
                     statusInformationTitle: l10n.requestDetailsLabel(
                       'Status Information',
                     ),
                     requestInformationTitle: l10n.requestDetailsLabel(
                       'Request Information',
                     ),
-                    technicalInformationTitle: l10n.technicalDetailsSection,
+                    technicalInformationTitle: l10n.requestDetailsLabel(
+                      'Annual Plan Details',
+                    ),
                     requestDetailsLabelBuilder: l10n.requestDetailsLabel,
+                    coverageInfo: buildDutyMissionSummary(request),
                     statusInfo: {
                       "Request Date": request?.createdAt.toString() ?? 'N/A',
                       "Status": request?.status ?? "N/A",
@@ -126,19 +162,10 @@ class _RequestforDutyMissionPlannedDetailsScreenState
                       "Assigned To":
                           nextApprover?.approverUser?.employeeName ?? 'N/A',
                     },
-                    requestInfo: {
-                      'Priority': request?.priority ?? 'N/A',
-                      'Task Title': request?.taskTitle ?? 'N/A',
-                      'Task Description': request?.taskDescription ?? 'N/A',
-                      'Completion Date': request?.completionDate ?? 'N/A',
-                      'Assigned Employee':
-                          request?.assignedEmployeeName ?? 'N/A',
-                    },
-                    technicalInfo: {
-                      'Extension Number':
-                          request?.createdByUser?.extensionNumber.toString() ??
-                          'N/A',
-                    },
+                    requestInfo: buildPlannedDutyRequestInfo(request),
+                    technicalInfo: buildAnnualPlanDetails(
+                      request?.linkedAnnualApprovedMission,
+                    ),
                   ),
                 ] else if (selectedTab == 1) ...[
                   employeeSection(),

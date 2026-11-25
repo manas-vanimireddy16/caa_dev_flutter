@@ -3718,6 +3718,46 @@ class DashboardL10n {
       case 'Location of Event':
         return locationOfEvent;
 
+      // ── Duty Mission ──────────────────────────────────────────────────────
+      case 'Edit Request Details':
+        return _t('Edit Request Details', 'تعديل تفاصيل الطلب');
+      case 'Mission Summary':
+        return _t('Mission Summary', 'ملخص المهمة');
+      case 'Annual Plan Details':
+        return _t('Annual Plan Details', 'تفاصيل الخطة السنوية');
+      case 'Paying Entity':
+        return _t('Paying Entity', 'الجهة الممولة');
+      case 'Mission Sponsored by':
+        return _t('Paying Entity', 'الجهة الممولة');
+      case 'Actual Mission Start Date':
+        return _t('Actual Mission Start Date', 'تاريخ بدء المهمة الفعلي');
+      case 'Actual Mission End Date':
+        return _t('Actual Mission End Date', 'تاريخ انتهاء المهمة الفعلي');
+      case 'Destination (From)':
+        return _t('Destination (From)', 'الوجهة (من)');
+      case 'Destination (To)':
+        return _t('Destination (To)', 'الوجهة (إلى)');
+      case 'Travel Place':
+      case 'City':
+        return _t('City', 'المدينة');
+      case 'Cash Component':
+      case 'Cash Compensation':
+        return _t('Cash Compensation', 'التعويض النقدي');
+      case 'Place of Mission':
+        return _t('Place of Mission', 'إلى');
+      case 'From Country':
+        return _t('From Country', 'من الدولة');
+      case 'To Country':
+        return _t('To Country', 'إلى الدولة');
+      case 'Mission ID':
+        return _t('Mission ID', 'رقم المهمة');
+      case 'Choose Type':
+        return _t('Choose Type', 'نوع المهمة');
+      case 'Air Ticket Required':
+        return _t('Air Ticket Required', 'تذكرة الطيران مطلوبة');
+      case 'Vehicle Required':
+        return _t('Vehicle Required', 'المركبة مطلوبة');
+
       default:
         return _formatKey(key);
     }

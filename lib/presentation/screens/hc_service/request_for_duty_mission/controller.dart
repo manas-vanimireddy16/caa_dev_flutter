@@ -25,11 +25,18 @@ final requestDeatilsTabSelectedProvider = StateProvider.autoDispose<int>(
 class _VSControllerParams extends Equatable {
   final Service service;
   final SubService subService;
+  final bool isEditMode;
+  final int? requestId;
 
-  const _VSControllerParams({required this.service, required this.subService});
+  const _VSControllerParams({
+    required this.service,
+    required this.subService,
+    this.isEditMode = false,
+    this.requestId,
+  });
 
   @override
-  List<Object?> get props => [service, subService];
+  List<Object?> get props => [service, subService, isEditMode, requestId];
 }
 
 final _vsProvider = StateNotifierProvider.autoDispose
@@ -37,6 +44,8 @@ final _vsProvider = StateNotifierProvider.autoDispose
       final controller = _VSController(
         service: params.service,
         subService: params.subService,
+        isEditMode: params.isEditMode,
+        requestId: params.requestId,
       );
       controller.initState();
       return controller;
@@ -96,6 +105,10 @@ class _ViewState {
 
   final bool isEdit;
   final List<DutyMissionModel> missionIdDropDownValues;
+  final Set<int> selectedActionItemIds;
+
+  /// Missions queued via "Add Mission" before final Annual bulk submit.
+  final List<Map<String, dynamic>> pendingAnnualMissions;
 
   /// FORM KEY
   final formKey = GlobalKey<FormState>();
@@ -145,6 +158,8 @@ class _ViewState {
 
     required this.isEdit,
     required this.formInitialValues,
+    required this.selectedActionItemIds,
+    required this.pendingAnnualMissions,
   });
 
   _ViewState.init()
@@ -192,6 +207,8 @@ class _ViewState {
         missionIdDropDownOptions: [],
         isEdit: true,
         formInitialValues: {},
+        selectedActionItemIds: <int>{},
+        pendingAnnualMissions: const [],
       );
 
   _ViewState copyWith({
@@ -251,6 +268,8 @@ class _ViewState {
 
     bool? isEdit,
     Map<String, dynamic>? formInitialValues,
+    Set<int>? selectedActionItemIds,
+    List<Map<String, dynamic>>? pendingAnnualMissions,
   }) {
     return _ViewState(
       isLoading: isLoading ?? this.isLoading,
@@ -305,6 +324,10 @@ class _ViewState {
 
       isEdit: isEdit ?? this.isEdit,
       formInitialValues: formInitialValues ?? this.formInitialValues,
+      selectedActionItemIds:
+          selectedActionItemIds ?? this.selectedActionItemIds,
+      pendingAnnualMissions:
+          pendingAnnualMissions ?? this.pendingAnnualMissions,
     );
   }
 }
@@ -312,9 +335,15 @@ class _ViewState {
 class _VSController extends StateNotifier<_ViewState> {
   final Service service;
   final SubService subService;
+  final bool isEditMode;
+  final int? requestId;
 
-  _VSController({required this.service, required this.subService})
-    : super(_ViewState.init());
+  _VSController({
+    required this.service,
+    required this.subService,
+    this.isEditMode = false,
+    this.requestId,
+  }) : super(_ViewState.init());
 
   late TextEditingController chatController;
   late TextEditingController titleController;
@@ -382,6 +411,28 @@ class _VSController extends StateNotifier<_ViewState> {
     fetchTrendBreakDown(DateTime.now().year.toString());
     fetchApprovalStatusBreakdown('monthly');
     fetchApprovalTrendBreakDown(DateTime.now().year.toString());
+    if (isEditMode && requestId != null) {
+      state = state.copyWith(isLoading: true);
+      loadForEdit(requestId!);
+    }
+  }
+
+  Future<void> loadForEdit(int id) async {
+    try {
+      state = state.copyWith(isLoading: true, isEdit: true);
+      await fetchRequestDetailsById(id);
+      final request = state.requestDetails.request;
+      final values = mapAnnualDutyMissionToFormValues(request);
+      state = state.copyWith(
+        isLoading: false,
+        isEdit: true,
+        formInitialValues: values,
+        pendingAnnualMissions: const [],
+      );
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+      Fluttertoast.showToast(msg: e.toString());
+    }
   }
 
   void _validateForm() {
@@ -457,7 +508,8 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'Trip Type',
       type: FieldType.text,
       required: false,
-      initialValue: 'Planned',
+      initialValue: 'Annual',
+      disabled: true,
     ),
 
     /// -------- CHOOSE TYPE --------
@@ -472,23 +524,19 @@ class _VSController extends StateNotifier<_ViewState> {
       ],
     ),
 
-    /// -------- MISSION ID --------
+    /// -------- MONTH (optional, informational) --------
     DynamicField(
-      name: 'missionId',
-      label: 'Mission ID',
-      type: FieldType.select,
+      name: 'month',
+      label: 'Month (Optional)',
+      type: FieldType.text,
       required: false,
-      options: state.missionIdDropDownOptions
-          .map(
-            (e) => DropdownOption<String>(value: e['value'], label: e['label']),
-          )
-          .toList(),
+      placeholder: 'e.g. January 2026',
     ),
 
-    /// -------- MISSION SPONSORED BY --------
+    /// -------- MISSION SPONSORED BY / PAYING ENTITY --------
     DynamicField(
       name: 'missionSponsoredBy',
-      label: 'Mission Sponsored by',
+      label: 'Paying Entity',
       type: FieldType.select,
       required: false,
       options: const [
@@ -571,7 +619,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// -------- MISSION START DATE --------
     DynamicField(
       name: 'missionStartDate',
-      label: 'Mission Start Date',
+      label: 'Actual Mission Start Date',
       type: FieldType.date,
       required: true,
     ),
@@ -579,7 +627,7 @@ class _VSController extends StateNotifier<_ViewState> {
     /// -------- MISSION END DATE --------
     DynamicField(
       name: 'missionEndDate',
-      label: 'Mission End Date',
+      label: 'Actual Mission End Date',
       type: FieldType.date,
       required: true,
     ),
@@ -601,14 +649,92 @@ class _VSController extends StateNotifier<_ViewState> {
       label: 'No. of Employees',
       type: FieldType.select,
       required: true,
-      options: List.generate(
-        50,
-        (index) => DropdownOption(
-          value: (index + 1).toString(),
-          label: (index + 1).toString(),
+      options: [
+        ...List.generate(
+          10,
+          (index) => DropdownOption(
+            value: (index + 1).toString(),
+            label: (index + 1).toString(),
+          ),
         ),
-      ),
+        const DropdownOption(value: '10+', label: '10+'),
+      ],
     ),
+
+    /// -------- PLACE OF MISSION --------
+    DynamicField(
+      name: 'placeOfMission',
+      label: 'Place of Mission',
+      type: FieldType.text,
+      required: true,
+      placeholder: 'Enter place of mission',
+    ),
+
+    /// -------- ALLOWANCE % --------
+    DynamicField(
+      name: 'allowancePercentage',
+      label: 'Allowance %',
+      type: FieldType.text,
+      required: true,
+      placeholder: 'e.g. 100',
+    ),
+
+    /// -------- ALLOWANCE FEES (OMR) --------
+    DynamicField(
+      name: 'allowanceFeesOmr',
+      label: 'Allowance Fees (OMR)',
+      type: FieldType.select,
+      required: true,
+      options: const [
+        DropdownOption(value: '35', label: '35'),
+        DropdownOption(value: '40', label: '40'),
+        DropdownOption(value: '120', label: '120'),
+        DropdownOption(value: '150', label: '150'),
+        DropdownOption(value: '200', label: '200'),
+      ],
+    ),
+
+    /// -------- TICKET FEE --------
+    DynamicField(
+      name: 'ticketFee',
+      label: 'Ticket Fee',
+      type: FieldType.text,
+      required: false,
+      placeholder: 'Enter ticket fee',
+    ),
+
+    /// -------- TOTAL (read-only, auto) --------
+    DynamicField(
+      name: 'missionTotal',
+      label: 'Total',
+      type: FieldType.text,
+      disabled: true,
+      required: false,
+      initialValue: '0.000',
+    ),
+
+    /// -------- NOTES --------
+    DynamicField(
+      name: 'notes',
+      label: 'Notes (Optional)',
+      type: FieldType.textarea,
+      required: false,
+      placeholder: 'Enter notes',
+    ),
+
+    /// -------- MULTI-MISSION QUEUE (create only) --------
+    if (!isEditMode)
+      DynamicField(
+        name: 'annual_missions_queue',
+        label: 'Missions',
+        type: FieldType.custom,
+        builder: (context, ref) {
+          return _AnnualMissionsQueueWidget(
+            service: service,
+            subService: subService,
+          );
+        },
+      ),
   ];
 
   List<DynamicField> step2Fields(_VSControllerParams providerArgs) => [
@@ -1075,25 +1201,25 @@ class _VSController extends StateNotifier<_ViewState> {
     required int approverId,
     required int requestId,
   }) {
+    final airTickets = type == ApprovalDialogType.approve
+        ? airTicketsNeedingType(state.requestDetails.request)
+        : const <AirTicketDetail>[];
+
     KAppX.extendedRouter.dialog.showKDialog(
-      builder: (_) => ApprovalCommentDialog(
+      builder: (_) => DutyMissionApprovalDialog(
         type: type,
-        onSubmit: (comment, decisionNo) async {
-          if (type == ApprovalDialogType.approve) {
-            await onApprove(
-              approverId,
-              requestId,
-              comment,
-              "Approved", // optional
-            );
-          } else {
-            await onApprove(
-              approverId,
-              requestId,
-              comment,
-              'Rejected', // mandatory
-            );
-          }
+        airTicketEmployees: airTickets,
+        onSubmit: (comment, ticketTypes) async {
+          final status = type == ApprovalDialogType.approve
+              ? 'Approved'
+              : 'Rejected';
+          await onApprove(
+            approverId,
+            requestId,
+            comment,
+            status,
+            ticketTypesByEmployeeId: ticketTypes,
+          );
         },
       ),
     );
@@ -1262,26 +1388,39 @@ class _VSController extends StateNotifier<_ViewState> {
     int approverId,
     int requestId,
     String comment,
-    String status,
-  ) async {
+    String status, {
+    Map<String, String> ticketTypesByEmployeeId = const {},
+  }) async {
     try {
       state = state.copyWith(isLoading: true);
 
-      // 1️⃣ Upload files
+      final isApprove = status.toLowerCase() == 'approved';
+      if (isApprove && ticketTypesByEmployeeId.isNotEmpty) {
+        final tickets = ticketTypesByEmployeeId.entries
+            .map(
+              (e) => {
+                'employee_id': e.key,
+                'ticket_type': e.value,
+              },
+            )
+            .toList();
+        await dutyMissionAnnualInstance.saveAirTicketTypesBulk(requestId, {
+          'tickets': tickets,
+        });
+      }
 
-      // 2️⃣ Build payload
+      // Do not send request_type — backend rejects it on approve.
       final payload = {
-        "request_id": requestId,
-        "status": status,
-        "comment": comment,
-        "approval_id": approverId,
+        'request_id': requestId,
+        'status': status,
+        'comment': comment,
+        'approval_id': approverId,
       };
 
-      debugPrint("✅ Final Payload: $payload");
+      debugPrint('✅ Final Payload: $payload');
 
-      // 3️⃣ Send request
       await dutyMissionAnnualInstance.onApprove(payload);
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 2));
       KAppX.router.pop();
       KAppX.router.pop();
       await fetchActionItems();
@@ -1291,6 +1430,66 @@ class _VSController extends StateNotifier<_ViewState> {
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  void toggleActionItemSelection(int requestId) {
+    final selected = Set<int>.from(state.selectedActionItemIds);
+    if (selected.contains(requestId)) {
+      selected.remove(requestId);
+    } else {
+      selected.add(requestId);
+    }
+    state = state.copyWith(selectedActionItemIds: selected);
+  }
+
+  void clearActionItemSelection() {
+    state = state.copyWith(selectedActionItemIds: <int>{});
+  }
+
+  Future<void> onBulkApproveReject({
+    required String status,
+    required String comment,
+  }) async {
+    final ids = state.selectedActionItemIds.toList();
+    if (ids.isEmpty) return;
+
+    try {
+      state = state.copyWith(isLoading: true);
+      final payload = <String, dynamic>{
+        'request_ids': ids,
+        'status': status,
+        'comment': comment,
+      };
+      // Never include request_type on approve.
+      await dutyMissionAnnualInstance.onBulkApprove(payload);
+      clearActionItemSelection();
+      await fetchActionItems();
+      await fetchRequests();
+    } catch (e) {
+      debugPrint('❌ Bulk approve/reject failed: $e');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  void showBulkApprovalDialog({required ApprovalDialogType type}) {
+    if (state.selectedActionItemIds.isEmpty) {
+      ShowFlutterToast().showFlutterToastFailure('Select at least one request');
+      return;
+    }
+
+    KAppX.extendedRouter.dialog.showKDialog(
+      builder: (_) => DutyMissionApprovalDialog(
+        type: type,
+        onSubmit: (comment, _) async {
+          final status = type == ApprovalDialogType.approve
+              ? 'Approved'
+              : 'Rejected';
+          await onBulkApproveReject(status: status, comment: comment);
+          KAppX.router.pop();
+        },
+      ),
+    );
   }
 
   Future<void> onSendInProgress(int approverId, int requestId) async {
@@ -1768,6 +1967,128 @@ class _VSController extends StateNotifier<_ViewState> {
   //     state = state.copyWith(isLoading: false);
   //   }
   // }
+
+  bool _hasRequiredAnnualMissionFields(Map<String, dynamic> values) {
+    final requiredKeys = [
+      'chooseType',
+      'missionPurpose',
+      'missionNumber',
+      'missionStartDate',
+      'missionEndDate',
+      'noOfEmployees',
+      'placeOfMission',
+      'allowancePercentage',
+      'allowanceFeesOmr',
+    ];
+    for (final key in requiredKeys) {
+      final v = values[key];
+      if (v == null || v.toString().trim().isEmpty) return false;
+    }
+    return true;
+  }
+
+  bool addCurrentFormAsAnnualMission(Map<String, dynamic> values) {
+    if (state.pendingAnnualMissions.length >= 49) return false;
+    if (!_hasRequiredAnnualMissionFields(values)) return false;
+
+    final userData = KAppX.globalProvider.read(rolesProvider);
+    final body = buildAnnualMissionBody(
+      values,
+      tripType: tripType,
+      serviceId: service.id,
+      subServiceId: subService.id,
+      departmentId: userData?.departmentId,
+      sectionId: userData?.sectionId,
+    );
+    state = state.copyWith(
+      pendingAnnualMissions: [...state.pendingAnnualMissions, body],
+    );
+    return true;
+  }
+
+  void removePendingAnnualMission(int index) {
+    if (index < 0 || index >= state.pendingAnnualMissions.length) return;
+    final next = [...state.pendingAnnualMissions]..removeAt(index);
+    state = state.copyWith(pendingAnnualMissions: next);
+  }
+
+  Future<void> submitAnnualBulkRequest({
+    required int serviceId,
+    required int subServiceId,
+    required Map<String, dynamic> values,
+  }) async {
+    try {
+      state = state.copyWith(isLoading: true);
+      final userData = KAppX.globalProvider.read(rolesProvider);
+
+      // Approver edit: single mission PUT, no requester dept/section.
+      if (isEditMode && requestId != null) {
+        if (!_hasRequiredAnnualMissionFields(values)) {
+          ShowFlutterToast().showFlutterToastFailure(
+            'Please complete all required mission fields',
+          );
+          return;
+        }
+        final body = buildAnnualMissionBody(
+          values,
+          tripType: tripType,
+          serviceId: serviceId,
+          subServiceId: subServiceId,
+          includeRequesterMeta: false,
+        );
+        body['request_id'] = requestId;
+        debugPrint('✅ Annual edit payload: $body');
+        await dutyMissionAnnualInstance.updateAnnualDutyMissionBulk(body);
+        await fetchRequests();
+        await fetchKpi();
+        KAppX.router.pop();
+        return;
+      }
+
+      final missions = <Map<String, dynamic>>[
+        ...state.pendingAnnualMissions,
+      ];
+
+      // Include the current form mission if filled.
+      if (_hasRequiredAnnualMissionFields(values)) {
+        missions.add(
+          buildAnnualMissionBody(
+            values,
+            tripType: tripType,
+            serviceId: serviceId,
+            subServiceId: subServiceId,
+            departmentId: userData?.departmentId,
+            sectionId: userData?.sectionId,
+          ),
+        );
+      }
+
+      if (missions.isEmpty) {
+        ShowFlutterToast().showFlutterToastFailure(
+          'Add at least one complete mission before submitting',
+        );
+        return;
+      }
+      if (missions.length > 50) {
+        ShowFlutterToast().showFlutterToastFailure(
+          'Maximum 50 missions allowed',
+        );
+        return;
+      }
+
+      final payload = {'missions': missions};
+      debugPrint('✅ Annual bulk payload: $payload');
+      await dutyMissionAnnualInstance.sendAnnualDutyMissionBulk(payload);
+      state = state.copyWith(pendingAnnualMissions: const []);
+      await fetchRequests();
+      await fetchKpi();
+      KAppX.router.pop();
+    } catch (e) {
+      debugPrint('❌ Annual bulk submit failed: $e');
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
 
   Future<void> submitAssignaTasktoEmployeeRequest(
     int serviceId,

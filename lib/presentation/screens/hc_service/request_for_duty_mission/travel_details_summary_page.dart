@@ -48,8 +48,12 @@ class _TravelDetailsSectionWidgetState
           TravelDetailsForm(
             key: ValueKey(state.formVersion),
             initialValues: {
+              ...?state.editingEntry?.values,
               'departureDate': departureDate,
               'returnDate': returnDate,
+              'missionNumber':
+                  formState.values['missionNumber']?.toString() ??
+                  state.editingEntry?.values['missionNumber'],
               'missionId': missionId,
             },
             onSubmit: controller.saveTravelDetailsEntry,

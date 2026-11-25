@@ -6,6 +6,7 @@ import 'package:code_setup/modules/domain/models/selected_role.dart';
 import 'package:code_setup/modules/router/app_router.gr.dart';
 import 'package:code_setup/presentation/common_widgets/radio_button.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/approval_comment_dialog.dart';
+import 'package:code_setup/presentation/screens/hc_service/widgets/duty_mission_approval_dialog.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/chat.dart';
 import 'package:code_setup/presentation/common_widgets/check_box.dart';
 import 'package:code_setup/presentation/common_widgets/request_details/common_attachments.dart';
@@ -40,6 +41,9 @@ import 'package:code_setup/presentation/models/trend_breakdown_model.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/area_permission.dart';
 import 'package:code_setup/presentation/screens/aviation_security_Facilitation/models/chat_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/allowance_entry.dart';
+import 'package:code_setup/presentation/screens/hc_service/duty_mission_annual_helpers.dart';
+import 'package:code_setup/presentation/screens/hc_service/duty_mission_detail_helpers.dart';
+import 'package:code_setup/presentation/screens/hc_service/duty_mission_edit_helpers.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/duty_mission_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/employee_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
@@ -71,6 +75,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:code_setup/utils/app_extensions/app_extension.dart';
+import 'package:code_setup/presentation/common_widgets/show_toast.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
@@ -78,6 +83,7 @@ part 'widgets/request_for_assign_a_task_to_employee.dart';
 part 'controller.dart';
 part 'widgets/request_details.dart';
 part 'widgets/request_tabs.dart';
+part 'widgets/annual_missions_queue.dart';
 // part 'widgets/assign_engineer_dialog.dart';
 
 part 'allowance_summary_page.dart';
@@ -426,11 +432,12 @@ class _RequestforDutyMissionScreenState
                           },
                         ),
 
-                        // Tab 1
+                        // Tab 1 — Action Items (supports bulk approve/reject)
                         Consumer(
                           builder: (context, ref, _) {
                             final data =
                                 state.assignaTasktoEmployeeActionItemsData;
+                            final selected = state.selectedActionItemIds;
                             if (state.isLoading) {
                               return const Center(
                                 child: CircularProgressIndicator(),
@@ -448,38 +455,111 @@ class _RequestforDutyMissionScreenState
                                 ),
                               );
                             }
-                            return ListView.builder(
-                              itemCount: data.length,
-                              itemBuilder: (context, index) {
-                                final item = data[index];
-                                return RequestCard(
-                                  from: 'hotelreservation',
-                                  data: {
-                                    'id': item.id,
-                                    'status': item.status,
-                                    'User Name':
-                                        item.createdByUser?.employeeName ??
-                                        'NA',
-                                    'Date': item.createdAt,
-                                    'Approver Name':
-                                        active?.approverUser?.employeeName ??
-                                        '',
-                                  },
-                                  onTap: () async {
-                                    await controller.openRequestDetails(
-                                      item.id ?? 0,
-                                      fromActionItems: true,
-                                    );
-                                  },
-                                  onWorkflowTap: () async {
-                                    await controller.openRequestDetails(
-                                      item.id ?? 0,
-                                      fromActionItems: true,
-                                      initialTabIndex: RequestDetailsTabIndex.workflow,
-                                    );
-                                  },
-                                );
-                              },
+                            return Column(
+                              children: [
+                                if (selected.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 6,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          '${selected.length} selected',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        TextButton(
+                                          onPressed: () => controller
+                                              .showBulkApprovalDialog(
+                                                type: ApprovalDialogType.approve,
+                                              ),
+                                          child: const Text('Approve'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => controller
+                                              .showBulkApprovalDialog(
+                                                type: ApprovalDialogType.reject,
+                                              ),
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: Colors.red,
+                                          ),
+                                          child: const Text('Reject'),
+                                        ),
+                                        TextButton(
+                                          onPressed: controller
+                                              .clearActionItemSelection,
+                                          child: const Text('Clear'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                Expanded(
+                                  child: ListView.builder(
+                                    itemCount: data.length,
+                                    itemBuilder: (context, index) {
+                                      final item = data[index];
+                                      final id = item.id ?? 0;
+                                      final isChecked = selected.contains(id);
+                                      return Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Checkbox(
+                                            value: isChecked,
+                                            onChanged: id == 0
+                                                ? null
+                                                : (_) => controller
+                                                      .toggleActionItemSelection(
+                                                        id,
+                                                      ),
+                                          ),
+                                          Expanded(
+                                            child: RequestCard(
+                                              from: 'hotelreservation',
+                                              data: {
+                                                'id': item.id,
+                                                'status': item.status,
+                                                'User Name':
+                                                    item
+                                                        .createdByUser
+                                                        ?.employeeName ??
+                                                    'NA',
+                                                'Date': item.createdAt,
+                                                'Approver Name':
+                                                    active
+                                                        ?.approverUser
+                                                        ?.employeeName ??
+                                                    '',
+                                              },
+                                              onTap: () async {
+                                                await controller
+                                                    .openRequestDetails(
+                                                      id,
+                                                      fromActionItems: true,
+                                                    );
+                                              },
+                                              onWorkflowTap: () async {
+                                                await controller
+                                                    .openRequestDetails(
+                                                      id,
+                                                      fromActionItems: true,
+                                                      initialTabIndex:
+                                                          RequestDetailsTabIndex
+                                                              .workflow,
+                                                    );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
                             );
                           },
                         ),

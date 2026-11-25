@@ -12306,6 +12306,8 @@ class RequestforDutyMissionPlannedRequestRoute
     required int subServiceId,
     required _i101.Service service,
     required _i101.SubService subService,
+    bool isEditMode = false,
+    int? requestId,
     List<_i99.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionPlannedRequestRoute.name,
@@ -12315,6 +12317,8 @@ class RequestforDutyMissionPlannedRequestRoute
            subServiceId: subServiceId,
            service: service,
            subService: subService,
+           isEditMode: isEditMode,
+           requestId: requestId,
          ),
          initialChildren: children,
        );
@@ -12331,6 +12335,8 @@ class RequestforDutyMissionPlannedRequestRoute
         subServiceId: args.subServiceId,
         service: args.service,
         subService: args.subService,
+        isEditMode: args.isEditMode,
+        requestId: args.requestId,
       );
     },
   );
@@ -12343,6 +12349,8 @@ class RequestforDutyMissionPlannedRequestRouteArgs {
     required this.subServiceId,
     required this.service,
     required this.subService,
+    this.isEditMode = false,
+    this.requestId,
   });
 
   final _i102.Key? key;
@@ -12355,9 +12363,13 @@ class RequestforDutyMissionPlannedRequestRouteArgs {
 
   final _i101.SubService subService;
 
+  final bool isEditMode;
+
+  final int? requestId;
+
   @override
   String toString() {
-    return 'RequestforDutyMissionPlannedRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+    return 'RequestforDutyMissionPlannedRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, isEditMode: $isEditMode, requestId: $requestId}';
   }
 
   @override
@@ -12368,7 +12380,9 @@ class RequestforDutyMissionPlannedRequestRouteArgs {
         serviceId == other.serviceId &&
         subServiceId == other.subServiceId &&
         service == other.service &&
-        subService == other.subService;
+        subService == other.subService &&
+        isEditMode == other.isEditMode &&
+        requestId == other.requestId;
   }
 
   @override
@@ -12377,7 +12391,9 @@ class RequestforDutyMissionPlannedRequestRouteArgs {
       serviceId.hashCode ^
       subServiceId.hashCode ^
       service.hashCode ^
-      subService.hashCode;
+      subService.hashCode ^
+      isEditMode.hashCode ^
+      requestId.hashCode;
 }
 
 /// generated route for
@@ -12455,6 +12471,8 @@ class RequestforDutyMissionRequestRoute
     required int subServiceId,
     required _i101.Service service,
     required _i101.SubService subService,
+    bool isEditMode = false,
+    int? requestId,
     List<_i99.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionRequestRoute.name,
@@ -12464,6 +12482,8 @@ class RequestforDutyMissionRequestRoute
            subServiceId: subServiceId,
            service: service,
            subService: subService,
+           isEditMode: isEditMode,
+           requestId: requestId,
          ),
          initialChildren: children,
        );
@@ -12480,6 +12500,8 @@ class RequestforDutyMissionRequestRoute
         subServiceId: args.subServiceId,
         service: args.service,
         subService: args.subService,
+        isEditMode: args.isEditMode,
+        requestId: args.requestId,
       );
     },
   );
@@ -12492,6 +12514,8 @@ class RequestforDutyMissionRequestRouteArgs {
     required this.subServiceId,
     required this.service,
     required this.subService,
+    this.isEditMode = false,
+    this.requestId,
   });
 
   final _i102.Key? key;
@@ -12504,9 +12528,13 @@ class RequestforDutyMissionRequestRouteArgs {
 
   final _i101.SubService subService;
 
+  final bool isEditMode;
+
+  final int? requestId;
+
   @override
   String toString() {
-    return 'RequestforDutyMissionRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+    return 'RequestforDutyMissionRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, isEditMode: $isEditMode, requestId: $requestId}';
   }
 
   @override
@@ -12517,7 +12545,9 @@ class RequestforDutyMissionRequestRouteArgs {
         serviceId == other.serviceId &&
         subServiceId == other.subServiceId &&
         service == other.service &&
-        subService == other.subService;
+        subService == other.subService &&
+        isEditMode == other.isEditMode &&
+        requestId == other.requestId;
   }
 
   @override
@@ -12526,7 +12556,9 @@ class RequestforDutyMissionRequestRouteArgs {
       serviceId.hashCode ^
       subServiceId.hashCode ^
       service.hashCode ^
-      subService.hashCode;
+      subService.hashCode ^
+      isEditMode.hashCode ^
+      requestId.hashCode;
 }
 
 /// generated route for
@@ -12705,6 +12737,8 @@ class RequestforDutyMissionUnplannedRequestRoute
     required int subServiceId,
     required _i101.Service service,
     required _i101.SubService subService,
+    bool isEditMode = false,
+    int? requestId,
     List<_i99.PageRouteInfo>? children,
   }) : super(
          RequestforDutyMissionUnplannedRequestRoute.name,
@@ -12714,6 +12748,8 @@ class RequestforDutyMissionUnplannedRequestRoute
            subServiceId: subServiceId,
            service: service,
            subService: subService,
+           isEditMode: isEditMode,
+           requestId: requestId,
          ),
          initialChildren: children,
        );
@@ -12731,6 +12767,8 @@ class RequestforDutyMissionUnplannedRequestRoute
         subServiceId: args.subServiceId,
         service: args.service,
         subService: args.subService,
+        isEditMode: args.isEditMode,
+        requestId: args.requestId,
       );
     },
   );
@@ -12743,6 +12781,8 @@ class RequestforDutyMissionUnplannedRequestRouteArgs {
     required this.subServiceId,
     required this.service,
     required this.subService,
+    this.isEditMode = false,
+    this.requestId,
   });
 
   final _i102.Key? key;
@@ -12755,9 +12795,13 @@ class RequestforDutyMissionUnplannedRequestRouteArgs {
 
   final _i101.SubService subService;
 
+  final bool isEditMode;
+
+  final int? requestId;
+
   @override
   String toString() {
-    return 'RequestforDutyMissionUnplannedRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService}';
+    return 'RequestforDutyMissionUnplannedRequestRouteArgs{key: $key, serviceId: $serviceId, subServiceId: $subServiceId, service: $service, subService: $subService, isEditMode: $isEditMode, requestId: $requestId}';
   }
 
   @override
@@ -12768,7 +12812,9 @@ class RequestforDutyMissionUnplannedRequestRouteArgs {
         serviceId == other.serviceId &&
         subServiceId == other.subServiceId &&
         service == other.service &&
-        subService == other.subService;
+        subService == other.subService &&
+        isEditMode == other.isEditMode &&
+        requestId == other.requestId;
   }
 
   @override
@@ -12777,7 +12823,9 @@ class RequestforDutyMissionUnplannedRequestRouteArgs {
       serviceId.hashCode ^
       subServiceId.hashCode ^
       service.hashCode ^
-      subService.hashCode;
+      subService.hashCode ^
+      isEditMode.hashCode ^
+      requestId.hashCode;
 }
 
 /// generated route for

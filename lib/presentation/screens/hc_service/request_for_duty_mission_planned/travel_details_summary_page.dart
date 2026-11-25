@@ -48,10 +48,17 @@ class _TravelDetailsSectionWidgetState
           TravelDetailsForm(
             key: ValueKey(state.formVersion),
             initialValues: {
+              ...?state.editingEntry?.values,
               'departureDate': departureDate,
               'returnDate': returnDate,
+              'missionNumber':
+                  formState.values['missionNumber']?.toString() ??
+                  state.editingEntry?.values['missionNumber'],
               'missionId': missionId,
             },
+            onFetchPassport: () => controller.fetchPassportForEmployee(
+              state.editingEntry?.values['employeeId'],
+            ),
             onSubmit: controller.saveTravelDetailsEntry,
             onCancel: controller.closeForm,
           ),

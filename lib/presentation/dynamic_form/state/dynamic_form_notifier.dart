@@ -443,6 +443,18 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
       } else {
         values.remove('missionDays');
       }
+      _recalcAnnualMissionTotal(values);
+    }
+
+    /// -----------------------------
+    /// ANNUAL MISSION TOTAL AUTO CALC
+    /// -----------------------------
+    if (key == 'missionDays' ||
+        key == 'allowancePercentage' ||
+        key == 'allowanceFeesOmr' ||
+        key == 'noOfEmployees' ||
+        key == 'ticketFee') {
+      _recalcAnnualMissionTotal(values);
     }
 
     /// -----------------------------
@@ -454,6 +466,32 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
       } else {
         values.remove('sponsoredCompanyName');
       }
+    }
+
+    /// -----------------------------
+    /// DUTY MISSION PLANNED / UNPLANNED
+    /// -----------------------------
+    if (key == 'requestType') {
+      values.remove('missionId');
+    }
+
+    if (key == 'chooseType') {
+      values.remove('travellingAreaFrom');
+      values.remove('travellingAreaTo');
+      if (value == 'Inside') {
+        values['fromCountry'] = 'Oman';
+        values['toCountry'] = 'Oman';
+      }
+    }
+
+    if (key == 'fromCountry') {
+      values['toCountry'] = value;
+      values.remove('travellingAreaFrom');
+      values.remove('travellingAreaTo');
+    }
+
+    if (key == 'toCountry') {
+      values.remove('travellingAreaTo');
     }
 
     /// -----------------------------
@@ -911,6 +949,25 @@ class DynamicFormNotifier extends StateNotifier<DynamicFormState> {
   }
 
   Map<String, dynamic> submit() => state.values;
+
+  void _recalcAnnualMissionTotal(Map<String, dynamic> values) {
+    final days =
+        double.tryParse(values['missionDays']?.toString() ?? '') ?? 0;
+    final pct =
+        double.tryParse(values['allowancePercentage']?.toString() ?? '') ?? 0;
+    final fee =
+        double.tryParse(values['allowanceFeesOmr']?.toString() ?? '') ?? 0;
+    final employeesRaw = values['noOfEmployees']?.toString().trim() ?? '';
+    final employees = employeesRaw == '10+'
+        ? 10
+        : (int.tryParse(employeesRaw) ?? 0);
+    if (days <= 0 || fee <= 0 || employees <= 0) {
+      values['missionTotal'] = '0.000';
+      return;
+    }
+    final raw = days * (pct / 100) * fee * employees;
+    values['missionTotal'] = raw.toStringAsFixed(3);
+  }
 
   /// ------------------------------------------------
   /// DEFAULT VALUES

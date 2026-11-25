@@ -1,6 +1,8 @@
+import 'package:code_setup/presentation/screens/hc_service/models/city_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/duty_mission_model.dart';
 import 'package:code_setup/presentation/screens/hc_service/models/position_model.dart';
 import 'package:code_setup/presentation/screens/task_management/models/employee_model.dart';
+import 'package:code_setup/presentation/screens/training_and_development/models/country_model.dart';
 import 'package:code_setup/repository/hr_service/annual_duty_mission/data/data.dart';
 import 'package:code_setup/repository/hr_service/service_transfer/data/data.dart';
 import 'package:code_setup/presentation/models/status_breakdown_model.dart';
@@ -22,9 +24,26 @@ abstract class AnnualDutyMissionRepoistry {
   /// ===================== MASTER DATA =====================
   Future<List<Position>> getPositions();
   Future<List<EmployeeList>> getUsers();
+  Future<List<CountryModel>> getCountryList();
+  Future<List<CityModel>> getCitiesByCountryId(int countryId);
+
+  /// Resolve numeric user id and fetch HR user (for passport autofill).
+  Future<EmployeeList?> getHrUserById(int userId);
 
   /// ===================== REQUEST =====================
   Future<void> sendAnnualDutyMissionRequest(Map<String, dynamic> payload);
+
+  /// Update Planned/Unplanned request (PUT). Do not send requester dept/section.
+  Future<void> updateDutyMissionRequest(
+    int requestId,
+    Map<String, dynamic> payload,
+  );
+
+  /// Create Annual plans: `{ missions: [ {...}, ... ] }` (up to 50).
+  Future<void> sendAnnualDutyMissionBulk(Map<String, dynamic> payload);
+
+  /// Update Annual plan(s): `{ request_id, ...mission fields }` (no dept/section).
+  Future<void> updateAnnualDutyMissionBulk(Map<String, dynamic> payload);
 
   Future<RequestDetailData?> getRequestsById(int id);
 
@@ -43,6 +62,7 @@ abstract class AnnualDutyMissionRepoistry {
   });
   Future<List<DutyMissionModel>> getMissionIdDropDownValues({
     required String tripType,
+    String status = '',
   });
 
   Future<List<DutyMissionModel>> getActionItems({
@@ -81,6 +101,17 @@ abstract class AnnualDutyMissionRepoistry {
   /// ===================== APPROVAL ACTIONS =====================
   Future<void> onApprove(Map<String, dynamic> payload);
   Future<void> onReject(Map<String, dynamic> payload);
+
+  /// Bulk approve / reject Annual requests.
+  /// Payload shape: `{ request_ids: [...], status, comment?, approvals?: [...] }`
+  Future<void> onBulkApprove(Map<String, dynamic> payload);
+
+  /// Persist Business/Economy ticket types before approve.
+  /// Payload shape: `{ tickets: [{ employee_id, ticket_type }] }`
+  Future<void> saveAirTicketTypesBulk(
+    int requestId,
+    Map<String, dynamic> payload,
+  );
 
   Future<void> onEventChange(int requestId, Map<String, dynamic> payload);
 

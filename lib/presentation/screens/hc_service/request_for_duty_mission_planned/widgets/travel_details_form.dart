@@ -4,12 +4,14 @@ class TravelDetailsForm extends StatefulWidget {
   final Map<String, dynamic> initialValues;
   final void Function(Map<String, dynamic>) onSubmit;
   final VoidCallback onCancel;
+  final Future<Map<String, dynamic>?> Function()? onFetchPassport;
 
   const TravelDetailsForm({
     super.key,
     required this.initialValues,
     required this.onSubmit,
     required this.onCancel,
+    this.onFetchPassport,
   });
 
   @override
@@ -23,6 +25,7 @@ class _TravelDetailsFormState extends State<TravelDetailsForm> {
   late TextEditingController ticketTypeCtrl;
   late TextEditingController decisionNoCtrl;
   late TextEditingController decisionDateCtrl;
+  bool _loadingPassport = false;
 
   @override
   void initState() {
@@ -50,6 +53,42 @@ class _TravelDetailsFormState extends State<TravelDetailsForm> {
     decisionDateCtrl = TextEditingController(
       text: widget.initialValues['decisionDate']?.toString() ?? '',
     );
+
+    _tryAutofillPassport();
+  }
+
+  Future<void> _tryAutofillPassport() async {
+    final fetch = widget.onFetchPassport;
+    if (fetch == null) return;
+    // Skip placeholder rows with no employee.
+    final empId = widget.initialValues['employeeId'];
+    if (empId == null || empId.toString().trim().isEmpty) return;
+    // Don't overwrite if passport already present.
+    if (passportNoCtrl.text.trim().isNotEmpty) return;
+
+    setState(() => _loadingPassport = true);
+    try {
+      final data = await fetch();
+      if (!mounted || data == null) return;
+      final no = data['passportNo']?.toString();
+      if (no != null && no.isNotEmpty) {
+        passportNoCtrl.text = no;
+      }
+      final issue = data['passportIssueDate']?.toString();
+      if (issue != null &&
+          issue.isNotEmpty &&
+          passportIssueDateCtrl.text.isEmpty) {
+        passportIssueDateCtrl.text = issue;
+      }
+      final expiry = data['passportExpiryDate']?.toString();
+      if (expiry != null &&
+          expiry.isNotEmpty &&
+          passportExpiryDateCtrl.text.isEmpty) {
+        passportExpiryDateCtrl.text = expiry;
+      }
+    } finally {
+      if (mounted) setState(() => _loadingPassport = false);
+    }
   }
 
   @override
@@ -83,6 +122,12 @@ class _TravelDetailsFormState extends State<TravelDetailsForm> {
             _infoRow('Return Date', v['returnDate']),
 
             const Divider(height: 32),
+
+            if (_loadingPassport)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: LinearProgressIndicator(),
+              ),
 
             /// ===== EDITABLE FIELDS =====
             KTextField(
@@ -210,7 +255,7 @@ class _TravelDetailsFormState extends State<TravelDetailsForm> {
     if (passportNoCtrl.text.isEmpty) return;
     if (passportIssueDateCtrl.text.isEmpty) return;
     if (passportExpiryDateCtrl.text.isEmpty) return;
-    if (decisionDateCtrl.text.isEmpty) return; // 🔴 REQUIRED
+    if (decisionDateCtrl.text.isEmpty) return;
 
     widget.onSubmit({
       'passportNo': passportNoCtrl.text,
@@ -218,7 +263,7 @@ class _TravelDetailsFormState extends State<TravelDetailsForm> {
       'passportExpiryDate': passportExpiryDateCtrl.text,
       'ticketType': ticketTypeCtrl.text,
       'decisionNumber': decisionNoCtrl.text,
-      'decisionDate': decisionDateCtrl.text, // ✅ ADDED
+      'decisionDate': decisionDateCtrl.text,
     });
   }
 }

@@ -109,6 +109,36 @@ class _RequestforDutyMissionUnplannedDetailsScreenState
                 5.toHorizontalSizedBox,
                 if (selectedTab == 0) ...[
                   employeeSection(),
+                  if (isFromActionItems &&
+                      actionType != ActionButtonsType.none) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            KAppX.router.push(
+                              RequestforDutyMissionUnplannedRequestRoute(
+                                serviceId: widget.serviceId,
+                                subServiceId: widget.subServiceId,
+                                service: widget.service,
+                                subService: widget.subService,
+                                isEditMode: true,
+                                requestId: requestId,
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.edit_outlined, size: 18),
+                          label: Text(
+                            l10n.requestDetailsLabel('Edit Request Details'),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   CommonRequestDetails(
                     allowanceEmployees: allowanceEmployees,
                     showAllowanceSection: true,
@@ -127,14 +157,7 @@ class _RequestforDutyMissionUnplannedDetailsScreenState
                       "Assigned To":
                           nextApprover?.approverUser?.employeeName ?? 'N/A',
                     },
-                    requestInfo: {
-                      'Priority': request?.priority ?? 'N/A',
-                      'Task Title': request?.taskTitle ?? 'N/A',
-                      'Task Description': request?.taskDescription ?? 'N/A',
-                      'Completion Date': request?.completionDate ?? 'N/A',
-                      'Assigned Employee':
-                          request?.assignedEmployeeName ?? 'N/A',
-                    },
+                    requestInfo: buildUnplannedDutyRequestInfo(request),
                     technicalInfo: {
                       'Extension Number':
                           request?.createdByUser?.extensionNumber.toString() ??

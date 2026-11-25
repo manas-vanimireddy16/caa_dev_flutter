@@ -39,6 +39,7 @@ class ApiEndPoint {
   static String departmentsByDgDepartment(int departmentId) =>
       '/v1/user-service/master/departments/by-dg-department/$departmentId';
   static const String countryList = '/v1/user-service/country-master/list';
+  static const String cityList = '/v1/hr-service/city-master/list';
 
   /// Dashboard
   static const String dashboardActionItems =
@@ -1069,10 +1070,19 @@ class ApiEndPoint {
 
   /// Create / Request Duty Mission
   static const String dutyMissionSendRequest = '/v1/hr-service/duty-mission';
+  /// Annual plan bulk create: body `{ missions: [...] }`
+  static const String dutyMissionAnnualBulkCreate =
+      '/v1/hr-service/duty-mission/annual/bulk';
+  /// Annual plan bulk update: body `{ request_id, ...mission fields }`
+  static const String dutyMissionAnnualBulkUpdate =
+      '/v1/hr-service/duty-mission/annual/bulk';
   static const String dutyMissionGetRequest = '/v1/hr-service/duty-missions';
   static const String dutyMissionGetActionItems =
       '/v1/hr-service/duty-missions/for-approval';
   static const String dutyMissionUsers = '/v1/user-service/users';
+
+  /// HR user by numeric id (passport / profile lookup)
+  static String hrServiceUserById(int id) => '/v1/hr-service/user/$id';
 
   /// Get Duty Mission by ID
   static String dutyMissionRequestById(int id) =>
@@ -1107,6 +1117,14 @@ class ApiEndPoint {
   /// Approve Duty Mission request
   static const String dutyMissionApprove =
       '/v1/hr-service/duty-mission/approve';
+
+  /// Bulk approve / reject Annual Duty Mission requests
+  static const String dutyMissionAnnualBulkApprove =
+      '/v1/hr-service/duty-mission/annual/bulk/approve';
+
+  /// Save air-ticket Business/Economy choices before approve
+  static String dutyMissionAirTicketTypeBulk(int id) =>
+      '/v1/hr-service/duty-mission/$id/air-ticket/ticket-type/bulk';
 
   /// ===================== ANALYTICS APIs =====================
 

@@ -6,6 +6,8 @@ class RequestforDutyMissionPlannedRequestScreen extends ConsumerStatefulWidget {
   final int subServiceId;
   final Service service;
   final SubService subService;
+  final bool isEditMode;
+  final int? requestId;
 
   const RequestforDutyMissionPlannedRequestScreen({
     super.key,
@@ -13,6 +15,8 @@ class RequestforDutyMissionPlannedRequestScreen extends ConsumerStatefulWidget {
     required this.subServiceId,
     required this.service,
     required this.subService,
+    this.isEditMode = false,
+    this.requestId,
   });
 
   @override
@@ -28,29 +32,44 @@ class _RequestforDutyMissionPlannedRequestScreenState
   void initState() {
     super.initState();
 
-    /// ✅ Create provider params ONCE
     _providerArgs = _VSControllerParams(
       service: widget.service,
       subService: widget.subService,
+      isEditMode: widget.isEditMode,
+      requestId: widget.requestId,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    /// Watch state only if needed
     final controller = ref.read(_vsProvider(_providerArgs).notifier);
-    final state = ref.read(_vsProvider(_providerArgs));
+    final state = ref.watch(_vsProvider(_providerArgs));
+
+    if (widget.isEditMode &&
+        (state.isLoading ||
+            state.formInitialValues == null ||
+            state.formInitialValues!.isEmpty)) {
+      return const KScaffold(
+        backgroundColor: Colors.white,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return KScaffold(
       backgroundColor: Colors.white,
-      // appBar: KAppBar(title: Text('Mission Transfer Request')),
-
-      /// ✅ DynamicForm MUST be root-level in a screen
       body: ProviderScope(
         overrides: [
           dynamicFormProvider.overrideWith((ref) => DynamicFormNotifier(ref)),
         ],
         child: DynamicForm(
-          title: 'Mission Transfer Request',
+          key: ValueKey(
+            widget.isEditMode
+                ? 'edit-${widget.requestId}-${state.formInitialValues!.length}'
+                : 'create',
+          ),
+          title: widget.isEditMode
+              ? 'Edit Duty Mission Planned Request'
+              : 'Duty Mission Planned Request',
           stepTitles: const ['1', '2', '3', '4'],
           steps: [
             controller.plannedForm1,
@@ -58,12 +77,15 @@ class _RequestforDutyMissionPlannedRequestScreenState
             controller.travelDetailsForm,
             controller.step4Fields(_providerArgs),
           ],
-
+          apiValues: widget.isEditMode ? state.formInitialValues : null,
           onSubmit: (values) async {
-            // await controller.onPressSubmit(values);
-
-            if (context.mounted) {
-              // context.router.pop();
+            final ok = await controller.buildDutyMissionPayload(
+              widget.serviceId,
+              widget.subServiceId,
+              values,
+            );
+            if (ok && context.mounted) {
+              context.router.pop();
             }
           },
         ),
@@ -71,168 +93,3 @@ class _RequestforDutyMissionPlannedRequestScreenState
     );
   }
 }
-
-// return KScaffold(
-    //   appBar: KAppBar(
-    //     title: Text(
-    //       "${widget.subService.subServiceName} - ${widget.subService.code}",
-    //     ),
-    //   ),
-    //   body: SafeArea(
-    //     child: SingleChildScrollView(
-    //       padding: const EdgeInsets.all(16),
-    //       child: Form(
-    //         key: _formKey,
-    //         child: Column(
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: [
-    //             /// ================= FORM =================
-
-    //             /// this field
-    //             KTextField(
-    //               fieldHeadingText: "Task Title *",
-    //               controller: controller.taskTitleController,
-    //               autovalidateMode: AutovalidateMode.onUserInteraction,
-    //               validator: (v) {
-    //                 if (v == null || v.isEmpty) {
-    //                   return "Please enter task title";
-    //                 }
-    //                 if (v.length < 5) {
-    //                   return "Task title should be at least 5 characters long";
-    //                 }
-    //                 return null;
-    //               },
-    //             ),
-
-    //             16.toVerticalSizedBox,
-
-    //             /// this field
-    //             /// -------- ASSIGNED TO --------
-    //             KDropdownField<int>(
-    //               fieldHeadingText: 'Assigned To (Employee Name / ID) *',
-    //               value: state.selectedUserId,
-    //               decoration: const InputDecoration(
-    //                 labelText: "Select *",
-    //                 border: OutlineInputBorder(),
-    //               ),
-    //               // validator: (v) =>
-    //               //     v == null ? "Please select employee" : null,
-    //               items: state.usersList
-    //                   .map(
-    //                     (e) => KDropdownItem<int>(
-    //                       value: e.id,
-    //                       child: Text(e.employeeName),
-    //                     ),
-    //                   )
-    //                   .toList(),
-    //               onChanged: (value) {
-    //                 if (value != null) {
-    //                   controller.onUserChange(value);
-    //                 }
-    //               },
-    //             ),
-
-    //             16.toVerticalSizedBox,
-
-    //             /// this field
-    //             /// -------- PRIORITY --------
-    //             KDropdownField<String>(
-    //               fieldHeadingText: 'Priority *',
-    //               value: state.selectedPriority.isEmpty
-    //                   ? null
-    //                   : state.selectedPriority,
-    //               decoration: const InputDecoration(
-    //                 labelText: "Select *",
-    //                 border: OutlineInputBorder(),
-    //               ),
-    //               // validator: (v) =>
-    //               //     v == null ? "Please select priority" : null,
-    //               items: [
-    //                 KDropdownItem(value: 'High', child: const Text('High')),
-    //                 KDropdownItem(value: 'Medium', child: const Text('Medium')),
-    //                 KDropdownItem(value: 'Low', child: const Text('Low')),
-    //               ],
-    //               onChanged: (value) {
-    //                 if (value != null) {
-    //                   controller.onPriorityChange(value);
-    //                 }
-    //               },
-    //             ),
-
-    //             16.toVerticalSizedBox,
-
-    //             /// this field
-    //             /// -------- COMPLETION DATE --------
-    //             KTextField(
-    //               fieldHeadingText: "Completion Date (Optional)",
-    //               readOnly: true,
-    //               controller: controller.completionController,
-    //               onTap: () async {
-    //                 final date = await KAppX.extendedRouter.showKDatePicker(
-    //                   initialDate: DateTime.now(),
-    //                   firstDate: DateTime.now(),
-    //                   lastDate: DateTime(2100),
-    //                 );
-
-    //                 if (date != null) {
-    //                   controller.completionController.text = DateFormat(
-    //                     'yyyy-MM-dd',
-    //                   ).format(date);
-
-    //                   controller.updateStartDateSelected(true);
-    //                 }
-    //               },
-    //             ),
-
-    //             16.toVerticalSizedBox,
-
-    //             /// this field
-    //             /// -------- TASK DESCRIPTION --------
-    //             KTextField(
-    //               fieldHeadingText: "Task Description *",
-    //               controller: controller.taskDescriptionController,
-    //               maxLines: 4,
-    //               validator: (v) => v == null || v.isEmpty ? "Required" : null,
-    //             ),
-
-    //             24.toVerticalSizedBox,
-
-    //             /// this field
-    //             /// -------- ATTACHMENTS --------
-    //             FileUploadWidget(
-    //               onUploadSuccess: controller.onUploadFileSuccess,
-    //               onDelete: controller.onRemoveFile,
-    //             ),
-
-    //             24.toVerticalSizedBox,
-
-    //             /// ================= SUBMIT =================
-    //             SizedBox(
-    //               width: double.infinity,
-    //               child: ElevatedButton(
-    //                 style: ElevatedButton.styleFrom(
-    //                   backgroundColor: controller.isFormFilled
-    //                       ? Colors.green
-    //                       : Colors.grey,
-    //                 ),
-    //                 onPressed: () {
-    //                   final isValid =
-    //                       _formKey.currentState?.validate() ?? false;
-    //                   if (!isValid) return;
-
-    //                   controller.submitAssignaTasktoEmployeeRequest(
-    //                     widget.serviceId,
-    //                     widget.subServiceId,
-    //                   );
-    //                 },
-    //                 child: const Text("Submit Request"),
-    //               ),
-    //             ),
-
-    //             20.toVerticalSizedBox,
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
